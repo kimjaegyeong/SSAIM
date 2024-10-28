@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: server
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ENC(xPjELBLjOj95Wwe3SELd9A==)
+    password: ENC(MlhBMa4p/8AyE+JrRf2VmurvINVU+c2V)
+    url: ENC(PvrdFqoZIXCEQ2cHxPY14dJDWacC4qKiV08pKtjbYIKXBsS5K+91jcn4vQkeQeb8)
+  jpa:
+    hibernate:
+      ddl-auto: update
