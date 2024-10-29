@@ -5,7 +5,7 @@ services:
     container_name: spring-boot
     build: ../../server
     environment:
-      jasypt.encryptor.password: ${JASYPT_ENCRYPTOR_PASSWORD}
+      JASYPT_ENCRYPTOR_PASSWORD: ${JASYPT_ENCRYPTOR_PASSWORD}
     ports:
       - "8080:8080"
     networks:
