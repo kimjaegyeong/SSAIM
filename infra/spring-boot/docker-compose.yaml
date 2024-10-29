@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ../../server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - my_network
+
+networks:
+  my_network:
