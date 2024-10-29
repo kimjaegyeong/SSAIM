@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styles from '../styles/CommonModal.module.css';
+import styles from './Modal.module.css';
 
 // 공통 모달 컴포넌트 사용법
 // isOpen: 모달 상태 변수
