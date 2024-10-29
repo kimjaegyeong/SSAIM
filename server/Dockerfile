@@ -1,13 +1,14 @@
+FROM gradle:7.6-jdk17 AS build
+WORKDIR /app
+
+COPY build.gradle settings.gradle ./
+COPY src ./src
+
+RUN gradle build --no-daemon
+
 FROM bellsoft/liberica-openjdk-alpine:17
+WORKDIR /app
 
-CMD ["./gradlew", "clean", "build"]
+COPY --from=build /app/build/libs/*.jar app.jar
 
-VOLUME /tmp
-
-ARG JAR_FILE=build/libs/*.jar
-
-COPY ${JAR_FILE} app.jar
-
-EXPOSE 8080
-
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
