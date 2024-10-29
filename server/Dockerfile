@@ -1,14 +1,17 @@
-FROM gradle:8.5-jdk17 AS build
+FROM openjdk:17-jdk-slim AS build
+
 WORKDIR /app
 
-COPY build.gradle settings.gradle ./
-COPY src ./src
+COPY . .
 
-RUN gradle build --no-daemon
+RUN chmod +x gradlew
 
-FROM bellsoft/liberica-openjdk-alpine:17
+RUN ./gradlew build --no-daemon -x test
+
+FROM openjdk:17-jdk-slim
+
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/*-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]
