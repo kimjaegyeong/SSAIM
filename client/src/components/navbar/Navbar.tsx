@@ -28,8 +28,8 @@ interface NavItemProps {
 const menuItems: MenuItem[] = [
   { icon: <IoHomeOutline className={styles.icon} />, text: '메인페이지', path: '/' },
   { icon: <IoLayersOutline className={styles.icon} />, text: '프로젝트', path: '/project' },
-  { icon: <IoPeopleOutline className={styles.icon} />, text: '팀 구성 게시판', path: '/' },
-  { icon: <IoDocumentTextOutline className={styles.icon} />, text: '회고', path: '/' },
+  { icon: <IoPeopleOutline className={styles.icon} />, text: '팀 구성 게시판', path: '/meeting' },
+  { icon: <IoDocumentTextOutline className={styles.icon} />, text: '회고', path: '/remind' },
 ];
 
 // NavItem 컴포넌트 정의
@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
     <div className={styles.sidebarContainer}>
       <div className={styles.navList}>
         {/* 프로필 이미지와 이름 */}
-        <NavItem icon={<div className={styles.profileImage}></div>} text="이름" onClick={() => {navigate('/')}}/>
+        <NavItem icon={<div className={styles.profileImage}></div>} text="이름" onClick={() => {navigate('/mypage')}}/>
 
         {/* 메뉴 아이템 리스트 */}
         {menuItems.map((item, index) => (

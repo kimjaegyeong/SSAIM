@@ -1,5 +1,4 @@
 // layouts/MainLayout.tsx
-import React from 'react';
 import Navbar from '../navbar/Navbar';
 import { Outlet } from 'react-router-dom';
 import styles from './MainLayout.module.css';
