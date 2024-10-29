@@ -5,7 +5,7 @@ services:
     container_name: mysql
     image: mysql:8.0.40
     environment:
-      MYSQL_DATABASE: lucky
+      MYSQL_DATABASE: ssafy_log
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
