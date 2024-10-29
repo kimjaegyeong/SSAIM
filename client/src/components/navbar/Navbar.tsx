@@ -1,33 +1,64 @@
+import React, { ReactNode } from 'react';
 import styles from './Navbar.module.css';
-import { IoHomeOutline } from 'react-icons/io5';
-import { IoLayersOutline, IoPeopleOutline, IoDocumentTextOutline, IoLogOutOutline } from 'react-icons/io5';
+import {
+  IoHomeOutline,
+  IoLayersOutline,
+  IoPeopleOutline,
+  IoDocumentTextOutline,
+  IoLogOutOutline,
+} from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
+
+
+// 메뉴 아이템의 타입 정의
+interface MenuItem {
+  icon: ReactNode;
+  text: string;
+  path: string;
+}
+
+// NavItem 컴포넌트의 props 타입 정의
+interface NavItemProps {
+  icon: ReactNode;
+  text: string;
+  onClick: () => void;
+}
+// menuItem 에 navbar 에서 사용할 item들의 정보 배열으로 저장
+const menuItems: MenuItem[] = [
+  { icon: <IoHomeOutline className={styles.icon} />, text: '메인페이지', path: '/' },
+  { icon: <IoLayersOutline className={styles.icon} />, text: '프로젝트', path: '/project' },
+  { icon: <IoPeopleOutline className={styles.icon} />, text: '팀 구성 게시판', path: '/' },
+  { icon: <IoDocumentTextOutline className={styles.icon} />, text: '회고', path: '/' },
+];
+
+// NavItem 컴포넌트 정의
+const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
+  <div className={styles.navItem} onClick={onClick}>
+    {icon}
+    <span className={styles.navText}>{text}</span>
+  </div>
+);
+
+// Navbar 컴포넌트 정의
+const Navbar: React.FC = () => {
+  const navigate = useNavigate()
   return (
     <div className={styles.sidebarContainer}>
       <div className={styles.navList}>
-        <div className={styles.navItem}>
-          <div className={styles.profileImage}></div>
-          <span className={styles.navText}>이름</span>
-        </div>
-        <div className={styles.navItem}>
-          <IoHomeOutline className={styles.icon}></IoHomeOutline>
-          <span className={styles.navText}>메인페이지</span>
-        </div>
-        <div className={styles.navItem}>
-          <IoLayersOutline className={styles.icon}></IoLayersOutline>
-          <span className={styles.navText}>프로젝트</span>
-        </div>
-        <div className={styles.navItem}>
-          <IoPeopleOutline className={styles.icon}></IoPeopleOutline>
-          <span className={styles.navText}>팀 구성 게시판</span>
-        </div>
-        <div className={styles.navItem}>
-          <IoDocumentTextOutline className={styles.icon}></IoDocumentTextOutline>
-          <span className={styles.navText}>회고</span>
-        </div>
+        {/* 프로필 이미지와 이름 */}
+        <NavItem icon={<div className={styles.profileImage}></div>} text="이름" onClick={() => {navigate('/')}}/>
+
+        {/* 메뉴 아이템 리스트 */}
+        {menuItems.map((item, index) => (
+          <NavItem key={index} icon={item.icon} text={item.text} onClick = {() => {navigate(item.path)}}/>
+        ))}
       </div>
-      <div className={styles.footer}><IoLogOutOutline className={styles.icon}></IoLogOutOutline></div>
+
+      {/* 로그아웃 버튼 */}
+      <div className={styles.footer}>
+        <IoLogOutOutline className={styles.icon} />
+      </div>
     </div>
   );
 };
