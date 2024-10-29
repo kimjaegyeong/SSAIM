@@ -2,7 +2,7 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import Modal from "./components/modal1/Modal";
+import Modal from "./components/modal/Modal";
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
