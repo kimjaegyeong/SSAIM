@@ -1,16 +1,23 @@
 version: "3"
 
 services:
-  spring-boot:
-    container_name: spring-boot
-    build: ../../server
+  mysql:
+    image: mysql:8.0.40
     environment:
-      JASYPT_ENCRYPTOR_PASSWORD: ${JASYPT_ENCRYPTOR_PASSWORD}
+      MYSQL_DATABASE: lucky
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "8080:8080"
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql # 데이터 저장을 위한 volume 설정
     networks:
       - my_network
 
 networks:
   my_network:
     external: true
+
+volumes:
+  mysql_data: # named volume 정의
