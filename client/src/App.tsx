@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Modal from "./components/modal/Modal";
+import Button from './components/button/Button';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,12 +53,12 @@ function App() {
         }
         footer={
           <>
-            <button style={{ padding: '10px 20px', backgroundColor: 'blue', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-              파랑
-            </button>
-            <button style={{ padding: '10px 20px', backgroundColor: 'red', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-              빨강
-            </button>
+            <Button size='small' colorType='purple'>
+              보라
+            </Button>
+            <Button size='small' colorType='green'>
+              녹색
+            </Button>
           </>
         }
         // width={400}
