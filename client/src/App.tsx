@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import Modal from "./components/Modal/Modal";
 
@@ -13,12 +10,9 @@ function App() {
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Button size="small" colorType="purple" onClick={() => alert('Button clicked')}>
+          나의 회고
+        </Button>
       </div>
       <h1>Vite + React</h1>
       <div className="card">
