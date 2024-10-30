@@ -1,0 +1,13 @@
+/* 레이아웃 전체 구조 */
+.mainLayout {
+  height: 100vh; /* 전체 화면 높이를 채우도록 설정 */
+  width : 100vw;
+}
+
+
+/* 콘텐츠 영역 */
+.content {
+
+  padding-left :70px;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+}
