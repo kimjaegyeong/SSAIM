@@ -16,8 +16,8 @@ const TeamBuildingBoard: React.FC = () => {
         { value: 'option3', label: '3' },
         { value: 'option4', label: '4' },
         { value: 'option5', label: '5' },
-        { value: 'option5', label: '6' },
-        { value: 'option5', label: '7' },
+        { value: 'option6', label: '6' },
+        { value: 'option7', label: '7' },
     ];
     const positionOptions = [
         { value: 'option1', label: 'FE' },
@@ -31,21 +31,32 @@ const TeamBuildingBoard: React.FC = () => {
 
     return (
         <>
-            <h1>팀원 모집 게시판</h1>
             {/* 게시판 전체 */}
             <div className={styles.board}>
                 {/* 게시판 상단 구역(필터, 검색, 생성 버튼) */}
                 <div className={styles.borderHeader}>
-                    <div className={styles.filterSection}>
+                    <div className={styles.dropDownSection}>
                         <DropDown options={regionOptions} onSelect={handleSelect} placeholder="지역" />
                         <DropDown options={memberOptions} onSelect={handleSelect} placeholder="인원" />
                         <DropDown options={positionOptions} onSelect={handleSelect} placeholder="직무" />
+                    </div>
+                    <div className={styles.searchSection}>
+                        <input type="text" />
+                        <button>신청현황</button>
+                        <button>팀 생성</button>
                     </div>
                 </div>
                 {/* 게시글 목록 */}
                 <div className={styles.borderContent}>
                     <div className={styles.borderItem}>
-                    
+                        <p>지역</p>
+                        <p>게시글 제목</p>
+                        {/* 태그 */}
+                        {/* 인원 수 */}
+                        <div>
+                            <img src="" alt="" />
+                            <p>작성자</p>
+                        </div>
                     </div>
                 </div>
                 {/* 페이지 목차 */}

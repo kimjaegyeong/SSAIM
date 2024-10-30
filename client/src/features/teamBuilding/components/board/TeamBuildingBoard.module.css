@@ -1,0 +1,8 @@
+.borderHeader {
+    display: flex;
+    flex-direction: row;
+}
+
+.dropDownSection {
+    display: flex;
+}
