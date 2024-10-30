@@ -1,0 +1,12 @@
+.page {
+    flex: 1;
+    box-sizing: border-box;
+    justify-self: center;
+    width: 90%;
+    margin-top: 50px;
+}
+
+.pageTitle {
+    font-size: 32px;
+    font-weight: bold;
+}

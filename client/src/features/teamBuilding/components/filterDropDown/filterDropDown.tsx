@@ -8,16 +8,15 @@ interface Option {
 
 interface DropdownProps {
   options: Option[];
+  selectedOption: Option | null;
   onSelect: (option: Option) => void;
   placeholder?: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder = '선택하세요' }) => {
+const Dropdown: React.FC<DropdownProps> = ({ options, selectedOption, onSelect, placeholder = '선택하세요' }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
   const handleOptionClick = (option: Option) => {
-    setSelectedOption(option);
     onSelect(option);
     setIsOpen(false);
   };
