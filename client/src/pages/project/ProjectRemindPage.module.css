@@ -1,8 +1,8 @@
 .container {
     display: flex;
-    height: 80vh;
-  }
-  
+    height: 85vh;
+}
+
 .left {
     flex: 4; /* 왼쪽 섹션 크기 */
     padding: 0px 20px;
@@ -13,35 +13,9 @@
     flex: 1; /* 오른쪽 섹션 크기 */
     padding: 0px 20px;
 }
-  
-.filterHeader {
+
+.remindContent {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 50px;
-    padding: 10px 20px;
+    flex-direction: column;
 }
 
-.dateTitle{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #007bff;
-    font-weight: bold;
-    font-size: 18px;
-}
-
-.filter {
-    display: flex;
-    gap: 50px;
-}
-
-.dayWeek {
-    display: flex;
-    gap: 20px;
-}
-
-.myTeam {
-    display: flex;
-    gap: 20px;
-}

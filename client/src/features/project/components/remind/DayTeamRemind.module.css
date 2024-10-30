@@ -1,0 +1,38 @@
+
+/* 팀원 회고 섹션 스타일 */
+.teamReview {
+    display: flex;
+    gap: 20px;
+    height: 75vh;
+}
+
+/* Keep, Problem, Try 섹션 스타일 */
+.keepSection, .problemSection, .trySection {
+    flex: 1;
+    padding: 10px;
+    background-color: #F5F5F5;
+    border-radius: 8px;
+}
+
+h3 {
+    margin: 15px 0;
+}
+
+/* 각 섹션의 제목 스타일 */
+.keepSection h3 {
+    color: #4F9DEA;
+}
+
+.problemSection h3 {
+    color: #FA664E;
+}
+
+.trySection h3 {
+    color: #FEB71D;
+}
+
+.reviewCardContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
