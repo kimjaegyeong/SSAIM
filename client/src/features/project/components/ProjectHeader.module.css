@@ -35,4 +35,9 @@
 .navLink:hover {
     color: #007bff;
 }
+
+.activeLink {
+    color: #007bff; /* 활성화된 링크 색상 */
+    font-weight: bold; /* 강조할 경우 굵게 설정 */
+}
   
