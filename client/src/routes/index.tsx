@@ -6,8 +6,10 @@ import MainLayout from '../components/mainLayout/MainLayout';
 import MeetingListPage from '../pages/meeting/MeetingListPage';
 import RemindListPage from '../pages/remind/RemindListPage';
 import MyPage from '../pages/myPage/MyPage';
+import LoginPage from '../pages/account/login/LoginPage';
 const AppRoutes = () => (
   <Routes>
+    <Route path="/login" element={<LoginPage />} />
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       <Route path="/project" element={<ProjectListPage />}></Route>
