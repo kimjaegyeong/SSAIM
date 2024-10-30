@@ -1,0 +1,38 @@
+.projectHeader {
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    
+}
+
+.projectTitle {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.projectNavbar {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid #e0e0e0;
+}
+  
+.navList {
+    display: flex;
+    gap: 45px;
+    list-style: none;
+    padding: 0;
+}
+
+.navLink {
+    text-decoration: none;
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+
+.navLink:hover {
+    color: #007bff;
+}
+  
