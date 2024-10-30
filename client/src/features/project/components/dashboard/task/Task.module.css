@@ -1,0 +1,29 @@
+/* Task.module.css */
+.jira {
+  background-color: #e2edfb; /* Jira 연한 파란색 */
+  color: #357DE8;
+}
+
+.gitlab {
+  background-color: #ffe0cc; /* GitLab 연한 오렌지 */
+  color: #fc6d26;
+}
+
+.meeting {
+  background-color: #ebf2ff; /* 회의록 연한 파란색 */
+  color: #6c63ff;
+}
+
+.task {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  transition: transform 0.2s, box-shadow 0.2s; /* 애니메이션 효과 */
+}
+
+.task:hover {
+  filter: brightness(0.9); /* 마우스 오버 시 밝아짐 */
+
+}
