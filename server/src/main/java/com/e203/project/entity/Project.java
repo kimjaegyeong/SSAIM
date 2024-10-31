@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,4 +48,17 @@ public class Project extends BaseEntity {
 
 	@Column(name = "project_progress_back")
 	private String progressBack;
+
+	@Builder
+	private Project(String title, String profileImage, LocalDateTime startDate, LocalDateTime endDate, String gitlabApi, String jiraApi,
+		String progressBack, String progressFront){
+		this.title = title;
+		this.profileImage = profileImage;
+		this.startDate =startDate;
+		this.endDate = endDate;
+		this.gitlabApi = gitlabApi;
+		this.jiraApi = jiraApi;
+		this.progressFront = progressFront;
+		this.progressBack = progressBack;
+	}
 }
