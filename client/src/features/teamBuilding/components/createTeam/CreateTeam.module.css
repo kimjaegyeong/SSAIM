@@ -62,8 +62,30 @@
 
 .tagOptions {
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.domainWrapper {
+    display: flex;
+    align-items: flex-start;
+    align-items: center;
+    gap: 20px; 
+}
+
+.categoryBox {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.tagList {
+    display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    max-width: 300px; 
 }
 
 .recruitmentOptions {
@@ -104,4 +126,16 @@
 .buttonSection {
     display: flex;
     justify-content: flex-end;
+    gap: 20px;
+}
+
+.categoryLabel {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.tagRow {
+    display: flex;
+    margin-bottom: 5px;
 }
