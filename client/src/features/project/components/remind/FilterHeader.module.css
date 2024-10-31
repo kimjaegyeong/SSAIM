@@ -22,6 +22,7 @@
 
 .dayWeek {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
 
@@ -29,3 +30,18 @@
     display: flex;
     gap: 20px;
 }
+
+.active {
+    display: flex;
+    align-items: center;
+    color: #007bff;
+    font-weight: bold;
+    gap: 5px;
+}
+
+.disactive {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+

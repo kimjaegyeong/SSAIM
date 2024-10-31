@@ -5,7 +5,10 @@ const DayTeamRemind = () => {
   return (
     <div className={styles.teamReview}>
       <div className={styles.keepSection}>
-        <h3>Keep</h3>
+        <div className={styles.sectionTitle}>
+            <div className={styles.sectionTitleStart}></div>
+            <h3>Keep</h3>
+        </div>
         <div className={styles.reviewCardContainer}>
             <DayTeamRemindCard
                 userName="강수연"
@@ -41,7 +44,10 @@ const DayTeamRemind = () => {
         </div>
       </div>
       <div className={styles.problemSection}>
-        <h3>Problem</h3>
+        <div className={styles.sectionTitle}>
+            <div className={styles.sectionTitleStart}></div>
+            <h3>Problem</h3>
+        </div>
         <div className={styles.reviewCardContainer}>
             <DayTeamRemindCard
                 userName="강수연"
@@ -77,7 +83,10 @@ const DayTeamRemind = () => {
         </div>
       </div>
       <div className={styles.trySection}>
-        <h3>Try</h3>
+        <div className={styles.sectionTitle}>
+            <div className={styles.sectionTitleStart}></div>
+            <h3>Try</h3>
+        </div>
         <div className={styles.reviewCardContainer}>
             <DayTeamRemindCard
                 userName="강수연"

@@ -1,13 +1,14 @@
 
 .DayTeamRemindCard {
     background-color: #f1f1f1;
-    height: 18vh;
+    height: 16vh;
     padding: 15px;
     border-radius: 10px;
     position: relative;
     overflow: hidden;
-    transform-origin: top left; 
+    transform-origin: center; 
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1; 
 }
 
 
@@ -45,5 +46,5 @@
 }
 
 .reviewText {
-    font-size: 13px;
+    font-size: 11px;
 }
