@@ -11,7 +11,11 @@
 
 .right {
     flex: 1; /* 오른쪽 섹션 크기 */
+    display: flex;
     padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }
 
 .remindContent {
@@ -19,3 +23,20 @@
     flex-direction: column;
 }
 
+.description {
+    color: #808080;
+}
+
+.calendar {
+    width: 280px;
+}
+
+
+:global(.react-calendar) {
+    border: none;
+}
+
+:global(.react-calendar__navigation__label) {
+    font-size: 12px; 
+    font-weight: bold;
+}

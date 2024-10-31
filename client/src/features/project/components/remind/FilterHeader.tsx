@@ -3,21 +3,26 @@ import styles from './FilterHeader.module.css';
 import { FaRegClock } from "react-icons/fa6";
 import { IoSunny } from "react-icons/io5";
 import { MdOutlineViewWeek } from "react-icons/md";
+import moment from "moment";
+// import "moment/locale/ko";
 import Button from '../../../../components/button/Button';
+
+// moment.locale("ko");
 
 interface FilterHeaderProps {
   dayWeek: string;
   setDayWeek: (value: string) => void;
   myTeam: string;
   setMyTeam: (value: string) => void;
+  selectedDate: Date; 
 }
 
-const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam, setMyTeam }) => {
+const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam, setMyTeam, selectedDate }) => {
   return (
     <div className={styles.filterHeader}>
       <div className={styles.dateTitle}>
         <FaRegClock style={{ strokeWidth: 4, color: "#007bff" }} />
-        2024년 10월 30일 (수)
+        {moment(selectedDate).format("YYYY년 MM월 DD일 (ddd)")}
       </div>
       <div className={styles.filter}>
         <div className={styles.dayWeek}>
