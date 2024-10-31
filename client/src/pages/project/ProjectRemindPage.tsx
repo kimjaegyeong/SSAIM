@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 import ProjectHeader from '../../features/project/components/ProjectHeader';
 import styles from './ProjectRemindPage.module.css';
 import FilterHeader from '../../features/project/components/remind/FilterHeader';
-import DayTeamRemind from '../../features/project/components/remind/DayTeam/DayTeamRemind';
-import DayMyRemind from '../../features/project/components/remind/DayMy/DayMyRemind';
+import DayTeamRemind from '../../features/project/components/remind/dayTeam/DayTeamRemind';
+import DayMyRemind from '../../features/project/components/remind/dayMy/DayMyRemind';
+import WeekRemind from '../../features/project/components/remind/week/WeekRemind';
 
 
 const ProjectRemindPage = () => {
@@ -22,8 +23,8 @@ const ProjectRemindPage = () => {
             <div className={styles.remindContent}>
                 {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind/>}
                 {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind />}
-                {dayWeek === '1주일' && myTeam === '나의 회고' && <p>1주일 동안의 나의 회고 내용</p>}
-                {dayWeek === '1주일' && myTeam === '팀원 회고' && <p>1주일 동안의 팀원 회고 내용</p>}
+                {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind/>}
+                {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind/>}
             </div>
         </div>
         <div className={styles.right}>
