@@ -28,7 +28,7 @@ const TeamCreation: React.FC = () => {
                 {/* 왼쪽 섹션 */}
                 <div className={styles.formSection}>
                     <div className={styles.formGroup}>
-                        <label>지역 선택</label>
+                        <label className={styles.sectionLabel}>지역 선택</label>
                         <div className={styles.regionOptions}>
                             {["서울", "대전", "광주", "구미", "부울경"].map((city) => (
                                 <label key={city}>
@@ -43,7 +43,7 @@ const TeamCreation: React.FC = () => {
                         </div>
                     </div>
                     <div className={styles.formGroup}>
-                        <label>게시글 제목</label>
+                        <label className={styles.sectionLabel}>게시글 제목</label>
                         <input
                             type="text"
                             value={title}
@@ -53,7 +53,7 @@ const TeamCreation: React.FC = () => {
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label>게시글 본문</label>
+                        <label className={styles.sectionLabel}>게시글 본문</label>
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
@@ -65,23 +65,36 @@ const TeamCreation: React.FC = () => {
                 {/* 오른쪽 섹션 */}
                 <div className={styles.selectionSection}>
                     <div className={styles.formGroup}>
-                        <label>도메인 선택</label>
+                        <label className={styles.sectionLabel}>도메인 선택(최대 2개)</label>
                         <div className={styles.tagOptions}>
-                            {[
-                                "웹 기술", "웹 디자인", "모바일", "AIoT", "AI 영상", "AI 음성", "추천",
-                                "분산", "자율주행", "스마트홈", "P2P", "디지털거래", "메타버스",
-                                "핀테크", "자유주제", "기업연계"
-                            ].map((tag) => (
-                                <Tag key={tag} text={tag}/>
-                            ))}
+                            <div>
+                                {[
+                                    "웹 기술", "웹 디자인", "모바일", "AIoT"
+                                ].map((tag) => (
+                                    <Tag key={tag} text={tag}/>
+                                ))}
+                                <hr />
+                                {[
+                                    "AI영상", "AI음성", "추천", "분산", "자율주행", "스마트홈", "P2P", 
+                                    "디지털거래", "메타버스","핀테크"
+                                ].map((tag) => (
+                                    <Tag key={tag} text={tag}/>
+                                ))}
+                                <hr />
+                                {[
+                                    "자유주제", "기업연계"
+                                ].map((tag) => (
+                                    <Tag key={tag} text={tag}/>
+                                ))}
+                            </div>
                         </div>
                     </div>
                     <div className={styles.formGroup}>
-                        <label>모집 인원 수</label>
+                        <label className={styles.sectionLabel}>모집 인원 수</label>
                         <div className={styles.recruitmentOptions}>
                             {(["FE", "BE", "Infra"] as const).map((role) => (
                                 <div key={role} className={styles.role}>
-                                    <span className={styles.roleLabel}>{role}</span>
+                                    <Tag text={role}/>
                                     <input
                                         type="number"
                                         value={recruitment[role]}
@@ -92,6 +105,7 @@ const TeamCreation: React.FC = () => {
                                             })
                                         }
                                         min="0"
+                                        max="10"
                                     />
                                 </div>
                             ))}

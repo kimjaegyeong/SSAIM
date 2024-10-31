@@ -31,7 +31,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selectedOption, onSelect, 
           {options.map(option => (
             <li 
               key={option.value} 
-              className={`${styles.option} ${selectedOption?.value === option.value ? styles.selected : ''}`} // 선택된 옵션 강조
+              className={`${styles.option} ${selectedOption?.value === option.value ? styles.selected : ''}`}
               onClick={() => handleOptionClick(option)}
             >
               {option.label}
