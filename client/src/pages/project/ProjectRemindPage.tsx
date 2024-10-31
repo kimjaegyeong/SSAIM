@@ -6,9 +6,9 @@ import 'react-calendar/dist/Calendar.css';
 import styles from './ProjectRemindPage.module.css';
 import ProjectHeader from '../../features/project/components/ProjectHeader';
 import FilterHeader from '../../features/project/components/remind/FilterHeader';
-import DayTeamRemind from '../../features/project/components/remind/dayTeam/DayTeamRemind';
-import DayMyRemind from '../../features/project/components/remind/dayMy/DayMyRemind';
-import WeekRemind from '../../features/project/components/remind/week/WeekRemind';
+import DayTeamRemind from '../../features/project/components/remind/DayTeamRemind';
+import DayMyRemind from '../../features/project/components/remind/DayMyRemind';
+import WeekRemind from '../../features/project/components/remind/WeekRemind';
 import Button from '../../components/button/Button'
 
 
@@ -45,7 +45,7 @@ const ProjectRemindPage = () => {
           <Calendar 
             onChange={(date) => setSelectedDate(date as Date)} 
             value={selectedDate} 
-            formatDay={(locale, date) => moment(date).format("D")} 
+            formatDay={(_, date) => moment(date).format("D")} 
           />
           {/* {moment(selectedDate).format("YYYY년 MM월 DD일 (ddd)")} */}
           </div>
