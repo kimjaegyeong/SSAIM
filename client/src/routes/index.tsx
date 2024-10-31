@@ -9,6 +9,7 @@ import ProjectRemindPage from '../pages/project/ProjectRemindPage';
 import MainLayout from '../components/mainLayout/MainLayout';
 import MeetingListPage from '../pages/meeting/MeetingListPage';
 import RemindListPage from '../pages/remind/RemindListPage';
+import MeetingCreatePage from '../pages/meeting/MeetingCreatePage';
 import MyPage from '../pages/myPage/MyPage';
 const AppRoutes = () => (
   <Routes>
@@ -22,7 +23,8 @@ const AppRoutes = () => (
       <Route path="/project/:projectId/meeting" element={<ProjectMeetingPage />}></Route>
       <Route path="/project/:projectId/remind" element={<ProjectRemindPage />}></Route>
       {/* 팀빌딩 */}
-      <Route path="/team-building" element={<MeetingListPage />}></Route>
+      <Route path="/meeting" element={<MeetingListPage />}></Route>
+      <Route path="/meeting/create" element={<MeetingCreatePage />}></Route>
       {/* 회고 */}
       <Route path="/remind" element={<RemindListPage />}></Route>
       {/* 마이페이지 */}
