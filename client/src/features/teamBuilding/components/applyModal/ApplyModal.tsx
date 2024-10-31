@@ -1,6 +1,6 @@
 // ApplyModal.tsx
 import React from "react";
-import styles from './applyModal.module.css';
+import styles from './ApplyModal.module.css';
 
 interface ApplyModalProps {
     isOpen: boolean;
