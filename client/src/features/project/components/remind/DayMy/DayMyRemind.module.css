@@ -1,0 +1,61 @@
+.myReview {
+    display: flex;
+    gap: 20px;
+    height: 67vh;
+    padding: 0px 20px;
+}
+
+.keepSection {
+    flex: 1;
+    background-color: rgba(79, 157, 234, 0.1);
+    border-radius: 8px;
+}
+.problemSection {
+    flex: 1;
+    background-color: rgba(250, 102, 78, 0.1);
+    border-radius: 8px;
+}
+.trySection {
+    flex: 1;
+    background-color: rgba(254, 183, 29, 0.1);
+    border-radius: 8px;
+}
+
+
+.sectionTitle{
+    display: flex;
+    align-items: center;
+    height: 5vh;
+    gap:10px;
+    padding: 10px 20px;
+}
+
+.keepSection .sectionTitle{
+    background-color: rgba(79, 157, 234);
+}
+
+.problemSection .sectionTitle{
+    background-color: rgba(250, 102, 78);
+}
+
+.trySection .sectionTitle{
+    background-color: rgba(254, 183, 29);
+}
+
+
+.h3 {
+    margin: 0px;
+    font-weight: bold;
+    color: white;
+}
+
+
+.reviewContainer {
+    padding: 20px;
+
+}
+
+.p {
+    margin: 0px;
+    font-size: 15px;
+}
