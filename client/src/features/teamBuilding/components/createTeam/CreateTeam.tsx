@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./CreateTeam.module.css";
 import Tag from "../tag/Tag";
+import Button from "../../../../components/button/Button";
 
 interface Recruitment {
     FE: number;
@@ -13,12 +14,21 @@ const TeamCreation: React.FC = () => {
     const [title, setTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const [recruitment, setRecruitment] = useState<Recruitment>({ FE: 0, BE: 0, Infra: 0 });
+    const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
 
     const handleRegionChange = (city: string) => {
         if (selectedRegion === city) {
             setSelectedRegion(null);
         } else {
             setSelectedRegion(city);
+        }
+    };
+
+    const handleDomainClick = (domain: string) => {
+        if (selectedDomains.includes(domain)) {
+            setSelectedDomains(selectedDomains.filter((item) => item !== domain));
+        } else if (selectedDomains.length < 2) {
+            setSelectedDomains([...selectedDomains, domain]);
         }
     };
 
@@ -69,22 +79,37 @@ const TeamCreation: React.FC = () => {
                         <div className={styles.tagOptions}>
                             <div>
                                 {[
-                                    "웹 기술", "웹 디자인", "모바일", "AIoT"
+                                    "웹기술", "웹디자인", "모바일", "AIoT"
                                 ].map((tag) => (
-                                    <Tag key={tag} text={tag}/>
+                                    <Tag
+                                        key={tag}
+                                        text={tag}
+                                        useDefaultColors={!selectedDomains.includes(tag)}
+                                        onClick={() => handleDomainClick(tag)}
+                                    />
                                 ))}
                                 <hr />
                                 {[
-                                    "AI영상", "AI음성", "추천", "분산", "자율주행", "스마트홈", "P2P", 
-                                    "디지털거래", "메타버스","핀테크"
+                                    "AI영상", "AI음성", "추천", "분산", "자율주행", "스마트홈", "P2P",
+                                    "디지털거래", "메타버스", "핀테크"
                                 ].map((tag) => (
-                                    <Tag key={tag} text={tag}/>
+                                    <Tag
+                                        key={tag}
+                                        text={tag}
+                                        useDefaultColors={!selectedDomains.includes(tag)}
+                                        onClick={() => handleDomainClick(tag)}
+                                    />
                                 ))}
                                 <hr />
                                 {[
                                     "자유주제", "기업연계"
                                 ].map((tag) => (
-                                    <Tag key={tag} text={tag}/>
+                                    <Tag
+                                        key={tag}
+                                        text={tag}
+                                        useDefaultColors={!selectedDomains.includes(tag)}
+                                        onClick={() => handleDomainClick(tag)}
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -113,9 +138,9 @@ const TeamCreation: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div>
-                <button className={styles.cancelButton}>취소</button>
-                <button className={styles.submitButton}>생성</button>
+            <div className={styles.buttonSection}>
+                <Button size="custom" colorType="red" >취소</Button>
+                <Button size="custom" colorType="blue" >생성</Button>
             </div>
         </>
     );

@@ -100,3 +100,8 @@
 .cancelButton:hover {
     background-color: #c82333;
 }
+
+.buttonSection {
+    display: flex;
+    justify-content: flex-end;
+}
