@@ -1,5 +1,5 @@
 import Board from '../../features/teamBuilding/components/board/TeamBuildingBoard'
-import styles from './MeetingListPage.module.css'
+import styles from './MeetingPage.module.css'
 
 const MeetingListPage = () => {
   return (

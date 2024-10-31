@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styles from './TeamBuildingBoard.module.css';
 import DropDown from '../filterDropDown/filterDropDown';
-import ApplyModal from '../applyModal/applyModal';
-import CreateTeamModal from '../createTeamModal/CreateTeamModal';
+import ApplyModal from '../applyModal/ApplyModal';
 import Tag from '../tag/Tag';
 import Bar from '../bar/Bar';
 import { GrPowerReset } from "react-icons/gr";
 import { AiOutlineProfile } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
+import { useNavigate } from 'react-router-dom';
 
 const TeamBuildingBoard: React.FC = () => {
+    const navigate = useNavigate()
+    
     const data = [
         { id: 1, title: '팀원 모집 게시글 1', region: '서울', currentMembers: 3, totalMembers: 6, category: ['자유주제', '기업연계'], position: ['FE', 'BE', 'Infra'], author: 'XXX' },
         { id: 2, title: '팀원 모집 게시글 2', region: '대전', currentMembers: 5, totalMembers: 6, category: ['자유주제', '기업연계'], position: ['FE', 'Infra'], author: 'XXX' },
@@ -123,13 +125,9 @@ const TeamBuildingBoard: React.FC = () => {
         setCurrentPage(1);
     };
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-    const [isCreateTeamModalOpen, setIsCreateTeamModalOpen] = useState(false);
 
     const openApplyModal = () => setIsApplyModalOpen(true);
     const closeApplyModal = () => setIsApplyModalOpen(false);
-
-    const openCreateTeamModal = () => setIsCreateTeamModalOpen(true);
-    const closeCreateTeamModal = () => setIsCreateTeamModalOpen(false);
 
     return (
         <>
@@ -186,7 +184,7 @@ const TeamBuildingBoard: React.FC = () => {
                         </div>
                         <div className={styles.actionButtons}> 
                             <button onClick={openApplyModal}><AiOutlineProfile /> 신청현황</button>
-                            <button onClick={openCreateTeamModal}><FiPlus /> 팀 생성</button>
+                            <button onClick={() => navigate('/meeting/create')}><FiPlus /> 팀 생성</button>
                         </div>
                     </div>
                 </div>
@@ -261,9 +259,6 @@ const TeamBuildingBoard: React.FC = () => {
             
             {/* 신청현황 모달 */}
             <ApplyModal isOpen={isApplyModalOpen} onClose={closeApplyModal} />
-
-            {/* 팀 생성 모달 */}
-            <CreateTeamModal isOpen={isCreateTeamModalOpen} onClose={closeCreateTeamModal} />
         </>
     );
 };
