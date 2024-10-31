@@ -28,7 +28,7 @@ interface NavItemProps {
 const menuItems: MenuItem[] = [
   { icon: <IoHomeOutline className={styles.icon} />, text: '메인페이지', path: '/' },
   { icon: <IoLayersOutline className={styles.icon} />, text: '프로젝트', path: '/project' },
-  { icon: <IoPeopleOutline className={styles.icon} />, text: '팀 구성 게시판', path: '/meeting' },
+  { icon: <IoPeopleOutline className={styles.icon} />, text: '팀 구성 게시판', path: '/team-building' },
   { icon: <IoDocumentTextOutline className={styles.icon} />, text: '회고', path: '/remind' },
 ];
 
