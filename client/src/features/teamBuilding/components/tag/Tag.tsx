@@ -3,9 +3,11 @@ import styles from './Tag.module.css';
 
 interface TagProps {
     text: string;
+    useDefaultColors?: boolean;
+    onClick?: () => void;
 }
 
-const Tag: React.FC<TagProps> = ({ text }) => {
+const Tag: React.FC<TagProps> = ({ text, useDefaultColors = false, onClick }) => {
     // 기본 색상 정의
     const defaultBackgroundColor = '#d9d9d9';
     const defaultFontColor = '#000000';
@@ -27,19 +29,22 @@ const Tag: React.FC<TagProps> = ({ text }) => {
         스마트홈: { backgroundColor: '#DB5B00', fontColor: '#FFFFFF' },
         메타버스: { backgroundColor: '#962020', fontColor: '#FFFFFF' },
         핀테크: { backgroundColor: '#009CB8', fontColor: '#FFFFFF' },
-        웹기술: { backgroundColor: '#d9d9d9', fontColor: '#000000' },
-        웹디자인: { backgroundColor: '#d9d9d9', fontColor: '#000000' },
-        모바일: { backgroundColor: '#d9d9d9', fontColor: '#000000' },
-        AIoT: { backgroundColor: '#d9d9d9', fontColor: '#000000' },
+        웹기술: { backgroundColor: '#0E7ACE', fontColor: '#FFFFFF' },
+        웹디자인: { backgroundColor: '#B728A4', fontColor: '#FFFFFF' },
+        모바일: { backgroundColor: '#5EB9A0', fontColor: '#FFFFFF' },
+        AIoT: { backgroundColor: '#84C30F', fontColor: '#FFFFFF' },
     };
 
     // 해당 텍스트에 맞는 색상 가져오기
-    const { backgroundColor, fontColor } = colorMap[text] || { backgroundColor: defaultBackgroundColor, fontColor: defaultFontColor };
+    const { backgroundColor, fontColor } = useDefaultColors
+        ? { backgroundColor: defaultBackgroundColor, fontColor: defaultFontColor }
+        : colorMap[text] || { backgroundColor: defaultBackgroundColor, fontColor: defaultFontColor };
 
     return (
         <span
             className={styles.tag}
             style={{ backgroundColor, color: fontColor }}
+            onClick={onClick}
         >
             {text}
         </span>
