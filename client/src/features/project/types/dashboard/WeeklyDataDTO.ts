@@ -16,13 +16,5 @@ export interface DayDataDTO {
 // WeeklyDataDTO: 주간 데이터를 정의하며 요일을 키로 포함
 export interface WeeklyDataDTO {
   weekStartDate: string; // 주간 시작 날짜
-  dailyData: {
-      Monday: DayDataDTO;
-      Tuesday: DayDataDTO;
-      Wednesday: DayDataDTO;
-      Thursday: DayDataDTO;
-      Friday: DayDataDTO;
-      Saturday: DayDataDTO;
-      Sunday: DayDataDTO;
-  };
+  dailyData: DayDataDTO[];
 }
