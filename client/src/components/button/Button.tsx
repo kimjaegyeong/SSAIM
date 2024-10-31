@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import styles from './Button.module.css';
 
 type ButtonStyleProps = {
-  size: 'small' | 'medium' | 'large' | 'custom'; 
-  colorType: 'green' | 'red' | 'blue' | 'navy' | 'purple'; 
+  size: 'xsmall' | 'small' | 'medium' | 'large' | 'custom'; 
+  colorType: 'green' | 'red' | 'blue' | 'navy' | 'purple' | 'white'; 
 };
 
 interface ButtonProps extends ButtonStyleProps {

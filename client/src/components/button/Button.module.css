@@ -4,6 +4,7 @@
     font-weight: bold;
     border: none;
     outline: none; 
+    padding: 0px;
 }
 
 .button:focus {
@@ -11,6 +12,12 @@
 }
 
 /* Size Variants */
+.xsmall {
+    width: 100px; 
+    height: 30px; 
+    font-size: 15px;
+}
+
 .small {
     width: 140px; 
     height: 55px; 
@@ -24,9 +31,10 @@
 }
 
 .large {
-    width: 350px; 
-    height: 120px; 
-    font-size: 32px;
+    width: 280px; 
+    height: 90px; 
+    font-size: 24px;
+    margin: 30px 0px;
 }
 .custom {
     padding: 10px 20px;
@@ -78,4 +86,16 @@
 
 .purpleNormal:hover {
     background-color: #7b31b4; 
+}
+
+.whiteNormal {
+    background-color: white;
+    color: black;
+    border: 1.5px solid black;
+}
+
+.whiteNormal:hover {
+    background-color: #f1f1f1; 
+    border: 1.5px solid black;
+
 }
