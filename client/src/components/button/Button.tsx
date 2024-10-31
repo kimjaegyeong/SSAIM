@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import styles from './Button.module.css';
 
 type ButtonStyleProps = {
-  size: 'small' | 'medium' | 'large'; 
+  size: 'small' | 'medium' | 'large' | 'custom'; 
   colorType: 'green' | 'red' | 'blue' | 'navy' | 'purple'; 
 };
 
