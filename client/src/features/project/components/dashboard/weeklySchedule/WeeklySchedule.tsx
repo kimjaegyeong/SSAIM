@@ -1,12 +1,20 @@
 import DailySchedule from '../dailySchedule/DailySchedule';
 import styles from './WeeklySchedule.module.css';
 import React from 'react';
-
+import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
 interface WeeklyScheduleProps {
   weeklyStartDate: Date;
 }
-type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
-const weekDays: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+const weekDays: DayOfWeek[] = [
+  DayOfWeek.Monday,
+  DayOfWeek.Tuesday,
+  DayOfWeek.Wednesday,
+  DayOfWeek.Thursday,
+  DayOfWeek.Friday,
+  DayOfWeek.Saturday,
+  DayOfWeek.Sunday,
+];
 const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ weeklyStartDate }) => {
   const year = weeklyStartDate.getFullYear();
   const month = weeklyStartDate.getMonth();
@@ -23,12 +31,9 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({ weeklyStartDate }) => {
 
   return (
     <div className={styles.container}>
-      {/* <div className={styles.header}>header</div> */}
       <div className={styles.content}>
-        {weekDays.map((e) => {
-          console.log(typeof e);
-          console.log(e);
-          return <DailySchedule date={weekMap[e]?.date.getDate()} day={e} />;
+        {weekDays.map((e, i) => {
+          return <DailySchedule key={i} date={weekMap[e]?.date.getDate()} day={e} />;
         })}
       </div>
     </div>

@@ -1,31 +1,28 @@
 import styles from './DailySchedule.module.css';
 import React from 'react';
-import classNames from 'classnames'; // classnames 라이브러리 불러오기
 import Task from '../task/Task';
+import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
+import { useWeeklyData } from '../../../hooks/useWeeklyData';
 
 interface DailyScheduleProps {
-  day: string;
+  day: DayOfWeek;
   date: number;
 }
 
 const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date }) => {
+  const { data: weeklyData } = useWeeklyData();
+
   return (
-    <>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          {day}, {date}
-        </div>
-        <div className={styles.content}>
-          {/* 컨텐츠 타이틀 */}
-          <div className={classNames(styles.taskTitle, styles.jira)}>Jira</div>
-          <Task title="Jira task" taskType="Jira" />
-          <div className={classNames(styles.taskTitle, styles.gitlab)}>GitLab</div>
-          <Task title="GitLab task" taskType="GitLab" />
-          <div className={classNames(styles.taskTitle, styles.meeting)}>회의록</div>
-          <Task title="회의록 제목" taskType="회의록" />
-        </div>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        {day}, {date}
       </div>
-    </>
+      <div className={styles.content}>
+        {weeklyData?.dailyData[day]?.jira?.length > 0 && <Task taskType="jira" day={day} />}
+        {weeklyData?.dailyData[day]?.gitlab?.length > 0 && <Task taskType="gitlab" day={day} />}
+        {weeklyData?.dailyData[day]?.meeting?.length > 0 && <Task taskType="meeting" day={day} />}
+      </div>
+    </div>
   );
 };
 
