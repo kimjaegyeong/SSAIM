@@ -1,0 +1,35 @@
+/* DashboardHeader.module.css */
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  min-width : 100vw;
+  position: relative;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 20px;
+}
+
+.dateRange {
+  display : flex;
+  flex-direction: row-reverse;
+  font-size: 16px;
+  margin-left: auto;
+  padding-right: 40px;
+}
+
+.arrowButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.arrowButton:hover {
+  color: #555;
+}
