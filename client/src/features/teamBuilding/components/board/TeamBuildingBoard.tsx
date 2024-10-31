@@ -184,7 +184,7 @@ const TeamBuildingBoard: React.FC = () => {
                         </div>
                         <div className={styles.actionButtons}> 
                             <button onClick={openApplyModal}><AiOutlineProfile /> 신청현황</button>
-                            <button onClick={() => navigate('/meeting/create')}><FiPlus /> 팀 생성</button>
+                            <button onClick={() => navigate('/team-building/create')}><FiPlus /> 팀 생성</button>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import Board from '../../features/teamBuilding/components/board/TeamBuildingBoard'
-import styles from './MeetingPage.module.css'
+import styles from './TeamBuildingPage.module.css'
 
-const MeetingListPage = () => {
+const TeamBuildingListPage = () => {
   return (
     <div className={styles.page}>
       <h1 className={styles.pageTitle}>팀원 모집 게시판</h1>
@@ -10,4 +10,4 @@ const MeetingListPage = () => {
   );
 };
 
-export default MeetingListPage;
+export default TeamBuildingListPage;
