@@ -1,0 +1,13 @@
+.container {
+  height : 400px;
+  overflow-x : scroll;
+}
+
+.header {
+  
+}
+
+.content {
+  display : flex;
+  
+}
