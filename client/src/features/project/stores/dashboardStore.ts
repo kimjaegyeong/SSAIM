@@ -5,6 +5,8 @@ import { TaskType } from '../types/dashboard/TaskTypes';
 import { DayOfWeek } from '../types/dashboard/DayOfWeek';
 
 interface DashboardState {
+  weekdayIndex: { [key: string]: number };
+
   taskStatus: {
       [day in DayOfWeek]: {
           [task in TaskType]: boolean;
@@ -17,6 +19,16 @@ interface DashboardState {
 
 // Zustand store 생성
 export const useDashboardStore = create<DashboardState>((set) => ({
+  weekdayIndex: {
+    Monday: 0,
+    Tuesday: 1,
+    Wednesday: 2,
+    Thursday: 3,
+    Friday: 4,
+    Saturday: 5,
+    Sunday: 6,
+  },
+
   taskStatus: {
     Monday: { jira: false, gitlab: false, meeting: false },
     Tuesday: { jira: false, gitlab: false, meeting: false },
