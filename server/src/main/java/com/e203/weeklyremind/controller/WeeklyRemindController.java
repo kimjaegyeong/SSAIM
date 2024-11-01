@@ -19,10 +19,9 @@ public class WeeklyRemindController {
     @PostMapping("/api/v1/projects/{projectId}/weekly-remind")
     public ResponseEntity<String> createWeeklyRemind(@RequestBody WeeklyRemindRequestDto message, @PathVariable int projectId) {
 
-        String summary = chatAiService.generateWeeklyRemind(message, projectId);
-        boolean createremind = weeklyRemindService.saveWeeklyRemind(summary, message.getUserId(), projectId);
+        boolean isSucceed = weeklyRemindService.saveWeeklyRemind(message, projectId);
 
-        if(createremind) {
+        if(isSucceed) {
             return ResponseEntity.status(200).body("주간 회고가 생성되었습니다.");
         }
         else {
