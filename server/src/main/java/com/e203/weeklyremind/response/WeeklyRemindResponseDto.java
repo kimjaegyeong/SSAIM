@@ -8,10 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WeeklyRemindResponseDto {
 
+    private int author;
+    private int projectId;
     private String content;
 
     @Builder
-    WeeklyRemindResponseDto(String content) {
+    WeeklyRemindResponseDto(int author, int projectId, String content) {
+
+        this.author = author;
+        this.projectId = projectId;
         this.content = content;
     }
 }

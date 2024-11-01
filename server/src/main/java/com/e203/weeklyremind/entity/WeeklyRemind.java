@@ -1,6 +1,8 @@
 package com.e203.weeklyremind.entity;
 
 import com.e203.global.entity.BaseEntity;
+import com.e203.project.entity.Project;
+import com.e203.project.entity.ProjectMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,14 +24,16 @@ public class WeeklyRemind extends BaseEntity {
     @Column(columnDefinition = "TEXT", name = "weekly_remind_contents")
     private String weeklyRemindContents;
 
-    @Column(name = "project_id")
-    private int projectId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project projectId;
 
-    @Column(name = "weekly_remind_author")
-    private int remindAuthor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "weekly_remind_author")
+    private ProjectMember remindAuthor;
 
     @Builder
-    private WeeklyRemind(String weeklyRemindContents, int projectId, int remindAuthor) {
+    private WeeklyRemind(String weeklyRemindContents, Project projectId, ProjectMember remindAuthor) {
         this.weeklyRemindContents = weeklyRemindContents;
         this.projectId = projectId;
         this.remindAuthor = remindAuthor;

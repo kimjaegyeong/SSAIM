@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Integer> {
 
-    ProjectMember findByUser(Optional<User> user);
+    ProjectMember findByUser(User user);
 }
