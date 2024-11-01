@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,7 +35,9 @@ public class WeeklyRemindController {
     @GetMapping("/api/v1/projects/{projectId}/weekly-remind/{author}")
     public ResponseEntity<List<WeeklyRemindResponseDto>> getWeeklyRemind(@PathVariable int projectId, @PathVariable int author) {
 
-       return ResponseEntity.status(200).body(weeklyRemindService.searchWeeklyRemind(projectId, author));
+        List<WeeklyRemindResponseDto> weeklyRemindList = weeklyRemindService.searchWeeklyRemind(projectId, author);
+
+        return ResponseEntity.status(200).body(weeklyRemindList);
     }
 
 
