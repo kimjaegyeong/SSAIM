@@ -4,7 +4,6 @@ import styles from "./CreateTeam.module.css";
 import Tag from "../tag/Tag";
 import Button from "../../../../components/button/Button";
 import NumberInput from "../numberInput/NumberInput";
-import { totalmem } from "os";
 
 interface Recruitment {
     FE: number;

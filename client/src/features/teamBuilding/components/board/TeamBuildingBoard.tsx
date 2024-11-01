@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from './TeamBuildingBoard.module.css';
 import DropDown from '../filterDropDown/filterDropDown';
-import ApplyModal from '../applyModal/ApplyModal';
 import Tag from '../tag/Tag';
 import Bar from '../bar/Bar';
 import { GrPowerReset } from "react-icons/gr";
@@ -124,10 +123,6 @@ const TeamBuildingBoard: React.FC = () => {
         setSearchQuery('');
         setCurrentPage(1);
     };
-    const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-
-    const openApplyModal = () => setIsApplyModalOpen(true);
-    const closeApplyModal = () => setIsApplyModalOpen(false);
 
     return (
         <>
@@ -156,24 +151,6 @@ const TeamBuildingBoard: React.FC = () => {
                     </div>
                     <div className={styles.searchActions}>
                         <div className={styles.searchBar}>
-                            <label className="checkbox-container">
-                                <input
-                                    type="checkbox"
-                                    className="checkbox-input"
-                                />
-                                <span className={`checkbox-label`}>
-                                    모집 중
-                                </span>
-                            </label>
-                            <label className="checkbox-container">
-                                <input
-                                    type="checkbox"
-                                    className="checkbox-input"
-                                />
-                                <span className={`checkbox-label`}>
-                                    미지원
-                                </span>
-                            </label>
                             <input 
                                 className={styles.searchInput} 
                                 type="text" 
@@ -183,7 +160,7 @@ const TeamBuildingBoard: React.FC = () => {
                             />
                         </div>
                         <div className={styles.actionButtons}> 
-                            <button onClick={openApplyModal}><AiOutlineProfile /> 신청현황</button>
+                            <button onClick={() => navigate('/team-building/detail/1')}><AiOutlineProfile /> 신청현황</button>
                             <button onClick={() => navigate('/team-building/create')}><FiPlus /> 팀 생성</button>
                         </div>
                     </div>
@@ -191,7 +168,7 @@ const TeamBuildingBoard: React.FC = () => {
                 <div className={styles.boardContent}>
                     {currentItems.length > 0 ? (
                         currentItems.map((item, index) => (
-                            <div key={index} className={styles.boardItem}>
+                            <div key={index} className={styles.boardItem} onClick={() => navigate(`/team-building/detail/${item.id}`)}>
                                 <span className={styles.region}>[{item.region}]</span>
                                 <span className={styles.title}>{item.title}</span>
                                 <div className={styles.category}>
@@ -256,9 +233,6 @@ const TeamBuildingBoard: React.FC = () => {
                     )}
                 </div>
             </div>
-            
-            {/* 신청현황 모달 */}
-            <ApplyModal isOpen={isApplyModalOpen} onClose={closeApplyModal} />
         </>
     );
 };
