@@ -28,18 +28,22 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
     </div>
   );
 };
+
+
 const ProjectList: React.FC = () => {
   const { data: projectListData } = useProjectListData();
   const navigate = useNavigate();
   const handleItemClick = (projectId: number) => () => {
     navigate(`/project/${projectId}`);
   };
-
+  const handleCreateClick = () => {
+    navigate('/project/create')
+  }
   return (
     <>
       <div className={styles.header}>
         <h1 className={styles.projectTitle}>프로젝트 목록</h1>
-        <Button children={'프로젝트 생성'} size="small" colorType="blue" />
+        <Button children={'프로젝트 생성'} size="small" colorType="blue" onClick={handleCreateClick} />
       </div>
       <div className={styles.body}>
         {projectListData.map((project) => (
