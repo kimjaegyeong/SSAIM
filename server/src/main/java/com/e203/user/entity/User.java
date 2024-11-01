@@ -3,17 +3,17 @@ package com.e203.user.entity;
 
 import com.e203.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "user")
 public class User extends BaseEntity {
@@ -29,10 +29,13 @@ public class User extends BaseEntity {
     private String userName;
 
     @Column(name = "user_class")
-    private Integer userClass;
+    private int userClass;
 
     @Column(name = "user_campus")
-    private Integer userCampus;
+    private int userCampus;
+
+    @Column(name = "user_generation")
+    private int userGeneration;
 
     @Column(name = "user_pw", nullable = false)
     private String userPw;
@@ -50,10 +53,10 @@ public class User extends BaseEntity {
     private int userRole;
 
     @Column(name = "user_birth")
-    private Date userBirth;
+    private LocalDate userBirth;
 
     @Column(name = "user_gender")
-    private Integer userGender;
+    private int userGender;
 
     @Column(name = "user_phone", length = 20)
     private String userPhone;
@@ -61,4 +64,21 @@ public class User extends BaseEntity {
     @Column(name = "user_profile_image")
     private String userProfileImage;
 
+    @Builder
+    public User(String userEmail, String userName, int userClass, int userCampus, int userGeneration, String userPw, String userNickname, String userProfileMessage, String userSkills, int userRole, LocalDate userBirth, int userGender, String userPhone, String userProfileImage) {
+        this.userEmail = userEmail;
+        this.userName = userName;
+        this.userClass = userClass;
+        this.userCampus = userCampus;
+        this.userGeneration = userGeneration;
+        this.userPw = userPw;
+        this.userNickname = userNickname;
+        this.userProfileMessage = userProfileMessage;
+        this.userSkills = userSkills;
+        this.userRole = userRole;
+        this.userBirth = userBirth;
+        this.userGender = userGender;
+        this.userPhone = userPhone;
+        this.userProfileImage = userProfileImage;
+    }
 }
