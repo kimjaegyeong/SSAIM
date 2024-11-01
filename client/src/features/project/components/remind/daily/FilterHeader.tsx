@@ -3,7 +3,7 @@ import styles from './FilterHeader.module.css';
 import { FaRegClock } from "react-icons/fa6";
 import { IoSunny } from "react-icons/io5";
 import { MdOutlineViewWeek } from "react-icons/md";
-import Button from '../../../../components/button/Button';
+import Button from '../../../../../components/button/Button';
 
 interface FilterHeaderProps {
   dayWeek: string;
