@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -58,16 +59,11 @@ public class WeeklyRemindService {
 
     public List<WeeklyRemindResponseDto> searchWeeklyRemind (int projectId, int author) {
 
-        Project project = null;
-        ProjectMember authorMember = null;
+        Project project = projectRepository.findById(projectId)
+                .orElse(null);
 
-        if(projectRepository.existsById(projectId)) {
-            project = projectRepository.findById(projectId).get();
-        }
-
-        if(projectMemberRepository.existsById(author)) {
-            authorMember = projectMemberRepository.findById(author).get();
-        }
+        ProjectMember authorMember = projectMemberRepository.findById(author)
+                .orElse(null);
 
         //내가 진행중인 플젝의 주간회고만 가져오기
         List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthorAndProjectId(authorMember, project);
