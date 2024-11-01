@@ -17,14 +17,3 @@
     flex-direction: column;
     text-align: center;
 }
-
-.remindContent {
-    display: flex;
-    flex-direction: column;
-}
-
-
-.description {
-    color: #808080;
-}
-
