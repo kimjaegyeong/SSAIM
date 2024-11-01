@@ -9,3 +9,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  jwt:
+    secret: 5wlXHtmN2l/i74J7a/A7mxiR5xYNmiRLJa6kfwgBg74biLDj1wT62BNoltMxw9sEDMzb/CEB4l0=
+  jackson:
+    time-zone: Asia/Seoul

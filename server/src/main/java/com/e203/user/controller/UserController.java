@@ -1,6 +1,8 @@
 package com.e203.user.controller;
 
+import com.e203.user.request.UserLoginRequestDto;
 import com.e203.user.request.UserSignUpRequestDto;
+import com.e203.user.service.UserDetailServiceImpl;
 import com.e203.user.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,8 @@ public class UserController {
 
     private final UserService userService;
 
+    private final UserDetailServiceImpl userDetailService;
+
     @PostMapping("/api/v1/users")
     public ResponseEntity<String> signUp(@RequestBody UserSignUpRequestDto userSignUpRequestDto, @RequestParam(value = "userProfileImage", required = false) MultipartFile profileImage) {
         boolean isSucceed = userService.createUser(userSignUpRequestDto, profileImage);
@@ -23,4 +27,5 @@ public class UserController {
             return ResponseEntity.status(200).body("이미 가입한 이메일입니다.");
         }
     }
+
 }
