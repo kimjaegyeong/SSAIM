@@ -7,18 +7,20 @@ import com.e203.project.entity.Project;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ProjectCreateRequestDto {
 	private String title;
 	private String name;
 	private String profileImage;
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
-	private ArrayList<ProjectCreateMemberRequestDto> teamMembers ;
+	private ArrayList<ProjectMemberCreateRequestDto> teamMembers ;
 
 	@Builder
-	private ProjectCreateRequestDto(String title, String name, String profileImage, LocalDateTime startDate, LocalDateTime endDate, ArrayList<ProjectCreateMemberRequestDto> teamMembers) {
+	private ProjectCreateRequestDto(String title, String name, String profileImage, LocalDateTime startDate, LocalDateTime endDate, ArrayList<ProjectMemberCreateRequestDto> teamMembers) {
 		this.title = title;
 		this.name = name;
 		this.profileImage = profileImage;

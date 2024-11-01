@@ -1,13 +1,11 @@
 package com.e203.project.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.e203.project.dto.request.ProjectCreateMemberRequestDto;
+import com.e203.project.dto.request.ProjectMemberCreateRequestDto;
 import com.e203.project.dto.request.ProjectCreateRequestDto;
 
 import com.e203.project.entity.Project;
@@ -24,9 +22,11 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
 	@Transactional
-	public boolean create(ProjectCreateRequestDto projectCreateRequestDto) {
+	public boolean createProject(ProjectCreateRequestDto projectCreateRequestDto) {
+
 		Project entity = projectCreateRequestDto.toEntity();
 		Project project = projectRepository.save(entity);
+
 		//ProjectMember 생성
 		for(int i=0; i<projectCreateRequestDto.getTeamMembers().size(); i++){
 			ProjectMember projectMember = createProjectMember(project, projectCreateRequestDto.getTeamMembers().get(i));
@@ -36,7 +36,7 @@ public class ProjectService {
 		return true;
 	}
 
-	private ProjectMember createProjectMember(Project project, ProjectCreateMemberRequestDto member) {
+	private ProjectMember createProjectMember(Project project, ProjectMemberCreateRequestDto member) {
 		User user = userTestStub(member);
 		return ProjectMember.builder()
 				.user(user)
@@ -45,7 +45,7 @@ public class ProjectService {
 				.build();
 	}
 
-	private User userTestStub(ProjectCreateMemberRequestDto member){
+	private User userTestStub(ProjectMemberCreateRequestDto member){
 		User user = User.builder().userEmail("test@test.com")
 			.userName("name")
 			.userClass(1)

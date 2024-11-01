@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ProjectCreateMemberRequestDto {
+public class ProjectMemberCreateRequestDto {
 	private int id;
 	private int role;
 
 	@Builder
-	private ProjectCreateMemberRequestDto(int id, int role) {
+	private ProjectMemberCreateRequestDto(int id, int role) {
 		this.id = id;
 		this.role = role;
 	}
