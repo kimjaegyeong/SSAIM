@@ -4,6 +4,7 @@ import styles from "./CreateTeam.module.css";
 import Tag from "../tag/Tag";
 import Button from "../../../../components/button/Button";
 import NumberInput from "../numberInput/NumberInput";
+import { totalmem } from "os";
 
 interface Recruitment {
     FE: number;
@@ -20,6 +21,8 @@ const TeamCreation: React.FC = () => {
     const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
+    const [selectedMyPosition, setSelectedMyPosition] = useState<string | null>(null);
+    const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra + (selectedMyPosition ? 1 : 0);;
 
     const handleRegionChange = (city: string) => {
         if (selectedRegion === city) {
@@ -39,11 +42,31 @@ const TeamCreation: React.FC = () => {
         }
     };
 
+    const handleRecruitmentChange = (role: keyof Recruitment, value: string) => {
+        setRecruitment((prev) => ({
+            ...prev,
+            [role]: parseInt(value, 10) || 0,
+        }));
+    };
+
+    const handleMyPositionClick = (position: string) => {
+        if (selectedMyPosition === position) {
+            setSelectedMyPosition(null);
+        } else {
+            setSelectedMyPosition(position);
+        }
+    };
+
     const handleSubmit = () => {
         // 데이터 유효성 검사
-        const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra;
-        if (!title || !content || !selectedRegion || selectedDomains.length === 0 || totalPositions === 0) {
+        if (!title || !content || !selectedRegion || selectedDomains.length === 0 || totalPositions === 0 || !selectedMyPosition) {
             alert("모든 필드를 채워주세요. 모집 인원 수는 최소 1명 이상이어야 합니다.");
+            console.log(title)
+            console.log(content)
+            console.log(selectedRegion)
+            console.log(selectedDomains)
+            console.log(totalPositions)
+            console.log(selectedMyPosition)
             return;
         }
     
@@ -52,7 +75,9 @@ const TeamCreation: React.FC = () => {
             content,
             region: selectedRegion,
             domains: selectedDomains,
+            selectedMyPosition,
             recruitment,
+            totalPositions,
             startDate,
             endDate,
         };
@@ -70,10 +95,28 @@ const TeamCreation: React.FC = () => {
                 {/* 왼쪽 섹션 */}
                 <div className={styles.formSection}>
                     <div className={styles.formGroup}>
+                        <label className={styles.sectionLabel}>프로젝트 기간</label>
+                        <div className={styles.dateInputs}>
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className={styles.dateInput}
+                            />
+                            <span className={styles.dateSeparator}>~</span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className={styles.dateInput}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.formGroup}>
                         <label className={styles.sectionLabel}>지역 선택</label>
                         <div className={styles.regionOptions}>
                             {["서울", "대전", "광주", "구미", "부울경"].map((city) => (
-                                <label key={city}>
+                                <label key={city} className={styles.regionLabel}>
                                     <input
                                         type="checkbox"
                                         checked={selectedRegion === city}
@@ -128,7 +171,7 @@ const TeamCreation: React.FC = () => {
                             <div className={styles.domainWrapper}>
                                 <div className={styles.categoryBox}>특화</div>
                                 <div className={styles.tagList}>
-                                    {["AI영상", "AI음성", "추천", "분산", "자율주행", "스마트홈", "P2P", "디지털거래"].map((tag) => (
+                                    {["AI영상", "AI음성", "추천", "분산", "자율주행", "스마트홈", "P2P", "디지털거래", "메타버스", "핀테크"].map((tag) => (
                                         <Tag
                                             key={tag}
                                             text={tag}
@@ -156,32 +199,29 @@ const TeamCreation: React.FC = () => {
                         </div>
                     </div>
                     <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>모집 인원 수</label>
+                        <label className={styles.sectionLabel}>모집 인원 : {totalPositions}</label>
+                        <div className={styles.myPosition}>
+                            <span>내 포지션</span>
+                            <div className={styles.myPositionTag}>
+                                {["FE", "BE", "Infra"].map((tag) => (
+                                    <Tag
+                                        key={tag}
+                                        text={tag}
+                                        useDefaultColors={selectedMyPosition !== tag}
+                                        onClick={() => handleMyPositionClick(tag)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                         <div className={styles.recruitmentOptions}>
                             {(["FE", "BE", "Infra"] as const).map((role) => (
                                 <div key={role} className={styles.role}>
                                     <Tag text={role}/>
-                                    <NumberInput/>
+                                    <NumberInput
+                                        onChange={(value) => handleRecruitmentChange(role, value)}
+                                    />
                                 </div>
                             ))}
-                        </div>
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>프로젝트 기간</label>
-                        <div className={styles.dateInputs}>
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className={styles.dateInput}
-                            />
-                            <span className={styles.dateSeparator}>~</span>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className={styles.dateInput}
-                            />
                         </div>
                     </div>
                 </div>

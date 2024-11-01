@@ -37,6 +37,7 @@
 .regionOptions {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 20px;
 }
 
@@ -51,7 +52,7 @@
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 14px;
     padding: 10px;
 }
 
@@ -79,13 +80,14 @@
     border-radius: 4px;
     font-weight: bold;
     text-align: center;
+    min-width: 48px;
 }
 
 .tagList {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    max-width: 300px; 
+    max-width: 380px; 
 }
 
 .recruitmentOptions {
@@ -138,4 +140,23 @@
 .tagRow {
     display: flex;
     margin-bottom: 5px;
+}
+
+.myPosition {
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.myPositionTag {
+    display: flex;
+    justify-items: center;
+    width: 60%;
+    align-items: center;
+    gap: 10px;
+}
+
+.regionLabel {
+    min-width: 74px;
 }

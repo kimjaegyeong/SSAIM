@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import styles from "./NumberInput.module.css";
 
-const NumberInput = () => {
+interface NumberInputProps {
+    onChange?: (value: string) => void;
+}
+
+const NumberInput: React.FC<NumberInputProps> = ({ onChange }) => {
     const [value, setValue] = useState<string>("0");
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         if (/^\d?$/.test(newValue)) { 
             setValue(newValue);
+            if (onChange) {
+                onChange(newValue);
+            }
         }
     };
 
@@ -16,11 +23,23 @@ const NumberInput = () => {
     };
 
     const increment = () => {
-        setValue((prev) => (parseInt(prev, 10) < 9 ? (parseInt(prev, 10) + 1).toString() : prev));
+        setValue((prev) => {
+            const newValue = parseInt(prev, 10) < 9 ? (parseInt(prev, 10) + 1).toString() : prev;
+            if (onChange) {
+                onChange(newValue);
+            }
+            return newValue;
+        });
     };
 
     const decrement = () => {
-        setValue((prev) => (parseInt(prev, 10) > 0 ? (parseInt(prev, 10) - 1).toString() : prev));
+        setValue((prev) => {
+            const newValue = parseInt(prev, 10) > 0 ? (parseInt(prev, 10) - 1).toString() : prev;
+            if (onChange) {
+                onChange(newValue);
+            }
+            return newValue;
+        });
     };
 
     return (
