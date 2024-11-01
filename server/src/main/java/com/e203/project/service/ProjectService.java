@@ -1,5 +1,7 @@
 package com.e203.project.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
@@ -44,8 +46,22 @@ public class ProjectService {
 	}
 
 	private User userTestStub(ProjectCreateMemberRequestDto member){
-		return new User(member.getId(),"test@test.com","test1",1,1,"23423324sjkfssadg","Test","testest1","String,Boot",0,
-			new Date(),1,"010-1111-1111","linkddd");
+		User user = User.builder().userEmail("test@test.com")
+			.userName("name")
+			.userClass(1)
+			.userCampus(2)
+			.userGeneration(11)
+			.userPw("34234234234")
+			.userNickname("testset")
+			.userBirth(LocalDate.now())
+			.userGender(2)
+			.userPhone("010-1111-1111")
+			.userProfileImage("https:s3//image")
+			.userSkills("spring boot")
+			.userProfileMessage("안녕하세요")
+			.build();
+		user.setUserId(member.getId());
+		return user;
 	}
 }
 
