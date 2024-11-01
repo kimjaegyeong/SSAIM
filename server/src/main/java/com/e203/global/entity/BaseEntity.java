@@ -2,6 +2,7 @@ package com.e203.global.entity;
 
 import java.time.LocalDateTime;
 
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -27,6 +28,7 @@ public class BaseEntity {
 	private LocalDateTime modifiedAt;
 
 	@Column(name = "deleted_at")
+	@Setter
 	private LocalDateTime deletedAt;
 
 }
