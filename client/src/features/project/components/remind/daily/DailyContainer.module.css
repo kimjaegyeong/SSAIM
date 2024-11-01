@@ -1,0 +1,61 @@
+.container {
+    display: flex;
+    height: 84vh;
+}
+
+.left {
+    flex: 4; /* 왼쪽 섹션 크기 */
+    padding: 0px 20px;
+    border-right: 1px solid #ccc; /* 오른쪽 경계선 */
+}
+
+.right {
+    flex: 1; /* 오른쪽 섹션 크기 */
+    display: flex;
+    padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.remindContent {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.description {
+    color: #808080;
+}
+
+/* 캘린더 커스텀 디자인 */
+
+.calendar {
+    width: 280px;
+}
+
+:global(.react-calendar) {
+    border: none !important;
+}
+
+:global(.react-calendar__navigation__label) {
+    font-size: 14px; 
+    font-weight: bold;
+}
+
+:global(.react-calendar__month-view__weekdays__weekday abbr) {
+    text-decoration: none;
+} 
+
+:global(.react-calendar__tile--now) {
+    background-color: #FBFFAA !important; 
+}
+
+:global(.react-calendar__tile) {
+    margin-bottom: 3px !important;
+}
+
+:global(.react-calendar__tile--active) {
+    background-color: #007bff !important; 
+    color: white !important; 
+}

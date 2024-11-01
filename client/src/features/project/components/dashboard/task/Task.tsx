@@ -4,18 +4,17 @@ import classNames from 'classnames';
 import { TaskType } from '../../../types/dashboard/TaskTypes';
 import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
 import { useDashboardStore } from '../../../stores/dashboardStore';
-import { useWeeklyData } from '../../../hooks/useWeeklyData';
+import { TaskDTO } from '../../../types/dashboard/WeeklyDataDTO';
 
 interface TaskProps {
   taskType: TaskType;
   day: DayOfWeek;
+  tasks : TaskDTO[];
 }
 
-const Task: React.FC<TaskProps> = ({ taskType, day }) => {
+const Task: React.FC<TaskProps> = ({ taskType, day, tasks }) => {
   const { taskStatus, toggleTask } = useDashboardStore();
-  const { data: weeklyData } = useWeeklyData(); 
   const isOpen = taskStatus[day][taskType]; // 현재 상태 가져오기
-  const tasks = weeklyData?.dailyData[day][`${taskType}`]; // 각 요일에 맞는 작업 가져오기
   const handleClick = () => {
     toggleTask(day, taskType); // 상태 토글
   };
