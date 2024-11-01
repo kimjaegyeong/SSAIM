@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +29,12 @@ public class WeeklyRemindController {
         else {
             return ResponseEntity.status(200).body("주간 회고가 생성되지 않았습니다.");
         }
+    }
+
+    @GetMapping("/api/v1/projects/{projectId}/weekly-remind/{author}")
+    public ResponseEntity<List<WeeklyRemindResponseDto>> getWeeklyRemind(@PathVariable int projectId, @PathVariable int author) {
+
+       return ResponseEntity.status(200).body(weeklyRemindService.searchWeeklyRemind(projectId, author));
     }
 
 

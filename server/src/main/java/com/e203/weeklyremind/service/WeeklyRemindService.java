@@ -6,10 +6,13 @@ import com.e203.user.repository.UserRepository;
 import com.e203.weeklyremind.entity.WeeklyRemind;
 import com.e203.weeklyremind.repository.WeeklyRemindRepository;
 import com.e203.weeklyremind.request.WeeklyRemindRequestDto;
+import com.e203.weeklyremind.response.WeeklyRemindResponseDto;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,5 +43,19 @@ public class WeeklyRemindService {
         weeklyRemindRepository.save(weeklyRemind);
 
         return true;
+    }
+
+    public List<WeeklyRemindResponseDto> searchWeeklyRemind (int projectId, int author) {
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthorAndProjectId(author, projectId);
+        List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
+
+        for(WeeklyRemind weeklyRemind : weeklyRemindList) {
+            weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
+                    .author(weeklyRemind.getRemindAuthor())
+                    .projectId(weeklyRemind.getProjectId())
+                    .content(weeklyRemind.getWeeklyRemindContents()).build());
+        }
+
+        return weeklyRemindResponseDtoList;
     }
 }
