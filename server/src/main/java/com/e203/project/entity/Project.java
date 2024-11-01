@@ -25,8 +25,11 @@ public class Project extends BaseEntity {
 	@Column(name = "project_id")
 	private int id;
 
-	@Column(name = "prject_title")
+	@Column(name = "project_title")
 	private String title;
+
+	@Column(name = "project_name")
+	private String name;
 
 	@Column(name = "project_profile_image")
 	private String profileImage;
@@ -50,9 +53,10 @@ public class Project extends BaseEntity {
 	private String progressBack;
 
 	@Builder
-	private Project(String title, String profileImage, LocalDateTime startDate, LocalDateTime endDate, String gitlabApi, String jiraApi,
+	private Project(String title, String name, String profileImage, LocalDateTime startDate, LocalDateTime endDate, String gitlabApi, String jiraApi,
 		String progressBack, String progressFront){
 		this.title = title;
+		this.name= name;
 		this.profileImage = profileImage;
 		this.startDate =startDate;
 		this.endDate = endDate;

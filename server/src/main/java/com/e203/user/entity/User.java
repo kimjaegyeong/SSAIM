@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 public class User extends BaseEntity {
     @Id
     @Column(name = "user_id")
+    @Setter /* User Test Stub 삭제 시 함께 제거해야 함 */
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
