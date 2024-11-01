@@ -1,6 +1,9 @@
 package com.e203.weeklyremind.service;
 
+import com.e203.project.entity.Project;
+import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
+import com.e203.project.repository.ProjectRepository;
 import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
 import com.e203.weeklyremind.entity.WeeklyRemind;
@@ -23,6 +26,7 @@ public class WeeklyRemindService {
     private final ProjectMemberRepository projectMemberRepository;
     private final UserRepository userRepository;
     private final ChatAiService chatAiService;
+    private final ProjectRepository projectRepository;
 
     public boolean saveWeeklyRemind(WeeklyRemindRequestDto message, int projectId) {
 
@@ -33,11 +37,18 @@ public class WeeklyRemindService {
         String summary = chatAiService.generateWeeklyRemind(message, projectId);
 
         Optional<User> user = userRepository.findById(message.getUserId());
-        int author = projectMemberRepository.findByUser(user).getId();
+        ProjectMember author = null;
+        if(user.isPresent()) {
+            author = projectMemberRepository.findByUser(user.get());
+        }
+        Project project = null;
+        if(projectRepository.existsById(projectId)) {
+            project = projectRepository.findById(projectId).get();
+        }
 
         WeeklyRemind weeklyRemind = WeeklyRemind.builder()
                 .weeklyRemindContents(summary)
-                .projectId(projectId)
+                .projectId(project)
                 .remindAuthor(author).build();
 
         weeklyRemindRepository.save(weeklyRemind);
@@ -46,13 +57,24 @@ public class WeeklyRemindService {
     }
 
     public List<WeeklyRemindResponseDto> searchWeeklyRemind (int projectId, int author) {
-        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthorAndProjectId(author, projectId);
+
+        Project project = null;
+        ProjectMember authorMember = null;
+
+        if(projectRepository.existsById(projectId)) {
+            project = projectRepository.findById(projectId).get();
+        }
+
+        if(projectMemberRepository.existsById(author)) {
+            authorMember = projectMemberRepository.findById(author).get();
+        }
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthorAndProjectId(authorMember, project);
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {
             weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
-                    .author(weeklyRemind.getRemindAuthor())
-                    .projectId(weeklyRemind.getProjectId())
+                    .author(weeklyRemind.getRemindAuthor().getId())
+                    .projectId(weeklyRemind.getProjectId().getId())
                     .content(weeklyRemind.getWeeklyRemindContents()).build());
         }
 
