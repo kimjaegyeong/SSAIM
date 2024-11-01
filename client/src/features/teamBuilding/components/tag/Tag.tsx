@@ -33,6 +33,8 @@ const Tag: React.FC<TagProps> = ({ text, useDefaultColors = false, onClick }) =>
         웹디자인: { backgroundColor: '#B728A4', fontColor: '#FFFFFF' },
         모바일: { backgroundColor: '#5EB9A0', fontColor: '#FFFFFF' },
         AIoT: { backgroundColor: '#84C30F', fontColor: '#FFFFFF' },
+        모집: { backgroundColor: '#3C93E8', fontColor: '#FFFFFF' },
+        마감: { backgroundColor: '#FA563B', fontColor: '#FFFFFF' },
     };
 
     // 해당 텍스트에 맞는 색상 가져오기
