@@ -2,7 +2,7 @@ import styles from './DailySchedule.module.css';
 import React from 'react';
 import Task from '../task/Task';
 import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
-import { useWeeklyData } from '../../../hooks/useWeeklyData';
+import { useDashboardData } from '../../../hooks/useDashboardData';
 import { useDashboardStore } from '../../../stores/dashboardStore';
 
 interface DailyScheduleProps {
@@ -11,7 +11,7 @@ interface DailyScheduleProps {
 }
 
 const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date }) => {
-  const { data: weeklyData } = useWeeklyData();
+  const { data: weeklyData } = useDashboardData();
   const{weekdayIndex} = useDashboardStore();
   const dayIdx = weekdayIndex[day];
   return (
