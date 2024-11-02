@@ -60,9 +60,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 10px 0;
 }
 
 .memberInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding-left: 10px;
 }
 
@@ -70,4 +74,32 @@
     width: 40px;
     height: 40px;
     border-radius: 20px;
+}
+
+.commentList {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #d9d9d9;
+}
+
+.commentItem {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 20px 20px;
+}
+
+.commentAuthor {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.commentContent {
+    width: 60%;
+    word-wrap: break-word;
+    white-space: normal;
 }

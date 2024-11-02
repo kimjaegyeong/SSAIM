@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import styles from './TeamBuildingPage.module.css'
 import Tag from '../../features/teamBuilding/components/tag/Tag'
 import { PiCrownSimpleFill } from "react-icons/pi";
+import { AiOutlineMore } from "react-icons/ai";
 
 const TeamBuildingListPage = () => {
   
@@ -24,7 +25,7 @@ const TeamBuildingListPage = () => {
       { id: 6, name: 'QQQ', position: 'Infra', img: 'https://picsum.photos/250/250', role: 0 },
     ],
     comments: [
-      { id: 1, content: 'comment1', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'FE' },
+      { id: 1, content: 'comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'FE' },
       { id: 2, content: 'comment2', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'BE' },
     ],
   }
@@ -58,22 +59,37 @@ const TeamBuildingListPage = () => {
           </div>
           <div className={styles.commentList}>
             {/* 댓글 목록 */}
+            {data.comments.map((comment) => (
+              <div key={comment.id} className={styles.commentItem}>
+                <Tag text={comment.position} />
+                <div className={styles.commentContent}>
+                  {comment.content}
+                </div>
+                <div className={styles.commentAuthor}>
+                  <img src={comment.authorImg} alt={comment.author} className={styles.profileImg}/>
+                  <div className={styles.commentInfo}>
+                    <span>{comment.author}</span>
+                  </div>
+                </div>
+                <AiOutlineMore style={{ minWidth: '20px', minHeight: '20px' }} />
+              </div>
+            ))}
           </div>
         </div>
         <div className={styles.teamSection}>
-            <p>모집 현황</p>
-            <div className={styles.memberList}>
-              {data.member.map((member) => (
-                <div key={member.id} className={styles.memberItem}>
-                  <div className={styles.memberInfo}>
-                    <img src={member.img} alt={member.name} className={styles.profileImg}/>
-                    <span>{member.name}</span>
-                    {member.role === 1 && <PiCrownSimpleFill color='#FFCD29'/>}
-                  </div>
-                  <Tag text={member.position}/>
+          <p>모집 현황</p>
+          <div className={styles.memberList}>
+            {data.member.map((member) => (
+              <div key={member.id} className={styles.memberItem}>
+                <div className={styles.memberInfo}>
+                  <img src={member.img} alt={member.name} className={styles.profileImg}/>
+                  <span>{member.name}</span>
+                  {member.role === 1 && <PiCrownSimpleFill color='#FFCD29'/>}
                 </div>
-              ))}
-            </div>
+                <Tag text={member.position}/>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
