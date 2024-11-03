@@ -6,6 +6,7 @@ import ProjectSprintPage from '../pages/project/ProjectSprintPage';
 import ProjectOutputPage from '../pages/project/ProjectOutputPage';
 import ProjectMeetingPage from '../pages/project/meeting/ProjectMeetingPage';
 import MeetingCreatePage from '../pages/project/meeting/MeetingCreatePage';
+import MeetingDetailPage from '../pages/project/meeting/MeetingDetailPage';
 import ProjectRemindPage from '../pages/project/ProjectRemindPage';
 import MainLayout from '../components/mainLayout/MainLayout';
 import TeamBuildingListPage from '../pages/teamBuilding/TeamBuildingListPage';
@@ -23,6 +24,7 @@ const AppRoutes = () => (
       <Route path="/project/:projectId/output" element={<ProjectOutputPage />}></Route>
       <Route path="/project/:projectId/meeting" element={<ProjectMeetingPage />}></Route>
       <Route path="/project/:projectId/meeting/create" element={<MeetingCreatePage />}></Route>
+      <Route path="/project/:projectId/meeting/:meetingId" element={<MeetingDetailPage />}></Route>
       <Route path="/project/:projectId/remind" element={<ProjectRemindPage />}></Route>
       {/* 팀빌딩 */}
       <Route path="/team-building" element={<TeamBuildingListPage />}></Route>
