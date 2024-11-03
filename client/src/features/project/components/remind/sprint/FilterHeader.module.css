@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #007bff;
+    color: #913BF6;
     font-weight: bold;
     font-size: 18px;
 }
@@ -18,12 +18,6 @@
 .filter {
     display: flex;
     gap: 50px;
-}
-
-.dayWeek {
-    display: flex;
-    align-items: center;
-    gap: 20px;
 }
 
 .myTeam {
@@ -34,7 +28,7 @@
 .active {
     display: flex;
     align-items: center;
-    color: #007bff;
+    color: #913BF6;
     font-weight: bold;
     gap: 5px;
 }

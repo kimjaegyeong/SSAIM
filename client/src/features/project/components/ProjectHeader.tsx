@@ -9,8 +9,12 @@ interface ProjectHeaderProps {
 const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
   const location = useLocation();
 
+  const isActiveLink = (path: string) => {
+    return location.pathname.startsWith(path); // 경로가 주어진 경로로 시작하는지 확인
+  };
+
   const getLinkClass = (path: string) => {
-    return location.pathname === path ? styles.activeLink : styles.navLink;
+    return isActiveLink(path) ? styles.activeLink : styles.navLink;
   };
 
   return (

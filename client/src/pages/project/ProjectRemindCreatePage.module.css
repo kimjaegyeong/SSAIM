@@ -3,13 +3,4 @@
     position: relative; /* 상대 위치로 설정하여 절대 위치 요소에 기준이 됩니다 */
   }
   
-  .move {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    position: absolute; 
-    top: 85px; 
-    right: 30px; 
-    cursor: pointer;
-  }
   
