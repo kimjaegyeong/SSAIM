@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom'; 
 import styles from './DailyContainer.module.css';
 import FilterHeader from './FilterHeader';
 import DayTeamRemind from '../daily/dayTeam/DayTeamRemind'; 
@@ -8,6 +9,8 @@ import Button from '../../../../../components/button/Button';
 import DayCalendar from './DayCalendar';
 
 const DailyContainer = () => {
+  const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
   const [dayWeek, setDayWeek] = useState('1일');
   const [myTeam, setMyTeam] = useState('나의 회고');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -18,6 +21,10 @@ const DailyContainer = () => {
     day: 'numeric',
     weekday: 'short',
   }).format(selectedDate).replace(/ (\S+)$/, ' ($1)');
+
+  const handleButtonClick = () => {
+    navigate(`/project/${projectId}/remind/create`); 
+  };
 
   return (
     <div className={styles.container}>
@@ -37,7 +44,7 @@ const DailyContainer = () => {
         </div>
       </div>
       <div className={styles.right}>
-        <Button size="large" colorType="blue">
+        <Button size="large" colorType="blue" onClick={handleButtonClick}>
           📝 일일 회고 작성
         </Button>
         <p className={styles.description}>조회할 날짜를 선택해주세요</p>
