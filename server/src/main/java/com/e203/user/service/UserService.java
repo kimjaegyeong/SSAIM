@@ -5,11 +5,16 @@ import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
 import com.e203.user.request.UserLoginRequestDto;
 import com.e203.user.request.UserSignUpRequestDto;
+import com.e203.user.response.UserInfoResponseDto;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,7 +54,30 @@ public class UserService {
         return passwordEncoder.encode(rawPassword);
     }
 
-    public void login(UserLoginRequestDto dto) {
+    public UserInfoResponseDto getUserInfo(int userId) {
+        User user = userRepository.findByUserId(userId);
+        if (user == null) {
+            return null;
+        }
 
+        UserInfoResponseDto dto = UserInfoResponseDto.builder()
+                .userId(user.getUserId())
+                .userEmail(user.getUserEmail())
+                .userName(user.getUserName())
+                .userNickname(user.getUserNickname())
+                .userPhone(user.getUserPhone())
+                .userBirth(user.getUserBirth())
+                .userGeneration(user.getUserGeneration())
+                .userCampus(user.getUserCampus())
+                .userClass(user.getUserClass())
+                .userGender(user.getUserGender())
+                .userSkills(user.getUserSkills())
+                .userProfileImage(user.getUserProfileImage())
+                .userProfileMessage(user.getUserProfileMessage())
+                .userRole(user.getUserRole())
+                .build();
+
+        return dto;
     }
+
 }
