@@ -4,6 +4,7 @@ import FilterHeader from './FilterHeader';
 import Button from '../../../../../components/button/Button';
 import WeekCalendar from './WeekCalendar'
 import MySprint from './my/MySprint';
+import TeamSprint from './team/TeamSprint';
 
 
 const SprintContainer = () => {
@@ -26,7 +27,7 @@ const SprintContainer = () => {
         />
         <div className={styles.remindContent}>
           {myTeam === '나의 회고' && <MySprint />}
-          {myTeam === '팀원 회고' && <p>팀원 회고 입니둥</p>}
+          {myTeam === '팀원 회고' && <TeamSprint/>}
         </div>
         
       </div>
