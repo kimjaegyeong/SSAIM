@@ -32,7 +32,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = obtainUsername(req);
         String password = obtainPassword(req);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
-        System.out.println(authToken);
 
         return authenticationManager.authenticate(authToken);
     }
