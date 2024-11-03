@@ -1,7 +1,7 @@
 // import React from 'react';
 import { useParams } from 'react-router-dom';
-import ProjectHeader from '../../features/project/components/ProjectHeader';
-import MeetingList from '../../features/project/components/meeting/MeetingList';
+import ProjectHeader from '../../../features/project/components/ProjectHeader';
+import MeetingList from '../../../features/project/components/meeting/MeetingList';
 
 const ProjectMeetingPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
