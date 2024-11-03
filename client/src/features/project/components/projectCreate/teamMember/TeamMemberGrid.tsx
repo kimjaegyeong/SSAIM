@@ -1,7 +1,6 @@
 import useTeamStore from '../../../stores/useTeamStore';
 import SearchModal from '../searchModal/SearchModal';
 import styles from './TeamMemberGrid.module.css';
-import { useState } from 'react';
 
 const TeamMemberGrid = () => {
   const { members, isModalOpen, openModal, closeModal } = useTeamStore();
