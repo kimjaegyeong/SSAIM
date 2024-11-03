@@ -172,25 +172,18 @@ const TeamBuildingBoard: React.FC = () => {
                                 <span className={styles.region}>[{item.region}]</span>
                                 <span className={styles.title}>{item.title}</span>
                                 <div className={styles.category}>
-                                    {Array.isArray(item.category) ? (
-                                        item.category.map((cat, catIndex) => (
-                                            <Tag key={catIndex} text={cat} />
-                                        ))
-                                    ) : (
-                                        <span>{item.position}</span>
-                                    )}
+                                    {item.category.map((cat, catIndex) => (
+                                        <Tag key={catIndex} text={cat} />
+                                    ))}
                                 </div>
-                                <div>
-                                    <Tag text={item.state}/><span>  {item.currentMembers}/{item.totalMembers}</span>
+                                <div className={styles.state}>
+                                    <Tag text={item.state}/>
+                                    <span>{item.currentMembers}/{item.totalMembers}</span>
                                 </div>
                                 <div className={styles.position}>
-                                    {Array.isArray(item.position) ? (
-                                        item.position.map((pos, posIndex) => (
-                                            <Tag key={posIndex} text={pos} />
-                                        ))
-                                    ) : (
-                                        <span>{item.position}</span>
-                                    )}
+                                    {item.position.map((pos, posIndex) => (
+                                        <Tag key={posIndex} text={pos} />
+                                    ))}
                                 </div>
                                 <div className={styles.profile}>
                                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTL2n26IeEdZUIp0w4g7VtqjHtLzGv-0RbZFQ&s" alt="Profile Image" className={styles.profileImg} />

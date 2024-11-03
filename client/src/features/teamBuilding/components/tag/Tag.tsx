@@ -5,9 +5,10 @@ interface TagProps {
     text: string;
     useDefaultColors?: boolean;
     onClick?: () => void;
+    disablePointerCursor?: boolean;
 }
 
-const Tag: React.FC<TagProps> = ({ text, useDefaultColors = false, onClick }) => {
+const Tag: React.FC<TagProps> = ({ text, useDefaultColors = false, onClick, disablePointerCursor }) => {
     // 기본 색상 정의
     const defaultBackgroundColor = '#d9d9d9';
     const defaultFontColor = '#000000';
@@ -45,7 +46,11 @@ const Tag: React.FC<TagProps> = ({ text, useDefaultColors = false, onClick }) =>
     return (
         <span
             className={styles.tag}
-            style={{ backgroundColor, color: fontColor }}
+            style={{ 
+                backgroundColor, 
+                color: fontColor,
+                cursor: disablePointerCursor ? 'default' : 'pointer',
+            }}
             onClick={onClick}
         >
             {text}

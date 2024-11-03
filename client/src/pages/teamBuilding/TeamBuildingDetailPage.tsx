@@ -1,12 +1,20 @@
+import {useState} from 'react'
 import { useParams } from 'react-router-dom';
 import styles from './TeamBuildingPage.module.css'
 import Tag from '../../features/teamBuilding/components/tag/Tag'
 import { PiCrownSimpleFill } from "react-icons/pi";
 import { AiOutlineMore } from "react-icons/ai";
+import Button from '../../components/button/Button';
+import TagSelector from '../../features/teamBuilding/components/tagSelector/TagSelector';
 
-const TeamBuildingListPage = () => {
+const TeamBuildingDetailPage = () => {
   
   const { postId } = useParams();
+
+  const [activeCommentId, setActiveCommentId] = useState<number | null>(null);
+  const [isCommentEditing, setIsCommentEditing] = useState(false);
+  const [editedCommentContent, setEditedCommentContent] = useState('');
+
   const data = {
     postId: 1,
     title: `팀원 모집 게시글 ${postId}`,
@@ -25,10 +33,48 @@ const TeamBuildingListPage = () => {
       { id: 6, name: 'QQQ', position: 'Infra', img: 'https://picsum.photos/250/250', role: 0 },
     ],
     comments: [
-      { id: 1, content: 'comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1comment1', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'FE' },
+      { id: 1, content: 'comment1', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'FE' },
       { id: 2, content: 'comment2', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'BE' },
     ],
   }
+
+  const [isPostEditing, setIsPostEditing] = useState(false);
+  const [editedPostContent, setEditedPostContent] = useState(data.content);
+  
+  const loggedInUser = {
+    name: 'aaa',
+  };
+
+  const isAuthor = loggedInUser?.name === data.author;
+
+  const toggleModal = (commentId: number) => {
+    if (activeCommentId === commentId) {
+      setActiveCommentId(null);
+    } else {
+      setActiveCommentId(commentId);
+      setIsCommentEditing(false);
+      setEditedCommentContent('');
+    }
+  };
+
+  const handleEditPost = () => {
+    setIsPostEditing(true);
+  };
+  
+  const handleSavePost = () => {
+    setIsPostEditing(false);
+  };
+
+  const handleEditComment = (commentContent:string) => {
+    setIsCommentEditing(true);
+    setEditedCommentContent(commentContent);
+  };
+
+  const handleSaveComment = () => {
+    setIsCommentEditing(false);
+    setActiveCommentId(null);
+  };
+
   return (
     <div className={styles.page}>
       <h1 className={styles.pageTitle}>{data.title}</h1>
@@ -52,26 +98,93 @@ const TeamBuildingListPage = () => {
             </div>
           </div>
           <div className={styles.postContent}>
-            {data.content}
+            {isPostEditing ? (
+              <textarea
+                value={editedPostContent}
+                onChange={(e) => setEditedPostContent(e.target.value)}
+                className={styles.editPostInput}
+              />
+            ) : (
+              data.content
+            )}
           </div>
-          <div className={styles.commentForm}>
-            {/* 댓글 작성 및 수정/삭제 */}
-          </div>
+          {isAuthor ? (
+            <div className={styles.buttonSection}>
+              {isPostEditing ? (
+                <button onClick={handleSavePost} className={`${styles.authorButton} ${styles.startButton}`}>저장</button>
+              ) : (
+                <>
+                  <button className={`${styles.authorButton} ${styles.startButton}`}>팀 구성 완료</button>
+                  <button onClick={handleEditPost} className={`${styles.authorButton} ${styles.editButton}`}>게시글 수정</button>
+                  <button className={`${styles.authorButton} ${styles.deleteButton}`}>게시글 삭제</button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className={styles.commentForm}>
+              <TagSelector />
+              <input className={styles.commentInput} />
+              <button className={styles.submitButton}>지원하기</button>
+            </div>
+          )}
           <div className={styles.commentList}>
-            {/* 댓글 목록 */}
             {data.comments.map((comment) => (
               <div key={comment.id} className={styles.commentItem}>
                 <Tag text={comment.position} />
                 <div className={styles.commentContent}>
-                  {comment.content}
+                  {isCommentEditing && activeCommentId === comment.id ? (
+                    <input
+                      type="text"
+                      value={editedCommentContent}
+                      onChange={(e) => setEditedCommentContent(e.target.value)}
+                      className={styles.editInput}
+                    />
+                  ) : (
+                    comment.content
+                  )}
                 </div>
                 <div className={styles.commentAuthor}>
-                  <img src={comment.authorImg} alt={comment.author} className={styles.profileImg}/>
+                  <img
+                    src={comment.authorImg}
+                    alt={comment.author}
+                    className={styles.profileImg}
+                  />
                   <div className={styles.commentInfo}>
                     <span>{comment.author}</span>
                   </div>
                 </div>
-                <AiOutlineMore style={{ minWidth: '20px', minHeight: '20px' }} />
+                
+                {isCommentEditing && activeCommentId === comment.id ? (
+                  <Button onClick={handleSaveComment} size='custom' colorType='blue'>
+                    저장
+                  </Button>
+                ) : (
+                  <div className={styles.moreButtonWrapper}>
+                    <AiOutlineMore
+                      onClick={() => toggleModal(comment.id)}
+                      className={styles.moreButton}
+                    />
+                    {activeCommentId === comment.id && !isCommentEditing && (
+                      <div className={styles.modal}>
+                        {isAuthor ? (
+                          <button 
+                            className={styles.modalButton}
+                          >
+                            수락
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleEditComment(comment.content)}
+                            className={styles.modalButton}
+                          >
+                            수정
+                          </button>
+                        )}
+                        <button className={styles.modalButton}>삭제</button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -96,4 +209,4 @@ const TeamBuildingListPage = () => {
   );
 };
 
-export default TeamBuildingListPage;
+export default TeamBuildingDetailPage;
