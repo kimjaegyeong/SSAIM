@@ -5,6 +5,7 @@ import Button from '../../../../components/button/Button';
 import { useProjectListData } from '../../hooks/useProjectListData';
 import { dateToString } from '../../../../utils/dateToString';
 import { useNavigate } from 'react-router-dom';
+import EmptyProjectList from './EmptyProjectList';
 
 interface ProjectListItemProps {
   projectInfo: ProjectDTO;
@@ -29,27 +30,39 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
   );
 };
 
-
 const ProjectList: React.FC = () => {
   const { data: projectListData } = useProjectListData();
+  // const projectListData = []
   const navigate = useNavigate();
   const handleItemClick = (projectId: number) => () => {
     navigate(`/project/${projectId}`);
   };
   const handleCreateClick = () => {
-    navigate('/project/create')
-  }
+    navigate('/project/create');
+  };
   return (
     <>
       <div className={styles.header}>
         <h1 className={styles.projectTitle}>프로젝트 목록</h1>
-        <Button children={'프로젝트 생성'} size="small" colorType="blue" onClick={handleCreateClick} />
+        <div>
+          {projectListData.length > 0 && (
+            <Button children={'프로젝트 생성'} size="small" colorType="blue" onClick={handleCreateClick} />
+          )}
+        </div>
       </div>
-      <div className={styles.body}>
-        {projectListData.map((project) => (
-          <ProjectListItem key={project.projectId} projectInfo={project} onClick={handleItemClick(project.projectId)} />
-        ))}
-      </div>
+      {projectListData.length === 0 ? (
+        <EmptyProjectList />
+      ) : (
+        <div className={styles.body}>
+          {projectListData.map((project) => (
+            <ProjectListItem
+              key={project.projectId}
+              projectInfo={project}
+              onClick={handleItemClick(project.projectId)}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 };
