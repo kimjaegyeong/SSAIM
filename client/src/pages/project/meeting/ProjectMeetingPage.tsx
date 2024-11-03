@@ -1,4 +1,3 @@
-// import React from 'react';
 import { useParams } from 'react-router-dom';
 import ProjectHeader from '../../../features/project/components/ProjectHeader';
 import MeetingList from '../../../features/project/components/meeting/MeetingList';

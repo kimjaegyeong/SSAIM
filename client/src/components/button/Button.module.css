@@ -1,5 +1,4 @@
 .button {
-    border-radius: 20px;
     cursor: pointer;
     font-weight: bold;
     border: none;
@@ -16,18 +15,21 @@
     width: 100px; 
     height: 30px; 
     font-size: 15px;
+    border-radius: 20px;
 }
 
 .small {
     width: 140px; 
     height: 55px; 
     font-size: 20px;
+    border-radius: 20px;
 }
 
 .medium {
-    width: 830px; 
-    height: 60px; 
-    font-size: 24px;
+    width: 500px; 
+    height: 38px; 
+    font-size: 18px;
+    border-radius: 10px;
 }
 
 .large {
@@ -35,6 +37,7 @@
     height: 90px; 
     font-size: 24px;
     margin: 30px 0px;
+    border-radius: 20px;
 }
 .custom {
     padding: 10px 20px;

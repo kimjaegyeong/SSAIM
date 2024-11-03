@@ -5,12 +5,15 @@ import Button from '../../../../components/button/Button';
 import MeetingCalendar from './MeetingCalendar';
 import MeetingItem from './MeetingItem';
 import { Meeting } from '../../types/meeting/Meeting';
+import MeetingModal from './MeetingModal';
 
 
 
 const MeetingList = () => {
   const navigate = useNavigate();
+
   const { projectId } = useParams<{ projectId: string }>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [meetings] = useState<Meeting[]>([
     {
       id: '1',
@@ -66,6 +69,14 @@ const MeetingList = () => {
       }
     });
   };
+  
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className={styles.container}>
@@ -82,12 +93,16 @@ const MeetingList = () => {
         
       </div>
       <div className={styles.right}>
-        <Button size="large" colorType="green">
+        <Button size="large" colorType="green" onClick={handleOpenModal}>
           🎙️ 회의록 생성하기
         </Button>
         <p className={styles.description}>조회할 날짜를 선택해주세요</p>
         <MeetingCalendar />
       </div>
+
+      <MeetingModal isOpen={isModalOpen} onClose={handleCloseModal}>
+
+      </MeetingModal>
     </div>
   );
 };

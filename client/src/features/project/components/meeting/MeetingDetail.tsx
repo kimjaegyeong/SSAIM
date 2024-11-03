@@ -2,9 +2,23 @@ import { useLocation } from 'react-router-dom';
 import styles from './MeetingDetail.module.css';
 import Button from '../../../../components/button/Button';
 
-const MeetingDetail = () => {
+interface MeetingDetailProps {
+    newTitle: string;
+    minutes: number;
+  }
+
+const MeetingDetail: React.FC<MeetingDetailProps> = ({ newTitle, minutes  }) => {
   const location = useLocation();
   const { title, date, duration } = location.state || {};
+
+  const todayDate = new Date().toLocaleString('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+    weekday: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  });
 
   const summaryText = `1. 프로젝트 관리\n- 관리자/사용자 그룹 생성 및 그룹장 설정 기능 추가.\n
 - 팀장 권한으로 JIRA, Gitlab 연동 가능.\n
@@ -14,9 +28,9 @@ const MeetingDetail = () => {
 - 주간 회고를 바탕으로 '우리가 함께 만드는 개발 이야기' 생성 기능 추가.`;
 
   const meetingData = {
-    title: title || "회의 제목 없음", // 기본 제목
-    date: date || "날짜 없음", // 기본 날짜
-    duration: duration || "지속 시간 없음", // 기본 지속 시간
+    title: title || newTitle, // 기본 제목
+    date: date || todayDate, // 기본 날짜
+    duration: duration || `${minutes}분`, // 기본 지속 시간
     participants: [
       {
         id: 1,
@@ -38,7 +52,7 @@ const MeetingDetail = () => {
       },
       {
         id: 4,
-        name: "박지웅",
+        name: "박지용",
         userImage:"profile.jpg",
         comment: "API 명세서나 기능 명세서는 작성할 수 있는 템플릿을 제공하고, 이를 기반으로 가이드라인 제공하는 식으로 하겠습니다."
       },
