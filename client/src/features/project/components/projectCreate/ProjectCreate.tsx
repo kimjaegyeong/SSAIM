@@ -3,6 +3,7 @@ import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import Button from '../../../../components/button/Button';
+import TeamMemberGrid from './teamMember/TeamMemberGrid';
 
 const ProjectCreate = () => {
   const [startDate, setStartDate] = useState<Date|null>(null);
@@ -33,7 +34,7 @@ const ProjectCreate = () => {
       </div>
 
       {/* 팀원 추가 모달 (현재 비워둠) */}
-      <div className={styles.teamMemberModal}>팀원 추가 모달 자리</div>
+      <div className={styles.teamMemberModal}><TeamMemberGrid/></div>
 
       {/* 프로젝트 기간 입력 */}
       <div className={styles.dateSection}>
