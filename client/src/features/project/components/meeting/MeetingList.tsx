@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './MeetingList.module.css';
 import Button from '../../../../components/button/Button';
 import MeetingCalendar from './MeetingCalendar';
@@ -8,6 +9,8 @@ import { Meeting } from '../../types/meeting/Meeting';
 
 
 const MeetingList = () => {
+  const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
   const [meetings] = useState<Meeting[]>([
     {
       id: '1',
@@ -55,7 +58,13 @@ const MeetingList = () => {
 
   const handleMeetingClick = (meeting: Meeting) => {
     console.log('Selected meeting:', meeting);
-    // 회의 선택 시 처리할 로직 추가
+    navigate(`/project/${projectId}/meeting/${meeting.id}`, {
+      state: {
+        title: meeting.title,
+        date: meeting.date,
+        duration: meeting.duration
+      }
+    });
   };
 
   return (

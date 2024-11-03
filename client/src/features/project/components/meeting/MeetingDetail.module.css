@@ -1,0 +1,96 @@
+.container {
+    display: flex;
+    height: 84vh;
+}
+
+.left {
+    flex: 4; /* 왼쪽 섹션 크기 */
+    padding: 0px 40px;
+    border-right: 1px solid #ccc; /* 오른쪽 경계선 */
+    overflow-y: auto; /* 내용이 많을 경우 스크롤 */
+}
+
+.right {
+    flex: 1; /* 오른쪽 섹션 크기 */
+    display: flex;
+    padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.summaryBox {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-top: 20px;
+    padding: 15px;
+    width: auto;
+    max-height: 45vh;
+    border: 1px solid rgba(25, 136, 97,0.5);
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.2; 
+}
+
+/* 새로 추가된 스타일 */
+.header {
+    display: flex;
+    align-items: center;
+    padding: 20px 0;
+    gap: 20px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0px;
+}
+
+.meetingInfo {
+    display: flex;
+    gap: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.content {
+    padding: 0px;
+}
+
+.contentTitle {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.participants {
+    display: flex;
+    flex-direction: column;
+}
+
+.participantBox {
+    display: flex;
+    padding: 15px;
+}
+
+.participantBox img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.participantName {
+    font-weight: bold;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+.comment {
+    margin: 0;
+    line-height: 1.5;
+    color: #333;
+    font-size: 14px;
+}
