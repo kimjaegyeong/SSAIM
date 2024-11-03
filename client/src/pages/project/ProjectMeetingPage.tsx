@@ -1,6 +1,7 @@
 // import React from 'react';
 import { useParams } from 'react-router-dom';
 import ProjectHeader from '../../features/project/components/ProjectHeader';
+import MeetingList from '../../features/project/components/meeting/MeetingList';
 
 const ProjectMeetingPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -8,7 +9,7 @@ const ProjectMeetingPage = () => {
   return (
     <div>
       <ProjectHeader projectId={projectId as string} />
-      회의록
+      <MeetingList/>
     </div>
   );
 };
