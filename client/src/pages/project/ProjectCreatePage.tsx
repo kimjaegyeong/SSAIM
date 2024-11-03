@@ -1,5 +1,5 @@
 // import React from 'react';
-import ProjectCreate from '../../features/project/components/projectCreate/projectCreate';
+import ProjectCreate from '../../features/project/components/projectCreate/ProjectCreate';
 import styles from './ProjectCreatePage.module.css'
 
 

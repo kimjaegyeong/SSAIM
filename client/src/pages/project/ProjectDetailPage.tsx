@@ -1,6 +1,8 @@
 // import React from 'react';
 import { useParams } from 'react-router-dom';
 import ProjectHeader from '../../features/project/components/ProjectHeader';
+import ProjectInfo from '../../features/project/components/projectInfo/ProjectInfo';
+
 
 const ProjectDetailPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -8,7 +10,7 @@ const ProjectDetailPage = () => {
   return (
     <div>
       <ProjectHeader projectId={projectId as string} />
-      프로젝트 정보
+      <ProjectInfo/>
     </div>
   );
 };
