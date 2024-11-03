@@ -60,6 +60,11 @@ public class ProjectService {
 		return projectFindResponseDtos;
 	}
 
+	public ProjectFindResponseDto findProjectInfo(Integer projectId) {
+		Project project = findEntity(projectId);
+		return getProjectFindResponseDto(project);
+	}
+
 	private ProjectFindResponseDto getProjectFindResponseDto(Project project) {
 		List<ProjectMemberFindResponseDto> pmDto = createProjectMemberFindResponseDtos(project);
 		ProjectFindResponseDto projectFindResponseDto = ProjectFindResponseDto.builder()
