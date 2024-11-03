@@ -28,4 +28,9 @@ public class UserController {
         }
     }
 
+    @PatchMapping("/api/v1/users/{userId}")
+    public ResponseEntity<String> editInfo() {
+        return ResponseEntity.status(200).body("회원 정보 수정이 완료되었습니다.");
+    }
+
 }
