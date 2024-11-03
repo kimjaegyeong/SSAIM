@@ -1,7 +1,7 @@
 import styles from './ProjectInfo.module.css';
 import ProgressChart from '../dashboard/progressChart/ProgressChart';
 import Button from '../../../../components/button/Button';
-import { FaPen } from 'react-icons/fa6';
+import { FaPen } from "react-icons/fa6";
 
 const ProjectInfo: React.FC = () => {
   const project = {
@@ -32,24 +32,27 @@ const ProjectInfo: React.FC = () => {
               <span>최근 수정일: {project.modifiedAt}</span>
             </div>
           </div>
-          <span className={styles.modify}>
-            <FaPen />
+          <span className={styles.modify}><FaPen />
           </span>
         </div>
 
         <div className={styles.leftLowerSection}>
           {/* 버튼 6개가 위치할 왼쪽 영역 */}
           <div className={styles.buttonGrid}>
-            <Button children="Jira" colorType="blue" size="small"></Button>
-            <Button children="GitLab" colorType="blue" size="small"></Button>
-            <Button children="주간 진행상황" colorType="blue" size="small"></Button>
-            <Button children="산출물" colorType="blue" size="small"></Button>
-            <Button children="회의록" colorType="blue" size="small"></Button>
-            <Button children="회고" colorType="blue" size="small"></Button>
+          <Button children="Jira" colorType='blue' size='small'></Button>
+          <Button children="GitLab" colorType='blue' size='small'></Button>
+          <Button children="주간 진행상황" colorType='blue' size='small'></Button>
+          <Button children="산출물" colorType='blue' size='small'></Button>
+          <Button children="회의록" colorType='blue' size='small'></Button>
+          <Button children="회고" colorType='blue' size='small'></Button>
           </div>
 
           {/* 컴포넌트가 들어갈 오른쪽 영역 */}
+          <div
+          className={styles.componentArea}>
           <ProgressChart />
+
+          </div>
         </div>
       </div>
 

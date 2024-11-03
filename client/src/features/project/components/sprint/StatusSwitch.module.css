@@ -1,0 +1,27 @@
+.switchContainer {
+  display: flex;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: #eee;
+}
+
+.switchButton {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.switchButton:not(.active):hover {
+  background-color: #ddd;
+}
+
+.active {
+  background-color: #d4f5d0; /* 선택된 상태의 배경색 */
+  color: #2d6a4f;
+  font-weight: bold;
+}
