@@ -3,6 +3,7 @@ package com.e203.project.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.e203.config.JasyptConfig;
 import com.e203.project.dto.request.ProjectCreateRequestDto;
 import com.e203.project.dto.request.ProjectMemberCreateRequestDto;
+import com.e203.project.entity.Project;
 import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
 
@@ -46,6 +48,16 @@ public class ProjectServiceTest {
 		boolean project = projectService.createProject(dto);
 
 		Assertions.assertTrue(project);
+	}
+
+	@Test
+	@DisplayName("Project Find All ")
+	@Transactional
+	public void projectFindAllTest() {
+		List<Project> projects = projectService.findAll();
+		for (Project project : projects) {
+			project.getProjectMemberList().stream().forEach(member -> System.out.println(member.getId()));
+		}
 	}
 
 	private ProjectCreateRequestDto createProjectDto(){
