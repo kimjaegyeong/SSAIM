@@ -1,10 +1,11 @@
 package com.e203.jwt;
 
+import com.e203.user.request.UserLoginRequestDto;
 import com.e203.user.response.UserDetailsImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -29,9 +31,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
-        String username = obtainUsername(req);
-        String password = obtainPassword(req);
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+//        String username = obtainUsername(req);
+//        String password = obtainPassword(req);
+        ObjectMapper mapper = new ObjectMapper();
+        UserLoginRequestDto loginRequestDto;
+        try {
+            loginRequestDto = mapper.readValue(req.getInputStream(), UserLoginRequestDto.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse authentication request", e);
+        }
+
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getUserEmail(), loginRequestDto.getUserPw(), null);
 
         return authenticationManager.authenticate(authToken);
     }
