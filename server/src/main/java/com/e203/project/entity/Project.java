@@ -1,6 +1,8 @@
 package com.e203.project.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.e203.global.entity.BaseEntity;
 
@@ -9,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,6 +54,9 @@ public class Project extends BaseEntity {
 
 	@Column(name = "project_progress_back")
 	private Double progressBack = 0.0;
+
+	@OneToMany(mappedBy = "project")
+	private List<ProjectMember> projectMemberList = new ArrayList<>();
 
 	@Builder
 	private Project(String title, String name, String profileImage, LocalDateTime startDate, LocalDateTime endDate, String gitlabApi, String jiraApi,

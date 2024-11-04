@@ -2,6 +2,8 @@ package com.e203.project.controller;
 
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,5 +37,11 @@ public class ProjectController {
 	public ResponseEntity<ProjectFindResponseDto> findProjectInfo(@PathVariable Integer projectId) {
 		ProjectFindResponseDto projectInfo = projectService.findProjectInfo(projectId);
 			return ResponseEntity.status(OK).body(projectInfo);
+	}
+
+	@GetMapping("/api/v1/user/{userId}/projects")
+	public ResponseEntity<List<ProjectFindResponseDto>> findAllProjects(@PathVariable Integer userId) {
+		List<ProjectFindResponseDto> projectFindResponseDtos = projectService.findAllProjects(userId);
+		return ResponseEntity.status(OK).body(projectFindResponseDtos);
 	}
 }

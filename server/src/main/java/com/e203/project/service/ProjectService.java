@@ -1,6 +1,5 @@
 package com.e203.project.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +14,7 @@ import com.e203.project.dto.response.ProjectFindResponseDto;
 import com.e203.project.dto.response.ProjectMemberFindResponseDto;
 import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
+import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
 import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
@@ -27,6 +27,7 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberService projectMemberService;
 	private final UserRepository userRepository;
+	private final ProjectMemberRepository projectMemberRepository;
 
 	@Transactional
 	public boolean createProject(ProjectCreateRequestDto projectCreateRequestDto) {
@@ -34,7 +35,6 @@ public class ProjectService {
 		Project entity = projectCreateRequestDto.toEntity();
 		Project project = projectRepository.save(entity);
 
-		//ProjectMember 생성
 		for(int i=0; i<projectCreateRequestDto.getTeamMembers().size(); i++){
 			ProjectMember projectMember = createProjectMember(project, projectCreateRequestDto.getTeamMembers().get(i));
 			projectMemberService.save(projectMember);
@@ -48,15 +48,27 @@ public class ProjectService {
 		return project.orElse(null);
 	}
 
+	public List<Project> findAll(int userId) {
+		return projectMemberRepository.findProjectsByUserId(userId);
+	}
+
+	public List<ProjectFindResponseDto> findAllProjects(int userId){
+		List<Project> projects = findAll(userId);
+		List<ProjectFindResponseDto> projectFindResponseDtos = new ArrayList<>();
+		for(Project project : projects){
+			ProjectFindResponseDto projectFindResponseDto = getProjectFindResponseDto(project);
+			projectFindResponseDtos.add(projectFindResponseDto);
+		}
+		return projectFindResponseDtos;
+	}
+
 	public ProjectFindResponseDto findProjectInfo(Integer projectId) {
 		Project project = findEntity(projectId);
-		List<ProjectMemberFindResponseDto> projectMemberFindResponseDtoList;
-		List<ProjectMember> projectMembers = projectMemberService.findEntityList(projectId);
+		return getProjectFindResponseDto(project);
+	}
 
-		//projectMembers를 dto로 바꾸기
-		projectMemberFindResponseDtoList = createProjectMemberFindResponseDtos(projectMembers);
-
-		//projectMember + project
+	private ProjectFindResponseDto getProjectFindResponseDto(Project project) {
+		List<ProjectMemberFindResponseDto> pmDto = createProjectMemberFindResponseDtos(project);
 		ProjectFindResponseDto projectFindResponseDto = ProjectFindResponseDto.builder()
 			.id(project.getId())
 			.name(project.getName())
@@ -65,25 +77,25 @@ public class ProjectService {
 			.jiraApi(project.getJiraApi())               // 프로젝트의 Jira API 정보
 			.gitlabApi(project.getGitlabApi())           // 프로젝트의 GitLab API 정보
 			.progress_back(project.getProgressBack())    // 백엔드 진행도
-			.progress_front(project.getProgressFront())  // 프론트엔드 진행도
+			.progress_front(project.getProgressFront())// 프론트엔드 진행도
+			.projectMembers(pmDto)
 			.build();
-
 		return projectFindResponseDto;
 	}
 
-	private List<ProjectMemberFindResponseDto> createProjectMemberFindResponseDtos(List<ProjectMember> projectMembers) {
-		List<ProjectMemberFindResponseDto> projectMemberFindResponseDtoList = new ArrayList<>();
-
-		for (ProjectMember projectMember : projectMembers) {
-			ProjectMemberFindResponseDto dto = ProjectMemberFindResponseDto.builder()
-				.id(projectMember.getId())
-				.name(projectMember.getUser().getUserName())
-				.role(projectMember.getRole())
-				.profileImage(projectMember.getUser().getUserProfileImage())
-				.build();
-			projectMemberFindResponseDtoList.add(dto);
+	private List<ProjectMemberFindResponseDto> createProjectMemberFindResponseDtos(Project project) {
+		List<ProjectMemberFindResponseDto> pmDtos = new ArrayList<>();
+		for(ProjectMember member : project.getProjectMemberList()){
+			ProjectMemberFindResponseDto dto =
+				ProjectMemberFindResponseDto.builder()
+					.id(member.getId())
+					.name(member.getUser().getUserName())
+					.profileImage(member.getUser().getUserProfileImage())
+					.role(member.getRole())
+					.build();
+			pmDtos.add(dto);
 		}
-		return projectMemberFindResponseDtoList;
+		return pmDtos;
 	}
 
 	private ProjectMember createProjectMember(Project project, ProjectMemberCreateRequestDto member) {
@@ -94,7 +106,5 @@ public class ProjectService {
 				.role(member.getRole())
 				.build();
 	}
-
-
 }
 
