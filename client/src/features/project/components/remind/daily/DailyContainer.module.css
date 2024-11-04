@@ -28,34 +28,3 @@
     color: #808080;
 }
 
-/* 캘린더 커스텀 디자인 */
-
-.calendar {
-    width: 280px;
-}
-
-:global(.react-calendar) {
-    border: none !important;
-}
-
-:global(.react-calendar__navigation__label) {
-    font-size: 14px; 
-    font-weight: bold;
-}
-
-:global(.react-calendar__month-view__weekdays__weekday abbr) {
-    text-decoration: none;
-} 
-
-:global(.react-calendar__tile--now) {
-    background-color: #FBFFAA !important; 
-}
-
-:global(.react-calendar__tile) {
-    margin-bottom: 3px !important;
-}
-
-:global(.react-calendar__tile--active) {
-    background-color: #007bff !important; 
-    color: white !important; 
-}

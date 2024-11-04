@@ -1,6 +1,9 @@
 // import React from 'react';
 import { useParams } from 'react-router-dom';
 import ProjectHeader from '../../features/project/components/ProjectHeader';
+import Proposal from '../../features/project/components/propasal/Proposal';
+import FeatureSpec from '../../features/project/components/featureSpec/FeatureSpec';
+
 
 const ProjectOutputPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -8,7 +11,8 @@ const ProjectOutputPage = () => {
   return (
     <div>
       <ProjectHeader projectId={projectId as string} />
-      산출물
+      <Proposal/>
+      <FeatureSpec/>
     </div>
   );
 };
