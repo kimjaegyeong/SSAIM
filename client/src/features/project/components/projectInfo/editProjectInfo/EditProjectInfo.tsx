@@ -2,7 +2,7 @@ import styles from './EditProjectInfo.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import React, { useState } from 'react';
-import TeamMemberGrid from '@/features/project/components/projectCreate/teamMember/TeamMemberGrid'
+import TeamMemberGrid from '@features/project/components/projectCreate/teamMember/TeamMemberGrid'
 
 interface EditProjectInfoModalProps {
   onClose: () => void;
