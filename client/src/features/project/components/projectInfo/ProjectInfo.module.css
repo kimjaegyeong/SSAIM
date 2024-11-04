@@ -1,0 +1,118 @@
+.projectInfoContainer {
+  display: flex;
+  width: calc(100% - 100px);
+  height : 70vh;
+  margin-left: 50px;
+  padding: 20px;
+}
+
+.leftSection {
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  padding-right: 20px;
+  
+}
+
+.projectDetails {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd; /* 연한 선 추가 */
+  padding-bottom : 30px;
+  position : relative;
+}
+
+.projectImage {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  border : 1px solid black;
+  margin-right: 20px;
+}
+.projectText{
+}
+.projectText h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.projectText p {
+  margin: 5px 0;
+}
+
+.dates {
+  width : 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+}
+
+.rightSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  border-left: 1px solid #ddd; /* 연한 선 추가 */
+  height : 100%;
+}
+
+.teamMembers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.teamMember {
+  display: flex;
+  align-items: center;
+}
+
+.memberImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.leftLowerSection {
+  display: flex;
+  margin-top: 20px;
+}
+
+.buttonGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  padding-right: 20px;
+}
+
+.gridButton {
+  width: 100%;
+  height: 60px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.componentArea {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 컴포넌트를 가져올 자리 */
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-height: 200px;
+}
+
+.modify {
+  position : absolute;
+  top : 0;
+  right : 0;
+}

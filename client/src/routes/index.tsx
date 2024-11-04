@@ -14,12 +14,14 @@ import TeamBuildingListPage from '../pages/teamBuilding/TeamBuildingListPage';
 import RemindListPage from '../pages/remind/RemindListPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import MyPage from '../pages/myPage/MyPage';
+import ProjectCreatePage from '../pages/project/ProjectCreatePage';
 const AppRoutes = () => (
   <Routes>
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
       <Route path="/project" element={<ProjectListPage />}></Route>
+      <Route path="/project/create" element={<ProjectCreatePage />}></Route>
       <Route path="/project/:projectId" element={<ProjectDetailPage />}></Route>
       <Route path="/project/:projectId/sprint" element={<ProjectSprintPage />}></Route>
       <Route path="/project/:projectId/output" element={<ProjectOutputPage />}></Route>
