@@ -35,7 +35,7 @@ const ProjectList: React.FC = () => {
   // const projectListData = []
   const navigate = useNavigate();
   const handleItemClick = (projectId: number) => () => {
-    navigate(`/project/${projectId}`);
+    navigate(`/project/${projectId}/info`);
   };
   const handleCreateClick = () => {
     navigate('/project/create');

@@ -29,7 +29,7 @@ const AppRoutes = () => (
       {/* 프로젝트 */}
       <Route path="/project" element={<ProjectListPage />}></Route>
       <Route path="/project/create" element={<ProjectCreatePage />}></Route>
-      <Route path="/project/:projectId" element={<ProjectDetailPage />}></Route>
+      <Route path="/project/:projectId/info" element={<ProjectDetailPage />}></Route>
       <Route path="/project/:projectId/sprint" element={<ProjectSprintPage />}></Route>
       <Route path="/project/:projectId/output" element={<ProjectOutputPage />}></Route>
       <Route path="/project/:projectId/meeting" element={<ProjectMeetingPage />}></Route>

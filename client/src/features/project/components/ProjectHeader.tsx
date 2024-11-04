@@ -22,7 +22,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
       <h1 className={styles.projectTitle}>프로젝트 이름</h1>
       <nav className={styles.projectNavbar}>
         <ul className={styles.navList}>
-          <li><a href={`/project/${projectId}`} className={getLinkClass(`/project/${projectId}`)}>개요</a></li>
+          <li><a href={`/project/${projectId}/info`} className={getLinkClass(`/project/${projectId}/info`)}>개요</a></li>
           <li><a href={`/project/${projectId}/sprint`} className={getLinkClass(`/project/${projectId}/sprint`)}>주간 진행상황</a></li>
           <li><a href={`/project/${projectId}/output`} className={getLinkClass(`/project/${projectId}/output`)}>산출물</a></li>
           <li><a href={`/project/${projectId}/meeting`} className={getLinkClass(`/project/${projectId}/meeting`)}>회의록</a></li>
