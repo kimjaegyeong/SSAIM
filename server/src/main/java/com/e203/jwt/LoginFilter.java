@@ -31,8 +31,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
-//        String username = obtainUsername(req);
-//        String password = obtainPassword(req);
         ObjectMapper mapper = new ObjectMapper();
         UserLoginRequestDto loginRequestDto;
         try {
@@ -59,7 +57,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = grantedAuthority.getAuthority();
 
-        String token = jwtUtil.createJwt(userId, role, 60 * 60 * 1000L);
+        String token = jwtUtil.createJwt(userId, role, 24 * 60 * 60 * 1000L);
 
         res.addHeader("Authorization", "Bearer " + token);
     }
