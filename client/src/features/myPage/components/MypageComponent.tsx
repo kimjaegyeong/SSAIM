@@ -1,13 +1,38 @@
+import React, { useState } from 'react';
 import styles from './MypageComponent.module.css';
+import { FaPen } from 'react-icons/fa6';
 
 const MypageComponent: React.FC = () => {
   const user = {
     name: '유기상',
     cohort: '11기',
     region: '부울경',
-    statusMessage: '열심히 배우는 중입니다!',
     profileImage: 'path/to/profileImage.jpg', // 프로필 이미지 경로
-    stacks: ['React', 'TypeScript', 'Node.js'], // 예시 스택
+  };
+
+  // 상태 메시지와 스택 관련 상태
+  const [statusMessage, setStatusMessage] = useState('열심히 배우는 중입니다!');
+  const [stacks, setStacks] = useState('React, TypeScript, Node.js');
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 상태 메시지 및 스택 편집 시작 함수
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  // 상태 메시지 입력값 변화 핸들러
+  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStatusMessage(e.target.value);
+  };
+
+  // 스택 입력값 변화 핸들러
+  const handleStacksChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStacks(e.target.value);
+  };
+
+  // 편집 모드 해제 및 상태 저장 함수
+  const handleSaveStatus = () => {
+    setIsEditing(false);
   };
 
   return (
@@ -15,6 +40,7 @@ const MypageComponent: React.FC = () => {
       {/* 헤더 */}
       <header className={styles.header}>
         <h1>{user.name} 님의 프로필 페이지</h1>
+        <FaPen className={styles.modifyIcon} onClick={handleEditClick} />
       </header>
 
       {/* 본문 구역 */}
@@ -29,17 +55,36 @@ const MypageComponent: React.FC = () => {
         <div className={styles.infoSection}>
           <h2>{user.name}</h2>
           <p>{`${user.cohort} ${user.region}`}</p>
-          <p className={styles.statusMessage}>{user.statusMessage}</p>
+          <hr />
+          <div className={styles.infoFooter}>
+            {isEditing ? (
+              <input
+                type="text"
+                value={statusMessage}
+                onChange={handleStatusChange}
+                onBlur={handleSaveStatus} // 포커스를 벗어나면 저장
+                className={styles.statusInput}
+              />
+            ) : (
+              <p className={styles.statusMessage}>{statusMessage}</p>
+            )}
+          </div>
         </div>
 
         {/* 왼쪽 아래 - 스택 목록 */}
         <div className={styles.stacksSection}>
           <h3>Stacks</h3>
-          <ul>
-            {user.stacks.map((stack, index) => (
-              <li key={index}>{stack}</li>
-            ))}
-          </ul>
+          {isEditing ? (
+            <input
+              type="text"
+              value={stacks}
+              onChange={handleStacksChange}
+              onBlur={handleSaveStatus} // 포커스를 벗어나면 저장
+              className={styles.statusInput}
+            />
+          ) : (
+            <p>{stacks}</p>
+          )}
         </div>
 
         {/* 오른쪽 아래 - Commit Info */}
