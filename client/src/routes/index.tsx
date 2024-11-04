@@ -13,6 +13,7 @@ import MainLayout from '../components/mainLayout/MainLayout';
 import TeamBuildingListPage from '../pages/teamBuilding/TeamBuildingListPage';
 import RemindListPage from '../pages/remind/RemindListPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
+import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage';
 import MyPage from '../pages/myPage/MyPage';
 import ProjectCreatePage from '../pages/project/ProjectCreatePage';
 const AppRoutes = () => (
@@ -33,6 +34,7 @@ const AppRoutes = () => (
       {/* 팀빌딩 */}
       <Route path="/team-building" element={<TeamBuildingListPage />}></Route>
       <Route path="/team-building/create" element={<TeamBuildingCreatePage />}></Route>
+      <Route path="/team-building/detail/:postId" element={<TeamBuildingDetailPage />}></Route>
       {/* 회고 */}
       <Route path="/remind" element={<RemindListPage />}></Route>
       {/* 마이페이지 */}

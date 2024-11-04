@@ -1,0 +1,39 @@
+.tableContainer {
+    padding: 20px;
+    width: 90%;
+    margin: auto;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .table th {
+    background-color: #433878;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    white-space: pre-wrap;
+  }
+  
+  textarea {
+    border: none;
+    background: transparent;
+    font-size: inherit;
+    color: inherit;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    outline: none;
+    resize: none;
+    overflow: hidden;
+  }
+  

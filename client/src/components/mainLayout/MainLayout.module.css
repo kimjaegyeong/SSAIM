@@ -2,12 +2,13 @@
 .mainLayout {
   height: 100vh; /* 전체 화면 높이를 채우도록 설정 */
   width : 100vw;
+  margin: 0;
+  overflow-x: hidden;
 }
 
 
 /* 콘텐츠 영역 */
 .content {
-
-  padding-left :70px;
+  padding-left :60px;
   overflow-y: auto; /* 세로 스크롤 추가 */
 }

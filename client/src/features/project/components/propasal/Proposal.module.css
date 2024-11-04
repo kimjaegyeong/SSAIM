@@ -1,0 +1,42 @@
+.proposal {
+    width: 90%;
+    margin: auto;
+}
+
+.sectionTitle {
+    margin-bottom: 16px;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 8px;
+}
+
+.infoTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.label {
+    width: 150px;
+    font-weight: bold;
+    background-color: #d5f2f6;
+    border: 1px solid #ccc;
+}
+
+.content {
+    padding: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.inputTextarea {
+    border: none;
+    background: transparent;
+    font-size: inherit;
+    color: inherit;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    outline: none;
+    box-sizing: border-box;
+    resize: none;
+}
+  
