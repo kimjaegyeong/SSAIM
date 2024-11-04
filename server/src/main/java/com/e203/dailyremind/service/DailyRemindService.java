@@ -24,7 +24,7 @@ public class DailyRemindService {
 
     public boolean saveDailyRemind(DailyRemindRequestDto requestDto, int projectId) {
 
-        Project project = projectRepository.findById(projectId).get();
+        Project project = projectRepository.findById(projectId).orElse(null);
         User user = userRepository.findById(requestDto.getDailyRemindAuthor()).orElse(null);
         ProjectMember projectMember = projectMemberRepository.findByUser(user);
 
