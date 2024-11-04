@@ -47,11 +47,9 @@ public class ProjectMember {
 	private int role = 0;
 
 	@Builder
-	private ProjectMember(Project project, User user, String jiraApiKey, String gitlabApiToken, int role){
+	private ProjectMember(Project project, User user, int role){
 		this.project = project;
 		this.user = user;
-		this.jiraApiKey = jiraApiKey;
-		this.gitlabApiToken = gitlabApiToken;
 		this.role = role;
 	}
 }

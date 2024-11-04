@@ -1,6 +1,13 @@
 spring:
   application:
     name: server
+  ai:
+    openai:
+      api-key: ENC(Q3Uz+kDQOa6uqGIIOPKQir6wuluFtPJh//eW64znzhcEgLQicPcQEbhvzSwIVnYuJJTj0UbT+113Py5wLQJEUsR9X1xViczbxSgwcOZ/2QiSlvZnVVrRs8gKdro6zUhQcVDOacXRa0POlqxgmvXl+u9OMKASTKbiLd0LInJIr2eReoxCpwlAM8xEkFmMg5fImKZahb1VbUwdQXpTHuCqDFOIkoFn9uQN1uVIJy/hDx4=)
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.6
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ENC(xPjELBLjOj95Wwe3SELd9A==)
