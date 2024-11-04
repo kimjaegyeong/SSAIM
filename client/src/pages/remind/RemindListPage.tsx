@@ -1,24 +1,49 @@
-import styles from './RemindListPage.module.css'
-import remindBG from '../../assets/remind/remindBG.png'
-
+import { useNavigate } from 'react-router-dom';
+import styles from './RemindListPage.module.css';
+import bookList from '../../assets/remind/bookList.png';
+import book from '../../assets/remind/book.png';
 
 const RemindListPage = () => {
-  return (
-  <div>
-    <img src={remindBG} alt="remindBG" className={styles.remindBG}/>
-    <div className={styles.container}>
-      <div className={styles.remindIntroText}>
-        <div className={styles.remindIntroDesc}>
-            프로젝트를 마무리하며<br /> 나의 개발 이야기를 생성해보세요
-        </div>
-      </div>
-      <div className={styles.remindButton}>
-      </div>
-    </div>
+  const navigate = useNavigate();
 
   
-  </div>
+  const handleBookClick = (remindId: number) => {
+    navigate(`/remind/${remindId}`);
+  };
 
+  return (
+    <div>
+      <img src={bookList} alt="bookList" className={styles.bookList} />
+      <div className={styles.container}>
+        <div className={styles.Row}> 
+          {Array.from({ length: 5 }).map((_, index) => (
+            <img 
+              key={index} 
+              src={book} 
+              alt="book" 
+              className={styles.book} 
+              onClick={() => handleBookClick(index + 1)} // remindId를 index + 1로 설정
+            />
+          ))}
+        </div>
+        <div className={styles.Row}> 
+          <img 
+            src={book} 
+            alt="book" 
+            className={styles.book} 
+            onClick={() => handleBookClick(6)} // remindId를 6으로 설정
+          />
+        </div>
+        <div className={styles.Row}> 
+          <img 
+            src={book} 
+            alt="book" 
+            className={styles.book} 
+            onClick={() => handleBookClick(7)} // remindId를 7으로 설정
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
