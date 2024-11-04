@@ -33,4 +33,8 @@ public class UserController {
         return ResponseEntity.status(200).body("회원 정보 수정이 완료되었습니다.");
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("123");
+    }
 }
