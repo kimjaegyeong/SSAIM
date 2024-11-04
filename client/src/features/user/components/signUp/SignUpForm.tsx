@@ -3,19 +3,8 @@ import React, { useState } from 'react';
 import styles from './SignUpForm.module.css';
 import { FaAngleLeft } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
-
-interface SignUpFormData {
-  userEmail: string;
-  userName: string;
-  userPw: string;
-  userClass: number;
-  userCampus: number;
-  userGeneration: number;
-  userNickname: string;
-  userBirth: string;
-  userGender: number;
-  userPhone: string;
-}
+import { SignUpFormData } from '@features/user/types/userTypes';
+import { signUp } from '@features/user/apis/signUpApi';
 
 const SignUpForm: React.FC = () => {
   const [formData, setFormData] = useState<SignUpFormData>({
@@ -30,6 +19,8 @@ const SignUpForm: React.FC = () => {
     userGender: 0,
     userPhone: '',
   });
+  const [error, setError] = useState<string | null>(null); // 오류 상태 추가
+
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +30,13 @@ const SignUpForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      signUp(formData);
+      navigate('/login');
+    } catch (error) {
+      setError('회원가입에 실패했습니다.');
+      console.log(error);
+    }
     console.log('Sign Up Data:', formData);
     // 회원가입 요청 API 호출 부분 추가 가능
   };
@@ -51,6 +49,7 @@ const SignUpForm: React.FC = () => {
         <FaAngleLeft />
       </div>
       <h1 className={styles.title}>회원가입</h1>
+      {error && <div className={styles.errorMessage}>{error}</div>} {/* 오류 메시지 표시 */}
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.inputGroup}>
           <label>이메일</label>

@@ -14,14 +14,14 @@ interface DecodedToken {
 export const login = async (userEmail: string, userPw: string) => {
   try {
     const response = await apiClient.post('/users/login', { userEmail, userPw });
-    console.log(response.headers.authorization);
+    // console.log(response.headers.authorization);
     const token = response.headers.authorization;
     // JWT 토큰 저장
     localStorage.setItem('token', token);
 
     // JWT 토큰 디코딩하여 유저 정보 추출
     const userData = jwtDecode<DecodedToken>(token);
-    console.log(userData);
+    // console.log(userData);
     // Zustand store에 유저 정보 업데이트
     const { login } = useUserStore.getState();
     login(token, userData.userId, userData.role);
