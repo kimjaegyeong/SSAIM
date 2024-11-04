@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/api/v1/users/{userId}")
-    public ResponseEntity<UserInfoResponseDto> lookUp(@RequestParam int userId) {
+    public ResponseEntity<UserInfoResponseDto> lookUp(@PathVariable int userId) {
         UserInfoResponseDto dto = userService.getUserInfo(userId);
         if (dto == null) {
             return ResponseEntity.status(404).body(null);
