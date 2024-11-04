@@ -1,8 +1,11 @@
 package com.e203.dailyremind.entity;
 
 import com.e203.global.entity.BaseEntity;
+import com.e203.project.entity.Project;
+import com.e203.project.entity.ProjectMember;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,12 +21,27 @@ public class DailyRemind extends BaseEntity {
     @Column(name = "daily_remind_id")
     private int dailyRemindId;
 
-    @Column(name = "daily_remind_contents")
+    @Column(columnDefinition = "TEXT", name = "daily_remind_contents")
     private String dailyRemindContents;
 
-    @Column(name = "daily_remind_author")
-    private int dailyRemindAuthor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "daily_remind_author")
+    private ProjectMember dailyRemindAuthor;
 
-    @Column(name = "project_id")
-    private int projectId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project projectId;
+
+    @Builder
+    public DailyRemind(Project project, ProjectMember dailyRemindAuthor, String dailyRemindContents) {
+        this.dailyRemindAuthor = dailyRemindAuthor;
+        this.projectId = project;
+        this.dailyRemindContents = dailyRemindContents;
+    }
+
+    public void updateDailyRemind(String dailyRemindContents) {
+        if(dailyRemindContents != null) {
+            this.dailyRemindContents = dailyRemindContents;
+        }
+    }
 }
