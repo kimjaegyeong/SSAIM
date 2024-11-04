@@ -15,7 +15,7 @@ export const login = async (userEmail: string, userPw: string) => {
   try {
     const response = await apiClient.post('/users/login', { userEmail, userPw });
     // console.log(response.headers.authorization);
-    const token = response.headers.authorization;
+    const token = response.headers.authorization?.replace("Bearer ", "");
     // JWT 토큰 저장
     localStorage.setItem('token', token);
 

@@ -15,6 +15,7 @@ apiClient.interceptors.request.use(
     // 로컬스토리지에서 토큰 가져오기
     const token = localStorage.getItem('token');
     if (token) {
+      console.log(token)
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

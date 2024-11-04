@@ -8,7 +8,7 @@ interface TodoListItemProps {
 }
 
 const TodoListItem: React.FC<TodoListItemProps> = ({ task }) => {
-  console.log(task);
+  // console.log(task);
   return (
     <div className={styles.todoListItem}>
       <div>

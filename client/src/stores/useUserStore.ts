@@ -1,5 +1,4 @@
 // src/stores/userStore.ts
-
 import {create} from 'zustand';
 
 // 상태 인터페이스 정의
@@ -13,7 +12,8 @@ interface UserState {
 }
 
 // zustand로 상태 생성
-const useUserStore = create<UserState>((set) => ({
+const useUserStore = create<UserState>(
+  (set) => ({
   isLogin: false,
   token: null,
   userId: null,
@@ -38,7 +38,9 @@ const useUserStore = create<UserState>((set) => ({
       userId: null,
       role : null,
     });
+    localStorage.removeItem('token')
   },
-}));
+})
+);
 
 export default useUserStore;
