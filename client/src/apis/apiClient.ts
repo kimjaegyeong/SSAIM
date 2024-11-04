@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import config from '../config/config'; // BASE_URL을 가져오기 위해 config.ts 불러오기
-import useUserStore from '../stores/userStore.ts'; //
+
 // Axios 인스턴스 생성
 const apiClient = axios.create({
   baseURL: config.BASE_URL, // 환경에 따라 다른 BASE_URL 적용
@@ -12,8 +12,8 @@ const apiClient = axios.create({
 // 요청 인터셉터 설정 (예: 토큰 추가)
 apiClient.interceptors.request.use(
   (config) => {
-    // 예: zustand 또는 다른 스토리지에서 토큰 가져오기
-    const {token} = useUserStore(); // 여기에 토큰을 추가하거나 zustand에서 가져와서 설정
+    // 로컬스토리지에서 토큰 가져오기
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,8 +28,8 @@ apiClient.interceptors.response.use(
   (error) => {
     // 예: 토큰 만료 시 로그아웃 처리 등
     if (error.response && error.response.status === 401) {
-      // 로그아웃 로직 또는 리다이렉트 등 추가 가능
       console.error('Unauthorized: Redirecting to login');
+      // 로그아웃 또는 리다이렉트 추가 가능
     }
     return Promise.reject(error);
   }

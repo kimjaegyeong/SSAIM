@@ -1,19 +1,15 @@
 // LoginForm.tsx
 import React, { useState } from 'react';
-import Button from '../../../../components/button/Button';
-import styles from './LoginForm.module.css'
+import styles from './LoginForm.module.css';
+import { login } from '@features/user/apis/loginApi';
 
-interface LoginFormProps {
-  onLogin: (email: string, password: string) => void;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
+const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(email, password);
+    login(email, password);
   };
 
   return (
@@ -50,13 +46,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             placeholder="Password"
           />
         </div>
+        <button type="submit" className={styles.loginButton}>
+          로그인
+        </button>
       </form>
-      <Button size="small" colorType="blue">
-        로그인
-      </Button>
-      <div className={styles.findpw}>
-        비밀번호 찾기
-      </div>      
+      <div className={styles.findpw}>비밀번호 찾기</div>
     </div>
   );
 };
