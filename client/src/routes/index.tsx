@@ -19,10 +19,15 @@ import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage
 import MyPage from '../pages/myPage/MyPage';
 import ProjectCreatePage from '../pages/project/ProjectCreatePage';
 import LoginPage from '../pages/account/login/LoginPage';
+import NetworkErrorPage from '../pages/error/NetworkErrorPage';
+import NotFoundPage from '../pages/error/NotFoundPage';
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
+    {/* error */}
+    <Route path="/network" element={<NetworkErrorPage />}></Route>
+    <Route path="/notfound" element={<NotFoundPage />}></Route>
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
