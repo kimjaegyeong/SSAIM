@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import styles from './TeamBuildingBoard.module.css';
 import DropDown from '../filterDropDown/filterDropDown';
 import Tag from '../tag/Tag';
-import Bar from '../bar/Bar';
 import { GrPowerReset } from "react-icons/gr";
 import { AiOutlineProfile } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";

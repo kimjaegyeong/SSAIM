@@ -5,11 +5,11 @@ interface Config {
 }
 
 const devConfig: Config = {
-  BASE_URL: 'https://dev.api.example.com',
+  BASE_URL: 'http://k11e203.p.ssafy.io:8080/api/v1',
 };
 
 const prodConfig: Config = {
-  BASE_URL: 'https://api.example.com',
+  BASE_URL: 'http://k11e203.p.ssafy.io:8080/api/v1',
 };
 
 const config: Config = process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
