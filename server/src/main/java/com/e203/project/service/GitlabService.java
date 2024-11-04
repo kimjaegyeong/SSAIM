@@ -13,12 +13,12 @@ import lombok.RequiredArgsConstructor;
 public class GitlabService {
 	private final ProjectRepository projectRepository;
 
-	public boolean setGitlabApi(ProjectGitlabConnectDto gitlabDto ,int projectId){
+	public boolean setGitlabApi(ProjectGitlabConnectDto gitlabDto, int projectId) {
 		Project project = projectRepository.findById(projectId).orElse(null);
-		if(project==null){
+		if (project == null) {
 			return false;
 		}
-		project.setJiraApi(gitlabDto.getGitlabApi());
+		project.setGitlabApi(gitlabDto.getGitlabApi());
 		return true;
 	}
 }

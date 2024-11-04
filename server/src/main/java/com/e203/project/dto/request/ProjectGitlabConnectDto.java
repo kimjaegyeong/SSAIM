@@ -10,7 +10,7 @@ public class ProjectGitlabConnectDto {
 	String gitlabApi;
 
 	@Builder
-	private void ProjectJiraConnectDto(String gitlabApi){
+	private void ProjectJiraConnectDto(String gitlabApi) {
 		this.gitlabApi = gitlabApi;
 	}
 }

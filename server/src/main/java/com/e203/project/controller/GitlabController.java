@@ -18,14 +18,16 @@ import lombok.RequiredArgsConstructor;
 public class GitlabController {
 
 	private final GitlabService gitlabService;
+
 	@PostMapping("api/v1/projects/{projectId}/gitlab-api")
-	public ResponseEntity<String> connectGitlabApi(@PathVariable("projectId") int projectId, @RequestBody
-		ProjectGitlabConnectDto projectGitlabConnectDto) {
+	public ResponseEntity<String> connectGitlabApi(@PathVariable("projectId") int projectId,
+		@RequestBody ProjectGitlabConnectDto projectGitlabConnectDto) {
+
 		boolean result = gitlabService.setGitlabApi(projectGitlabConnectDto, projectId);
 
-		if(result){
+		if (result) {
 			return ResponseEntity.status(OK).body("gitlab key 등록에 성공했습니다.");
-		}else{
+		} else {
 			return ResponseEntity.status(NOT_FOUND).body("gitlab key 등록에 실패했습니다.");
 		}
 	}
