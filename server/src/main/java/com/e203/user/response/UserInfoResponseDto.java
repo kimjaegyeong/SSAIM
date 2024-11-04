@@ -1,5 +1,6 @@
 package com.e203.user.response;
 
+import com.e203.user.entity.User;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +42,7 @@ public class UserInfoResponseDto {
     private String userProfileImage;
 
     @Builder
-    public UserInfoResponseDto(int userId, String userName, String userEmail, int userClass, int userCampus, int userGeneration, String userNickname, String userProfileMessage, String userSkills, int userRole, LocalDate userBirth, int userGender, String userPhone, String userProfileImage) {
+    private UserInfoResponseDto(int userId, String userName, String userEmail, int userClass, int userCampus, int userGeneration, String userNickname, String userProfileMessage, String userSkills, int userRole, LocalDate userBirth, int userGender, String userPhone, String userProfileImage) {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
@@ -56,5 +57,24 @@ public class UserInfoResponseDto {
         this.userGender = userGender;
         this.userPhone = userPhone;
         this.userProfileImage = userProfileImage;
+    }
+
+    public static UserInfoResponseDto fromEntity(User user) {
+        return UserInfoResponseDto.builder()
+                .userId(user.getUserId())
+                .userName(user.getUserName())
+                .userEmail(user.getUserEmail())
+                .userClass(user.getUserClass())
+                .userCampus(user.getUserCampus())
+                .userGeneration(user.getUserGeneration())
+                .userNickname(user.getUserNickname())
+                .userProfileMessage(user.getUserProfileMessage())
+                .userSkills(user.getUserSkills())
+                .userRole(user.getUserRole())
+                .userBirth(user.getUserBirth())
+                .userGender(user.getUserGender())
+                .userPhone(user.getUserPhone())
+                .userProfileImage(user.getUserProfileImage())
+                .build();
     }
 }

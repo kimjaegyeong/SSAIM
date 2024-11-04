@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -60,24 +62,16 @@ public class UserService {
             return null;
         }
 
-        UserInfoResponseDto dto = UserInfoResponseDto.builder()
-                .userId(user.getUserId())
-                .userEmail(user.getUserEmail())
-                .userName(user.getUserName())
-                .userNickname(user.getUserNickname())
-                .userPhone(user.getUserPhone())
-                .userBirth(user.getUserBirth())
-                .userGeneration(user.getUserGeneration())
-                .userCampus(user.getUserCampus())
-                .userClass(user.getUserClass())
-                .userGender(user.getUserGender())
-                .userSkills(user.getUserSkills())
-                .userProfileImage(user.getUserProfileImage())
-                .userProfileMessage(user.getUserProfileMessage())
-                .userRole(user.getUserRole())
-                .build();
-
-        return dto;
+        return UserInfoResponseDto.fromEntity(user);
     }
 
+    public List<UserInfoResponseDto> searchUsers(String userName, String userEmail, Integer userClass,
+                                                 Integer userCampus, Integer userGeneration, String userNickname,
+                                                 Integer userRole, LocalDate userBirth, Integer userGender) {
+
+        List<User> users = userRepository.searchUsers(userName, userEmail, userClass, userCampus, userGeneration,
+                userNickname, userRole, userBirth, userGender);
+
+        return users.stream().map(UserInfoResponseDto::fromEntity).collect(Collectors.toList());
+    }
 }

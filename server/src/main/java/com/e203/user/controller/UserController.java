@@ -46,5 +46,22 @@ public class UserController {
         return ResponseEntity.status(200).body(dto);
     }
 
+    @GetMapping("/api/v1/users")
+    public ResponseEntity<List<UserInfoResponseDto>> searchUsers(
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) String userEmail,
+            @RequestParam(required = false) Integer userClass,
+            @RequestParam(required = false) Integer userCampus,
+            @RequestParam(required = false) Integer userGeneration,
+            @RequestParam(required = false) String userNickname,
+            @RequestParam(required = false) Integer userRole,
+            @RequestParam(required = false) LocalDate userBirth,
+            @RequestParam(required = false) Integer userGender) {
+
+        List<UserInfoResponseDto> dtos = userService.searchUsers(userName, userEmail, userClass, userCampus,
+                userGeneration, userNickname, userRole, userBirth, userGender);
+
+        return ResponseEntity.status(200).body(dtos);
+    }
 
 }
