@@ -12,7 +12,7 @@
   }
   
 .modalContent {
-    width: 35vw;
+    width: auto;
     height: 50vh;
     background: white;
     padding: 30px;
@@ -43,8 +43,8 @@
 
 
 .selectBox {
-  width: 480px;
-  height: 30vh;
+  width: auto;
+  height: auto;
   padding: 10px;
   margin: 20px 0px;
   border-radius: 4px;
