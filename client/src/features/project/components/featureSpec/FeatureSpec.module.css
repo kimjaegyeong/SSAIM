@@ -26,33 +26,31 @@
 }
 
 .table th:nth-child(1), .table td:nth-child(1) {
-    width: 5%; /* ID 열의 너비 */
-    cursor: default;
-    text-align: center;
+    width: 10%;
 }
 
 .table th:nth-child(2), .table td:nth-child(2) {
-    width: 15%; /* Category 열의 너비 */
+    width: 25%;
 }
 
 .table th:nth-child(3), .table td:nth-child(3) {
-    width: 20%; /* Feature Name 열의 너비 */
+    width: 35%;
 }
 
 .table th:nth-child(4), .table td:nth-child(4) {
-    width: 30%; /* Details 열의 너비 */
+    width: 10%;
 }
 
 .table th:nth-child(5), .table td:nth-child(5) {
-    width: 10%; /* Type 열의 너비 */
+    width: 10%;
 }
 
 .table th:nth-child(6), .table td:nth-child(6) {
-    width: 10%; /* Owner 열의 너비 */
+    width: 10%;
 }
 
-.table th:nth-child(7), .table td:nth-child(7) {
-    width: 10%; /* Priority 열의 너비 */
+.addRow {
+    text-align: center;
 }
 
 textarea {

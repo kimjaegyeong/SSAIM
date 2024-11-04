@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ApiSpec.module.css';
+import { MdDelete } from "react-icons/md";
 
 interface ApiSpec {
   id: number;
@@ -54,6 +55,17 @@ const ApiSpecTable: React.FC = () => {
     setData([...data, newRow]);
   };
 
+  const handleDeleteRow = (index: number) => {
+    const updatedData = data.filter((_, i) => i !== index);
+
+    const reorderedData = updatedData.map((item, idx) => ({
+      ...item,
+      id: idx + 1,
+    }));
+
+    setData(reorderedData);
+  };
+
   const autoResize = (element: HTMLTextAreaElement) => {
     element.style.height = 'auto';
     element.style.height = `${element.scrollHeight}px`;
@@ -78,7 +90,6 @@ const ApiSpecTable: React.FC = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>ID</th>
             <th>카테고리</th>
             <th>설명</th>
             <th>URL</th>
@@ -86,12 +97,12 @@ const ApiSpecTable: React.FC = () => {
             <th>statusCode</th>
             <th>담당자</th>
             <th>개발 상태</th>
+            <th>삭제</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row, index) => (
             <tr key={row.id}>
-              <td>{row.id}</td>
               {['category', 'description', 'url', 'method', 'statusCode', 'owner', 'state'].map((field) => (
                 <td
                   key={field}
@@ -118,10 +129,13 @@ const ApiSpecTable: React.FC = () => {
                   )}
                 </td>
               ))}
+              <td>
+                <MdDelete onClick={() => handleDeleteRow(index)}/>
+              </td>
             </tr>
           ))}
           <tr className={styles.addRow} onClick={addNewRow}>
-            <td colSpan={8} className={styles.addRowText}>
+            <td colSpan={7} className={styles.addRowText}>
               + Add New Row
             </td>
           </tr>

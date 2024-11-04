@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './FeatureSpec.module.css';
+import { MdDelete } from "react-icons/md";
 
 interface FeatureSpec {
   id: number;
@@ -52,6 +53,17 @@ const FeatureSpecTable: React.FC = () => {
     setData([...data, newRow]);
   };
 
+  const handleDeleteRow = (index: number) => {
+    const updatedData = data.filter((_, i) => i !== index);
+
+    const reorderedData = updatedData.map((item, idx) => ({
+      ...item,
+      id: idx + 1,
+    }));
+
+    setData(reorderedData);
+  };
+
   const autoResize = (element: HTMLTextAreaElement) => {
     element.style.height = 'auto';
     element.style.height = `${element.scrollHeight}px`;
@@ -76,19 +88,18 @@ const FeatureSpecTable: React.FC = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>ID</th>
             <th>카테고리</th>
             <th>기능명</th>
             <th>내용</th>
             <th>구분</th>
             <th>담당자</th>
             <th>우선순위</th>
+            <th>삭제</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row, index) => (
             <tr key={row.id}>
-              <td>{row.id}</td>
               {['category', 'featureName', 'details', 'type', 'owner', 'priority'].map((field) => (
                 <td
                   key={field}
@@ -115,10 +126,13 @@ const FeatureSpecTable: React.FC = () => {
                   )}
                 </td>
               ))}
+              <td>
+                <MdDelete onClick={() => handleDeleteRow(index)}/>
+              </td>
             </tr>
           ))}
           <tr className={styles.addRow} onClick={addNewRow}>
-            <td colSpan={7} className={styles.addRowText}>
+            <td colSpan={6} className={styles.addRowText}>
               + Add New Row
             </td>
           </tr>

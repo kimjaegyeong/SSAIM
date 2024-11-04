@@ -3,6 +3,7 @@ import ProjectHeader from '../../features/project/components/ProjectHeader';
 import Proposal from '../../features/project/components/propasal/Proposal';
 import FeatureSpec from '../../features/project/components/featureSpec/FeatureSpec';
 import ApiSpec from '../../features/project/components/apiSpec/ApiSpec';
+import ERD from '../../features/project/components/erd/ERD';
 import styles from './ProjectOutputPage.module.css';
 import { useState } from 'react';
 
@@ -51,6 +52,7 @@ const ProjectOutputPage = () => {
       {showOutput === 'proposal' && <Proposal/>}
       {showOutput === 'featureSpec' && <FeatureSpec/>}
       {showOutput === 'APIspec' && <ApiSpec/>}
+      {showOutput === 'ERD' && <ERD/>}
     </div>
   );
 };

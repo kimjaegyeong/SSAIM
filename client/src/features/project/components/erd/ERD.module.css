@@ -1,0 +1,26 @@
+.erd {
+    position: relative;
+    width: 90%;
+    margin: auto;
+    text-align: center;
+}
+
+.editButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    color: #fff;
+    background-color: #433878;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.erdImage {
+    cursor: pointer;
+    margin: 100px 30px;
+}
