@@ -28,10 +28,10 @@ public class JiraServiceTest {
 			.build();
 
 		//when
-		String result = jiraService.setJiraApi(dto, projectId);
+		boolean result = jiraService.setJiraApi(dto, projectId);
 
 		//then
 
-		Assertions.assertEquals(result,jiraApiKey);
+		Assertions.assertTrue(result);
 	}
 }
