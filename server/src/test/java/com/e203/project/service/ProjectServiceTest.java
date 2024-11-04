@@ -51,12 +51,12 @@ public class ProjectServiceTest {
 	}
 
 	@Test
-	@DisplayName("Project Find All ")
+	@DisplayName("Project Find All")
 	@Transactional
 	public void projectFindAllTest() {
-		List<Project> projects = projectService.findAll();
+		List<Project> projects = projectService.findAll(1);
 		for (Project project : projects) {
-			project.getProjectMemberList().stream().forEach(member -> System.out.println(member.getId()));
+			project.getProjectMemberList().stream().forEach(member -> System.out.println(member.getUser().getUserId()));
 		}
 	}
 
