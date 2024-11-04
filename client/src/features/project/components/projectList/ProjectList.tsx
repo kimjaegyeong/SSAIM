@@ -6,6 +6,7 @@ import { useProjectListData } from '../../hooks/useProjectListData';
 import { dateToString } from '../../../../utils/dateToString';
 import { useNavigate } from 'react-router-dom';
 import EmptyProjectList from './EmptyProjectList';
+import useUserStore from '@/stores/useUserStore';
 
 interface ProjectListItemProps {
   projectInfo: ProjectDTO;
@@ -23,7 +24,7 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
         <p>팀장 : 허일영</p>
         <p>팀원 : 두경민, 전성현, 유기상, 타마요, 마레이</p>
         <p>
-          {dateToString(projectInfo.startDate)} ~ {dateToString(projectInfo.endDate)}
+          {dateToString(projectInfo?.startDate)} ~ {dateToString(projectInfo?.endDate)}
         </p>
       </div>
     </div>
@@ -31,7 +32,8 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
 };
 
 const ProjectList: React.FC = () => {
-  const { data: projectListData } = useProjectListData();
+  const {userId} = useUserStore();
+  const { data: projectListData } = useProjectListData(userId);
   // const projectListData = []
   const navigate = useNavigate();
   const handleItemClick = (projectId: number) => () => {
@@ -54,11 +56,11 @@ const ProjectList: React.FC = () => {
         <EmptyProjectList />
       ) : (
         <div className={styles.body}>
-          {projectListData.map((project) => (
+          {projectListData.map((project:ProjectDTO) => (
             <ProjectListItem
-              key={project.projectId}
+              key={project.id}
               projectInfo={project}
-              onClick={handleItemClick(project.projectId)}
+              onClick={handleItemClick(project.id)}
             />
           ))}
         </div>

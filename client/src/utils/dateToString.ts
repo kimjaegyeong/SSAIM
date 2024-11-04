@@ -1,4 +1,7 @@
-export const dateToString = (date : Date) => {
+export const dateToString = (date : Date|null) => {
+  if(!date){
+    return null;
+  }
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
