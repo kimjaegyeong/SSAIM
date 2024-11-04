@@ -3,6 +3,7 @@ package com.e203.user.service;
 
 import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
+import com.e203.user.request.UserLoginRequestDto;
 import com.e203.user.request.UserSignUpRequestDto;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +44,12 @@ public class UserService {
         return true;
     }
 
+
     private String hashPassword(String rawPassword) {
         return passwordEncoder.encode(rawPassword);
     }
 
+    public void login(UserLoginRequestDto dto) {
+
+    }
 }
