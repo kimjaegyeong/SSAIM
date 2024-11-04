@@ -1,5 +1,11 @@
+import MypageComponent from '../../features/myPage/components/MypageComponent';
+
 const MyPage = () => {
-  return <div>마이페이지</div>;
+  return (
+    <>
+      <MypageComponent />
+    </>
+  );
 };
 
 export default MyPage;
