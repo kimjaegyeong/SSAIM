@@ -11,7 +11,7 @@ interface DayCalendarProps {
 
 const DayCalendar: React.FC<DayCalendarProps> = ({ selectedDate, onDateChange }) => {
   return (
-    <div className={styles.calendar}>
+    <div className={styles.calendarWrapper}>
       <Calendar
         onChange={(date) => onDateChange(date as Date)}
         value={selectedDate}

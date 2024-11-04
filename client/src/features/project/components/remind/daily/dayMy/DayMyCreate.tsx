@@ -13,6 +13,8 @@ const DayMyCreate = () => {
   const [problemText, setProblemText] = useState("");
   const [tryText, setTryText] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const formattedDate = new Intl.DateTimeFormat('ko', {
     year: 'numeric',
@@ -26,10 +28,19 @@ const DayMyCreate = () => {
     month: 'long',
     day: 'numeric',
     weekday: 'short',
-  }).format().replace(/ (\S+)$/, ' ($1)');
+  }).format(currentDate).replace(/ (\S+)$/, ' ($1)');
 
   const handleButtonClick = () => {
     navigate(`/project/${projectId}/remind`); 
+  };
+
+  const handlePencilClick = () => {
+    setIsCalendarOpen((prev) => !prev);  // 달력 표시 상태 토글
+  };
+
+  const handleDateChange = (date: Date) => {
+    setCurrentDate(date);
+    setIsCalendarOpen(false);  // 날짜 선택 후 달력 숨기기
   };
 
 
@@ -40,7 +51,12 @@ const DayMyCreate = () => {
           <div className={styles.dateTitle}>
             <FaRegClock style={{ strokeWidth: 4, color: "#007bff" }} />
             {formattedCurrentDate}
-            <ImPencil style={{ color: "black" }} />
+            <ImPencil style={{ color: "black", cursor: 'pointer' }} onClick={handlePencilClick} />
+            {isCalendarOpen && (
+              <div className={styles.calendarContainer}>
+                <CreateCalendar selectedDate={currentDate} onDateChange={handleDateChange} />
+              </div>
+            )}
           </div>
           <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
         </div>

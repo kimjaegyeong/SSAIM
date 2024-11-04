@@ -1,29 +1,42 @@
-.calendar {
+.calendarWrapper {
     width: 280px;
 }
 
-.react-calendar {
-    border: none ;
+.customCalendar {
+    border: none;
 }
 
-:global(.react-calendar__navigation__label) {
-    font-size: 14px; 
+.customCalendar__navigation__label {
+    font-size: 14px;
     font-weight: bold;
 }
 
-:global(.react-calendar__month-view__weekdays__weekday abbr) {
+.customCalendar__month-view__weekdays__weekday abbr {
     text-decoration: none;
-} 
-
-:global(.react-calendar__tile--now) {
-    background-color: #FBFFAA ; 
 }
 
-:global(.react-calendar__tile) {
-    margin-bottom: 3px ;
+.customCalendar__tile {
+    margin-bottom: 3px;
 }
 
-:global(.react-calendar__tile--active) {
-    background-color: #913BF6 !important; 
-    color: white ; 
+.weekdayTile {
+    background-color: #913BF6;
+    color: white;
+}
+
+.activeTile {
+    background-color: #913BF6 !important; /* 선택된 월요일 스타일 */
+    color: white !important;
+}
+
+.todayMarker {
+    display: block;
+    width: 5px;
+    height: 5px;
+    background-color: #913BF6; /* 오늘 날짜에 표시할 스타일 */
+    color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }
