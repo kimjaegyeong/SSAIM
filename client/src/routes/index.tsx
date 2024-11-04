@@ -11,13 +11,18 @@ import ProjectRemindPage from '../pages/project/ProjectRemindPage';
 import ProjectRemindCreatePage from '../pages/project/ProjectRemindCreatePage';
 import MainLayout from '../components/mainLayout/MainLayout';
 import TeamBuildingListPage from '../pages/teamBuilding/TeamBuildingListPage';
+import RemindIntroPage from '../pages/remind/RemindIntroPage';
+import RemindCreatePage from '../pages/remind/RemindCreatePage';
 import RemindListPage from '../pages/remind/RemindListPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage';
 import MyPage from '../pages/myPage/MyPage';
 import ProjectCreatePage from '../pages/project/ProjectCreatePage';
+import LoginPage from '../pages/account/login/LoginPage';
+
 const AppRoutes = () => (
   <Routes>
+    <Route path="/login" element={<LoginPage />} />
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
@@ -36,7 +41,9 @@ const AppRoutes = () => (
       <Route path="/team-building/create" element={<TeamBuildingCreatePage />}></Route>
       <Route path="/team-building/detail/:postId" element={<TeamBuildingDetailPage />}></Route>
       {/* 회고 */}
-      <Route path="/remind" element={<RemindListPage />}></Route>
+      <Route path="/remind" element={<RemindIntroPage />}></Route>
+      <Route path="/remind/create" element={<RemindCreatePage />}></Route>
+      <Route path="/remind/list" element={<RemindListPage />}></Route>
       {/* 마이페이지 */}
       <Route path="/mypage" element={<MyPage />}></Route>
       <Route path="*" element={<Navigate to="/" replace />} />
