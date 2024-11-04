@@ -40,22 +40,21 @@ public class JWTFilter extends OncePerRequestFilter {
         //토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
 
-            System.out.println("token expired");
             filterChain.doFilter(request, response);
 
             return;
         }
 
         //토큰에서 username과 role 획득
-        String username = jwtUtil.getUsername(token);
+        int userId = jwtUtil.getUserId(token);
         String role = jwtUtil.getRole(token);
 
         //user를 생성하여 값 set
         User user = User.builder()
-                .userEmail(username)
                 .userPw("temppassword")
                 .userRole(role.equals("ROLE_ADMIN") ? 10 : 0)
                 .build();
+        user.setUserId(userId);
 
 
         //UserDetails에 회원 정보 객체 담기

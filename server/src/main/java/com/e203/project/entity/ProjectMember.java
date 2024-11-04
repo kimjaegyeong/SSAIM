@@ -34,12 +34,6 @@ public class ProjectMember {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@Column(name = "project_member_jira_api_key", length = 255)
-	private String jiraApiKey;
-
-	@Column(name = "project_member_gitlab_api_token", length = 255)
-	private String gitlabApiToken;
-
 	@Column(name = "project_member_current_MR", length = 255)
 	private String currentMR;
 
@@ -47,11 +41,9 @@ public class ProjectMember {
 	private int role = 0;
 
 	@Builder
-	private ProjectMember(Project project, User user, String jiraApiKey, String gitlabApiToken, int role){
+	private ProjectMember(Project project, User user, int role){
 		this.project = project;
 		this.user = user;
-		this.jiraApiKey = jiraApiKey;
-		this.gitlabApiToken = gitlabApiToken;
 		this.role = role;
 	}
 }
