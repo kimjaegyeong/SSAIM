@@ -2,14 +2,23 @@
 import React, { useState } from 'react';
 import styles from './LoginForm.module.css';
 import { login } from '@features/user/apis/loginApi';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null); // 오류 상태 추가
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
+    try {
+      await login(email, password);
+      navigate('/'); // 성공 시 메인 페이지로 이동
+    } catch (error) {
+      setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.'); // 실패 시 에러 메시지 설정
+    }
   };
 
   return (
@@ -17,6 +26,7 @@ const LoginForm: React.FC = () => {
       <div className={styles.header}>
         <h1>Login</h1>
       </div>
+      {error && <div className={styles.errorMessage}>{error}</div>} {/* 오류 메시지 표시 */}
       <form onSubmit={handleSubmit} className={styles.loginForm}>
         <div className={styles.inputGroup}>
           <label htmlFor="email" className={styles.label}>

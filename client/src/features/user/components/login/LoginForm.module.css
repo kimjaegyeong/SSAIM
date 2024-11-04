@@ -4,9 +4,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 70vh;
+  height: 100%;
   background-color: #e5e5e5; /* 세련된 배경색 */
-  padding : 30px;
 }
 
 .header {
