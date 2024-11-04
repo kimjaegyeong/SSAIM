@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './MypageComponent.module.css';
 import { FaPen } from 'react-icons/fa6';
+import HexagonChart from './commitChart/HexagonChart';
 
 const MypageComponent: React.FC = () => {
   const user = {
@@ -14,6 +15,7 @@ const MypageComponent: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState('열심히 배우는 중입니다!');
   const [stacks, setStacks] = useState('React, TypeScript, Node.js');
   const [isEditing, setIsEditing] = useState(false);
+  const dummyData = [60, 80, 50, 70, 40, 90];
 
   // 상태 메시지 및 스택 편집 시작 함수
   const handleEditClick = () => {
@@ -90,6 +92,8 @@ const MypageComponent: React.FC = () => {
         {/* 오른쪽 아래 - Commit Info */}
         <div className={styles.commitInfoSection}>
           <h3>Commit Info</h3>
+          <hr />
+          <HexagonChart data={dummyData} />
         </div>
       </div>
     </div>
