@@ -6,8 +6,9 @@ import {create} from 'zustand';
 interface UserState {
   isLogin: boolean;
   token: string | null;
-  user: { id: string; name: string } | null; // 예시로 사용자 정보를 추가했습니다.
-  login: (token: string, user: { id: string; name: string }) => void;
+  userId : string| null;
+  role : string| null;
+  login: (token: string, userId:string, role:string) => void;
   logout: () => void;
 }
 
@@ -15,15 +16,18 @@ interface UserState {
 const useUserStore = create<UserState>((set) => ({
   isLogin: false,
   token: null,
-  user: null,
+  userId: null,
+  role : null,
 
   // 로그인 함수: 토큰과 사용자 정보를 업데이트하고 isLogin 상태를 true로 설정
-  login: (token, user) => {
+  login: (token, userId, role) => {
     set({
       isLogin: true,
       token,
-      user,
+      userId,
+      role,
     });
+    console.log('login success!', 'userId : ', userId, 'token : ', token, 'role : ', role)
   },
 
   // 로그아웃 함수: 상태를 초기화하고 isLogin을 false로 설정
@@ -31,7 +35,8 @@ const useUserStore = create<UserState>((set) => ({
     set({
       isLogin: false,
       token: null,
-      user: null,
+      userId: null,
+      role : null,
     });
   },
 }));

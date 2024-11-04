@@ -11,6 +11,9 @@
   height: 100vh;
   transition: width 0.3s ease;
   z-index: 1000;
+  display : flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
 
 .sidebarContainer:hover {
@@ -29,7 +32,6 @@
   padding: 0;
   padding: 20px 0px;
   padding-left: 15px;
-
 }
 
 .navItem:hover {
@@ -73,7 +75,5 @@
   color: white;
 }
 .footer {
-  position : absolute;
-  bottom : 70px;
-  padding-left : 15px;
+  margin-bottom : 70px;
 }

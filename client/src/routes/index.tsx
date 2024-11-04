@@ -20,10 +20,12 @@ import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage
 import MyPage from '../pages/myPage/MyPage';
 import ProjectCreatePage from '../pages/project/ProjectCreatePage';
 import LoginPage from '../pages/account/login/LoginPage';
+import SignUpPage from '@pages/account/signup/SignUpPage';
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
+    <Route path="/signup" element={<SignUpPage />} />
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
