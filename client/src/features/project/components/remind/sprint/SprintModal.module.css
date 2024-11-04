@@ -31,11 +31,11 @@
     cursor: pointer;
 }
 
-h2 {
+.h2 {
   margin: 0px;
 }
 
-p {
+.p {
   margin: 5px 0px;
   font-size: 14px;
   color: gray
