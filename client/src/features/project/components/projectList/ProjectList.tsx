@@ -32,7 +32,7 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
 };
 
 const ProjectList: React.FC = () => {
-  const {userId} = useUserStore();
+  const { userId } = useUserStore();
   const { data: projectListData } = useProjectListData(userId);
   // const projectListData = []
   const navigate = useNavigate();
@@ -56,12 +56,8 @@ const ProjectList: React.FC = () => {
         <EmptyProjectList />
       ) : (
         <div className={styles.body}>
-          {projectListData.map((project:ProjectDTO) => (
-            <ProjectListItem
-              key={project.id}
-              projectInfo={project}
-              onClick={handleItemClick(project.id)}
-            />
+          {projectListData.map((project: ProjectDTO) => (
+            <ProjectListItem key={project.id} projectInfo={project} onClick={handleItemClick(project.id)} />
           ))}
         </div>
       )}

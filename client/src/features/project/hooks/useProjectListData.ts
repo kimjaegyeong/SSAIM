@@ -1,15 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { ProjectDTO } from '../types/ProjectDTO';
 import { fetchProjectListData } from '../apis/fetchProjectListData';
-export const useProjectListData = (userId: number) => {
+export const useProjectListData = (userId: number|null) => {
   return useQuery({
     queryKey: ['projectListData'],
-    queryFn: async () => {fetchProjectListData(userId)
-      return [];
+    queryFn: async () => {
+      // fetchProjectListData의 결과를 반환하도록 수정
+      if (userId === null) return []; // userId가 null인 경우 빈 배열 반환
+      return await fetchProjectListData(userId);
     },
 
+
     initialData: sampleProjectListData, // 초기 렌더링 시 사용될 더미 데이터
-    staleTime: 5, // 무한대 설정으로 초기 데이터가 계속 유지되도록 설정
+    staleTime: Infinity, // 무한대 설정으로 초기 데이터가 계속 유지되도록 설정
   });
 };
 

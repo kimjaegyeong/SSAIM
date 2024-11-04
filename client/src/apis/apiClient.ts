@@ -13,10 +13,17 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // 로컬스토리지에서 토큰 가져오기
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log(config.headers.Authorization)
+    const userStorage = localStorage.getItem('user-storage');
+    if (userStorage) {
+      try {
+        const { token } = JSON.parse(userStorage).state; // JSON 파싱 후 token 가져오기
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+          console.log('Authorization Header:', config.headers.Authorization);
+        }
+      } catch (error) {
+        console.error('Failed to parse user-storage from localStorage', error);
+      }
     }
     return config;
   },

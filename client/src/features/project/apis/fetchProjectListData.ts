@@ -2,7 +2,7 @@
 import apiClient from '@/apis/apiClient'
 import config from '../../../config/config';
 
-export const fetchProjectListData = async (userId: number) => {
+export const fetchProjectListData = async (userId: number|null) => {
   try {
     console.log(userId)
     const response = await apiClient.get(`${config.BASE_URL}/user/${userId}/projects`);
