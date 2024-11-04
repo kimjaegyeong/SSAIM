@@ -71,9 +71,32 @@ public class WeeklyRemindService {
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {
             weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
-                    .author(weeklyRemind.getRemindAuthor().getId())
+                    .authorId(weeklyRemind.getRemindAuthor().getId())
                     .projectId(weeklyRemind.getProjectId().getId())
-                    .content(weeklyRemind.getWeeklyRemindContents()).build());
+                    .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
+                    .content(weeklyRemind.getWeeklyRemindContents())
+                    .author(weeklyRemind.getRemindAuthor().getUser().getUserName()).build());
+        }
+
+        return weeklyRemindResponseDtoList;
+    }
+
+    public List<WeeklyRemindResponseDto> searchDevelopmentStory (int author) {
+
+        ProjectMember authorMember = projectMemberRepository.findById(author)
+                .orElse(null);
+
+        //나의 주간회고만 가져오기
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthor(authorMember);
+        List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
+
+        for(WeeklyRemind weeklyRemind : weeklyRemindList) {
+            weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
+                    .authorId(weeklyRemind.getRemindAuthor().getId())
+                    .projectId(weeklyRemind.getProjectId().getId())
+                    .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
+                    .content(weeklyRemind.getWeeklyRemindContents())
+                    .author(weeklyRemind.getRemindAuthor().getUser().getUserName()).build());
         }
 
         return weeklyRemindResponseDtoList;

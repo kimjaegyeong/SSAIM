@@ -12,4 +12,5 @@ import java.util.List;
 public interface WeeklyRemindRepository extends JpaRepository<WeeklyRemind, Integer> {
 
     List<WeeklyRemind> findWeeklyRemindByRemindAuthorAndProjectId(ProjectMember author, Project projectId);
+    List<WeeklyRemind> findWeeklyRemindByRemindAuthor(ProjectMember author);
 }
