@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -44,15 +45,19 @@ public class Project extends BaseEntity {
 	private LocalDateTime endDate;
 
 	@Column(name = "project_gitlab_api")
+	@Setter
 	private String gitlabApi ;
 
 	@Column(name = "project_jira_api")
+	@Setter
 	private String jiraApi;
 
 	@Column(name = "project_progress_front")
+	@Setter
 	private Double progressFront =0.0; //이거 왜 안 먹히지 ?
 
 	@Column(name = "project_progress_back")
+	@Setter
 	private Double progressBack = 0.0;
 
 	@OneToMany(mappedBy = "project")
