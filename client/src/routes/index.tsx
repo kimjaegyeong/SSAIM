@@ -13,8 +13,10 @@ import RemindCreatePage from '../pages/remind/RemindCreatePage';
 import RemindListPage from '../pages/remind/RemindListPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import MyPage from '../pages/myPage/MyPage';
+import LoginPage from '../pages/account/login/LoginPage';
 const AppRoutes = () => (
   <Routes>
+    <Route path="/login" element={<LoginPage />} />
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
