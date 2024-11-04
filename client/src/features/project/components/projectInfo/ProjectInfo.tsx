@@ -2,8 +2,11 @@ import styles from './ProjectInfo.module.css';
 import ProgressChart from '../dashboard/progressChart/ProgressChart';
 import Button from '../../../../components/button/Button';
 import { FaPen } from "react-icons/fa6";
+import EditProjectInfoModal from './editProjectInfo/EditProjectInfo';
+import { useState } from 'react';
 
 const ProjectInfo: React.FC = () => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const project = {
     profileImage: 'path/to/projectImage.jpg',
     name: '프로젝트 이름',
@@ -32,7 +35,7 @@ const ProjectInfo: React.FC = () => {
               <span>최근 수정일: {project.modifiedAt}</span>
             </div>
           </div>
-          <span className={styles.modify}><FaPen />
+          <span className={styles.modify} onClick={()=>{setIsEditModalOpen(true)}}><FaPen />
           </span>
         </div>
 
@@ -67,6 +70,9 @@ const ProjectInfo: React.FC = () => {
           ))}
         </div>
       </div>
+      {isEditModalOpen && (
+        <EditProjectInfoModal onClose={() => setIsEditModalOpen(false)} />
+      )}
     </div>
   );
 };
