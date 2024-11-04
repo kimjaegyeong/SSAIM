@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,25 +83,32 @@ public class UserService {
         User user = userRepository.findByUserId(userId);
 
         updateUserFields(user, dto);
-        user.setUserProfileImage(imageUrl);
+        Optional.ofNullable(imageUrl).ifPresent(user::setUserProfileImage);
     }
 
     private String uploadProfileImage(MultipartFile profileImage) {
-        return profileImage != null ? imageUploader.upload(profileImage) : null;
+        return Optional.ofNullable(profileImage)
+                .map(imageUploader::upload)
+                .orElse(null);
     }
 
     private void updateUserFields(User user, UserEditInfoDto dto) {
-        if (dto.getUserEmail() != null) user.setUserEmail(dto.getUserEmail());
-        if (dto.getUserName() != null) user.setUserName(dto.getUserName());
-        if (dto.getUserNickname() != null) user.setUserNickname(dto.getUserNickname());
-        if (dto.getUserPw() != null) user.setUserPw(hashPassword(dto.getUserPw()));
-        if (dto.getUserGender() != null) user.setUserGender(dto.getUserGender());
-        if (dto.getUserBirth() != null) user.setUserBirth(dto.getUserBirth());
-        if (dto.getUserClass() != null) user.setUserClass(dto.getUserClass());
-        if (dto.getUserGeneration() != null) user.setUserGeneration(dto.getUserGeneration());
-        if (dto.getUserCampus() != null) user.setUserCampus(dto.getUserCampus());
-        if (dto.getUserPhone() != null) user.setUserPhone(dto.getUserPhone());
-        if (dto.getUserProfileMessage() != null) user.setUserProfileMessage(dto.getUserProfileMessage());
+        updateField(dto.getUserEmail(), user::setUserEmail);
+        updateField(dto.getUserName(), user::setUserName);
+        updateField(dto.getUserNickname(), user::setUserNickname);
+        updateField(dto.getUserPw(), pw -> user.setUserPw(hashPassword(pw)));
+        updateField(dto.getUserGender(), user::setUserGender);
+        updateField(dto.getUserBirth(), user::setUserBirth);
+        updateField(dto.getUserClass(), user::setUserClass);
+        updateField(dto.getUserGeneration(), user::setUserGeneration);
+        updateField(dto.getUserCampus(), user::setUserCampus);
+        updateField(dto.getUserPhone(), user::setUserPhone);
+        updateField(dto.getUserProfileMessage(), user::setUserProfileMessage);
     }
+
+    private <T> void updateField(T value, Consumer<T> setter) {
+        Optional.ofNullable(value).ifPresent(setter);
+    }
+
 
 }
