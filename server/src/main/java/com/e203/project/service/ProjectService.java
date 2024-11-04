@@ -14,6 +14,7 @@ import com.e203.project.dto.response.ProjectFindResponseDto;
 import com.e203.project.dto.response.ProjectMemberFindResponseDto;
 import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
+import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
 import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
@@ -26,6 +27,7 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberService projectMemberService;
 	private final UserRepository userRepository;
+	private final ProjectMemberRepository projectMemberRepository;
 
 	@Transactional
 	public boolean createProject(ProjectCreateRequestDto projectCreateRequestDto) {
@@ -46,12 +48,12 @@ public class ProjectService {
 		return project.orElse(null);
 	}
 
-	public List<Project> findAll() {
-		return projectRepository.findAll();
+	public List<Project> findAll(int userId) {
+		return projectMemberRepository.findProjectsByUserId(userId);
 	}
 
-	public List<ProjectFindResponseDto> findAllProjects(){
-		List<Project> projects = findAll();
+	public List<ProjectFindResponseDto> findAllProjects(int userId){
+		List<Project> projects = findAll(userId);
 		List<ProjectFindResponseDto> projectFindResponseDtos = new ArrayList<>();
 		for(Project project : projects){
 			ProjectFindResponseDto projectFindResponseDto = getProjectFindResponseDto(project);

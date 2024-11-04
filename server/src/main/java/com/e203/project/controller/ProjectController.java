@@ -39,9 +39,9 @@ public class ProjectController {
 			return ResponseEntity.status(OK).body(projectInfo);
 	}
 
-	@GetMapping("/api/v1/projects")
-	public ResponseEntity<List<ProjectFindResponseDto>> findAllProjects() {
-		List<ProjectFindResponseDto> projectFindResponseDtos = projectService.findAllProjects();
+	@GetMapping("/api/v1/user/{userId}/projects")
+	public ResponseEntity<List<ProjectFindResponseDto>> findAllProjects(@PathVariable Integer userId) {
+		List<ProjectFindResponseDto> projectFindResponseDtos = projectService.findAllProjects(userId);
 		return ResponseEntity.status(OK).body(projectFindResponseDtos);
 	}
 }
