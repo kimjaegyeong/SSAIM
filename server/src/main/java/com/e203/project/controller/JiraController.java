@@ -23,11 +23,11 @@ public class JiraController {
 	public ResponseEntity<String> connectJiraApi(@PathVariable("projectId") int projectId , @RequestBody
 		ProjectJiraConnectDto projectJiraConnectDto) {
 
-		String result = jiraService.setJiraApi(projectJiraConnectDto, projectId);
+		boolean result = jiraService.setJiraApi(projectJiraConnectDto, projectId);
 
-		if(result==null){
-			return ResponseEntity.status(OK).body("success : connect jira api");
+		if(result){
+			return ResponseEntity.status(OK).body("jira api 연결 성공 ");
 		}
-		return ResponseEntity.status(BAD_REQUEST).body("fail : connect jira api");
+		return ResponseEntity.status(BAD_REQUEST).body("jira api 연결 실패");
 	}
 }

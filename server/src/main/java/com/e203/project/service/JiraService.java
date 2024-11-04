@@ -16,12 +16,12 @@ public class JiraService {
 	// jira api key를 db에 저장하기
 	private final ProjectRepository projectRepository;
 	@Transactional
-	public String setJiraApi(ProjectJiraConnectDto jiraApi, int projectId){
+	public Boolean setJiraApi(ProjectJiraConnectDto jiraApi, int projectId){
 		Project project = projectRepository.findById(projectId).orElse(null);
 		if(project==null){
-			return null;
+			return false;
 		}
 		project.setJiraApi(jiraApi.getJiraApi());
-		return project.getJiraApi() ;
+		return true ;
 	}
 }
