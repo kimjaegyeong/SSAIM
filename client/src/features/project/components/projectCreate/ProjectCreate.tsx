@@ -1,13 +1,12 @@
 import styles from './ProjectCreate.module.css';
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 import Button from '../../../../components/button/Button';
 import TeamMemberGrid from './teamMember/TeamMemberGrid';
 import { ProjectCreateDTO } from '@features/project/types/ProjectDTO';
-import {createProject} from '@features/project/apis/createProject'
+import { createProject } from '@features/project/apis/createProject';
 import { useNavigate } from 'react-router-dom';
-
 
 const ProjectCreate = () => {
   const navigate = useNavigate();
@@ -17,7 +16,7 @@ const ProjectCreate = () => {
     profileImage: '',
     startDate: null,
     endDate: null,
-    teamMembers: []
+    teamMembers: [],
   });
   const handleImageClick = () => {
     // 이미지 선택 로직
@@ -25,26 +24,26 @@ const ProjectCreate = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProjectData(prevData => ({
+    setProjectData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleDateChange = (date: Date | null, field: 'startDate' | 'endDate') => {
     setProjectData(prevData => ({
       ...prevData,
-      [field]: date?.toISOString()
+      [field]: date ? date.toISOString() : null
     }));
   };
-
+  
   const handleSubmit = () => {
     // 제출 로직
-    try{
-      createProject(projectData); 
-      navigate('/project')
-    }catch(error){
-      console.log(error)
+    try {
+      createProject(projectData);
+      navigate('/project');
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -90,8 +89,9 @@ const ProjectCreate = () => {
       <div className={styles.dateSection}>
         <div>
           <label>프로젝트 시작일자:</label>
+
           <DatePicker
-            selected={projectData.startDate}
+            selected={projectData.startDate ? new Date(projectData.startDate) : null}
             onChange={(date) => handleDateChange(date, 'startDate')}
             dateFormat="yyyy/MM/dd"
             placeholderText="시작일 선택"
@@ -102,7 +102,7 @@ const ProjectCreate = () => {
         <div>
           <label>프로젝트 종료일자:</label>
           <DatePicker
-            selected={projectData.endDate}
+            selected={projectData.endDate ? new Date(projectData.endDate) : null}
             onChange={(date) => handleDateChange(date, 'endDate')}
             dateFormat="yyyy/MM/dd"
             placeholderText="종료일 선택"
@@ -112,7 +112,7 @@ const ProjectCreate = () => {
       </div>
 
       <hr />
-      
+
       {/* 하단 버튼 */}
       <div className={styles.footer}>
         <Button colorType="blue" size="small" onClick={handleSubmit}>

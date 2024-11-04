@@ -12,8 +12,8 @@ interface BaseProjectDTO {
   title: string;
   name: string;
   profileImage: string;
-  startDate: Date | null;
-  endDate: Date | null;
+  startDate: string | null | Date;
+  endDate: string | null | Date;
   teamMembers: ProjectMemberDTO[] | null;
 }
 
