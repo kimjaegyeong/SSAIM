@@ -26,7 +26,7 @@ public class JiraController {
 		boolean result = jiraService.setJiraApi(projectJiraConnectDto, projectId);
 
 		if(result){
-			return ResponseEntity.status(OK).body("jira api 연결 성공 ");
+			return ResponseEntity.status(OK).body("jira api 연결 성공");
 		}
 		return ResponseEntity.status(BAD_REQUEST).body("jira api 연결 실패");
 	}
