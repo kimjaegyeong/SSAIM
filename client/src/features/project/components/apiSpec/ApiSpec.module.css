@@ -36,23 +36,27 @@
 }
 
 .table th:nth-child(3), .table td:nth-child(3) {
-    width: 20%; /* Feature Name 열의 너비 */
+    width: 20%; /* description 열의 너비 */
 }
 
 .table th:nth-child(4), .table td:nth-child(4) {
-    width: 30%; /* Details 열의 너비 */
+    width: 20%; /* url 열의 너비 */
 }
 
 .table th:nth-child(5), .table td:nth-child(5) {
-    width: 10%; /* Type 열의 너비 */
+    width: 10%; /* Method 열의 너비 */
 }
 
 .table th:nth-child(6), .table td:nth-child(6) {
-    width: 10%; /* Owner 열의 너비 */
+    width: 10%; /* statusCode 열의 너비 */
 }
 
 .table th:nth-child(7), .table td:nth-child(7) {
-    width: 10%; /* Priority 열의 너비 */
+    width: 10%; /* owner 열의 너비 */
+}
+
+.table th:nth-child(8), .table td:nth-child(8) {
+    width: 10%; /* state 열의 너비 */
 }
 
 textarea {

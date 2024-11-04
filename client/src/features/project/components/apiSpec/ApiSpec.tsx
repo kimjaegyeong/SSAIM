@@ -1,38 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import styles from './FeatureSpec.module.css';
+import styles from './ApiSpec.module.css';
 
-interface FeatureSpec {
+interface ApiSpec {
   id: number;
   category: string;
-  featureName: string;
-  details: string;
-  type: string;
+  description: string;
+  url: string;
+  method: string;
+  statusCode: string;
   owner: string;
-  priority: string;
+  state: string;
 }
 
-const FeatureSpecTable: React.FC = () => {
-  const [data, setData] = useState<FeatureSpec[]>([
-    { id: 1, category: '회원 관리', featureName: '로그인', details: '로그인 기능', type: 'BE', owner: 'XXX', priority: '1' },
-    { id: 2, category: '회원 관리', featureName: '회원가입', details: '회원가입 기능', type: 'BE', owner: 'XXX', priority: '1' },
-    { id: 3, category: '회원 관리', featureName: '비밀번호 찾기', details: '비밀번호 찾기', type: 'BE', owner: 'XXX', priority: '2' },
+const ApiSpecTable: React.FC = () => {
+  const [data, setData] = useState<ApiSpec[]>([
+    { id: 1, category: '회원 관리', description: '로그인', url: '/users/login', method: 'POST', statusCode: '200', owner: 'XXX', state: '개발 중' },
+    { id: 2, category: '회원 관리', description: '회원가입', url: '/users', method: 'POST', statusCode: '200', owner: 'XXX', state: '개발 중' },
+    { id: 3, category: '회원 관리', description: '비밀번호 찾기', url: '/users/password', method: 'POST', statusCode: '200', owner: 'XXX', state: '개발 중' },
   ]);
   const [isEditing, setIsEditing] = useState<{ [key: number]: { [field: string]: boolean } }>({});
 
-  const handleInputChange = (index: number, field: keyof FeatureSpec, value: string | number) => {
+  const handleInputChange = (index: number, field: keyof ApiSpec, value: string | number) => {
     const updatedData = [...data];
     (updatedData[index] as any)[field] = value;
     setData(updatedData);
   };
 
-  const handleEditClick = (index: number, field: keyof FeatureSpec) => {
+  const handleEditClick = (index: number, field: keyof ApiSpec) => {
     setIsEditing((prev) => ({
       ...prev,
       [index]: { ...prev[index], [field]: true },
     }));
   };
 
-  const handleBlur = (index: number, field: keyof FeatureSpec) => {
+  const handleBlur = (index: number, field: keyof ApiSpec) => {
     setIsEditing((prev) => ({
       ...prev,
       [index]: { ...prev[index], [field]: false },
@@ -40,14 +41,15 @@ const FeatureSpecTable: React.FC = () => {
   };
 
   const addNewRow = () => {
-    const newRow: FeatureSpec = {
+    const newRow: ApiSpec = {
       id: data.length + 1,
       category: '',
-      featureName: '',
-      details: '',
-      type: '',
+      description: '',
+      url: '',
+      method: '',
+      statusCode: '',
       owner: '',
-      priority: '',
+      state: ''
     };
     setData([...data, newRow]);
   };
@@ -71,46 +73,47 @@ const FeatureSpecTable: React.FC = () => {
           <tr>
             <th>ID</th>
             <th>카테고리</th>
-            <th>기능명</th>
-            <th>내용</th>
-            <th>구분</th>
+            <th>설명</th>
+            <th>URL</th>
+            <th>Method</th>
+            <th>statusCode</th>
             <th>담당자</th>
-            <th>우선순위</th>
+            <th>개발 상태</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row, index) => (
             <tr key={row.id}>
               <td>{row.id}</td>
-              {['category', 'featureName', 'details', 'type', 'owner', 'priority'].map((field) => (
+              {['category', 'description', 'url', 'method', 'statusCode', 'owner', 'state'].map((field) => (
                 <td
                   key={field}
-                  onClick={() => handleEditClick(index, field as keyof FeatureSpec)}
+                  onClick={() => handleEditClick(index, field as keyof ApiSpec)}
                   style={{ whiteSpace: 'pre-wrap' }}
                 >
                   {isEditing[index]?.[field] ? (
                     <textarea
-                      value={row[field as keyof FeatureSpec]}
+                      value={row[field as keyof ApiSpec]}
                       onChange={(e) =>
                         handleInputChange(
                           index,
-                          field as keyof FeatureSpec,
+                          field as keyof ApiSpec,
                           e.target.value
                         )
                       }
-                      onBlur={() => handleBlur(index, field as keyof FeatureSpec)}
+                      onBlur={() => handleBlur(index, field as keyof ApiSpec)}
                       autoFocus
                       ref={(el) => el && autoResize(el)}
                     />
                   ) : (
-                    row[field as keyof FeatureSpec]
+                    row[field as keyof ApiSpec]
                   )}
                 </td>
               ))}
             </tr>
           ))}
           <tr className={styles.addRow} onClick={addNewRow}>
-            <td colSpan={7} className={styles.addRowText}>
+            <td colSpan={8} className={styles.addRowText}>
               + Add New Row
             </td>
           </tr>
@@ -120,4 +123,4 @@ const FeatureSpecTable: React.FC = () => {
   );
 };
 
-export default FeatureSpecTable;
+export default ApiSpecTable;
