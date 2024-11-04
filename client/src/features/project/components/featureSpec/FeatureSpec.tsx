@@ -57,6 +57,13 @@ const FeatureSpecTable: React.FC = () => {
     element.style.height = `${element.scrollHeight}px`;
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>, index: number, field: keyof FeatureSpec) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleBlur(index, field);
+    }
+  };
+
   useEffect(() => {
     const textareas = document.querySelectorAll('textarea');
     textareas.forEach((textarea) => {
@@ -98,6 +105,7 @@ const FeatureSpecTable: React.FC = () => {
                           e.target.value
                         )
                       }
+                      onKeyDown={(e) => handleKeyPress(e, index, field as keyof FeatureSpec)}
                       onBlur={() => handleBlur(index, field as keyof FeatureSpec)}
                       autoFocus
                       ref={(el) => el && autoResize(el)}

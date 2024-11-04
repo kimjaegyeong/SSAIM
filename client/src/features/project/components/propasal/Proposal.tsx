@@ -18,14 +18,21 @@ const Proposal: React.FC = () => {
     expectedEffect: false,
   });
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>, field: keyof typeof editableData) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleBlur(field);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const data = {
-        serviceName: '실제 프로젝트 제목',
-        serviceDescription: '실제 프로젝트 한줄 소개',
-        background: '실제 프로젝트 배경 설명',
-        mainFeatures: '실제 주요기능',
-        expectedEffect: '실제 기대효과',
+        serviceName: '프로젝트 제목',
+        serviceDescription: '프로젝트 한줄 소개',
+        background: '프로젝트 배경 설명',
+        mainFeatures: '주요기능',
+        expectedEffect: '기대효과',
       };
       setEditableData(data);
     };
@@ -81,6 +88,7 @@ const Proposal: React.FC = () => {
                       autoFocus
                       ref={(el) => el && autoResize(el)}
                       onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
+                      onKeyDown={(e) => handleKeyPress(e, field)}
                     ></textarea>
                   ) : (
                     editableData[field]

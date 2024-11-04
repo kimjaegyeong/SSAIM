@@ -59,6 +59,13 @@ const ApiSpecTable: React.FC = () => {
     element.style.height = `${element.scrollHeight}px`;
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>, index: number, field: keyof ApiSpec) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleBlur(index, field);
+    }
+  };
+
   useEffect(() => {
     const textareas = document.querySelectorAll('textarea');
     textareas.forEach((textarea) => {
@@ -101,6 +108,7 @@ const ApiSpecTable: React.FC = () => {
                           e.target.value
                         )
                       }
+                      onKeyDown={(e) => handleKeyPress(e, index, field as keyof ApiSpec)}
                       onBlur={() => handleBlur(index, field as keyof ApiSpec)}
                       autoFocus
                       ref={(el) => el && autoResize(el)}
