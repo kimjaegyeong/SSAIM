@@ -1,5 +1,7 @@
 package com.e203.user.controller;
 
+import com.e203.jwt.JWTUtil;
+import com.e203.user.request.UserEditInfoDto;
 import com.e203.user.request.UserLoginRequestDto;
 import com.e203.user.request.UserSignUpRequestDto;
 import com.e203.user.response.UserInfoResponseDto;
@@ -20,7 +22,7 @@ public class UserController {
 
     private final UserService userService;
 
-    private final UserDetailServiceImpl userDetailService;
+    private final JWTUtil jwtUtil;
 
     @PostMapping("/api/v1/users")
     public ResponseEntity<String> signUp(@RequestBody UserSignUpRequestDto userSignUpRequestDto, @RequestParam(value = "userProfileImage", required = false) MultipartFile profileImage) {
@@ -33,7 +35,14 @@ public class UserController {
     }
 
     @PatchMapping("/api/v1/users/{userId}")
-    public ResponseEntity<String> editInfo() {
+    public ResponseEntity<String> editInfo(@PathVariable int userId, @RequestBody UserEditInfoDto dto,
+                                           @RequestParam(value = "userProfileImage", required = false) MultipartFile profileImage,
+                                           @RequestHeader("Authorization") String authToken) {
+        if (!jwtUtil.isPermitted(userId, authToken)) {
+            return ResponseEntity.status(403).body("권한이 없습니다.");
+        }
+
+        userService.modifyInfo(userId, dto, profileImage);
         return ResponseEntity.status(200).body("회원 정보 수정이 완료되었습니다.");
     }
 

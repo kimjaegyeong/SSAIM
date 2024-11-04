@@ -44,4 +44,11 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
     }
+
+    public boolean isPermitted(int userId, String authToken) {
+        if (authToken == null) {
+            return false;
+        }
+        return userId == getUserId(authToken.substring(7));
+    }
 }
