@@ -3,11 +3,14 @@ package com.e203.project.controller;
 import static org.springframework.http.HttpStatus.*;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.e203.project.dto.request.ProjectCreateRequestDto;
+import com.e203.project.dto.response.ProjectFindResponseDto;
 import com.e203.project.service.ProjectService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,5 +29,11 @@ public class ProjectController {
 		}else{
 			return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("project create error");
 		}
+	}
+
+	@GetMapping("/api/v1/projects/{projectId}")
+	public ResponseEntity<ProjectFindResponseDto> findProjectInfo(@PathVariable Integer projectId) {
+		ProjectFindResponseDto projectInfo = projectService.findProjectInfo(projectId);
+			return ResponseEntity.status(OK).body(projectInfo);
 	}
 }

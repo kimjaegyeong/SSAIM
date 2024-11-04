@@ -41,20 +41,20 @@ public class Project extends BaseEntity {
 	private LocalDateTime endDate;
 
 	@Column(name = "project_gitlab_api")
-	private String gitlabApi;
+	private String gitlabApi ;
 
 	@Column(name = "project_jira_api")
 	private String jiraApi;
 
 	@Column(name = "project_progress_front")
-	private String progressFront;
+	private Double progressFront =0.0; //이거 왜 안 먹히지 ?
 
 	@Column(name = "project_progress_back")
-	private String progressBack;
+	private Double progressBack = 0.0;
 
 	@Builder
 	private Project(String title, String name, String profileImage, LocalDateTime startDate, LocalDateTime endDate, String gitlabApi, String jiraApi,
-		String progressBack, String progressFront){
+		Double progressBack, Double progressFront){
 		this.title = title;
 		this.name= name;
 		this.profileImage = profileImage;
