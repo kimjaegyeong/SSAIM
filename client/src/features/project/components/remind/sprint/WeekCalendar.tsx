@@ -23,6 +23,12 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
     onDateChange(monday);
   };
 
+  // 주말(토요일, 일요일) 비활성화
+  const disableWeekends = ({ date }: { date: Date }) => {
+    const day = date.getDay();
+    return day === 0 || day === 6; // 일요일(0) 또는 토요일(6)일 경우 비활성화
+  };
+
   return (
     <div className={styles.calendarWrapper}>
       <Calendar
@@ -36,6 +42,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
         prev2Label={null}
         minDetail="year"
         className={styles.customCalendar}
+        tileDisabled={disableWeekends} // 주말 비활성화 함수 추가
         tileClassName={({ date }) => {
           const dayOfWeek = date.getDay();
           const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5; // 월~금
