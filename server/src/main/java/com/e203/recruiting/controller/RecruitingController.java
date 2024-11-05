@@ -22,7 +22,7 @@ public class RecruitingController {
     @PostMapping("/api/v1/recruiting/posts")
     public ResponseEntity<String> writePost(@RequestBody RecruitingWriteRequestDto dto,
                                             @RequestHeader("Authorization") String auth) {
-        if (dto.getAuthor() != null && jwtUtil.isPermitted(dto.getAuthor(), auth)) {
+        if (dto.getAuthor() == null || !jwtUtil.isPermitted(dto.getAuthor(), auth)) {
             return ResponseEntity.status(403).body("권한이 없습니다.");
         }
         recruitingService.createPost(dto);
