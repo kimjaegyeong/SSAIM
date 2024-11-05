@@ -95,4 +95,17 @@ public class DailyRemindService {
 
         return dailyRemindResponseDtoList;
     }
+
+    @Transactional
+    public boolean putDailyRemind(DailyRemindRequestDto requestDto, int dailyRemindId) {
+        DailyRemind dailyRemind = dailyRemindRepository.findById(dailyRemindId).orElse(null);
+
+        if (dailyRemind == null) {
+            return false;
+        }
+
+        dailyRemind.updateDailyRemind(requestDto.getDailyRemindContents());
+
+        return true;
+    }
 }
