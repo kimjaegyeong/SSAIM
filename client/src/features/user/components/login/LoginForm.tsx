@@ -18,6 +18,7 @@ const LoginForm: React.FC = () => {
       navigate('/'); // 성공 시 메인 페이지로 이동
     } catch (error) {
       setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.'); // 실패 시 에러 메시지 설정
+      console.log(error)
     }
   };
 
