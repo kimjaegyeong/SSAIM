@@ -92,4 +92,8 @@ public class User extends BaseEntity {
         this.userPhone = userPhone;
         this.userProfileImage = userProfileImage;
     }
+
+    public User(int userId) {
+        this.userId = userId;
+    }
 }
