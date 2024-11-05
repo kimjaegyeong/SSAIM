@@ -13,27 +13,29 @@ import lombok.NoArgsConstructor;
 public class ProjectFindResponseDto {
 	private int id;
 	private String name;
+	private String title;
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 	private String jiraApi;
 	private String gitlabApi;
-	private Double progress_front;
-	private Double progress_back;
+	private Double progressFront;
+	private Double progressBack;
 	private List<ProjectMemberFindResponseDto> projectMemberFindResponseDtoList;
 
 	@Builder
-	private ProjectFindResponseDto(int id, String name, LocalDateTime startDate, LocalDateTime endDate,
+	private ProjectFindResponseDto(int id, String name, String title, LocalDateTime startDate, LocalDateTime endDate,
 		String jiraApi, String gitlabApi,
-		List<ProjectMemberFindResponseDto> projectMembers, Double progress_front, Double progress_back) {
+		List<ProjectMemberFindResponseDto> projectMembers, Double progressFront, Double progressBack) {
 		this.id = id;
+		this.title =title;
 		this.projectMemberFindResponseDtoList = projectMembers;
 		this.name = name;
 		this.jiraApi = jiraApi;
 		this.gitlabApi = gitlabApi;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.progress_front = progress_front;
-		this.progress_back = progress_back;
+		this.progressFront = progressFront;
+		this.progressBack = progressBack;
 	}
 }
 
