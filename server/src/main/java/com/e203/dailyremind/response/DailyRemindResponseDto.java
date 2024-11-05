@@ -16,8 +16,8 @@ public class DailyRemindResponseDto {
     private int userId;
 
     @Builder
-    public DailyRemindResponseDto(String username, String message, int memberUserId, int projectId, int dailyRemindId,
-                                  int userId) {
+    private DailyRemindResponseDto(String username, String message, int memberUserId, int projectId, int dailyRemindId
+    , int userId) {
         this.username = username;
         this.message = message;
         this.memberUserId = memberUserId;
