@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitingController {
@@ -32,5 +34,11 @@ public class RecruitingController {
                                                                    @RequestHeader("Authorization") String auth) {
         int userId = jwtUtil.getUserId(auth.substring(7));
         return ResponseEntity.status(200).body(recruitingService.getPost(postId, userId));
+    }
+
+    @GetMapping("/api/v1/recruiting/posts")
+    public ResponseEntity<List<RecruitingPostDetailResponseDto>> searchPosts(@RequestHeader("Authorization") String auth) {
+
+        return null;
     }
 }
