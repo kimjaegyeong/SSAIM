@@ -72,12 +72,13 @@ public class ProjectService {
 		ProjectFindResponseDto projectFindResponseDto = ProjectFindResponseDto.builder()
 			.id(project.getId())
 			.name(project.getName())
+			.title(project.getTitle())
 			.startDate(project.getStartDate())
 			.endDate(project.getEndDate())
 			.jiraApi(project.getJiraApi())               // 프로젝트의 Jira API 정보
 			.gitlabApi(project.getGitlabApi())           // 프로젝트의 GitLab API 정보
-			.progress_back(project.getProgressBack())    // 백엔드 진행도
-			.progress_front(project.getProgressFront())// 프론트엔드 진행도
+			.progressBack(project.getProgressBack())    // 백엔드 진행도
+			.progressFront(project.getProgressFront())// 프론트엔드 진행도
 			.projectMembers(pmDto)
 			.build();
 		return projectFindResponseDto;
