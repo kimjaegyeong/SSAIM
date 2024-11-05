@@ -8,7 +8,7 @@ import {
   IoLogOutOutline,
 } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-
+import useUserStore from '@/stores/useUserStore'
 
 
 // 메뉴 아이템의 타입 정의
@@ -42,7 +42,13 @@ const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
 
 // Navbar 컴포넌트 정의
 const Navbar: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const {logout} = useUserStore();
+  const handleLogout = () =>{
+    logout();
+    navigate('/login');
+
+  }
   return (
     <div className={styles.sidebarContainer}>
       <div className={styles.navList}>
@@ -56,8 +62,11 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* 로그아웃 버튼 */}
+      <div className=''>
+
       <div className={styles.footer}>
-        <IoLogOutOutline className={styles.icon} />
+        <NavItem icon={<IoLogOutOutline className={styles.icon} />} text="로그아웃" onClick={handleLogout}/>
+      </div>
       </div>
     </div>
   );

@@ -44,8 +44,8 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose }) => {
         <button className={styles.closeButton} onClick={onClose}>
           &times;
         </button>
-        <h2>주간 회고 생성</h2>
-        <p>프로젝트명</p>
+        <h2 className={styles.h2}>주간 회고 생성</h2>
+        <p className={styles.p}>프로젝트명</p>
         <div className={styles.selectBox}>
             <div className={styles.sprintOptions}>
             {sprintOptions.map((sprint) => (

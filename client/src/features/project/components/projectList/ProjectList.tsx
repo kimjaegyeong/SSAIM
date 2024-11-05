@@ -6,6 +6,7 @@ import { useProjectListData } from '../../hooks/useProjectListData';
 import { dateToString } from '../../../../utils/dateToString';
 import { useNavigate } from 'react-router-dom';
 import EmptyProjectList from './EmptyProjectList';
+import useUserStore from '@/stores/useUserStore';
 
 interface ProjectListItemProps {
   projectInfo: ProjectDTO;
@@ -13,6 +14,7 @@ interface ProjectListItemProps {
 }
 
 const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick }) => {
+  console.log(projectInfo)
   return (
     <div className={styles.projectItem} onClick={onClick}>
       <div className={styles.cardLeft}>
@@ -31,11 +33,15 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
 };
 
 const ProjectList: React.FC = () => {
-  const { data: projectListData } = useProjectListData();
+  const { userId } = useUserStore();
+  console.log(userId);
+  const { data: projectListData } = useProjectListData(userId);
+  console.log('Fetched Project List Data:', projectListData);
+
   // const projectListData = []
   const navigate = useNavigate();
   const handleItemClick = (projectId: number) => () => {
-    navigate(`/project/${projectId}`);
+    navigate(`/project/${projectId}/info`);
   };
   const handleCreateClick = () => {
     navigate('/project/create');
@@ -45,24 +51,24 @@ const ProjectList: React.FC = () => {
       <div className={styles.header}>
         <h1 className={styles.projectTitle}>프로젝트 목록</h1>
         <div>
-          {projectListData.length > 0 && (
+          {projectListData?.length > 0 && (
             <Button children={'프로젝트 생성'} size="small" colorType="blue" onClick={handleCreateClick} />
           )}
         </div>
       </div>
-      {projectListData.length === 0 ? (
-        <EmptyProjectList />
-      ) : (
-        <div className={styles.body}>
-          {projectListData.map((project) => (
-            <ProjectListItem
-              key={project.projectId}
-              projectInfo={project}
-              onClick={handleItemClick(project.projectId)}
-            />
-          ))}
-        </div>
-      )}
+      {projectListData ? (
+   projectListData.length === 0 ? (
+     <EmptyProjectList />
+   ) : (
+     <div className={styles.body}>
+       {projectListData.map((project: ProjectDTO) => (
+         <ProjectListItem key={project.id} projectInfo={project} onClick={handleItemClick(project.id)} />
+       ))}
+     </div>
+   )
+ ) : (
+   <p>로딩 중...</p>
+ )}
     </>
   );
 };

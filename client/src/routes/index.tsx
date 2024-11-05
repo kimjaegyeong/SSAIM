@@ -14,6 +14,7 @@ import TeamBuildingListPage from '../pages/teamBuilding/TeamBuildingListPage';
 import RemindIntroPage from '../pages/remind/RemindIntroPage';
 import RemindCreatePage from '../pages/remind/RemindCreatePage';
 import RemindListPage from '../pages/remind/RemindListPage';
+import RemindDetailPage from '../pages/remind/RemindDetailPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage';
 import MyPage from '../pages/myPage/MyPage';
@@ -21,10 +22,12 @@ import ProjectCreatePage from '../pages/project/ProjectCreatePage';
 import LoginPage from '../pages/account/login/LoginPage';
 import NetworkErrorPage from '../pages/error/NetworkErrorPage';
 import NotFoundPage from '../pages/error/NotFoundPage';
+import SignUpPage from '@pages/account/signup/SignUpPage';
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
+    <Route path="/signup" element={<SignUpPage />} />
     {/* error */}
     <Route path="/network" element={<NetworkErrorPage />}></Route>
     <Route path="/notfound" element={<NotFoundPage />}></Route>
@@ -33,7 +36,7 @@ const AppRoutes = () => (
       {/* 프로젝트 */}
       <Route path="/project" element={<ProjectListPage />}></Route>
       <Route path="/project/create" element={<ProjectCreatePage />}></Route>
-      <Route path="/project/:projectId" element={<ProjectDetailPage />}></Route>
+      <Route path="/project/:projectId/info" element={<ProjectDetailPage />}></Route>
       <Route path="/project/:projectId/sprint" element={<ProjectSprintPage />}></Route>
       <Route path="/project/:projectId/output" element={<ProjectOutputPage />}></Route>
       <Route path="/project/:projectId/meeting" element={<ProjectMeetingPage />}></Route>
@@ -49,6 +52,7 @@ const AppRoutes = () => (
       <Route path="/remind" element={<RemindIntroPage />}></Route>
       <Route path="/remind/create" element={<RemindCreatePage />}></Route>
       <Route path="/remind/list" element={<RemindListPage />}></Route>
+      <Route path="/remind/:remindId" element={<RemindDetailPage />}></Route>
       {/* 마이페이지 */}
       <Route path="/mypage" element={<MyPage />}></Route>
       <Route path="*" element={<Navigate to="/" replace />} />

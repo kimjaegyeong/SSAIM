@@ -12,7 +12,7 @@
   }
   
 .modalContent {
-    width: 35vw;
+    width: auto;
     height: 50vh;
     background: white;
     padding: 30px;
@@ -31,11 +31,11 @@
     cursor: pointer;
 }
 
-h2 {
+.h2 {
   margin: 0px;
 }
 
-p {
+.p {
   margin: 5px 0px;
   font-size: 14px;
   color: gray
@@ -43,8 +43,8 @@ p {
 
 
 .selectBox {
-  width: 480px;
-  height: 30vh;
+  width: auto;
+  height: auto;
   padding: 10px;
   margin: 20px 0px;
   border-radius: 4px;
