@@ -38,4 +38,8 @@ public class DailyRemind extends BaseEntity {
         this.projectId = project;
         this.dailyRemindContents = dailyRemindContents;
     }
+
+    public void updateDailyRemind(String dailyRemindContents) {
+        this.dailyRemindContents = dailyRemindContents;
+    }
 }

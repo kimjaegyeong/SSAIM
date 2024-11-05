@@ -10,10 +10,12 @@ public class DailyRemindRequestDto {
 
     private int dailyRemindAuthor;
     private String dailyRemindContents;
+    private int dailyRemindId;
 
     @Builder
-    public DailyRemindRequestDto(int dailyRemindAuthor, String dailyRemindContents) {
+    private DailyRemindRequestDto(int dailyRemindAuthor, String dailyRemindContents, int dailyRemindId) {
         this.dailyRemindAuthor = dailyRemindAuthor;
         this.dailyRemindContents = dailyRemindContents;
+        this.dailyRemindId = dailyRemindId;
     }
 }
