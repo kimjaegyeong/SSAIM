@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,11 +34,16 @@ public class DailyRemind extends BaseEntity {
     @JoinColumn(name = "project_id")
     private Project projectId;
 
+    @Column(name = "daily_remind_date")
+    private LocalDate dailyRemindDate;
+
     @Builder
-    private DailyRemind(Project project, ProjectMember dailyRemindAuthor, String dailyRemindContents) {
+    private DailyRemind(Project project, ProjectMember dailyRemindAuthor, String dailyRemindContents
+    , LocalDate dailyRemindDate) {
         this.dailyRemindAuthor = dailyRemindAuthor;
         this.projectId = project;
         this.dailyRemindContents = dailyRemindContents;
+        this.dailyRemindDate = dailyRemindDate;
     }
 
     public void updateDailyRemind(String dailyRemindContents) {

@@ -45,8 +45,8 @@ public class DailyRemindController {
         }
     }
 
-    @GetMapping("/api/v1/projects/{projectId}/daily-remind/{author}")
-    public ResponseEntity<List<DailyRemindResponseDto>> getDailyRemind(@PathVariable("projectId") int projectId, @PathVariable("author") int author) {
+    @GetMapping("/api/v1/projects/{projectId}/daily-remind/{projectMemberId}")
+    public ResponseEntity<List<DailyRemindResponseDto>> getDailyRemind(@PathVariable("projectId") int projectId, @PathVariable("projectMemberId") int author) {
 
         List<DailyRemindResponseDto> results = dailyRemindService.searchDailyRemind(projectId, author);
 

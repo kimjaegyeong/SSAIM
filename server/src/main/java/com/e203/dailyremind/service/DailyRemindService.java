@@ -8,7 +8,6 @@ import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
-import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,17 +29,17 @@ public class DailyRemindService {
     public boolean saveDailyRemind(DailyRemindRequestDto requestDto, int projectId) {
 
         Project project = projectRepository.findById(projectId).orElse(null);
-        User user = userRepository.findById(requestDto.getDailyRemindAuthor()).orElse(null);
-        ProjectMember projectMember = projectMemberRepository.findByUser(user);
+        ProjectMember projectMember = projectMemberRepository.findById(requestDto.getProjectMemberId()).orElse(null);
 
-        if (user == null) {
+        if (projectMember == null) {
             return false;
         }
 
         DailyRemind dailyRemind = DailyRemind.builder()
                 .dailyRemindAuthor(projectMember)
                 .dailyRemindContents(requestDto.getDailyRemindContents())
-                .project(project).build();
+                .project(project)
+                .dailyRemindDate(requestDto.getDailyRemindDate()).build();
 
         dailyRemindRepository.save(dailyRemind);
 
@@ -51,7 +50,7 @@ public class DailyRemindService {
 
         Project project = projectRepository.findById(projectId).get();
 
-        ProjectMember projectMember = projectMemberRepository.findByUser(userRepository.findById(author).orElse(null));
+        ProjectMember projectMember = projectMemberRepository.findById(author).orElse(null);
 
         List<DailyRemind> dailyRemindList = dailyRemindRepository.findByProjectIdAndDailyRemindAuthor(project, projectMember);
         List<DailyRemindResponseDto> dailyRemindResponseDtoList = new ArrayList<>();
@@ -63,7 +62,7 @@ public class DailyRemindService {
 
         for (DailyRemind dailyRemind : dailyRemindList) {
             dailyRemindResponseDtoList.add(DailyRemindResponseDto.builder()
-                    .memberUserId(dailyRemind.getDailyRemindAuthor().getId())
+                    .projectMemberId(dailyRemind.getDailyRemindAuthor().getId())
                     .message(dailyRemind.getDailyRemindContents())
                     .projectId(dailyRemind.getProjectId().getId())
                     .username(dailyRemind.getDailyRemindAuthor().getUser().getUserName())
@@ -84,7 +83,7 @@ public class DailyRemindService {
 
         for (DailyRemind dailyRemind : dailyRemindList) {
             dailyRemindResponseDtoList.add(DailyRemindResponseDto.builder()
-                    .memberUserId(dailyRemind.getDailyRemindAuthor().getId())
+                    .projectMemberId(dailyRemind.getDailyRemindAuthor().getId())
                     .message(dailyRemind.getDailyRemindContents())
                     .projectId(dailyRemind.getProjectId().getId())
                     .username(dailyRemind.getDailyRemindAuthor().getUser().getUserName())

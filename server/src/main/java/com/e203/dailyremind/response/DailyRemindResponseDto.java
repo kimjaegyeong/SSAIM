@@ -10,17 +10,17 @@ public class DailyRemindResponseDto {
 
     private String username;
     private String message;
-    private int memberUserId;
+    private int projectMemberId;
     private int projectId;
     private int dailyRemindId;
     private int userId;
 
     @Builder
-    private DailyRemindResponseDto(String username, String message, int memberUserId, int projectId, int dailyRemindId
+    private DailyRemindResponseDto(String username, String message, int projectMemberId, int projectId, int dailyRemindId
     , int userId) {
         this.username = username;
         this.message = message;
-        this.memberUserId = memberUserId;
+        this.projectMemberId = projectMemberId;
         this.projectId = projectId;
         this.dailyRemindId = dailyRemindId;
         this.userId = userId;
