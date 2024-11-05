@@ -106,8 +106,6 @@ public class DailyRemindService {
 
         dailyRemind.updateDailyRemind(requestDto.getDailyRemindContents());
 
-        dailyRemindRepository.save(dailyRemind);
-
         return true;
     }
 }
