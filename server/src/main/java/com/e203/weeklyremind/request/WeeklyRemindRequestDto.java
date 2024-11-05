@@ -12,7 +12,7 @@ public class WeeklyRemindRequestDto {
     private String content;
 
     @Builder
-    WeeklyRemindRequestDto(String content, int userId) {
+    private WeeklyRemindRequestDto(String content, int userId) {
         this.userId = userId;
         this.content = content;
     }

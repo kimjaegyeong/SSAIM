@@ -1,5 +1,6 @@
 package com.e203.weeklyremind.controller;
 
+import org.springframework.http.HttpStatusCode;
 import com.e203.weeklyremind.request.WeeklyRemindRequestDto;
 import com.e203.weeklyremind.response.WeeklyRemindResponseDto;
 import com.e203.weeklyremind.service.ChatAiService;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
@@ -25,10 +29,10 @@ public class WeeklyRemindController {
         boolean isSucceed = weeklyRemindService.saveWeeklyRemind(message, projectId);
 
         if(isSucceed) {
-            return ResponseEntity.status(200).body("주간 회고가 생성되었습니다.");
+            return ResponseEntity.status(OK).body("주간 회고가 생성되었습니다.");
         }
         else {
-            return ResponseEntity.status(200).body("주간 회고가 생성되지 않았습니다.");
+            return ResponseEntity.status(OK).body("주간 회고가 생성되지 않았습니다.");
         }
     }
 
@@ -37,7 +41,19 @@ public class WeeklyRemindController {
 
         List<WeeklyRemindResponseDto> weeklyRemindList = weeklyRemindService.searchWeeklyRemind(projectId, author);
 
-        return ResponseEntity.status(200).body(weeklyRemindList);
+        return ResponseEntity.status(OK).body(weeklyRemindList);
+    }
+
+    @GetMapping("/api/v1/projects/development-story/{author}")
+    public ResponseEntity<List<WeeklyRemindResponseDto>> getDevelopmentStory(@PathVariable("author") int author) {
+
+        List<WeeklyRemindResponseDto> result = weeklyRemindService.searchDevelopmentStory(author);
+
+        if(result == null) {
+            return ResponseEntity.status(FORBIDDEN).body(null);
+        }
+
+        return ResponseEntity.status(OK).body(result);
     }
 
 
