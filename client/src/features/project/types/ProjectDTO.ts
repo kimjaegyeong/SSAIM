@@ -2,7 +2,7 @@
 
 export interface ProjectMemberDTO {
   id: number;
-  role: number;
+  role: 0|1;
   userName: string;
   profileImage : string|null;
 }

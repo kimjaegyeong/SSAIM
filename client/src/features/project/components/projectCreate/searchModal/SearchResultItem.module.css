@@ -28,3 +28,8 @@
   border: none;
   background: none;
 }
+
+.buttonDisabled{
+  cursor: not-allowed;
+  background-color: #ccc;
+}
