@@ -40,8 +40,6 @@ public class DailyRemind extends BaseEntity {
     }
 
     public void updateDailyRemind(String dailyRemindContents) {
-        if(dailyRemindContents != null) {
-            this.dailyRemindContents = dailyRemindContents;
-        }
+        this.dailyRemindContents = dailyRemindContents;
     }
 }
