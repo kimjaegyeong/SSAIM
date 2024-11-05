@@ -28,11 +28,9 @@ public class DailyRemindController {
             return ResponseEntity.status(OK).body("일일회고가 수정되었습니다.");
         }
         else {
-            return ResponseEntity.status(OK).body("일일회고 수정에 실패하였습니다.");
+            return ResponseEntity.status(NOT_FOUND).body("일일회고 수정에 실패하였습니다.");
         }
     }
-
-    private final DailyRemindService dailyRemindService;
 
     @PostMapping("/api/v1/projects/{projectId}/daily-remind")
     public ResponseEntity<String> addDailyRemind(@PathVariable("projectId") int projectId, @RequestBody DailyRemindRequestDto requestDto) {
