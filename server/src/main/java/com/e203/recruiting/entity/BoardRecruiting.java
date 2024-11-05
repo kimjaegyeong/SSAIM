@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -62,6 +63,9 @@ public class BoardRecruiting extends BaseEntity {
 
     @Column(name = "board_recruiting_member_frontend")
     private Integer memberFrontend;
+
+    @OneToMany(mappedBy = "recruiting_member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecruitingMember> recruitingMembers;
 
     @Builder
     private BoardRecruiting(User author, String title, String content, LocalDate startDate, LocalDate endDate,
