@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "./CreateTeam.module.css";
 import Tag from "../tag/Tag";
 import Button from "../../../../components/button/Button";
+import { createRecruiting } from "../../apis/createTeam/createRecruiting";
+import useUserStore from '@/stores/useUserStore';
 
 interface Recruitment {
     FE: number;
@@ -11,8 +13,9 @@ interface Recruitment {
 }
 
 const TeamCreation: React.FC = () => {
+    const user = useUserStore();
     const navigate = useNavigate();
-    const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+    const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
     const [title, setTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const [recruitment, setRecruitment] = useState<Recruitment>({ FE: 0, BE: 0, Infra: 0 });
@@ -47,11 +50,19 @@ const TeamCreation: React.FC = () => {
         { id: 16, categoryId: 3, name: "기업연계" },
     ];
 
-    const handleRegionChange = (city: string) => {
-        if (selectedRegion === city) {
+    const campus = [
+        { id: 1, name: "서울" },
+        { id: 2, name: "대전" },
+        { id: 3, name: "광주" },
+        { id: 4, name: "구미" },
+        { id: 5, name: "부울경" },
+    ]
+
+    const handleRegionChange = (id: number) => {
+        if (selectedRegion === id) {
             setSelectedRegion(null);
         } else {
-            setSelectedRegion(city);
+            setSelectedRegion(id);
         }
     };
 
@@ -113,15 +124,40 @@ const TeamCreation: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        // 데이터 유효성 검사
-        if (!title || !content || !selectedRegion || selectedDomains.length === 0 || totalPositions === 0 || !selectedMyPosition) {
-            alert("모든 필드를 채워주세요. 모집 인원 수는 최소 1명 이상이어야 합니다.");
-            console.log(title)
-            console.log(content)
-            console.log(selectedRegion)
-            console.log(selectedDomains)
-            console.log(totalPositions)
-            console.log(selectedMyPosition)
+        // 유효성 검사
+        if (!title.trim()) {
+            alert("제목을 입력해주세요.");
+            return;
+        }
+      
+        if (!content.trim()) {
+            alert("내용을 입력해주세요.");
+            return;
+        }
+      
+        if (!startDate || !endDate) {
+            alert("프로젝트 기간을 설정해주세요.");
+            return;
+        }
+      
+        if (!selectedRegion) {
+            alert("캠퍼스를 선택해주세요.");
+            return;
+        }
+      
+        if (selectedDomains.length === 0) {
+            alert("최소 하나의 도메인을 선택해주세요.");
+            return;
+        }
+      
+        if (N === 0) {
+            alert("모집 인원은 최소 1명 이상이어야 합니다.");
+            return;
+        }
+
+        const totalMembers = recruitment.Infra + recruitment.BE + recruitment.FE;
+        if (N !== totalMembers) {
+            alert(`총 모집 인원(${N})과 세부 모집 인원의 합(${totalMembers})이 일치하지 않습니다.`);
             return;
         }
 
@@ -129,6 +165,7 @@ const TeamCreation: React.FC = () => {
         const localEndDate = convertToLocalDate(endDate);
     
         const formData = {
+            author: user.userId,
             title,
             content,
             startDate: localStartDate,
@@ -141,10 +178,8 @@ const TeamCreation: React.FC = () => {
             memberBackend: recruitment.BE,
             memberFrontend: recruitment.FE,
         };
-    
-        console.log("준비된 데이터:", formData);
         
-        //API 호출 자리
+        createRecruiting(formData)
 
         navigate('/team-building');
     };
@@ -175,14 +210,14 @@ const TeamCreation: React.FC = () => {
                     <div className={styles.formGroup}>
                         <label className={styles.sectionLabel}>지역 선택</label>
                         <div className={styles.regionOptions}>
-                            {["서울", "대전", "광주", "구미", "부울경"].map((city) => (
-                                <label key={city} className={styles.regionLabel}>
+                            {campus.map((city) => (
+                                <label key={city.id} className={styles.regionLabel}>
                                     <input
                                         type="checkbox"
-                                        checked={selectedRegion === city}
-                                        onChange={() => handleRegionChange(city)}
+                                        checked={selectedRegion === city.id}
+                                        onChange={() => handleRegionChange(city.id)}
                                     />{" "}
-                                    {city}
+                                    {city.name}
                                 </label>
                             ))}
                         </div>
@@ -224,12 +259,32 @@ const TeamCreation: React.FC = () => {
 
                                 return (
                                     <div key={category} className={styles.domainWrapper}>
-                                        <div className={styles.categoryBox}>{categoryName}</div>
+                                        <div
+                                            className={`${styles.categoryBox} ${
+                                                selectedDomains.some((domainId) => {
+                                                    const domain = domains.find((d) => d.id === domainId);
+                                                    return (
+                                                        (category === "common" && domain?.categoryId === 1) ||
+                                                        (category === "specialized" && domain?.categoryId === 2) ||
+                                                        (category === "autonomous" && domain?.categoryId === 3)
+                                                    );
+                                                })
+                                                    ? styles.activeCategory
+                                                    : ""
+                                            }`}
+                                        >
+                                            {categoryName}
+                                        </div>
                                         <div className={styles.tagList}>
                                             {categoryDomains.map((domain) => (
                                                 <Tag
                                                     key={domain.id}
                                                     text={domain.name}
+                                                    badgeText={
+                                                        selectedDomains.includes(domain.id)
+                                                            ? (selectedDomains.indexOf(domain.id) + 1).toString()
+                                                            : undefined
+                                                    }
                                                     useDefaultColors={!selectedDomains.includes(domain.id)}
                                                     onClick={() => handleDomainClick(domain.id)}
                                                 />
@@ -266,6 +321,7 @@ const TeamCreation: React.FC = () => {
                                         setN(0);
                                     }
                                 }}
+                                onFocus={(e) => e.target.select()}
                                 className={styles.numberInput}
                             />
                         </label>

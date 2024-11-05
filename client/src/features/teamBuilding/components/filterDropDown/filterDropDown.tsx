@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './filterDropDown.module.css';
 
 interface Option {
@@ -10,20 +10,21 @@ interface DropdownProps {
   options: Option[];
   selectedOption: Option | null;
   onSelect: (option: Option) => void;
+  isOpen: boolean;
+  onToggle: () => void;
   placeholder?: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, selectedOption, onSelect, placeholder = '선택하세요' }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+const Dropdown: React.FC<DropdownProps> = ({ options, selectedOption, onSelect, isOpen, onToggle, placeholder = '선택하세요' }) => {
 
   const handleOptionClick = (option: Option) => {
     onSelect(option);
-    setIsOpen(false);
+    onToggle();
   };
 
   return (
     <div className={styles.dropdown}>
-      <button className={styles.button} onClick={() => setIsOpen(!isOpen)}>
+      <button className={styles.button} onClick={onToggle}>
         {selectedOption ? selectedOption.label : placeholder}
       </button>
       {isOpen && (

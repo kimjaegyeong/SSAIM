@@ -30,7 +30,7 @@ const TeamBuildingDetailPage = () => {
       { id: 3, name: 'ZZZ', position: 'Infra', img: 'https://picsum.photos/250/250', role: 0 },
       { id: 4, name: 'WWW', position: 'FE', img: 'https://picsum.photos/250/250', role: 0 },
       { id: 5, name: 'VVV', position: 'BE', img: 'https://picsum.photos/250/250', role: 0 },
-      { id: 6, name: 'QQQ', position: 'Infra', img: 'https://picsum.photos/250/250', role: 0 },
+      { id: 6, name: 'QQQ', position: 'FE', img: 'https://picsum.photos/250/250', role: 0 },
     ],
     comments: [
       { id: 1, content: 'comment1', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'FE' },
@@ -83,18 +83,20 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.postHeader}>
             <div className={styles.categorySection}>
               {data.category.map((tag) => (
-                  <Tag
-                      key={tag}
-                      text={tag}
-                  />
+                <Tag key={tag} text={tag} />
               ))}
             </div>
             <div className={styles.positionSection}>
-              {Object.entries(data.recruitment).map(([position, count]) => (
+            {Object.entries(data.recruitment).map(([position, count]) => {
+              const currentPositionCount = data.member.filter(member => member.position === position).length;
+              const remainingCount = count - currentPositionCount;
+
+              return (
                 <div key={position}>
-                  <Tag text={position} /> {count}
+                  <Tag text={position} /> {remainingCount}
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
           <div className={styles.postContent}>
@@ -130,7 +132,7 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.commentList}>
             {data.comments.map((comment) => (
               <div key={comment.id} className={styles.commentItem}>
-                <Tag text={comment.position} />
+                <Tag text={comment.position} disablePointerCursor={true}/>
                 <div className={styles.commentContent}>
                   {isCommentEditing && activeCommentId === comment.id ? (
                     <input
