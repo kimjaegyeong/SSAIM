@@ -1,6 +1,6 @@
 package com.e203.dailyremind.controller;
 
-import org.springframework.http.HttpStatusCode;
+import static org.springframework.http.HttpStatus.*;
 import com.e203.dailyremind.response.DailyRemindResponseDto;
 import com.e203.dailyremind.request.DailyRemindRequestDto;
 import com.e203.dailyremind.service.DailyRemindService;
@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +32,10 @@ public class DailyRemindController {
     public ResponseEntity<List<DailyRemindResponseDto>> getDailyRemind(@PathVariable("projectId") int projectId, @PathVariable("author") int author) {
 
         List<DailyRemindResponseDto> results = dailyRemindService.searchDailyRemind(projectId, author);
+
+        if (results == null) {
+            return ResponseEntity.status(FORBIDDEN).body(null);
+        }
 
         return ResponseEntity.status(OK).body(results);
     }

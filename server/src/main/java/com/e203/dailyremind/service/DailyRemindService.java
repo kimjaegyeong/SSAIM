@@ -57,7 +57,7 @@ public class DailyRemindService {
         List<DailyRemindResponseDto> dailyRemindResponseDtoList = new ArrayList<>();
 
         if (projectMember == null) {
-            return dailyRemindResponseDtoList;
+            return null;
         }
 
 
