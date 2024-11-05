@@ -25,14 +25,9 @@
 
 .sectionLabel {
     font-weight: 700;
-}
-
-.regionOptions label,
-.recruitmentOptions .role {
     display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-    gap: 5px;
+    flex-direction: row;
+    gap: 20px;
 }
 
 .regionOptions {
@@ -93,6 +88,7 @@
 
 .recruitmentOptions {
     display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
@@ -160,4 +156,21 @@
 
 .regionLabel {
     min-width: 74px;
+}
+
+.role {
+    display: flex;
+    flex-direction: row;    
+}
+
+.role > div {
+    width: 15%;
+}
+
+.role > span {
+    width: 10%;
+}
+
+.slider {
+    width: 60%;
 }

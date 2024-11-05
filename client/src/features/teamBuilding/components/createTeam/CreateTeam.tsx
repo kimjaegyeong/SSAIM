@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CreateTeam.module.css";
 import Tag from "../tag/Tag";
 import Button from "../../../../components/button/Button";
-import NumberInput from "../numberInput/NumberInput";
 
 interface Recruitment {
     FE: number;
@@ -17,11 +16,36 @@ const TeamCreation: React.FC = () => {
     const [title, setTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const [recruitment, setRecruitment] = useState<Recruitment>({ FE: 0, BE: 0, Infra: 0 });
-    const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
+    const [selectedDomains, setSelectedDomains] = useState<number[]>([]);
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
     const [selectedMyPosition, setSelectedMyPosition] = useState<string | null>(null);
-    const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra + (selectedMyPosition ? 1 : 0);;
+    const [N, setN] = useState<number>(0);
+    const [inputValue, setInputValue] = useState<string>("0");
+    const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra;
+
+    useEffect(() => {
+        setRecruitment({ FE: 0, BE: 0, Infra: 0 });
+    }, [N]);
+
+    const domains = [
+        { id: 1, categoryId: 1, name: "웹기술" },
+        { id: 2, categoryId: 1, name: "웹디자인" },
+        { id: 3, categoryId: 1, name: "모바일" },
+        { id: 4, categoryId: 1, name: "AIoT" },
+        { id: 5, categoryId: 2, name: "AI영상" },
+        { id: 6, categoryId: 2, name: "AI음성" },
+        { id: 7, categoryId: 2, name: "추천" },
+        { id: 8, categoryId: 2, name: "분산" },
+        { id: 9, categoryId: 2, name: "자율주행" },
+        { id: 10, categoryId: 2, name: "스마트홈" },
+        { id: 11, categoryId: 2, name: "P2P" },
+        { id: 12, categoryId: 2, name: "디지털거래" },
+        { id: 13, categoryId: 2, name: "메타버스" },
+        { id: 14, categoryId: 2, name: "핀테크" },
+        { id: 15, categoryId: 3, name: "자유주제" },
+        { id: 16, categoryId: 3, name: "기업연계" },
+    ];
 
     const handleRegionChange = (city: string) => {
         if (selectedRegion === city) {
@@ -31,21 +55,35 @@ const TeamCreation: React.FC = () => {
         }
     };
 
-    const handleDomainClick = (domain: string) => {
-        if (selectedDomains.includes(domain)) {
-            setSelectedDomains(selectedDomains.filter((item) => item !== domain));
+    const getDomainCategory = (domainId: number) => {
+        const domain = domains.find((d) => d.id === domainId);
+        if (!domain) return null;
+    
+        if (domain.categoryId === 1) return "common";
+        if (domain.categoryId === 2) return "specialized";
+        if (domain.categoryId === 3) return "autonomous";
+        return null;
+    };
+
+    const handleDomainClick = (domainId: number) => {
+        const domainCategory = getDomainCategory(domainId);
+        const selectedCategories = selectedDomains.map(getDomainCategory);
+    
+        if (
+            selectedCategories.length > 0 &&
+            !selectedCategories.includes(domainCategory)
+        ) {
+            alert("다른 대분류의 도메인은 선택할 수 없습니다.");
+            return;
+        }
+    
+        if (selectedDomains.includes(domainId)) {
+            setSelectedDomains(selectedDomains.filter((id) => id !== domainId));
         } else if (selectedDomains.length < 2) {
-            setSelectedDomains([...selectedDomains, domain]);
+            setSelectedDomains([...selectedDomains, domainId]);
         } else {
             alert("최대 2개의 도메인만 선택할 수 있습니다.");
         }
-    };
-
-    const handleRecruitmentChange = (role: keyof Recruitment, value: string) => {
-        setRecruitment((prev) => ({
-            ...prev,
-            [role]: parseInt(value, 10) || 0,
-        }));
     };
 
     const handleMyPositionClick = (position: string) => {
@@ -54,6 +92,24 @@ const TeamCreation: React.FC = () => {
         } else {
             setSelectedMyPosition(position);
         }
+    };
+
+    const handleSliderChange = (role: keyof Recruitment, value: number) => {
+        const parsedValue = isNaN(value) ? 0 : value;
+        const otherTotal = totalPositions - recruitment[role];
+        const maxAllowed = N - otherTotal;
+      
+        if (parsedValue <= maxAllowed) {
+            setRecruitment({ ...recruitment, [role]: parsedValue });
+        } else {
+            setRecruitment({ ...recruitment, [role]: maxAllowed });
+        }
+    };
+
+    const convertToLocalDate = (dateString: string): string | null => {
+        if (!dateString) return null;
+        const date = new Date(dateString);
+        return date.toISOString().split("T")[0];
     };
 
     const handleSubmit = () => {
@@ -68,17 +124,22 @@ const TeamCreation: React.FC = () => {
             console.log(selectedMyPosition)
             return;
         }
+
+        const localStartDate = convertToLocalDate(startDate);
+        const localEndDate = convertToLocalDate(endDate);
     
         const formData = {
             title,
             content,
-            region: selectedRegion,
-            domains: selectedDomains,
-            selectedMyPosition,
-            recruitment,
-            totalPositions,
-            startDate,
-            endDate,
+            startDate: localStartDate,
+            endDate: localEndDate,
+            firstDomain: selectedDomains[0],
+            secondDomain: selectedDomains[1] || null,
+            campus: selectedRegion,
+            memberTotal: N,
+            memberInfra: recruitment.Infra,
+            memberBackend: recruitment.BE,
+            memberFrontend: recruitment.FE,
         };
     
         console.log("준비된 데이터:", formData);
@@ -151,58 +212,85 @@ const TeamCreation: React.FC = () => {
                     <div className={styles.formGroup}>
                         <label className={styles.sectionLabel}>도메인 선택(최대 2개)</label>
                         <div className={styles.tagOptions}>
-                            {/* 공통 */}
-                            <div className={styles.domainWrapper}>
-                                <div className={styles.categoryBox}>공통</div>
-                                <div className={styles.tagList}>
-                                    {["웹기술", "웹디자인", "모바일", "AIoT"].map((tag) => (
-                                        <Tag
-                                            key={tag}
-                                            text={tag}
-                                            useDefaultColors={!selectedDomains.includes(tag)}
-                                            onClick={() => handleDomainClick(tag)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                            {["common", "specialized", "autonomous"].map((category) => {
+                                const categoryDomains = domains.filter(
+                                    (domain) =>
+                                        (category === "common" && domain.categoryId === 1) ||
+                                        (category === "specialized" && domain.categoryId === 2) ||
+                                        (category === "autonomous" && domain.categoryId === 3)
+                                );
+                                const categoryName =
+                                    category === "common" ? "공통" : category === "specialized" ? "특화" : "자율";
 
-                            {/* 특화 */}
-                            <div className={styles.domainWrapper}>
-                                <div className={styles.categoryBox}>특화</div>
-                                <div className={styles.tagList}>
-                                    {["AI영상", "AI음성", "추천", "분산", "자율주행", "스마트홈", "P2P", "디지털거래", "메타버스", "핀테크"].map((tag) => (
-                                        <Tag
-                                            key={tag}
-                                            text={tag}
-                                            useDefaultColors={!selectedDomains.includes(tag)}
-                                            onClick={() => handleDomainClick(tag)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* 자율 */}
-                            <div className={styles.domainWrapper}>
-                                <div className={styles.categoryBox}>자율</div>
-                                <div className={styles.tagList}>
-                                    {["자유주제", "기업연계"].map((tag) => (
-                                        <Tag
-                                            key={tag}
-                                            text={tag}
-                                            useDefaultColors={!selectedDomains.includes(tag)}
-                                            onClick={() => handleDomainClick(tag)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                                return (
+                                    <div key={category} className={styles.domainWrapper}>
+                                        <div className={styles.categoryBox}>{categoryName}</div>
+                                        <div className={styles.tagList}>
+                                            {categoryDomains.map((domain) => (
+                                                <Tag
+                                                    key={domain.id}
+                                                    text={domain.name}
+                                                    useDefaultColors={!selectedDomains.includes(domain.id)}
+                                                    onClick={() => handleDomainClick(domain.id)}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                     <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>모집 인원 : {totalPositions}</label>
+                        <label className={styles.sectionLabel}>
+                            모집 인원
+                            <input
+                                type="number"
+                                min={0}
+                                max={9}
+                                value={inputValue}
+                                onChange={(e) => {
+                                    let value = e.target.value;
+                                    if (value === "") {
+                                        setInputValue("");
+                                        return;
+                                    }
+                                    let numericValue = parseInt(value);
+                                    if (numericValue > 9) numericValue = 9;
+                                    if (numericValue < 0) numericValue = 0;
+                                    setInputValue(numericValue.toString());
+                                    setN(numericValue);
+                                }}
+                                onBlur={() => {
+                                    if (inputValue === "") {
+                                        setInputValue("0");
+                                        setN(0);
+                                    }
+                                }}
+                                className={styles.numberInput}
+                            />
+                        </label>
+                        <div className={styles.recruitmentOptions}>
+                            {(["FE", "BE", "Infra"] as const).map((role) => (
+                                <div key={role} className={styles.role}>
+                                    <div>
+                                        <Tag text={role}/>
+                                    </div>
+                                    <span>{recruitment[role]}</span>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max={N}
+                                        value={recruitment[role]}
+                                        onChange={(e) => handleSliderChange(role, parseInt(e.target.value))}
+                                        className={styles.slider}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                         <div className={styles.myPosition}>
                             <span>내 포지션</span>
                             <div className={styles.myPositionTag}>
-                                {["FE", "BE", "Infra"].map((tag) => (
+                                {["FE", "BE", "Infra", "미정"].map((tag) => (
                                     <Tag
                                         key={tag}
                                         text={tag}
@@ -211,16 +299,6 @@ const TeamCreation: React.FC = () => {
                                     />
                                 ))}
                             </div>
-                        </div>
-                        <div className={styles.recruitmentOptions}>
-                            {(["FE", "BE", "Infra"] as const).map((role) => (
-                                <div key={role} className={styles.role}>
-                                    <Tag text={role}/>
-                                    <NumberInput
-                                        onChange={(value) => handleRecruitmentChange(role, value)}
-                                    />
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </div>

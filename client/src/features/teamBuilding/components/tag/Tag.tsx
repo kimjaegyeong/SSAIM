@@ -36,6 +36,7 @@ const Tag: React.FC<TagProps> = ({ text, useDefaultColors = false, onClick, disa
         AIoT: { backgroundColor: '#84C30F', fontColor: '#FFFFFF' },
         모집: { backgroundColor: '#3C93E8', fontColor: '#FFFFFF' },
         마감: { backgroundColor: '#FA563B', fontColor: '#FFFFFF' },
+        미정: { backgroundColor: '#4F4F4F', fontColor: '#d9d9d9' }
     };
 
     // 해당 텍스트에 맞는 색상 가져오기
