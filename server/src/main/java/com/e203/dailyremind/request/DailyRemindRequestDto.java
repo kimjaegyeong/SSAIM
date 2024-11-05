@@ -13,7 +13,7 @@ public class DailyRemindRequestDto {
     private int dailyRemindId;
 
     @Builder
-    public DailyRemindRequestDto(int dailyRemindAuthor, String dailyRemindContents, int dailyRemindId) {
+    private DailyRemindRequestDto(int dailyRemindAuthor, String dailyRemindContents, int dailyRemindId) {
         this.dailyRemindAuthor = dailyRemindAuthor;
         this.dailyRemindContents = dailyRemindContents;
         this.dailyRemindId = dailyRemindId;
