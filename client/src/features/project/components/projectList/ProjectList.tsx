@@ -14,18 +14,21 @@ interface ProjectListItemProps {
 }
 
 const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick }) => {
-  console.log(projectInfo)
+  console.log(projectInfo);
+  const teamLeader = projectInfo?.projectMemberFindResponseDtoList?.find((e) => e.role === 1);
+  const teamMemberNames = projectInfo?.projectMemberFindResponseDtoList?.filter((e) => e.role === 0).map((e) => e.name);
+
   return (
     <div className={styles.projectItem} onClick={onClick}>
       <div className={styles.cardLeft}>
-        <img src={projectInfo.profileImage} className={styles.profileImage} alt="thumbnail" />
+        <img src={projectInfo?.profileImage} className={styles.profileImage} alt="thumbnail" />
       </div>
       <div className={styles.cardRight}>
         <h2>{projectInfo.title}</h2>
-        <p>팀장 : 허일영</p>
-        <p>팀원 : 두경민, 전성현, 유기상, 타마요, 마레이</p>
+        <p>팀장 : {teamLeader?.name}</p>
+        <p>팀원 : {teamMemberNames?.join(', ')}</p>
         <p>
-          {dateToString(projectInfo.startDate)} ~ {dateToString(projectInfo.endDate)}
+          {dateToString(projectInfo?.startDate)} ~ {dateToString(projectInfo?.endDate)}
         </p>
       </div>
     </div>
@@ -57,18 +60,18 @@ const ProjectList: React.FC = () => {
         </div>
       </div>
       {projectListData ? (
-   projectListData.length === 0 ? (
-     <EmptyProjectList />
-   ) : (
-     <div className={styles.body}>
-       {projectListData.map((project: ProjectDTO) => (
-         <ProjectListItem key={project.id} projectInfo={project} onClick={handleItemClick(project.id)} />
-       ))}
-     </div>
-   )
- ) : (
-   <p>로딩 중...</p>
- )}
+        projectListData.length === 0 ? (
+          <EmptyProjectList />
+        ) : (
+          <div className={styles.body}>
+            {projectListData.map((project: ProjectDTO) => (
+              <ProjectListItem key={project.id} projectInfo={project} onClick={handleItemClick(project.id)} />
+            ))}
+          </div>
+        )
+      ) : (
+        <p>로딩 중...</p>
+      )}
     </>
   );
 };
