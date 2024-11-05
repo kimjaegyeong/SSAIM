@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,15 +37,20 @@ public class WeeklyRemindController {
         }
     }
 
-    @GetMapping("/api/v1/projects/{projectId}/weekly-remind/{author}")
-    public ResponseEntity<List<WeeklyRemindResponseDto>> getWeeklyRemind(@PathVariable int projectId, @PathVariable int author) {
+    @GetMapping("/api/v1/projects/{projectId}/weekly-remind")
+    public ResponseEntity<List<WeeklyRemindResponseDto>> getWeeklyRemind(
+            @PathVariable int projectId,
+            @RequestParam(required = false) Integer projectMemberId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate){
 
-        List<WeeklyRemindResponseDto> weeklyRemindList = weeklyRemindService.searchWeeklyRemind(projectId, author);
+        List<WeeklyRemindResponseDto> weeklyRemindList = weeklyRemindService.searchWeeklyRemind(projectId, projectMemberId,
+                startDate, endDate);
 
         return ResponseEntity.status(OK).body(weeklyRemindList);
     }
 
-    @GetMapping("/api/v1/projects/development-story/{author}")
+    @GetMapping("/api/v1/projects/development-story/{projectMemberId}")
     public ResponseEntity<List<WeeklyRemindResponseDto>> getDevelopmentStory(@PathVariable("author") int author) {
 
         List<WeeklyRemindResponseDto> result = weeklyRemindService.searchDevelopmentStory(author);
