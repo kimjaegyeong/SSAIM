@@ -1,26 +1,29 @@
 import apiClient from '../../../apis/apiClient';
-import {jwtDecode} from 'jwt-decode';
-import useUserStore  from '../../../stores/useUserStore';
+import { jwtDecode } from 'jwt-decode';
+import useUserStore from '../../../stores/useUserStore';
+
+// JWT 토큰의 디코드된 데이터 구조 정의
+interface DecodedToken {
+  userId: number;
+  role: string;
+  // 필요시 추가 필드
+}
 
 // 로그인 API 요청 함수
-export const login = async (username: string, password: string) => {
+export const login = async (userEmail: string, userPw: string) => {
   try {
-    const response = await apiClient.post('/login', { username, password });
-    const { token } = response.headers.Authorization;
-    console.log(response.headers.getAuthorization)
-    console.log(response.headers.Authorization)
+    const response = await apiClient.post('/users/login', { userEmail, userPw });
+    // console.log(response.headers.authorization);
+    const token = response.headers.authorization?.replace('Bearer ', '');
     // JWT 토큰 저장
-    localStorage.setItem('token', token);
-
     // JWT 토큰 디코딩하여 유저 정보 추출
-    const userData = jwtDecode(token);
-    console.log(userData)
+    const userData = jwtDecode<DecodedToken>(token);
+    // console.log(userData);
     // Zustand store에 유저 정보 업데이트
-    useUserStore.getState().login(token, {id : '1', name : '탱글대기'});
-
-    return userData;
+    const { login } = useUserStore.getState();
+    login(token, userData.userId, userData.role);
   } catch (error) {
-    console.error("Login failed:", error);
+    console.error('Login failed:', error);
     throw error;
   }
 };

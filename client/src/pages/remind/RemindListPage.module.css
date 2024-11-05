@@ -1,8 +1,8 @@
-.remindBG {
+.bookList {
     position: fixed; /* 고정 위치 */
     top: 0; /* 화면 상단에 맞춤 */
-    left: 0; /* 화면 좌측에 맞춤 */
-    width: 100vw; /* 화면 전체 너비 */
+    left: 60px; /* 화면 좌측에 맞춤 */
+    width: 97%; /* 화면 전체 너비 */
     height: 100vh; /* 화면 전체 높이 */
     object-fit: cover; /* 비율을 유지하면서 꽉 채움 */
     z-index: -1; /* 다른 요소들 뒤에 배치 */
@@ -10,24 +10,27 @@
 }
 
 .container {
+    height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 150px;
-    gap: 100px;
+    padding-top: 60px;
+    gap: 70px;
 }
 
-.remindIntroText{
+
+
+.Row {
+    width: 80vw;
+    height: 25vh;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 100px;
-
+    justify-content: space-between;
+    gap: 50px;
 }
 
-.remindIntroDesc {
-    color: white;
-    font-size: 24px;
-    white-space: pre-line;
+
+.book {
+    width: 150px;
+    height: 200px;
+    cursor: pointer;
 }

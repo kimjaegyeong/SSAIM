@@ -6,7 +6,7 @@ const LoginPage:React.FC = () => {
   return (
     <div className={styles.mainLayout}>
       <div className={styles.loginContainer}>
-        <LoginForm onLogin={()=>{}}/>
+        <LoginForm/>
       </div>
     </div>
   );
