@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RecruitingRepository extends JpaRepository<BoardRecruiting, Integer> {
+
+    BoardRecruiting findByRecruitingId(int recruitingId);
 }

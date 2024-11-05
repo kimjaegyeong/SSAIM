@@ -5,12 +5,12 @@ import com.e203.recruiting.entity.BoardRecruiting;
 import com.e203.recruiting.entity.RecruitingMember;
 import com.e203.recruiting.repository.RecruitingRepository;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
+import com.e203.recruiting.response.RecruitingPostResponseDto;
 import com.e203.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,5 +44,11 @@ public class RecruitingService {
 
         recruitingRepository.save(boardRecruiting);
 
+    }
+
+    public RecruitingPostResponseDto getPost(int postId, int userId) {
+
+        recruitingRepository.findByRecruitingId(postId);
+        return null;
     }
 }
