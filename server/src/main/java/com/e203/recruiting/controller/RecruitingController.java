@@ -2,7 +2,7 @@ package com.e203.recruiting.controller;
 
 import com.e203.jwt.JWTUtil;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
-import com.e203.recruiting.response.RecruitingPostResponseDto;
+import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
 import com.e203.recruiting.service.RecruitingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,8 @@ public class RecruitingController {
     }
 
     @GetMapping("/api/v1/recruiting/posts/{postId}")
-    public ResponseEntity<RecruitingPostResponseDto> getPost(@PathVariable(name = "postId") int postId,
-                                                             @RequestHeader("Authorization") String auth) {
+    public ResponseEntity<RecruitingPostDetailResponseDto> getPost(@PathVariable(name = "postId") int postId,
+                                                                   @RequestHeader("Authorization") String auth) {
         int userId = jwtUtil.getUserId(auth.substring(7));
         return ResponseEntity.status(200).body(recruitingService.getPost(postId, userId));
     }

@@ -1,10 +1,7 @@
 package com.e203.recruiting.response;
 
 import com.e203.recruiting.entity.BoardRecruiting;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -36,12 +33,13 @@ public class RecruitingPostResponseDto {
 
     private int memberFrontend;
 
+    @Setter
     private int recruitedTotal;
 
     @Builder
     private RecruitingPostResponseDto(int postId, String authorProfileImageUrl, String authorName, String postTitle,
                                       String postContent, int firstDomain, int secondDomain, int campus, int memberTotal,
-                                      int memberInfra, int memberBackend, int memberFrontend, int recruitedTotal) {
+                                      int memberInfra, int memberBackend, int memberFrontend) {
         this.postId = postId;
         this.authorProfileImageUrl = authorProfileImageUrl;
         this.authorName = authorName;
@@ -54,7 +52,6 @@ public class RecruitingPostResponseDto {
         this.memberInfra = memberInfra;
         this.memberBackend = memberBackend;
         this.memberFrontend = memberFrontend;
-        this.recruitedTotal = recruitedTotal;
     }
 
     RecruitingPostResponseDto(BoardRecruiting recruiting) {
@@ -70,8 +67,6 @@ public class RecruitingPostResponseDto {
         this.memberInfra = recruiting.getMemberInfra();
         this.memberBackend = recruiting.getMemberBackend();
         this.memberFrontend = recruiting.getMemberFrontend();
-        this.recruitedTotal = recruiting.getMemberTotal() - (recruiting.getMemberInfra() +
-                recruiting.getMemberBackend() + recruiting.getMemberFrontend());
     }
 
     public static RecruitingPostResponseDto fromEntity(BoardRecruiting recruiting) {
@@ -88,8 +83,6 @@ public class RecruitingPostResponseDto {
                 .memberInfra(recruiting.getMemberInfra())
                 .memberBackend(recruiting.getMemberBackend())
                 .memberFrontend(recruiting.getMemberFrontend())
-                .recruitedTotal(recruiting.getMemberTotal() - (recruiting.getMemberInfra() +
-                        recruiting.getMemberBackend() + recruiting.getMemberFrontend()))
                 .build();
     }
 }
