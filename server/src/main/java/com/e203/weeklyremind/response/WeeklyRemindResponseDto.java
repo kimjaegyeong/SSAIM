@@ -15,7 +15,7 @@ public class WeeklyRemindResponseDto {
     private String author;
 
     @Builder
-    WeeklyRemindResponseDto(int authorId, int projectId, int weeklyRemindId, String content, String author) {
+    private WeeklyRemindResponseDto(int authorId, int projectId, int weeklyRemindId, String content, String author) {
 
         this.weeklyRemindId = weeklyRemindId;
         this.authorId = authorId;
