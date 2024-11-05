@@ -1,5 +1,6 @@
 package com.e203.recruiting.entity;
 
+import com.e203.global.entity.BaseEntity;
 import com.e203.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,18 +14,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "recruiting_member")
-public class RecruitingMember {
+public class RecruitingMember extends BaseEntity {
 
     @Id
     @Column(name = "recruiting_member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_id", nullable = false)
     private BoardRecruiting boardRecruiting;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

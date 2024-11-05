@@ -22,7 +22,7 @@ public class BoardRecruiting extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int recruitingId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_author", nullable = false)
     private User author;
 
@@ -38,11 +38,11 @@ public class BoardRecruiting extends BaseEntity {
     @Column(name = "board_recruiting_end_date")
     private LocalDate endDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_first_domain")
     private ProjectDomain firstDomain;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_second_domain")
     private ProjectDomain secondDomain;
 
@@ -62,7 +62,7 @@ public class BoardRecruiting extends BaseEntity {
     private Integer memberFrontend;
 
     @Setter
-    @OneToMany(mappedBy = "boardRecruiting", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "boardRecruiting", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RecruitingMember> recruitingMembers;
 
     @Builder
