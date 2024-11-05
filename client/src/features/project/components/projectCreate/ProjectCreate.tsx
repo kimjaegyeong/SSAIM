@@ -39,14 +39,17 @@ const ProjectCreate = () => {
   
   const handleSubmit = () => {
     // 제출 로직
+    console.log(projectData)
+    console.log(123)
     try {
+      console.log(projectData)
       createProject(projectData);
       navigate('/project');
     } catch (error) {
       console.log(error);
     }
   };
-
+  console.log(projectData)
   return (
     <div className={styles.container}>
       {/* 상단 구역 */}

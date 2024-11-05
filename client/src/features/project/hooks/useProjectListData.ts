@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { ProjectDTO } from '../types/ProjectDTO';
 import { fetchProjectListData } from '../apis/fetchProjectListData';
 export const useProjectListData = (userId: number|null) => {
   return useQuery({
