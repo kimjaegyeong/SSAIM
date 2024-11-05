@@ -1,5 +1,6 @@
 package com.e203.user.request;
 
+import com.e203.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

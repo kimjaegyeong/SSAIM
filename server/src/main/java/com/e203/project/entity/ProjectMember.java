@@ -1,5 +1,8 @@
 package com.e203.project.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.e203.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -10,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,12 +37,6 @@ public class ProjectMember {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
-
-	@Column(name = "project_member_jira_api_key", length = 255)
-	private String jiraApiKey;
-
-	@Column(name = "project_member_gitlab_api_token", length = 255)
-	private String gitlabApiToken;
 
 	@Column(name = "project_member_current_MR", length = 255)
 	private String currentMR;
