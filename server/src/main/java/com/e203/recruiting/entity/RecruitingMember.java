@@ -38,7 +38,7 @@ public class RecruitingMember {
     private int recruitingMemberPosition;
 
     @Builder
-    public RecruitingMember(BoardRecruiting boardRecruiting, User user, int recruitingMemberStatus,
+    private RecruitingMember(BoardRecruiting boardRecruiting, User user, int recruitingMemberStatus,
                             String recruitingMemberMessage, int recruitingMemberPosition) {
         this.boardRecruiting = boardRecruiting;
         this.user = user;
