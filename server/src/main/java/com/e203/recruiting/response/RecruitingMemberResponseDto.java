@@ -30,6 +30,14 @@ public class RecruitingMemberResponseDto {
         this.userEmail = userEmail;
     }
 
+    RecruitingMemberResponseDto(RecruitingMember member) {
+        this.userId = member.getUser().getUserId();
+        this.userName = member.getUser().getUserName();
+        this.profileImage = member.getUser().getUserProfileImage();
+        this.position = member.getRecruitingMemberPosition();
+        this.userEmail = member.getUser().getUserEmail();
+    }
+
     public static RecruitingMemberResponseDto fromEntity(RecruitingMember member) {
         return RecruitingMemberResponseDto.builder()
                 .userId(member.getUser().getUserId())
