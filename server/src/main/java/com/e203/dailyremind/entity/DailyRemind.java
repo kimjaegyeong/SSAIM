@@ -33,7 +33,7 @@ public class DailyRemind extends BaseEntity {
     private Project projectId;
 
     @Builder
-    public DailyRemind(Project project, ProjectMember dailyRemindAuthor, String dailyRemindContents) {
+    private DailyRemind(Project project, ProjectMember dailyRemindAuthor, String dailyRemindContents) {
         this.dailyRemindAuthor = dailyRemindAuthor;
         this.projectId = project;
         this.dailyRemindContents = dailyRemindContents;

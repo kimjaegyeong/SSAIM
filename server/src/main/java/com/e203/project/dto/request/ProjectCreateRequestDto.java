@@ -33,7 +33,7 @@ public class ProjectCreateRequestDto {
 		return Project.builder()
 			.title(this.title)
 			.name(this.name)
-			.progressFront(this.profileImage)
+			.profileImage(this.profileImage)
 			.startDate(this.startDate)
 			.endDate(this.endDate)
 			.build();

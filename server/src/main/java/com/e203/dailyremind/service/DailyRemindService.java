@@ -27,6 +27,26 @@ public class DailyRemindService {
     private final UserRepository userRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
+    public boolean saveDailyRemind(DailyRemindRequestDto requestDto, int projectId) {
+
+        Project project = projectRepository.findById(projectId).orElse(null);
+        User user = userRepository.findById(requestDto.getDailyRemindAuthor()).orElse(null);
+        ProjectMember projectMember = projectMemberRepository.findByUser(user);
+
+        if (user == null) {
+            return false;
+        }
+
+        DailyRemind dailyRemind = DailyRemind.builder()
+                .dailyRemindAuthor(projectMember)
+                .dailyRemindContents(requestDto.getDailyRemindContents())
+                .project(project).build();
+
+        dailyRemindRepository.save(dailyRemind);
+
+        return true;
+    }
+
     public List<DailyRemindResponseDto> searchDailyRemind(int projectId, int author) {
 
         Project project = projectRepository.findById(projectId).get();

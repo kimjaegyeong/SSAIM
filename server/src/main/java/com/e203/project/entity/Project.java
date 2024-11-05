@@ -1,6 +1,8 @@
 package com.e203.project.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.e203.global.entity.BaseEntity;
 
@@ -9,11 +11,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -41,20 +45,27 @@ public class Project extends BaseEntity {
 	private LocalDateTime endDate;
 
 	@Column(name = "project_gitlab_api")
-	private String gitlabApi;
+	@Setter
+	private String gitlabApi ;
 
 	@Column(name = "project_jira_api")
+	@Setter
 	private String jiraApi;
 
 	@Column(name = "project_progress_front")
-	private String progressFront;
+	@Setter
+	private Double progressFront =0.0; //이거 왜 안 먹히지 ?
 
 	@Column(name = "project_progress_back")
-	private String progressBack;
+	@Setter
+	private Double progressBack = 0.0;
+
+	@OneToMany(mappedBy = "project")
+	private List<ProjectMember> projectMemberList = new ArrayList<>();
 
 	@Builder
 	private Project(String title, String name, String profileImage, LocalDateTime startDate, LocalDateTime endDate, String gitlabApi, String jiraApi,
-		String progressBack, String progressFront){
+		Double progressBack, Double progressFront){
 		this.title = title;
 		this.name= name;
 		this.profileImage = profileImage;
