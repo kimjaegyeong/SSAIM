@@ -69,7 +69,7 @@ public class ProjectService {
 
 	private ProjectFindResponseDto getProjectFindResponseDto(Project project) {
 		List<ProjectMemberFindResponseDto> pmDto = createProjectMemberFindResponseDtos(project);
-		ProjectFindResponseDto projectFindResponseDto = ProjectFindResponseDto.builder()
+		return ProjectFindResponseDto.builder()
 			.id(project.getId())
 			.name(project.getName())
 			.title(project.getTitle())
@@ -81,7 +81,6 @@ public class ProjectService {
 			.progressFront(project.getProgressFront())// 프론트엔드 진행도
 			.projectMembers(pmDto)
 			.build();
-		return projectFindResponseDto;
 	}
 
 	private List<ProjectMemberFindResponseDto> createProjectMemberFindResponseDtos(Project project) {
@@ -89,7 +88,8 @@ public class ProjectService {
 		for(ProjectMember member : project.getProjectMemberList()){
 			ProjectMemberFindResponseDto dto =
 				ProjectMemberFindResponseDto.builder()
-					.id(member.getId())
+					.pmId(member.getId())
+					.userId(member.getUser().getUserId())
 					.name(member.getUser().getUserName())
 					.profileImage(member.getUser().getUserProfileImage())
 					.role(member.getRole())
