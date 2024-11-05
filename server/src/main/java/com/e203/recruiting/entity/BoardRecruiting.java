@@ -4,10 +4,7 @@ import com.e203.global.entity.BaseEntity;
 import com.e203.global.entity.ProjectDomain;
 import com.e203.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
@@ -29,10 +26,10 @@ public class BoardRecruiting extends BaseEntity {
     @JoinColumn(name = "board_recruiting_author", nullable = false)
     private User author;
 
-    @Column(name = "board_recruiting_title", length = 255)
+    @Column(name = "board_recruiting_title")
     private String title;
 
-    @Column(name = "board_recruiting_content", length = 255)
+    @Column(name = "board_recruiting_content")
     private String content;
 
     @Column(name = "board_recruiting_start_date")
@@ -64,7 +61,8 @@ public class BoardRecruiting extends BaseEntity {
     @Column(name = "board_recruiting_member_frontend")
     private Integer memberFrontend;
 
-    @OneToMany(mappedBy = "recruiting_member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    @OneToMany(mappedBy = "boardRecruiting", cascade = CascadeType.ALL)
     private List<RecruitingMember> recruitingMembers;
 
     @Builder
@@ -83,5 +81,6 @@ public class BoardRecruiting extends BaseEntity {
         this.memberInfra = memberInfra;
         this.memberBackend = memberBackend;
         this.memberFrontend = memberFrontend;
+
     }
 }

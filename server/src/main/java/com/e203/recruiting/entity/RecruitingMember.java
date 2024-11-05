@@ -3,6 +3,7 @@ package com.e203.recruiting.entity;
 import com.e203.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,11 +22,11 @@ public class RecruitingMember {
 
     @ManyToOne
     @JoinColumn(name = "board_recruiting_id", nullable = false)
-    private BoardRecruiting boardRecruitingId;
+    private BoardRecruiting boardRecruiting;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     @Column(name = "recruiting_member_status")
     private int recruitingMemberStatus;
@@ -35,5 +36,15 @@ public class RecruitingMember {
 
     @Column(name = "recruiting_member_position")
     private int recruitingMemberPosition;
+
+    @Builder
+    public RecruitingMember(BoardRecruiting boardRecruiting, User user, int recruitingMemberStatus,
+                            String recruitingMemberMessage, int recruitingMemberPosition) {
+        this.boardRecruiting = boardRecruiting;
+        this.user = user;
+        this.recruitingMemberStatus = recruitingMemberStatus;
+        this.recruitingMemberMessage = recruitingMemberMessage;
+        this.recruitingMemberPosition = recruitingMemberPosition;
+    }
 
 }
