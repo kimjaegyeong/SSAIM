@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.OK;
 
 
@@ -47,6 +48,10 @@ public class WeeklyRemindController {
     public ResponseEntity<List<WeeklyRemindResponseDto>> getDevelopmentStory(@PathVariable("author") int author) {
 
         List<WeeklyRemindResponseDto> result = weeklyRemindService.searchDevelopmentStory(author);
+
+        if(result == null) {
+            return ResponseEntity.status(FORBIDDEN).body(null);
+        }
 
         return ResponseEntity.status(OK).body(result);
     }

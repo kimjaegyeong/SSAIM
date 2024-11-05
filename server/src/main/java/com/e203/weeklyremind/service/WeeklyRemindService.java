@@ -86,6 +86,10 @@ public class WeeklyRemindService {
         ProjectMember authorMember = projectMemberRepository.findById(author)
                 .orElse(null);
 
+        if(authorMember == null) {
+            return null;
+        }
+
         //나의 주간회고만 가져오기
         List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthor(authorMember);
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
