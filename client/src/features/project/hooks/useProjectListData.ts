@@ -5,7 +5,7 @@ export const useProjectListData = (userId: number|null) => {
     queryKey: ['projectListData'],
     queryFn: async () => {
       // fetchProjectListData의 결과를 반환하도록 수정
-      console.log(userId, 'queryFn')
+      // console.log(userId, 'queryFn')
       if (userId === null) return []; // userId가 null인 경우 빈 배열 반환
       return await fetchProjectListData(userId);
     },

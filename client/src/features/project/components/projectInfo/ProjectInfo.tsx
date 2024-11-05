@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 const ProjectInfo: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { data: projectInfo } = useProjectInfo(userId);
   const project = {
     profileImage: 'path/to/projectImage.jpg',
     name: '프로젝트 이름',
