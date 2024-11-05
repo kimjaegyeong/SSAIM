@@ -2,11 +2,16 @@ package com.e203.recruiting.service;
 
 import com.e203.global.entity.ProjectDomain;
 import com.e203.recruiting.entity.BoardRecruiting;
+import com.e203.recruiting.entity.RecruitingMember;
 import com.e203.recruiting.repository.RecruitingRepository;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
 import com.e203.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +19,7 @@ public class RecruitingService {
 
     private final RecruitingRepository recruitingRepository;
 
+    @Transactional
     public void createPost(RecruitingWriteRequestDto dto) {
 
         BoardRecruiting boardRecruiting = BoardRecruiting.builder()
@@ -30,6 +36,11 @@ public class RecruitingService {
                 .memberFrontend(dto.getMemberFrontend())
                 .memberBackend(dto.getMemberBackend())
                 .build();
+
+        boardRecruiting.setRecruitingMembers(List.of(RecruitingMember.builder()
+                .boardRecruiting(boardRecruiting)
+                .user(boardRecruiting.getAuthor())
+                .build()));
 
         recruitingRepository.save(boardRecruiting);
 
