@@ -1,6 +1,6 @@
 import styles from './EditProjectSetting.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CheckModal from '@/components/checkModal/CheckModal';
 import { fetchApiKey } from '@features/project/apis/fetchApiKey';
 import { useProjectInfo } from '@/features/project/hooks/useProjectInfo';
@@ -31,15 +31,22 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState<string>('');
   const { data: projectInfo } = useProjectInfo(projectId);
-  const isApiKeyPresent = () => (type === 'jira' ? projectInfo?.jiraApi : projectInfo?.gitlabApi);
-  console.log(modalData);
+
+  const existingApiKey = type === 'jira' ? projectInfo?.jiraApi : projectInfo?.gitlabApi;
+
+  useEffect(() => {
+    if (existingApiKey) {
+      setApiKey('**********'); // 초기값을 숨겨진 형태로 설정
+    }
+  }, [existingApiKey]);
+
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
   const handleSave = async () => {
     const apiKeyPayload = type === 'jira' ? { jiraApi: apiKey } : { gitlabApi: apiKey };
     console.log(apiKeyPayload);
-    if (isApiKeyPresent()) {
+    if (existingApiKey) {
       await fetchApiKey(modalData.content, 'patch', apiKeyPayload, projectId);
     } else {
       await fetchApiKey(modalData.content, 'post', apiKeyPayload, projectId);
