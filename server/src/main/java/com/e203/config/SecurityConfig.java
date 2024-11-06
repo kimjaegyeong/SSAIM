@@ -69,6 +69,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/users", "api/v1/users/login").permitAll()
                         .requestMatchers("/health-check").permitAll()
+                        .requestMatchers("/api/v1/**") .permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)

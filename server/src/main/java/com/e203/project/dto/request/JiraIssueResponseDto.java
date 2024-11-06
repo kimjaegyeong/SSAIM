@@ -5,11 +5,9 @@ import com.e203.project.dto.jiraapi.JiraIssue;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
 @NoArgsConstructor
-@ToString
 public class JiraIssueResponseDto {
 	private String title;
 	private String epicCode;
