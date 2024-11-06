@@ -35,4 +35,5 @@ public class RecruitingWriteRequestDto {
 
     private Integer memberFrontend;
 
+    private Integer position;
 }

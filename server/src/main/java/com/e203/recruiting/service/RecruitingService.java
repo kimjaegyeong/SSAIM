@@ -51,6 +51,8 @@ public class RecruitingService {
         boardRecruiting.setRecruitingMembers(List.of(RecruitingMember.builder()
                 .boardRecruiting(boardRecruiting)
                 .user(boardRecruiting.getAuthor())
+                .recruitingMemberStatus(1)
+                .recruitingMemberPosition(dto.getPosition())
                 .build()));
 
         recruitingRepository.save(boardRecruiting);
