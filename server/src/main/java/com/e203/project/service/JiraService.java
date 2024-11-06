@@ -43,6 +43,9 @@ public class JiraService {
 	@Transactional
 	public List<JiraIssueResponseDto> findAllJiraIssues(String startDate, String endDate, int projectId) {
 		JiraResponse jiraIssues = getJiraIssues(startDate, endDate, projectId);
+		if(jiraIssues ==null){
+			return null;
+		}
 		return jiraIssues.getIssues() == null ? null : jiraIssues.getIssues().stream()
 			.map(JiraIssueResponseDto::transferDto)
 			.collect(Collectors.toList());
@@ -51,6 +54,9 @@ public class JiraService {
 	@Transactional
 	public JiraResponse getJiraIssues(String startDate, String endDate, int projectId) {
 		ProjectMember leader = getProjectLeader(projectId);
+		if(leader==null){
+			return null;
+		}
 		String jiraApi = leader.getProject().getJiraApi();
 		String userEmail = leader.getUser().getUserEmail();
 
