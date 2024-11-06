@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,9 +24,9 @@ public class JiraController {
 
 	private final JiraService jiraService;
 
-	@PostMapping("/api/v1/projects/{projectId}/jira-api")
-	public ResponseEntity<String> connectJiraApi(@PathVariable("projectId") int projectId
-		, @RequestBody ProjectJiraConnectDto projectJiraConnectDto) {
+	@PatchMapping("/api/v1/projects/{projectId}/jira-api")
+	public ResponseEntity<String> connectJiraApi(@PathVariable("projectId") int projectId,
+		 @RequestBody ProjectJiraConnectDto projectJiraConnectDto) {
 
 		boolean result = jiraService.setJiraApi(projectJiraConnectDto, projectId);
 

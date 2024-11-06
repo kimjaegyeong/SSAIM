@@ -30,13 +30,14 @@ public class JiraService {
 	private final String JIRA_URL = "https://ssafy.atlassian.net/rest/api/3/search";
 
 	@Transactional
-	public Boolean setJiraApi(ProjectJiraConnectDto jiraApi, int projectId) {
+	public Boolean setJiraApi(ProjectJiraConnectDto jiraConnectDto, int projectId) {
 		Project project = projectRepository.findById(projectId).orElse(null);
 		if (project == null) {
 			return false;
 		}
-		System.out.println(jiraApi.getJiraApi());
-		project.setJiraApi(jiraApi.getJiraApi());
+		project.setJiraApi(jiraConnectDto.getJiraApi());
+		project.setJiraProjectId(jiraConnectDto.getJiraProjectId());
+
 		return true;
 	}
 
@@ -58,9 +59,10 @@ public class JiraService {
 			return null;
 		}
 		String jiraApi = leader.getProject().getJiraApi();
+		String projectID = leader.getProject().getJiraProjectId();
 		String userEmail = leader.getUser().getUserEmail();
 
-		String jql = "project=S11P31E203 AND created >= \"" + startDate + "\" AND created <= \"" + endDate + "\"";
+		String jql = "project=\"" + projectId + "\" + AND created >= \"" + startDate + "\" AND created <= \"" + endDate + "\"";
 		String fields = "summary,status,assignee,customfield_10014,customfield_10031";
 		String url = JIRA_URL + "?jql=" + jql + "&fields=" + fields;
 
