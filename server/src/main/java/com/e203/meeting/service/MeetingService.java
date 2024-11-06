@@ -41,4 +41,21 @@ public class MeetingService {
 
         return meetingResponseDtoList;
     }
+
+    public MeetingResponseDto getMeeting(int meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId).orElse(null);
+        if (meeting == null) {
+            return null;
+        }
+
+        MeetingResponseDto meetingResponseDto = MeetingResponseDto.builder()
+                .meetingCreateTime(meeting.getCreatedAt())
+                .projectId(meeting.getProjectId().getId())
+                .meetingId(meeting.getMeetingId())
+                .meetingTitle(meeting.getMeetingTitle())
+                .meetingVoiceUrl(meeting.getMeetingVoiceUrl())
+                .meetingVoiceScript(meeting.getMeetingVoiceScript()).build();
+
+        return meetingResponseDto;
+    }
 }
