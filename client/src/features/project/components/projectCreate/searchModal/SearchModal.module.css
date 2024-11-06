@@ -29,7 +29,6 @@
 .searchInput {
   width: 90%;
   padding: 8px;
-  margin-bottom: 30px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -46,4 +45,28 @@
 
 .results {
   margin-top: 10px;
+  min-height : 500px;
+}
+.searchContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchTypeSelect {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px;
+}
+
+.searchButton {
+  width : 60px;
+  padding: 8px 8px;
 }

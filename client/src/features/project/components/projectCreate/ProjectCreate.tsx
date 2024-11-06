@@ -7,6 +7,8 @@ import TeamMemberGrid from './teamMember/TeamMemberGrid';
 import { ProjectCreateDTO } from '@features/project/types/ProjectDTO';
 import { createProject } from '@features/project/apis/createProject';
 import { useNavigate } from 'react-router-dom';
+import { transformToProjectMember } from '@features/project/utils/transformers';
+import useTeamStore from '../../stores/useTeamStore';
 
 const ProjectCreate = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ const ProjectCreate = () => {
     endDate: null,
     teamMembers: [],
   });
+  const { members, leaderId } = useTeamStore();
   const handleImageClick = () => {
     // 이미지 선택 로직
   };
@@ -31,25 +34,35 @@ const ProjectCreate = () => {
   };
 
   const handleDateChange = (date: Date | null, field: 'startDate' | 'endDate') => {
-    setProjectData(prevData => ({
+    setProjectData((prevData) => ({
       ...prevData,
-      [field]: date ? date.toISOString() : null
+      [field]: date ? date.toISOString() : null,
     }));
   };
-  
-  const handleSubmit = () => {
-    // 제출 로직
-    console.log(projectData)
-    console.log(123)
+
+  const handleSubmit = async () => {
     try {
-      console.log(projectData)
-      createProject(projectData);
+      // teamMembers 변환
+      const transformedTeamMembers = members.map(transformToProjectMember);
+      transformedTeamMembers.forEach((e, i) => {if(e.id === leaderId){
+        console.log(e)
+        transformedTeamMembers[i].role = 1;
+        console.log('transformed', transformedTeamMembers)
+      }})
+      // projectData 업데이트
+      const updatedProjectData = {
+        ...projectData,
+        teamMembers: transformedTeamMembers,
+      };
+
+      // 프로젝트 생성 요청
+      await createProject(updatedProjectData);
       navigate('/project');
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(projectData)
+
   return (
     <div className={styles.container}>
       {/* 상단 구역 */}

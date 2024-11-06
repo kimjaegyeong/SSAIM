@@ -1,19 +1,15 @@
 import { create } from 'zustand';
-
-interface TeamMember {
-  id: number;
-  name: string;
-  email: string;
-  profileImage: string;
-}
+import { TeamMemberDTO } from '@features/project/types/TeamMemberDTO';
 
 interface TeamStore {
-  members: TeamMember[];
-  addMember: (member: TeamMember) => void;
+  members: TeamMemberDTO[];
+  addMember: (member: TeamMemberDTO) => void;
   removeMember: (id: number) => void;
   isModalOpen: boolean;
   openModal: () => void;
   closeModal: () => void;
+  leaderId: number|null;
+  setLeaderId: (leaderId: number) => void;
 }
 
 const useTeamStore = create<TeamStore>((set) => ({
@@ -27,11 +23,18 @@ const useTeamStore = create<TeamStore>((set) => ({
     }),
   removeMember: (id) =>
     set((state) => ({
-      members: state.members.filter((member) => member.id !== id),
+      members: state.members.filter((member) => member.userId !== id),
     })),
   isModalOpen: false,
   openModal: () => set({ isModalOpen: true }),
   closeModal: () => set({ isModalOpen: false }),
+  leaderId: null,
+  setLeaderId: (leaderId) => {
+    set((state) => ({
+      ...state,
+      leaderId: leaderId, // leaderId 값을 업데이트
+    }));
+  },
 }));
 
 export default useTeamStore;
