@@ -1,4 +1,5 @@
 import { useState, useEffect  } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './SprintContainer.module.css';
 import FilterHeader from './FilterHeader';
 import Button from '../../../../../components/button/Button';
@@ -7,21 +8,25 @@ import MySprint from './my/MySprint';
 import TeamSprint from './team/TeamSprint';
 import SprintModal from './SprintModal';
 import moment from 'moment';
+import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 
 
 const SprintContainer = () => {
+    const { projectId } = useParams<{ projectId: string }>();
     const [myTeam, setMyTeam] = useState('나의 회고');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formattedDate, setFormattedDate] = useState('');
+    const { pmId } = usePmIdStore();
     
     useEffect(() => {
+      console.log(pmId);
       const month = moment(selectedDate).format('M'); // 현재 선택된 월
       const year = moment(selectedDate).format('YYYY'); // 현재 선택된 연도
       const startOfMonth = moment(selectedDate).startOf('month'); // 선택한 날짜의 월 시작일
       const weekNumber = Math.ceil((selectedDate.getDate() + startOfMonth.day()) / 7); // 주차 계산
       setFormattedDate(`${year}년 ${month}월 ${weekNumber}주차`); // 원하는 형식으로 포맷팅
-  }, [selectedDate]);
+  }, [selectedDate, pmId]);
 
     const handleOpenModal = () => {
       setIsModalOpen(true);
@@ -53,7 +58,7 @@ const SprintContainer = () => {
         <WeekCalendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
       </div>
 
-      <SprintModal isOpen={isModalOpen} onClose={handleCloseModal}>
+      <SprintModal isOpen={isModalOpen} onClose={handleCloseModal} projectId={Number(projectId)}>
 
       </SprintModal>
     </div>
