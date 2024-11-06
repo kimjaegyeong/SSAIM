@@ -26,7 +26,7 @@ public class MeetingController {
         List<MeetingResponseDto> result = meetingService.getMeetings(projectId);
 
         if (result == null) {
-            return ResponseEntity.status(NOT_FOUND).body(null);
+            return ResponseEntity.status(OK).body(null);
         }
 
         return ResponseEntity.status(OK).body(result);
