@@ -53,6 +53,10 @@ public class RecruitingService {
     public RecruitingPostDetailResponseDto getPost(int postId, int userId) {
 
         BoardRecruiting recruiting = recruitingRepository.findByRecruitingId(postId);
+        if (recruiting == null) {
+            return null;
+        }
+
         List<RecruitingMemberResponseDto> recruitingMembers;
         List<RecruitingCandidateResponseDto> recruitingCandidates;
 

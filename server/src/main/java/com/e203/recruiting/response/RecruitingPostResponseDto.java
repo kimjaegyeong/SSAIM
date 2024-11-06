@@ -4,6 +4,7 @@ import com.e203.recruiting.entity.BoardRecruiting;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,13 +34,18 @@ public class RecruitingPostResponseDto {
 
     private int memberFrontend;
 
+    private LocalDateTime createdDate;
+
+    private LocalDateTime updatedDate;
+
     @Setter
     private int recruitedTotal;
 
     @Builder
     private RecruitingPostResponseDto(int postId, String authorProfileImageUrl, String authorName, String postTitle,
-                                      String postContent, int firstDomain, int secondDomain, int campus, int memberTotal,
-                                      int memberInfra, int memberBackend, int memberFrontend) {
+                                      String postContent, int firstDomain, int secondDomain, int campus,
+                                      int memberTotal, int memberInfra, int memberBackend, int memberFrontend,
+                                      LocalDateTime createdDate, LocalDateTime updatedDate) {
         this.postId = postId;
         this.authorProfileImageUrl = authorProfileImageUrl;
         this.authorName = authorName;
@@ -52,6 +58,8 @@ public class RecruitingPostResponseDto {
         this.memberInfra = memberInfra;
         this.memberBackend = memberBackend;
         this.memberFrontend = memberFrontend;
+        this.createdDate = createdDate;
+        this.updatedDate = updatedDate;
     }
 
     RecruitingPostResponseDto(BoardRecruiting recruiting) {
@@ -67,6 +75,8 @@ public class RecruitingPostResponseDto {
         this.memberInfra = recruiting.getMemberInfra();
         this.memberBackend = recruiting.getMemberBackend();
         this.memberFrontend = recruiting.getMemberFrontend();
+        this.createdDate = recruiting.getCreatedAt();
+        this.updatedDate = recruiting.getModifiedAt();
     }
 
     public static RecruitingPostResponseDto fromEntity(BoardRecruiting recruiting) {
