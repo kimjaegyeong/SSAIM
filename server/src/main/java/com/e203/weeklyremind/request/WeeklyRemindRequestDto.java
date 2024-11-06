@@ -10,12 +10,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class WeeklyRemindRequestDto {
 
-    private int projectMemberId;
+    private Integer projectMemberId;
     private LocalDate startDate;
     private LocalDate endDate;
 
     @Builder
-    private WeeklyRemindRequestDto(int projectMemberId
+    private WeeklyRemindRequestDto(Integer projectMemberId
             , LocalDate startDate, LocalDate endDate) {
         this.projectMemberId = projectMemberId;
         this.startDate = startDate;
