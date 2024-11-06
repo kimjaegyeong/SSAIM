@@ -48,9 +48,17 @@ public class Project extends BaseEntity {
 	@Setter
 	private String gitlabApi ;
 
+	@Column(name = "project_gitlab_id")
+	@Setter
+	private String gitlabProjectId;
+
 	@Column(name = "project_jira_api")
 	@Setter
 	private String jiraApi;
+
+	@Column(name = "project_jira_id")
+	@Setter
+	private String jiraProjectId;
 
 	@Column(name = "project_progress_front")
 	@Setter
