@@ -14,6 +14,8 @@ public class RecruitingPostResponseDto {
 
     private Integer postId;
 
+    private Integer authorId;
+
     private String authorProfileImageUrl;
 
     private String authorName;
@@ -46,11 +48,12 @@ public class RecruitingPostResponseDto {
     private Integer recruitedTotal;
 
     @Builder
-    private RecruitingPostResponseDto(Integer postId, String authorProfileImageUrl, String authorName, String postTitle,
+    private RecruitingPostResponseDto(Integer postId, Integer authorId, String authorProfileImageUrl, String authorName, String postTitle,
                                       String postContent, Integer firstDomain, Integer secondDomain, Integer campus,
                                       Integer memberTotal, Integer memberInfra, Integer memberBackend, Integer memberFrontend,
                                       LocalDateTime createdDate, LocalDateTime updatedDate, Integer status) {
         this.postId = postId;
+        this.authorId = authorId;
         this.authorProfileImageUrl = authorProfileImageUrl;
         this.authorName = authorName;
         this.postTitle = postTitle;
@@ -69,6 +72,7 @@ public class RecruitingPostResponseDto {
 
     RecruitingPostResponseDto(BoardRecruiting recruiting) {
         this.postId = recruiting.getRecruitingId();
+        this.authorId = recruiting.getAuthor().getUserId();
         this.authorProfileImageUrl = recruiting.getAuthor().getUserProfileImage();
         this.authorName = recruiting.getAuthor().getUserName();
         this.postTitle = recruiting.getTitle();
@@ -92,6 +96,7 @@ public class RecruitingPostResponseDto {
     public static RecruitingPostResponseDto fromEntity(BoardRecruiting recruiting) {
         return RecruitingPostResponseDto.builder()
                 .postId(recruiting.getRecruitingId())
+                .authorId(recruiting.getAuthor().getUserId())
                 .authorProfileImageUrl(recruiting.getAuthor().getUserProfileImage())
                 .authorName(recruiting.getAuthor().getUserName())
                 .postTitle(recruiting.getTitle())
