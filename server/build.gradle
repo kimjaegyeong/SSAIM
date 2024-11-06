@@ -24,7 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     // Spring AI
     implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
     implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
@@ -38,6 +38,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    testImplementation 'io.projectreactor:reactor-test'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -51,6 +52,11 @@ dependencies {
 //	SQL 로그에 값을 주입해주는 의존성
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
 
+    // WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    //mongoDB
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 
 }
 
