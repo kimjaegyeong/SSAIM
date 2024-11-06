@@ -223,7 +223,7 @@ const TeamBuildingBoard: React.FC = () => {
                                     </div>
                                     <div className={styles.state}>
                                         <Tag text={getStatusLabel(item.status)} />
-                                        <span>{item.recruitedTotal}/{item.memberTotal}</span>
+                                        <span>{item.recruitedTotal ? item.recruitedTotal : 0}/{item.memberTotal}</span>
                                     </div>
                                     <div className={styles.position}>
                                         {item.memberFrontend > 0 && <Tag text={'FE'} />}

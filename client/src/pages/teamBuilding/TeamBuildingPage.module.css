@@ -6,9 +6,23 @@
     margin-top: 70px;
 }
 
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
 .pageTitle {
     font-size: 32px;
     font-weight: bold;
+}
+
+.timeSection {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 30px;
+    font-size: 12px;
+    color:#949494
 }
 
 .detailContainer {
@@ -61,6 +75,7 @@
     align-items: center;
     flex-direction: row;
     justify-content: space-between;
+    margin-top: 20px;
 }
 
 .memberItem {
@@ -186,12 +201,11 @@
 
 .buttonSection {
     display: flex;
-    height: 70px;
+    height: 50px;
     flex-direction: row;
     justify-content: flex-end;
     gap: 20px;
 }
-
 
 .authorButton {
     width: 120px;
@@ -221,4 +235,11 @@
     font-size: 16px;
     background-color: transparent;
     resize: none;
+}
+
+.editMemberButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
