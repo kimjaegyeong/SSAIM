@@ -11,11 +11,16 @@ import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import useUserStore from '@/stores/useUserStore';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { useDailyRemind } from '@/features/project/hooks/remind/useDailyRemind'; // useDailyRemind 훅을 임포트
+import { format } from 'date-fns';
+
+
 
 interface ProjectMember {
   userId: number;
   pmId: number;
 }
+
+
 
 const DailyContainer = () => {
   const navigate = useNavigate();
@@ -26,7 +31,7 @@ const DailyContainer = () => {
 
   const { data: projectInfo } = useProjectInfo(Number(projectId));
   const { userId } = useUserStore();
-  const { setPmId } = usePmIdStore();
+  const { pmId, setPmId } = usePmIdStore();
 
   const { data: dailyRemindData, isError, error } = useDailyRemind({
     projectId: Number(projectId), // projectId를 넘겨줘야 함
@@ -66,6 +71,12 @@ const DailyContainer = () => {
     navigate(`/project/${projectId}/remind/create`); 
   };
 
+  const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
+
+  const filteredMessages = dailyRemindData?.filter((item) =>
+    item.projectMemberId === pmId && item.dailyRemindDate === formattedSelectedDate
+  ) || [];
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -77,7 +88,7 @@ const DailyContainer = () => {
           formattedDate={formattedDate}
         />
         <div className={styles.remindContent}>
-          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind />}
+          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={filteredMessages} />}
           {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind />}
           {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind />}
           {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind />}

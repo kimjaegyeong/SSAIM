@@ -1,32 +1,85 @@
 import styles from './DayMyRemind.module.css';
+import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+
+interface Message {
+  message: string;
+}
+
+interface DayMyRemindProps {
+  messages: Message[];
+}
 
 
 
-const DayMyRemind = () => {
+const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages }) => {
+  const { pmId } = usePmIdStore();
+  console.log(pmId);
+
+  // 각 섹션에 맞는 메시지를 추출하는 함수
+  const extractSectionMessage = (msg: string, prefix: string, nextPrefix?: string) => {
+    const startIndex = msg.indexOf(prefix);
+    if (startIndex === -1) return null;
+    const endIndex = nextPrefix ? msg.indexOf(nextPrefix) : msg.length;
+    return msg.substring(startIndex + prefix.length, endIndex).trim();
+  };
+
+  // Keep, Problem, Try 메시지 각각 추출
+  const keepMessages = messages
+    .map((msg) => extractSectionMessage(msg.message, '🟢 Keep:', '🟠 Problem:'))
+    .filter((msg): msg is string => msg !== null);
+
+  const problemMessages = messages
+    .map((msg) => extractSectionMessage(msg.message, '🟠 Problem:', '🔵 Try:'))
+    .filter((msg): msg is string => msg !== null);
+
+  const tryMessages = messages
+    .map((msg) => extractSectionMessage(msg.message, '🔵 Try:'))
+    .filter((msg): msg is string => msg !== null);
+
   return (
     <div className={styles.myReview}>
       <div className={styles.keepSection}>
         <div className={styles.sectionTitle}>
-            <h3 className={styles.h3}>Keep</h3>
+          <h3 className={styles.h3}>Keep</h3>
         </div>
         <div className={styles.reviewContainer}>
-            <p className={styles.p}>드디어 OpenCV를 활용한 모델을 프론트에 올렸습니다!!!!!! 실시간으로 mediapipe로 사람의 관절의 포인트를 출력하고 모델에 적용시켜 예측값이 프론트 화면에 나오도록 구현했습니다. 오늘 더 많은 데이터를 수집하기 위해 직접 도복을 입고 촬영을 했는데 꽤 정확도가 높게 나와 만족하고 있습니다. 드디어 OpenCV를 활용한 모델을 프론트에 올렸습니다!!!!!! 실시간으로 mediapipe로 사람의 관절의 포인트를 출력하고 모델에 적용시켜 예측값이 프론트 화면에 나오도록 구현했습니다. 오늘 더 많은 데이터를 수집하기 위해 직접 도복을 입고 촬영을 했는데 꽤 정확도가 높게 나와 만족하고 있습니다.</p>
+          {keepMessages.length > 0 ? (
+            keepMessages.map((msg, index) => (
+              <p key={index} className={styles.p}>{msg}</p>
+            ))
+          ) : (
+            <p className={styles.p}>해당 날짜에 작성된 Keep 회고가 없습니다.</p>
+          )}
         </div>
       </div>
+
       <div className={styles.problemSection}>
         <div className={styles.sectionTitle}>
-            <h3 className={styles.h3}>Problem</h3>
+          <h3 className={styles.h3}>Problem</h3>
         </div>
         <div className={styles.reviewContainer}>
-            <p className={styles.p}>모델을 프론트에 올려서 출력한은 것까지 성공했지만 여전히 웹캠의 반응속도가 느립니다. 코드를 좀 더 뜯어보고 개선방안을 찾아보도록 하겠습니다! 모델을 프론트에 올려서 출력한은 것까지 성공했지만 여전히 웹캠의 반응속도가 느립니다. 코드를 좀 더 뜯어보고 개선방안을 찾아보도록 하겠습니다!</p>
+          {problemMessages.length > 0 ? (
+            problemMessages.map((msg, index) => (
+              <p key={index} className={styles.p}>{msg}</p>
+            ))
+          ) : (
+            <p className={styles.p}>해당 날짜에 작성된 Problem 회고가 없습니다.</p>
+          )}
         </div>
       </div>
+
       <div className={styles.trySection}>
         <div className={styles.sectionTitle}>
-            <h3 className={styles.h3}>Try</h3>
+          <h3 className={styles.h3}>Try</h3>
         </div>
         <div className={styles.reviewContainer}>
-            <p className={styles.p}>품새 심사 진행률 + 모델 연결시키기 겨루기에 적용시킬 모델 학습하기 품새 심사 진행률 + 모델 연결시키기 겨루기에 적용시킬 모델 학습하기 품새 심사 진행률 + 모델 연결시키기 겨루기에 적용시킬 모델 학습하기</p>
+          {tryMessages.length > 0 ? (
+            tryMessages.map((msg, index) => (
+              <p key={index} className={styles.p}>{msg}</p>
+            ))
+          ) : (
+            <p className={styles.p}>해당 날짜에 작성된 Try 회고가 없습니다.</p>
+          )}
         </div>
       </div>
     </div>
