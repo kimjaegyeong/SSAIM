@@ -11,7 +11,7 @@ export interface ProjectInfoMemberDTO {
   userId : number;
   name : string;
   role : 0|1;
-  profileImage : string|null;
+  profileImage : string;
 }
 // 공통 프로젝트 속성 인터페이스 정의
 interface BaseProjectDTO {

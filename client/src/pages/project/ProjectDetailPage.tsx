@@ -10,7 +10,7 @@ const ProjectDetailPage = () => {
   return (
     <div>
       <ProjectHeader projectId={projectId as string} />
-      <ProjectInfo/>
+      <ProjectInfo projectId={Number(projectId)}/>
     </div>
   );
 };
