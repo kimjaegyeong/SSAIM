@@ -1,5 +1,7 @@
 package com.e203.weeklyremind.service;
 
+import com.e203.dailyremind.entity.DailyRemind;
+import com.e203.dailyremind.repository.DailyRemindRepository;
 import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
@@ -29,10 +31,9 @@ public class WeeklyRemindService {
     private final UserRepository userRepository;
     private final ChatAiService chatAiService;
     private final ProjectRepository projectRepository;
+    private final DailyRemindRepository dailyRemindRepository;
 
     public boolean saveWeeklyRemind(WeeklyRemindRequestDto message, int projectId) {
-
-        String summary = chatAiService.generateWeeklyRemind(message, projectId);
 
         ProjectMember projectMember = projectMemberRepository
                 .findById(message.getProjectMemberId())
@@ -42,6 +43,17 @@ public class WeeklyRemindService {
             return false;
         }
         Project project = projectRepository.findById(projectId).orElse(null);
+
+        List<DailyRemind> dailyRemindList = dailyRemindRepository.searchDailyReminds(message.getProjectMemberId(),
+                message.getStartDate(), message.getEndDate(), projectId);
+
+        StringBuilder dailyReminds = new StringBuilder();
+
+        for (DailyRemind dailyRemind : dailyRemindList) {
+            dailyReminds.append(dailyRemind.getDailyRemindContents());
+        }
+
+        String summary = chatAiService.generateWeeklyRemind(dailyReminds.toString(), projectId);
 
         WeeklyRemind weeklyRemind = WeeklyRemind.builder()
                 .weeklyRemindContents(summary)
