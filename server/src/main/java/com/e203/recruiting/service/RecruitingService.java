@@ -132,10 +132,8 @@ public class RecruitingService {
         if (post == null) {
             return "Not found";
         }
-
-        String authorizationResult = validateUserAuthorization(post, userId);
-        if (!authorizationResult.equals("Authorized")) {
-            return authorizationResult;
+        if (!validateUserAuthorization(post, userId)) {
+            return "Not authorized";
         }
 
         updatePostFields(post, dto);
@@ -148,8 +146,8 @@ public class RecruitingService {
         return recruitingRepository.findByRecruitingIdAndDeletedAtIsNull(postId);
     }
 
-    private String validateUserAuthorization(BoardRecruiting post, int userId) {
-        return post.getAuthor().getUserId() == userId ? "Authorized" : "Not authorized";
+    private boolean validateUserAuthorization(BoardRecruiting post, int userId) {
+        return post.getAuthor().getUserId() == userId;
     }
 
     private void updatePostFields(BoardRecruiting post, RecruitingEditRequestDto dto) {
@@ -191,4 +189,20 @@ public class RecruitingService {
         Optional.ofNullable(value).ifPresent(setter);
     }
 
+    @Transactional
+    public String removePost(int postId, int userId) {
+        BoardRecruiting post = findPost(postId);
+        if (post == null) {
+            return "Not found";
+        }
+        if (!validateUserAuthorization(post, userId)) {
+            return "Not authorized";
+        }
+        post.setDeletedAt(LocalDateTime.now());
+        post.getRecruitingMembers().stream()
+                .filter(member -> member.getDeletedAt() == null)
+                .forEach(member -> member.setDeletedAt(LocalDateTime.now()));
+
+        return "Deleted";
+    }
 }
