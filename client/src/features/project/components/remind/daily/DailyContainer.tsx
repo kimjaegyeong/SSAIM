@@ -1,5 +1,5 @@
-import { useEffect , useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; 
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from './DailyContainer.module.css';
 import FilterHeader from './FilterHeader';
 import DayTeamRemind from '../daily/dayTeam/DayTeamRemind'; 
@@ -10,6 +10,7 @@ import DayCalendar from './DayCalendar';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import useUserStore from '@/stores/useUserStore';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+import { useDailyRemind } from '@/features/project/hooks/remind/useDailyRemind'; // useDailyRemind 훅을 임포트
 
 interface ProjectMember {
   userId: number;
@@ -27,16 +28,32 @@ const DailyContainer = () => {
   const { userId } = useUserStore();
   const { setPmId } = usePmIdStore();
 
+  const { data: dailyRemindData, isError, error } = useDailyRemind({
+    projectId: Number(projectId), // projectId를 넘겨줘야 함
+    projectMemberId: undefined,   // 예시로 undefined로 설정
+    startDate: undefined,      // 날짜 예시
+    endDate: undefined,        // 날짜 예시
+  });
+
   useEffect(() => {
     if (projectInfo && projectInfo.projectMemberFindResponseDtoList && userId) {
       const projectMember = projectInfo.projectMemberFindResponseDtoList.find(
-        (member: ProjectMember) => member.userId === userId // 타입 지정
+        (member: ProjectMember) => member.userId === userId
       );
       if (projectMember) {
         setPmId(projectMember.pmId); // pmId 상태 업데이트
       }
     }
-  }, [projectInfo, userId, setPmId]);
+
+    // API 응답 데이터 콘솔 출력
+    if (dailyRemindData) {
+      console.log('Daily Remind Data:', dailyRemindData);
+    }
+
+    if (isError) {
+      console.error('Error fetching daily remind:', error);
+    }
+  }, [projectInfo, userId, setPmId, projectId, dailyRemindData, isError, error]);
 
   const formattedDate = new Intl.DateTimeFormat('ko', {
     year: 'numeric',
