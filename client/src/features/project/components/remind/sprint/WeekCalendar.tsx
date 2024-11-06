@@ -21,23 +21,21 @@ const getFriday = (date: Date): Date => {
 };
 
 const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange }) => {
-  // selectedDate가 없다면 오늘 날짜로 설정
-  const [date, setDate] = useState<Date>(selectedDate || new Date());
+  const [date, setDate] = useState<Date>(selectedDate || new Date()); // selectedDate가 없으면 오늘 날짜로 초기화
+
+  // selectedDate가 변경될 때마다 날짜를 다시 설정
+  useEffect(() => {
+    if (selectedDate) {
+      setDate(selectedDate); // selectedDate가 있을 경우 해당 날짜로 상태 업데이트
+    }
+  }, [selectedDate]);
+
+  // 컴포넌트가 마운트될 때 오늘 날짜를 클릭한 것처럼 처리
+  useEffect(() => {
+    handleDateChange(new Date()); // 오늘 날짜를 자동으로 선택
+  }, []); // 빈 배열을 넣어 컴포넌트 마운트 시 한 번만 실행되도록 설정
 
   const weekStart = getMonday(date);
-
-  useEffect(() => {
-    // 컴포넌트 마운트 시 오늘 날짜를 기준으로 정보를 전달
-    const monday = getMonday(new Date());
-    const friday = getFriday(new Date());
-    const dateInfo = {
-      checkDate: moment(new Date()).format('YYYY-MM-DD'),
-      startDate: moment(monday).format('YYYY-MM-DD'),
-      endDate: moment(friday).format('YYYY-MM-DD'),
-    };
-
-    onDateChange(dateInfo); // 오늘 날짜의 정보를 전달
-  }, [onDateChange]);
 
   const handleDateChange = (date: Date) => {
     const monday = getMonday(date);
@@ -48,7 +46,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
       endDate: moment(friday).format('YYYY-MM-DD'),
     };
 
-    setDate(date);  // 새로운 날짜로 상태 업데이트
+    setDate(date); // 새로운 날짜로 상태 업데이트
     onDateChange(dateInfo);
   };
 

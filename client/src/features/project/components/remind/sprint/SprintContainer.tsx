@@ -65,6 +65,7 @@ const SprintContainer = () => {
       const startOfMonth = moment(selectedDate).startOf('month'); // 선택한 날짜의 월 시작일
       const weekNumber = Math.ceil((selectedDate.getDate() + startOfMonth.day()) / 7); // 주차 계산
       setFormattedDate(`${year}년 ${month}월 ${weekNumber}주차`); // 원하는 형식으로 포맷팅
+      console.log(formattedDate)
   }, [selectedDate]);
 
     const handleOpenModal = () => {
