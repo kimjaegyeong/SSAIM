@@ -1,20 +1,24 @@
 import styles from './ProjectInfo.module.css';
 import ProgressChart from '../dashboard/progressChart/ProgressChart';
 import Button from '../../../../components/button/Button';
-import { FaPen } from 'react-icons/fa6';
 import EditProjectInfoModal from './editProjectInfo/EditProjectInfo';
 import { useState } from 'react';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import { ProjectInfoMemberDTO } from '../../types/ProjectDTO';
 import { dateToString } from '@/utils/dateToString';
 import leaderCrown from '@/assets/project/leaderCrown.png';
-
+import EditProjectSetting from './editProjectSetting/EditProjectSetting';
+import { TiDocumentText } from 'react-icons/ti';
+import jiraIcon from '@/assets/jira.svg';
+import gitlabIcon from '@/assets/gitlab.svg';
 interface ProjectInfoProps {
   projectId: number;
 }
 
 const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditJiraModalOpen, setIsEditJiraModalOpen] = useState(false);
+  const [isEditGitlabModalOpen, setIsEditGitlabModalOpen] = useState(false);
   const { data: projectInfo } = useProjectInfo(projectId);
   console.log(projectId);
   console.log(projectInfo);
@@ -33,25 +37,41 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
               <span>최근 수정일: {projectInfo.modifiedAt}</span> */}
             </div>
           </div>
-          <span
-            className={styles.modify}
-            onClick={() => {
-              setIsEditModalOpen(true);
-            }}
-          >
-            <FaPen />
-          </span>
+          <div className={styles.modifyButtons}>
+            <span
+              className={styles.modify}
+              onClick={() => {
+                setIsEditModalOpen(true);
+              }}
+            >
+              <TiDocumentText />
+            </span>
+            <span
+              className={styles.modify}
+              onClick={() => {
+                setIsEditJiraModalOpen(true);
+              }}
+            >
+              <img src={jiraIcon} alt="" className={styles.icons} />
+            </span>
+            <span
+              className={styles.modify}
+              onClick={() => {
+                setIsEditGitlabModalOpen(true);
+              }}
+            >
+              <img src={gitlabIcon} alt="" className={styles.icons} />
+            </span>
+          </div>
         </div>
 
         <div className={styles.leftLowerSection}>
           {/* 버튼 6개가 위치할 왼쪽 영역 */}
           <div className={styles.buttonGrid}>
-            <Button children="Jira" colorType="blue" size="small"></Button>
-            <Button children="GitLab" colorType="blue" size="small"></Button>
-            <Button children="주간 진행상황" colorType="blue" size="small"></Button>
-            <Button children="산출물" colorType="blue" size="small"></Button>
-            <Button children="회의록" colorType="blue" size="small"></Button>
-            <Button children="회고" colorType="blue" size="small"></Button>
+            <Button children="주간 진행상황" colorType="blue" size="custom"></Button>
+            <Button children="산출물" colorType="blue" size="custom"></Button>
+            <Button children="회의록" colorType="blue" size="custom"></Button>
+            <Button children="회고" colorType="blue" size="custom"></Button>
           </div>
 
           {/* 컴포넌트가 들어갈 오른쪽 영역 */}
@@ -74,6 +94,8 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
         </div>
       </div>
       {isEditModalOpen && <EditProjectInfoModal onClose={() => setIsEditModalOpen(false)} />}
+      {isEditJiraModalOpen && <EditProjectSetting type={'jira'} onClose={() => setIsEditJiraModalOpen(false)} />}
+      {isEditGitlabModalOpen && <EditProjectSetting type={'gitlab'} onClose={() => setIsEditGitlabModalOpen(false)} />}
     </div>
   );
 };

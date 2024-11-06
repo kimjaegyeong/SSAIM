@@ -2,11 +2,11 @@
 .mainLayout {
   margin: 0;
   width : calc(100%-60px);
+  height : 100vh;
 }
 
 
 /* 콘텐츠 영역 */
 .content {
   padding-left :60px;
-  overflow-y: hidden; /* 세로 스크롤 추가 */
 }
