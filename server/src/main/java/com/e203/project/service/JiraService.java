@@ -4,9 +4,13 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import com.e203.project.dto.request.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
@@ -15,6 +19,7 @@ import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class JiraService {
+	private static final Logger log = LoggerFactory.getLogger(JiraService.class);
 	// jira api key를 db에 저장하기
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
@@ -75,12 +81,18 @@ public class JiraService {
 				.header("Content-Type", "application/json")
 				.retrieve()
 				.body(String.class);
-			return objectMapper.readValue(responseBody, JiraResponse.class); // JSON 응답을 JiraResponse 객체로 변환
+			return objectMapper.readValue(responseBody, JiraResponse.class);
+		} catch (RestClientException e) {
+			handleException("Error occurred while calling Jira API", e);
+		} catch (JsonProcessingException e) {
+			handleException("Error processing JSON response", e);
+		} catch (IllegalArgumentException e) {
+			handleException("Invalid argument", e);
 		} catch (Exception e) {
-			// 예외 처리
-			e.printStackTrace();
-			return null;
+			handleException("An unexpected error occurred", e);
 		}
+
+		return null;
 	}
 
 	private ProjectMember getProjectLeader(int projectId) {
@@ -89,6 +101,9 @@ public class JiraService {
 			return null;
 		}
 		return leader.get(0);
+	}
 
+	private void handleException(String message, Exception e) {
+		log.error(message,e);
 	}
 }
