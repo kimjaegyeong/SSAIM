@@ -14,8 +14,6 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ onClose }) 
   const [image] = useState(null);
   const [projectName, setProjectName] = useState('');
   const [teamName, setTeamName] = useState('');
-  const [jiraApi, setJiraApi] = useState('');
-  const [gitlabApi, setGitlabApi] = useState('');
 
   const handleImageClick = () => {
     // 이미지 선택 로직
@@ -26,8 +24,6 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ onClose }) 
     console.log('프로젝트 정보 저장:', {
       projectName,
       teamName,
-      jiraApi,
-      gitlabApi,
       startDate,
       endDate,
     });
