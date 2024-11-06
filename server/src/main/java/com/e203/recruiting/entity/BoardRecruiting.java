@@ -5,6 +5,7 @@ import com.e203.global.entity.ProjectDomain;
 import com.e203.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class BoardRecruiting extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int recruitingId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_author", nullable = false)
     private User author;
 
@@ -38,11 +39,11 @@ public class BoardRecruiting extends BaseEntity {
     @Column(name = "board_recruiting_end_date")
     private LocalDate endDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_first_domain")
     private ProjectDomain firstDomain;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_second_domain")
     private ProjectDomain secondDomain;
 
@@ -61,8 +62,12 @@ public class BoardRecruiting extends BaseEntity {
     @Column(name = "board_recruiting_member_frontend")
     private Integer memberFrontend;
 
+    @Column(name = "board_recruiting_status")
+    @ColumnDefault("1")
+    private Integer status = 1;
+
     @Setter
-    @OneToMany(mappedBy = "boardRecruiting", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "boardRecruiting", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RecruitingMember> recruitingMembers;
 
     @Builder
@@ -81,6 +86,5 @@ public class BoardRecruiting extends BaseEntity {
         this.memberInfra = memberInfra;
         this.memberBackend = memberBackend;
         this.memberFrontend = memberFrontend;
-
     }
 }
