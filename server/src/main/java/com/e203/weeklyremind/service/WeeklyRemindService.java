@@ -47,7 +47,8 @@ public class WeeklyRemindService {
                 .weeklyRemindContents(summary)
                 .projectId(project)
                 .weeklyRemindAuthor(projectMember)
-                .weeklyRemindDate(message.getWeeklyRemindDate()).build();
+                .weeklyRemindStardDate(message.getStartDate())
+                .weeklyRemindEndDate(message.getEndDate()).build();
 
         weeklyRemindRepository.save(weeklyRemind);
 
@@ -55,10 +56,10 @@ public class WeeklyRemindService {
     }
 
     public List<WeeklyRemindResponseDto> searchWeeklyRemind (int projectId, Integer author
-            ,LocalDate startDate, LocalDate endDate) {
+            ,LocalDate checkDate ,LocalDate startDate, LocalDate endDate) {
 
-        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyReminds(projectId, startDate
-        , endDate, author);
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyReminds(projectId, author
+                , checkDate, startDate ,endDate);
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {
@@ -68,7 +69,8 @@ public class WeeklyRemindService {
                     .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
                     .content(weeklyRemind.getWeeklyRemindContents())
                     .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName())
-                    .weeklyRemindDate(weeklyRemind.getWeeklyRemindDate())
+                    .startDate(weeklyRemind.getWeeklyRemindStardDate())
+                    .endDate(weeklyRemind.getWeeklyRemindEndDate())
                     .userImage(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserProfileImage())
                     .build());
         }
@@ -76,10 +78,9 @@ public class WeeklyRemindService {
         return weeklyRemindResponseDtoList;
     }
 
-    public List<WeeklyRemindResponseDto> searchDevelopmentStory (int author) {
+    public List<WeeklyRemindResponseDto> searchDevelopmentStory (Integer userId) {
 
-        ProjectMember authorMember = projectMemberRepository.findById(author)
-                .orElse(null);
+        ProjectMember authorMember = projectMemberRepository.findById(userId).orElse(null);
 
         if(authorMember == null) {
             return null;
