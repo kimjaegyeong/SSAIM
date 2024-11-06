@@ -59,10 +59,10 @@ public class JiraService {
 			return null;
 		}
 		String jiraApi = leader.getProject().getJiraApi();
-		String projectID = leader.getProject().getJiraProjectId();
+		String jiraProjectId = leader.getProject().getJiraProjectId();
 		String userEmail = leader.getUser().getUserEmail();
 
-		String jql = "project=\"" + projectId + "\" + AND created >= \"" + startDate + "\" AND created <= \"" + endDate + "\"";
+		String jql = "project=\"" + jiraProjectId + "\" + AND created >= \"" + startDate + "\" AND created <= \"" + endDate + "\"";
 		String fields = "summary,status,assignee,customfield_10014,customfield_10031";
 		String url = JIRA_URL + "?jql=" + jql + "&fields=" + fields;
 
