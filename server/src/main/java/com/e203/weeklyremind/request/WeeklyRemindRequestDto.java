@@ -11,15 +11,13 @@ import java.time.LocalDate;
 public class WeeklyRemindRequestDto {
 
     private int projectMemberId;
-    private String content;
     private LocalDate startDate;
     private LocalDate endDate;
 
     @Builder
-    private WeeklyRemindRequestDto(String content, int projectMemberId
+    private WeeklyRemindRequestDto(int projectMemberId
             , LocalDate startDate, LocalDate endDate) {
         this.projectMemberId = projectMemberId;
-        this.content = content;
         this.startDate = startDate;
         this.endDate = endDate;
     }

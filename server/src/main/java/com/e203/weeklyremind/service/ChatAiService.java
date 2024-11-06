@@ -14,11 +14,11 @@ public class ChatAiService {
         this.chatClient = chatClientBuilder.build();
     }
 
-    public String generateWeeklyRemind(WeeklyRemindRequestDto message, int id) {
+    public String generateWeeklyRemind(String message, int id) {
 
         return chatClient.prompt()
                 .system("아래의 내용의 답변을 한글로 해주고 일기 형태로 요약해줘 1일차 2일차 이렇게 구분하지 말고 하나의 이야기처럼 요약해줘")
-                .user(message.getContent())
+                .user(message)
                 .call()
                 .content();
     }
