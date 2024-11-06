@@ -4,6 +4,8 @@ import com.e203.global.entity.ProjectDomain;
 import com.e203.recruiting.entity.BoardRecruiting;
 import com.e203.recruiting.entity.RecruitingMember;
 import com.e203.recruiting.repository.RecruitingRepository;
+import com.e203.recruiting.request.RecruitingEditRequestDto;
+import com.e203.recruiting.request.RecruitingMemberEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
 import com.e203.recruiting.response.RecruitingCandidateResponseDto;
 import com.e203.recruiting.response.RecruitingMemberResponseDto;
@@ -11,13 +13,16 @@ import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
 import com.e203.recruiting.response.RecruitingPostResponseDto;
 import com.e203.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -101,4 +106,70 @@ public class RecruitingService {
                 .map(RecruitingPostResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public String updatePost(int postId, RecruitingEditRequestDto dto, int userId) {
+        BoardRecruiting post = findPost(postId);
+        if (post == null) {
+            return "Not found";
+        }
+
+        String authorizationResult = validateUserAuthorization(post, userId);
+        if (!authorizationResult.equals("Authorized")) {
+            return authorizationResult;
+        }
+
+        updatePostFields(post, dto);
+        updateRecruitingMembers(post, dto.getRecruitingMembers());
+
+        return "Updated";
+    }
+
+    private BoardRecruiting findPost(int postId) {
+        return recruitingRepository.findByRecruitingId(postId);
+    }
+
+    private String validateUserAuthorization(BoardRecruiting post, int userId) {
+        return post.getAuthor().getUserId() == userId ? "Authorized" : "Not authorized";
+    }
+
+    private void updatePostFields(BoardRecruiting post, RecruitingEditRequestDto dto) {
+        updateFieldIfPresent(dto.getTitle(), post::setTitle);
+        updateFieldIfPresent(dto.getContent(), post::setContent);
+        updateFieldIfPresent(dto.getCampus(), post::setCampus);
+        updateFieldIfPresent(dto.getStartDate(), post::setStartDate);
+        updateFieldIfPresent(dto.getEndDate(), post::setEndDate);
+        updateFieldIfPresent(dto.getMemberFrontend(), post::setMemberFrontend);
+        updateFieldIfPresent(dto.getMemberBackend(), post::setMemberBackend);
+        updateFieldIfPresent(dto.getMemberInfra(), post::setMemberInfra);
+        updateFieldIfPresent(dto.getMemberTotal(), post::setMemberTotal);
+        updateDomainIfPresent(dto.getFirstDomain(), post::setFirstDomain);
+        updateDomainIfPresent(dto.getSecondDomain(), post::setSecondDomain);
+    }
+
+    private void updateDomainIfPresent(Integer domain, Consumer<ProjectDomain> setter) {
+        setter.accept(domain != null ? new ProjectDomain(domain) : null);
+    }
+
+    private void updateRecruitingMembers(BoardRecruiting post, List<RecruitingMemberEditRequestDto> memberEdits) {
+        if (memberEdits == null) return;
+
+        for (RecruitingMember member : post.getRecruitingMembers()) {
+            memberEdits.stream()
+                    .filter(memberEdit -> member.getUser().getUserId() == memberEdit.getUserId())
+                    .forEach(memberEdit -> updateMember(member, memberEdit));
+        }
+    }
+
+    private void updateMember(RecruitingMember member, RecruitingMemberEditRequestDto memberEdit) {
+        updateFieldIfPresent(memberEdit.getPosition(), member::setRecruitingMemberPosition);
+        if (memberEdit.isDelete()) {
+            member.setDeletedAt(LocalDateTime.now());
+        }
+    }
+
+    private <T> void updateFieldIfPresent(T value, Consumer<T> setter) {
+        Optional.ofNullable(value).ifPresent(setter);
+    }
+
 }

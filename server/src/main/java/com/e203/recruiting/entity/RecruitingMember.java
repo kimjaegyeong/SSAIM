@@ -3,10 +3,7 @@ package com.e203.recruiting.entity;
 import com.e203.global.entity.BaseEntity;
 import com.e203.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -29,12 +26,15 @@ public class RecruitingMember extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Setter
     @Column(name = "recruiting_member_status")
     private int recruitingMemberStatus;
 
+    @Setter
     @Column(name = "recruiting_member_message")
     private String recruitingMemberMessage;
 
+    @Setter
     @Column(name = "recruiting_member_position")
     private int recruitingMemberPosition;
 

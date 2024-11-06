@@ -1,6 +1,7 @@
 package com.e203.recruiting.controller;
 
 import com.e203.jwt.JWTUtil;
+import com.e203.recruiting.request.RecruitingEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
 import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
 import com.e203.recruiting.response.RecruitingPostResponseDto;
@@ -54,5 +55,20 @@ public class RecruitingController {
             @RequestParam(defaultValue = "1") Integer page) {
 
         return ResponseEntity.status(200).body(recruitingService.searchPosts(title, position, campus, domain, status, page));
+    }
+
+    @PatchMapping("/api/v1/recruiting/posts/{postId}")
+    public ResponseEntity<String> updatePost(@RequestBody RecruitingEditRequestDto dto,
+                                             @PathVariable(name = "postId") int postId,
+                                             @RequestHeader("Authorization") String auth) {
+        int userId = jwtUtil.getUserId(auth.substring(7));
+        String result = recruitingService.updatePost(postId, dto, userId);
+        if (result.equals("Not Authorized")) {
+            return ResponseEntity.status(403).body("권한이 없습니다.");
+        } else if (result.equals("Not found")) {
+            return ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+        } else {
+            return ResponseEntity.status(200).body("게시글 수정이 완료되었습니다.");
+        }
     }
 }

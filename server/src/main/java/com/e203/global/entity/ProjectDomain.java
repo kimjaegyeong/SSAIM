@@ -15,13 +15,13 @@ public class ProjectDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_domain_id", nullable = false)
-    private int projectDomainId;
+    private Integer projectDomainId;
 
-    @Column(name = "project_domain_name", length = 255)
+    @Column(name = "project_domain_name")
     private String projectDomainName;
 
     @Column(name = "project_domain_category")
-    private int projectDomainCategory;
+    private Integer projectDomainCategory;
 
     @Builder
     private ProjectDomain(String projectDomainName, int projectDomainCategory) {

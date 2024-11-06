@@ -1,17 +1,16 @@
 package com.e203.recruiting.request;
 
-import com.e203.global.entity.ProjectDomain;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecruitingWriteRequestDto {
-
-    private Integer author;
+public class RecruitingEditRequestDto {
 
     private String title;
 
@@ -34,5 +33,7 @@ public class RecruitingWriteRequestDto {
     private Integer memberBackend;
 
     private Integer memberFrontend;
+
+    private List<RecruitingMemberEditRequestDto> recruitingMembers;
 
 }

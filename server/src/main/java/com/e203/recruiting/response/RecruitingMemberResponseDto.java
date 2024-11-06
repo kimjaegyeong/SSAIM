@@ -10,19 +10,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitingMemberResponseDto {
 
-    private int userId;
+    private Integer userId;
 
     private String userName;
 
     private String profileImage;
 
-    private int position;
+    private Integer position;
 
     private String userEmail;
 
     @Builder
-    private RecruitingMemberResponseDto(int userId, String userName, String profileImage,
-                                        int position, String userEmail) {
+    private RecruitingMemberResponseDto(Integer userId, String userName, String profileImage,
+                                        Integer position, String userEmail) {
         this.userId = userId;
         this.userName = userName;
         this.profileImage = profileImage;
