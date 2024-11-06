@@ -2,6 +2,7 @@ package com.e203.weeklyremind.repository;
 
 import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
+import com.e203.user.entity.User;
 import com.e203.weeklyremind.entity.WeeklyRemind;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
