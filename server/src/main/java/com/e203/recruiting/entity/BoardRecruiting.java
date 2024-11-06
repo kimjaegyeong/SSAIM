@@ -27,41 +27,53 @@ public class BoardRecruiting extends BaseEntity {
     @JoinColumn(name = "board_recruiting_author", nullable = false)
     private User author;
 
+    @Setter
     @Column(name = "board_recruiting_title")
     private String title;
 
+    @Setter
     @Column(name = "board_recruiting_content")
     private String content;
 
+    @Setter
     @Column(name = "board_recruiting_start_date")
     private LocalDate startDate;
 
+    @Setter
     @Column(name = "board_recruiting_end_date")
     private LocalDate endDate;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_first_domain")
     private ProjectDomain firstDomain;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_recruiting_second_domain")
     private ProjectDomain secondDomain;
 
+    @Setter
     @Column(name = "board_recruiting_campus")
     private Integer campus;
 
+    @Setter
     @Column(name = "board_recruiting_member_total")
     private Integer memberTotal;
 
+    @Setter
     @Column(name = "board_recruiting_member_infra")
     private Integer memberInfra;
 
+    @Setter
     @Column(name = "board_recruiting_member_backend")
     private Integer memberBackend;
 
+    @Setter
     @Column(name = "board_recruiting_member_frontend")
     private Integer memberFrontend;
 
+    @Setter
     @Column(name = "board_recruiting_status")
     @ColumnDefault("1")
     private Integer status = 1;

@@ -4,6 +4,8 @@ import com.e203.global.entity.ProjectDomain;
 import com.e203.recruiting.entity.BoardRecruiting;
 import com.e203.recruiting.entity.RecruitingMember;
 import com.e203.recruiting.repository.RecruitingRepository;
+import com.e203.recruiting.request.RecruitingEditRequestDto;
+import com.e203.recruiting.request.RecruitingMemberEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
 import com.e203.recruiting.response.RecruitingCandidateResponseDto;
 import com.e203.recruiting.response.RecruitingMemberResponseDto;
@@ -17,7 +19,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -101,4 +107,65 @@ public class RecruitingService {
                 .map(RecruitingPostResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public String updatePost(RecruitingEditRequestDto dto, int userId) {
+        BoardRecruiting post = recruitingRepository.findByRecruitingId(dto.getRecruitingId());
+        if (post == null) {
+            return "Not found";
+        }
+        if (post.getAuthor().getUserId() != userId || dto.getRecruitingId() != post.getRecruitingId()) {
+            return "Not authorized";
+        }
+
+        updatePostFields(post, dto);
+
+
+        if (dto.getRecruitingMembers() != null) {
+            List<RecruitingMember> members = post.getRecruitingMembers();
+            List<RecruitingMember> newMembers = new ArrayList<>();
+            for (RecruitingMember member : members) {
+                for (RecruitingMemberEditRequestDto memberEdit : dto.getRecruitingMembers()) {
+                    if (member.getUser().getUserId() == memberEdit.getUserId()) {
+                        member.setRecruitingMemberPosition(memberEdit.getPosition());
+                        if (memberEdit.isDelete()) {
+                            member.setDeletedAt(LocalDateTime.now());
+                        }
+                    }
+                }
+            }
+            post.setRecruitingMembers(newMembers);
+        }
+
+
+        return "";
+    }
+
+    private void updatePostFields(BoardRecruiting post, RecruitingEditRequestDto dto) {
+        updateField(dto.getTitle(), post::setTitle);
+        updateField(dto.getContent(), post::setContent);
+        updateField(dto.getCampus(), post::setCampus);
+        updateField(dto.getStartDate(), post::setStartDate);
+        updateField(dto.getEndDate(), post::setEndDate);
+        updateField(dto.getMemberFrontend(), post::setMemberFrontend);
+        updateField(dto.getMemberBackend(), post::setMemberBackend);
+        updateField(dto.getMemberInfra(), post::setMemberInfra);
+        updateField(dto.getMemberTotal(), post::setMemberTotal);
+        if (dto.getFirstDomain() != null) {
+            updateField(new ProjectDomain(dto.getFirstDomain()), post::setFirstDomain);
+        } else {
+            updateField(null, post::setFirstDomain);
+        }
+        if (dto.getSecondDomain() != null) {
+            updateField(new ProjectDomain(dto.getSecondDomain()), post::setSecondDomain);
+        } else {
+            updateField(null, post::setFirstDomain);
+        }
+    }
+
+    private <T> void updateField(T value, Consumer<T> setter) {
+        Optional.ofNullable(value).ifPresent(setter);
+    }
+
+
 }
