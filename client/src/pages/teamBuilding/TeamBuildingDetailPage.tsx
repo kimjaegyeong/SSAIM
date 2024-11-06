@@ -2,48 +2,89 @@ import {useEffect, useState} from 'react'
 import { useParams } from 'react-router-dom';
 import styles from './TeamBuildingPage.module.css'
 import Tag from '../../features/teamBuilding/components/tag/Tag'
-import { PiCrownSimpleFill } from "react-icons/pi";
 import { AiOutlineMore } from "react-icons/ai";
 import Button from '../../components/button/Button';
 import TagSelector from '../../features/teamBuilding/components/tagSelector/TagSelector';
 import { getPostInfo } from '@/features/teamBuilding/apis/teamBuildingDetail/getPostInfo';
+import useUserStore from '@/stores/useUserStore';
+import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
+
+
+type TeamBuildingMember = {
+  userId: number;
+  userName: string;
+  profileImage: string | null;
+  position: number;
+};
+
+type TeamBuildingCandidate = {
+  userId: number;
+  userName: string;
+  profileImage: string | null;
+  position: number;
+  message: string | null;
+  status: number;
+};
+
+type TeamBuildingData = {
+  postId: number;
+  campus: number;
+  postTitle: string;
+  postContent: string;
+  firstDomain: number;
+  secondDomain: number;
+  status: number;
+  recruitedTotal: number;
+  memberTotal: number;
+  authorProfileImageUrl: string;
+  authorName: string;
+  memberInfra: number;
+  memberBackend: number;
+  memberFrontend: number;
+  recruitingMembers: TeamBuildingMember[];
+  recruitingCandidates: TeamBuildingCandidate[];
+};
+
+const initialData: TeamBuildingData = {
+  postId: 0,
+  campus: 0,
+  postTitle: '',
+  postContent: '',
+  firstDomain: 0,
+  secondDomain: 0,
+  status: 0,
+  recruitedTotal: 0,
+  memberTotal: 0,
+  authorProfileImageUrl: '',
+  authorName: '',
+  memberInfra: 0,
+  memberBackend: 0,
+  memberFrontend: 0,
+  recruitingMembers: [],
+  recruitingCandidates: []
+};
 
 const TeamBuildingDetailPage = () => {
-  
-  const { postId } = useParams();
-
+  const { userId } = useUserStore();
+  const { postId = '' } = useParams();
+  const [data, setData] = useState<TeamBuildingData>(initialData);
   const [activeCommentId, setActiveCommentId] = useState<number | null>(null);
   const [isCommentEditing, setIsCommentEditing] = useState(false);
   const [editedCommentContent, setEditedCommentContent] = useState('');
-
-  const data = {
-    postId: 1,
-    title: `팀원 모집 게시글 ${postId}`,
-    content: '팀원 모집 게시글 내용',
-    createdAt: new Date(),
-    category: ['자유주제', '기업연계'],
-    region: '서울',
-    author: 'XXX',
-    recruitment: {'FE': 3, 'BE': 2, 'Infra': 1},
-    member: [
-      { id: 1, name: 'XXX', position: 'FE', img: 'https://picsum.photos/250/250', role: 1 },
-      { id: 2, name: 'YYY', position: 'BE', img: 'https://picsum.photos/250/250', role: 0 },
-      { id: 3, name: 'ZZZ', position: 'Infra', img: 'https://picsum.photos/250/250', role: 0 },
-      { id: 4, name: 'WWW', position: 'FE', img: 'https://picsum.photos/250/250', role: 0 },
-      { id: 5, name: 'VVV', position: 'BE', img: 'https://picsum.photos/250/250', role: 0 },
-      { id: 6, name: 'QQQ', position: 'FE', img: 'https://picsum.photos/250/250', role: 0 },
-    ],
-    comments: [
-      { id: 1, content: 'comment1', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'FE' },
-      { id: 2, content: 'comment2', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'BE' },
-    ],
-  }
   
-  const loggedInUser = {
-    name: 'XXX',
-  };
+  useEffect(() => {
+    getPostInfo(parseInt(postId))
+      .then((response) => {
+          console.log(response,111);
+          setData(response);
+      })
+      .catch((err) => {
+          console.error(err);
+      });
+    console.log(data, 222);
+  }, []);
 
-  const isAuthor = loggedInUser?.name === data.author;
+  const isAuthor = userId === 1;
 
   const toggleModal = (commentId: number) => {
     if (activeCommentId === commentId) {
@@ -67,31 +108,21 @@ const TeamBuildingDetailPage = () => {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.pageTitle}>{data.title}</h1>
+      <h1 className={styles.pageTitle}>{data.postTitle}</h1>
       <div className={styles.detailContainer}>
         <div className={styles.postSection}>
           <div className={styles.postHeader}>
             <div className={styles.categorySection}>
-              {data.category.map((tag) => (
-                <Tag key={tag} text={tag} />
-              ))}
+                <Tag text={getDomainLabel(data.firstDomain)} />
+                <Tag text={getDomainLabel(data.secondDomain)} />
             </div>
             <div className={styles.positionSection}>
-            {Object.entries(data.recruitment).map(([position, count]) => {
-              const currentPositionCount = data.member.filter(member => member.position === position).length;
-              const remainingCount = count - currentPositionCount;
-
-              return (
-                <div key={position}>
-                  <Tag text={position} /> {remainingCount}
-                </div>
-              );
-            })}
+              <Tag text={'FE'} /> {data.memberFrontend}
+              <Tag text={'BE'} /> {data.memberBackend}
+              <Tag text={'Infra'} /> {data.memberInfra}
             </div>
           </div>
-          <div className={styles.postContent}>
-            {data.content}
-          </div>
+          <div className={styles.postContent}>{data.postContent}</div>
           {isAuthor ? (
             <div className={styles.buttonSection}>
                 <button className={`${styles.authorButton} ${styles.startButton}`}>팀 구성 완료</button>
@@ -106,11 +137,11 @@ const TeamBuildingDetailPage = () => {
             </div>
           )}
           <div className={styles.commentList}>
-            {data.comments.map((comment) => (
-              <div key={comment.id} className={styles.commentItem}>
-                <Tag text={comment.position} disablePointerCursor={true}/>
+            {(data.recruitingCandidates || []).map((candidate: TeamBuildingCandidate , index: number) => (
+              <div key={index} className={styles.commentItem}>
+                <Tag text={getPositionLabel(candidate.position)} disablePointerCursor={true}/>
                 <div className={styles.commentContent}>
-                  {isCommentEditing && activeCommentId === comment.id ? (
+                  {isCommentEditing && activeCommentId === index ? (
                     <input
                       type="text"
                       value={editedCommentContent}
@@ -118,31 +149,31 @@ const TeamBuildingDetailPage = () => {
                       className={styles.editInput}
                     />
                   ) : (
-                    comment.content
+                    candidate.message
                   )}
                 </div>
                 <div className={styles.commentAuthor}>
                   <img
-                    src={comment.authorImg}
-                    alt={comment.author}
+                    src={candidate.profileImage ?? undefined}
+                    alt={candidate.userName}
                     className={styles.profileImg}
                   />
                   <div className={styles.commentInfo}>
-                    <span>{comment.author}</span>
+                    <span>{candidate.userName}</span>
                   </div>
                 </div>
                 
-                {isCommentEditing && activeCommentId === comment.id ? (
+                {isCommentEditing && activeCommentId === index ? (
                   <Button onClick={handleSaveComment} size='custom' colorType='blue'>
                     저장
                   </Button>
                 ) : (
                   <div className={styles.moreButtonWrapper}>
                     <AiOutlineMore
-                      onClick={() => toggleModal(comment.id)}
+                      onClick={() => toggleModal(index)}
                       className={styles.moreButton}
                     />
-                    {activeCommentId === comment.id && !isCommentEditing && (
+                    {activeCommentId === index && !isCommentEditing && (
                       <div className={styles.modal}>
                         {isAuthor ? (
                           <button 
@@ -152,7 +183,7 @@ const TeamBuildingDetailPage = () => {
                           </button>
                         ) : (
                           <button
-                            onClick={() => handleEditComment(comment.content)}
+                            onClick={() => handleEditComment(candidate.message ? candidate.message : '')}
                             className={styles.modalButton}
                           >
                             수정
@@ -173,14 +204,14 @@ const TeamBuildingDetailPage = () => {
             <button>Edit</button>
           </div>
           <div className={styles.memberList}>
-            {data.member.map((member) => (
-              <div key={member.id} className={styles.memberItem}>
+            {(data.recruitingMembers || []).map((member: TeamBuildingMember) => (
+              <div key={member.userId} className={styles.memberItem}>
                 <div className={styles.memberInfo}>
-                  <img src={member.img} alt={member.name} className={styles.profileImg}/>
-                  <span>{member.name}</span>
-                  {member.role === 1 && <PiCrownSimpleFill color='#FFCD29'/>}
+                  <img src={member.profileImage ?? undefined} alt={member.userName} className={styles.profileImg}/>
+                  <span>{member.userName}</span>
+                  {/* {member.role === 1 && <PiCrownSimpleFill color='#FFCD29'/>} */}
                 </div>
-                <Tag text={member.position}/>
+                <Tag text={getPositionLabel(member.position)}/>
               </div>
             ))}
           </div>

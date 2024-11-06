@@ -8,6 +8,7 @@ import { AiOutlineProfile } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 import { IoSearchOutline } from "react-icons/io5";
+import { getDomainLabel, getRegionLabel, getStatusLabel } from "../../../../utils/labelUtils";
 
 type TeamBuildingData = {
     postId: number;
@@ -28,7 +29,8 @@ type TeamBuildingData = {
 const TeamBuildingBoard: React.FC = () => {
     const navigate = useNavigate()
     const [data, setData] = useState<TeamBuildingData[]>([]);
-    const [loading, setLoading] = useState(false);  // 로딩 상태
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -38,43 +40,11 @@ const TeamBuildingBoard: React.FC = () => {
                 setLoading(false);
             })
             .catch((err) => {
-                console.error(err);
+                setError(err);
                 setLoading(false);
             });
         console.log(data);
     }, []);
-
-    const regionMap: Record<string, string> = {
-        '1': '서울',
-        '2': '대전',
-        '3': '광주',
-        '4': '구미',
-        '5': '부울경'
-    };
-    
-    const domainMap: Record<string, string> = {
-        '1': '웹기술',
-        '2': '웹디자인',
-        '3': '모바일',
-        '4': 'AIoT',
-        '5': 'AI영상',
-        '6': 'AI음성',
-        '7': '추천',
-        '8': '분산',
-        '9': '자율주행',
-        '10': '스마트홈',
-        '11': 'P2P',
-        '12': '디지털거래',
-        '13': '메타버스',
-        '14': '핀테크',
-        '15': '자유주제',
-        '16': '기업연계'
-    };
-    
-    const statusMap: Record<string, string> = {
-        '1': '모집',
-        '0': '마감'
-    };
 
     // 필터링 상태 관리
     const [selectedRegion, setSelectedRegion] = useState('');
@@ -82,10 +52,6 @@ const TeamBuildingBoard: React.FC = () => {
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedState, setSelectedState] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-
-    const getRegionLabel = (id: number) => regionMap[id.toString()] || 'Unknown';
-    const getDomainLabel = (id: number) => domainMap[id.toString()] || 'Unknown';
-    const getStatusLabel = (id: number) => statusMap[id.toString()] || 'Unknown';
 
     const regionOptions = [
         { value: '1', label: '서울' },
@@ -247,8 +213,6 @@ const TeamBuildingBoard: React.FC = () => {
                 <div className={styles.boardContent}>
                     {!loading && data?.length > 0 ? (
                         data.map((item, index) => {
-                            const regionName = regionOptions.find(option => option.value === item.campus.toString())?.label || '알 수 없음';
-
                             return (
                                 <div key={index} className={styles.boardItem} onClick={() => navigate(`/team-building/detail/${item.postId}`)}>
                                     <span className={styles.region}>[{getRegionLabel(item.campus)}]</span>
@@ -277,43 +241,19 @@ const TeamBuildingBoard: React.FC = () => {
                                 </div>
                             );
                         })
+                    ) : error ? (
+                        <div className={styles.noResults}>
+                            데이터를 가져오지 못했습니다. 다시 시도하세요.
+                        </div>
                     ) : loading ? (
-                        <div>Loading...</div>
+                        <div className={styles.noResults}>
+                            Loading...
+                        </div>
                     ) : (
                         <div className={styles.noResults}>
                             검색 결과가 없습니다.
                         </div>
                     )}
-                    {/* {data.length > 0 && (
-                        <div className={`${styles.pagination}`}>
-                            <button 
-                                onClick={() => setCurrentPage((prev) => prev - 1)} 
-                                disabled={currentPage === 1}
-                            >
-                                이전
-                            </button>
-
-                            {Array.from({ length: endPage - startPage + 1 }, (_, i) => {
-                                const pageNumber = startPage + i;
-                                return (
-                                    <button
-                                        key={pageNumber}
-                                        onClick={() => setCurrentPage(pageNumber)}
-                                        className={`${currentPage === pageNumber ? styles.active : ''}`}
-                                    >
-                                        {pageNumber}
-                                    </button>
-                                );
-                            })}
-
-                            <button 
-                                onClick={() => setCurrentPage((prev) => prev + 1)} 
-                                disabled={currentPage === totalPages}
-                            >
-                                다음
-                            </button>
-                        </div>
-                    )} */}
                 </div>
             </div>
         </>

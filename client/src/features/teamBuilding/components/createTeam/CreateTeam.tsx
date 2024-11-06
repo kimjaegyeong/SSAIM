@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CreateTeam.module.css";
-import Tag from "../tag/Tag";
 import Button from "../../../../components/button/Button";
 import { createRecruiting } from "../../apis/createTeam/createRecruiting";
 import useUserStore from '@/stores/useUserStore';
+import ProjectDatePicker from './projectDatePicker/ProjectDatePicker';
+import RegionSelector from "./regionSelector/RegionSelector";
+import TitleInput from "./titleInput/TitleInput";
+import ContentInput from "./contentInput/ContentInput";
+import DomainSelector from "./domainSelector/DomainSelector";
+import RecruitmentSelector from "./recruitmentSelector/RecruitmentSelector";
 
 interface Recruitment {
     FE: number;
@@ -56,14 +61,6 @@ const TeamCreation: React.FC = () => {
         { id: 4, name: "구미" },
         { id: 5, name: "부울경" },
     ]
-
-    const handleRegionChange = (id: number) => {
-        if (selectedRegion === id) {
-            setSelectedRegion(null);
-        } else {
-            setSelectedRegion(id);
-        }
-    };
 
     const getDomainCategory = (domainId: number) => {
         const domain = domains.find((d) => d.id === domainId);
@@ -180,161 +177,24 @@ const TeamCreation: React.FC = () => {
             <div className={styles.teamCreationForm}>
                 {/* 왼쪽 섹션 */}
                 <div className={styles.formSection}>
-                    <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>프로젝트 기간</label>
-                        <div className={styles.dateInputs}>
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className={styles.dateInput}
-                            />
-                            <span className={styles.dateSeparator}>~</span>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className={styles.dateInput}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>지역 선택</label>
-                        <div className={styles.regionOptions}>
-                            {campus.map((city) => (
-                                <label key={city.id} className={styles.regionLabel}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedRegion === city.id}
-                                        onChange={() => handleRegionChange(city.id)}
-                                    />{" "}
-                                    {city.name}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>게시글 제목</label>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="게시글 제목을 입력하세요"
-                            className={styles.textInput}
-                        />
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>게시글 본문</label>
-                        <textarea
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="게시글 본문을 입력하세요"
-                            className={styles.textArea}
-                        ></textarea>
-                    </div>
+                    <ProjectDatePicker
+                        startDate={startDate}
+                        endDate={endDate}
+                        onStartDateChange={setStartDate}
+                        onEndDateChange={setEndDate}
+                    />
+                    <RegionSelector
+                        selectedRegion={selectedRegion}
+                        regions={campus}
+                        onRegionChange={setSelectedRegion}
+                    />
+                    <TitleInput title={title} onTitleChange={setTitle} />
+                    <ContentInput content={content} onContentChange={setContent} />
                 </div>
                 {/* 오른쪽 섹션 */}
                 <div className={styles.selectionSection}>
-                    <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>도메인 선택(최대 2개)</label>
-                        <div className={styles.tagOptions}>
-                            {["common", "specialized", "autonomous"].map((category) => {
-                                const categoryDomains = domains.filter(
-                                    (domain) =>
-                                        (category === "common" && domain.categoryId === 1) ||
-                                        (category === "specialized" && domain.categoryId === 2) ||
-                                        (category === "autonomous" && domain.categoryId === 3)
-                                );
-                                const categoryName =
-                                    category === "common" ? "공통" : category === "specialized" ? "특화" : "자율";
-
-                                return (
-                                    <div key={category} className={styles.domainWrapper}>
-                                        <div
-                                            className={`${styles.categoryBox} ${
-                                                selectedDomains.some((domainId) => {
-                                                    const domain = domains.find((d) => d.id === domainId);
-                                                    return (
-                                                        (category === "common" && domain?.categoryId === 1) ||
-                                                        (category === "specialized" && domain?.categoryId === 2) ||
-                                                        (category === "autonomous" && domain?.categoryId === 3)
-                                                    );
-                                                })
-                                                    ? styles.activeCategory
-                                                    : ""
-                                            }`}
-                                        >
-                                            {categoryName}
-                                        </div>
-                                        <div className={styles.tagList}>
-                                            {categoryDomains.map((domain) => (
-                                                <Tag
-                                                    key={domain.id}
-                                                    text={domain.name}
-                                                    badgeText={
-                                                        selectedDomains.includes(domain.id)
-                                                            ? (selectedDomains.indexOf(domain.id) + 1).toString()
-                                                            : undefined
-                                                    }
-                                                    useDefaultColors={!selectedDomains.includes(domain.id)}
-                                                    onClick={() => handleDomainClick(domain.id)}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label className={styles.sectionLabel}>
-                            모집 인원
-                            <input
-                                type="number"
-                                min={0}
-                                max={9}
-                                value={inputValue}
-                                onChange={(e) => {
-                                    let value = e.target.value;
-                                    if (value === "") {
-                                        setInputValue("");
-                                        return;
-                                    }
-                                    let numericValue = parseInt(value);
-                                    if (numericValue > 9) numericValue = 9;
-                                    if (numericValue < 0) numericValue = 0;
-                                    setInputValue(numericValue.toString());
-                                    setN(numericValue);
-                                }}
-                                onBlur={() => {
-                                    if (inputValue === "") {
-                                        setInputValue("0");
-                                        setN(0);
-                                    }
-                                }}
-                                onFocus={(e) => e.target.select()}
-                                className={styles.numberInput}
-                            />
-                        </label>
-                        <div className={styles.recruitmentOptions}>
-                            {(["FE", "BE", "Infra"] as const).map((role) => (
-                                <div key={role} className={styles.role}>
-                                    <div>
-                                        <Tag text={role}/>
-                                    </div>
-                                    <span>{recruitment[role]}</span>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max={N}
-                                        value={recruitment[role]}
-                                        onChange={(e) => handleSliderChange(role, parseInt(e.target.value))}
-                                        className={styles.slider}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <DomainSelector domains={domains} selectedDomains={selectedDomains} onDomainClick={handleDomainClick} />
+                    <RecruitmentSelector recruitment={recruitment} totalPositions={totalPositions} N={N} inputValue={inputValue} onInputChange={setInputValue} onSliderChange={handleSliderChange} onNChange={setN} />
                 </div>
             </div>
             <div className={styles.buttonSection}>
