@@ -23,6 +23,7 @@ public class DailyRemind extends BaseEntity {
     @Column(name = "daily_remind_id")
     private int dailyRemindId;
 
+    @Lob
     @Column(columnDefinition = "TEXT", name = "daily_remind_contents")
     private String dailyRemindContents;
 
