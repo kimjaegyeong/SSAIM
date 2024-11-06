@@ -8,8 +8,12 @@ import com.e203.recruiting.request.RecruitingWriteRequestDto;
 import com.e203.recruiting.response.RecruitingCandidateResponseDto;
 import com.e203.recruiting.response.RecruitingMemberResponseDto;
 import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
+import com.e203.recruiting.response.RecruitingPostResponseDto;
 import com.e203.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +89,16 @@ public class RecruitingService {
                 recruitingCandidates);
 
         dto.setRecruitedTotal(recruitingMembers.size());
-
+        dto.setCandidateCount(recruiting.getRecruitingMembers().size() - recruitingMembers.size());
         return dto;
+    }
+
+    public List<RecruitingPostResponseDto> searchPosts(String title, Integer position, Integer campus,
+                                                       Integer domain, Integer status, Integer page) {
+
+        Pageable pageable = PageRequest.of(page - 1, 5);
+        return recruitingRepository.searchPosts(title, position, campus, domain, status, pageable).stream()
+                .map(RecruitingPostResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

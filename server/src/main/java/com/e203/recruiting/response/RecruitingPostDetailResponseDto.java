@@ -1,10 +1,7 @@
 package com.e203.recruiting.response;
 
 import com.e203.recruiting.entity.BoardRecruiting;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +13,9 @@ public class RecruitingPostDetailResponseDto extends RecruitingPostResponseDto {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    @Setter
+    private int candidateCount;
 
     private List<RecruitingMemberResponseDto> recruitingMembers;
 

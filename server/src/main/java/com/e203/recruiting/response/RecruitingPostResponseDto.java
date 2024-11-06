@@ -38,6 +38,8 @@ public class RecruitingPostResponseDto {
 
     private LocalDateTime updatedDate;
 
+    private Integer status;
+
     @Setter
     private int recruitedTotal;
 
@@ -45,7 +47,7 @@ public class RecruitingPostResponseDto {
     private RecruitingPostResponseDto(int postId, String authorProfileImageUrl, String authorName, String postTitle,
                                       String postContent, int firstDomain, int secondDomain, int campus,
                                       int memberTotal, int memberInfra, int memberBackend, int memberFrontend,
-                                      LocalDateTime createdDate, LocalDateTime updatedDate) {
+                                      LocalDateTime createdDate, LocalDateTime updatedDate, Integer status) {
         this.postId = postId;
         this.authorProfileImageUrl = authorProfileImageUrl;
         this.authorName = authorName;
@@ -60,6 +62,7 @@ public class RecruitingPostResponseDto {
         this.memberFrontend = memberFrontend;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
+        this.status = status;
     }
 
     RecruitingPostResponseDto(BoardRecruiting recruiting) {
@@ -77,6 +80,7 @@ public class RecruitingPostResponseDto {
         this.memberFrontend = recruiting.getMemberFrontend();
         this.createdDate = recruiting.getCreatedAt();
         this.updatedDate = recruiting.getModifiedAt();
+        this.status = recruiting.getStatus();
     }
 
     public static RecruitingPostResponseDto fromEntity(BoardRecruiting recruiting) {
@@ -93,6 +97,9 @@ public class RecruitingPostResponseDto {
                 .memberInfra(recruiting.getMemberInfra())
                 .memberBackend(recruiting.getMemberBackend())
                 .memberFrontend(recruiting.getMemberFrontend())
+                .createdDate(recruiting.getCreatedAt())
+                .updatedDate(recruiting.getModifiedAt())
+                .status(recruiting.getStatus())
                 .build();
     }
 }

@@ -3,9 +3,11 @@ package com.e203.recruiting.controller;
 import com.e203.jwt.JWTUtil;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
 import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
+import com.e203.recruiting.response.RecruitingPostResponseDto;
 import com.e203.recruiting.service.RecruitingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,12 +35,24 @@ public class RecruitingController {
     public ResponseEntity<RecruitingPostDetailResponseDto> getPost(@PathVariable(name = "postId") int postId,
                                                                    @RequestHeader("Authorization") String auth) {
         int userId = jwtUtil.getUserId(auth.substring(7));
-        return ResponseEntity.status(200).body(recruitingService.getPost(postId, userId));
+        RecruitingPostDetailResponseDto dto = recruitingService.getPost(postId, userId);
+
+        if (dto == null) {
+            return ResponseEntity.status(404).body(null);
+        } else {
+            return ResponseEntity.status(200).body(dto);
+        }
     }
 
     @GetMapping("/api/v1/recruiting/posts")
-    public ResponseEntity<List<RecruitingPostDetailResponseDto>> searchPosts(@RequestHeader("Authorization") String auth) {
+    public ResponseEntity<List<RecruitingPostResponseDto>> searchPosts(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer position,
+            @RequestParam(required = false) Integer campus,
+            @RequestParam(required = false) Integer domain,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(defaultValue = "1") Integer page) {
 
-        return null;
+        return ResponseEntity.status(200).body(recruitingService.searchPosts(title, position, campus, domain, status, page));
     }
 }
