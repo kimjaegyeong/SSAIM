@@ -109,61 +109,67 @@ public class RecruitingService {
 
     @Transactional
     public String updatePost(int postId, RecruitingEditRequestDto dto, int userId) {
-        BoardRecruiting post = recruitingRepository.findByRecruitingId(postId);
+        BoardRecruiting post = findPost(postId);
         if (post == null) {
             return "Not found";
         }
-        if (post.getAuthor().getUserId() != userId) {
-            return "Not authorized";
+
+        String authorizationResult = validateUserAuthorization(post, userId);
+        if (!authorizationResult.equals("Authorized")) {
+            return authorizationResult;
         }
 
         updatePostFields(post, dto);
+        updateRecruitingMembers(post, dto.getRecruitingMembers());
 
+        return "Updated";
+    }
 
-        if (dto.getRecruitingMembers() != null) {
-            List<RecruitingMember> members = post.getRecruitingMembers();
-            List<RecruitingMember> newMembers = new ArrayList<>();
-            for (RecruitingMember member : members) {
-                for (RecruitingMemberEditRequestDto memberEdit : dto.getRecruitingMembers()) {
-                    if (member.getUser().getUserId() == memberEdit.getUserId()) {
-                        member.setRecruitingMemberPosition(memberEdit.getPosition());
-                        if (memberEdit.isDelete()) {
-                            member.setDeletedAt(LocalDateTime.now());
-                        }
-                    }
-                }
-            }
-        }
+    private BoardRecruiting findPost(int postId) {
+        return recruitingRepository.findByRecruitingId(postId);
+    }
 
-
-        return "";
+    private String validateUserAuthorization(BoardRecruiting post, int userId) {
+        return post.getAuthor().getUserId() == userId ? "Authorized" : "Not authorized";
     }
 
     private void updatePostFields(BoardRecruiting post, RecruitingEditRequestDto dto) {
-        updateField(dto.getTitle(), post::setTitle);
-        updateField(dto.getContent(), post::setContent);
-        updateField(dto.getCampus(), post::setCampus);
-        updateField(dto.getStartDate(), post::setStartDate);
-        updateField(dto.getEndDate(), post::setEndDate);
-        updateField(dto.getMemberFrontend(), post::setMemberFrontend);
-        updateField(dto.getMemberBackend(), post::setMemberBackend);
-        updateField(dto.getMemberInfra(), post::setMemberInfra);
-        updateField(dto.getMemberTotal(), post::setMemberTotal);
-        if (dto.getFirstDomain() != null) {
-            updateField(new ProjectDomain(dto.getFirstDomain()), post::setFirstDomain);
-        } else {
-            post.setFirstDomain(null);
-        }
-        if (dto.getSecondDomain() != null) {
-            updateField(new ProjectDomain(dto.getSecondDomain()), post::setSecondDomain);
-        } else {
-            post.setSecondDomain(null);
+        updateFieldIfPresent(dto.getTitle(), post::setTitle);
+        updateFieldIfPresent(dto.getContent(), post::setContent);
+        updateFieldIfPresent(dto.getCampus(), post::setCampus);
+        updateFieldIfPresent(dto.getStartDate(), post::setStartDate);
+        updateFieldIfPresent(dto.getEndDate(), post::setEndDate);
+        updateFieldIfPresent(dto.getMemberFrontend(), post::setMemberFrontend);
+        updateFieldIfPresent(dto.getMemberBackend(), post::setMemberBackend);
+        updateFieldIfPresent(dto.getMemberInfra(), post::setMemberInfra);
+        updateFieldIfPresent(dto.getMemberTotal(), post::setMemberTotal);
+        updateDomainIfPresent(dto.getFirstDomain(), post::setFirstDomain);
+        updateDomainIfPresent(dto.getSecondDomain(), post::setSecondDomain);
+    }
+
+    private void updateDomainIfPresent(Integer domain, Consumer<ProjectDomain> setter) {
+        setter.accept(domain != null ? new ProjectDomain(domain) : null);
+    }
+
+    private void updateRecruitingMembers(BoardRecruiting post, List<RecruitingMemberEditRequestDto> memberEdits) {
+        if (memberEdits == null) return;
+
+        for (RecruitingMember member : post.getRecruitingMembers()) {
+            memberEdits.stream()
+                    .filter(memberEdit -> member.getUser().getUserId() == memberEdit.getUserId())
+                    .forEach(memberEdit -> updateMember(member, memberEdit));
         }
     }
 
-    private <T> void updateField(T value, Consumer<T> setter) {
+    private void updateMember(RecruitingMember member, RecruitingMemberEditRequestDto memberEdit) {
+        updateFieldIfPresent(memberEdit.getPosition(), member::setRecruitingMemberPosition);
+        if (memberEdit.isDelete()) {
+            member.setDeletedAt(LocalDateTime.now());
+        }
+    }
+
+    private <T> void updateFieldIfPresent(T value, Consumer<T> setter) {
         Optional.ofNullable(value).ifPresent(setter);
     }
-
 
 }
