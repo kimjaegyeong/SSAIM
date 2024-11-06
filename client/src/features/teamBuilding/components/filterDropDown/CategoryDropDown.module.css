@@ -5,7 +5,7 @@
 
 .button {
     width: 90px;
-    height: 40px; 
+    height: 40px;
     border-radius: 5px;
     background-color: #d9d9d9;
     font-size: 16px;
@@ -18,7 +18,7 @@
     color: #ffffff;
 }
 
-.options {
+.menu {
     position: absolute;
     background-color: white;
     border: 1px solid #ccc;
@@ -31,22 +31,33 @@
     overflow: hidden;
 }
 
-.option {
+.categoryList, .optionList {
+    padding: 0;
+    margin: 0;
+}
+  
+.categoryItem, .optionItem {
     padding: 8px 15px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
     text-align: center;
     font-size: 16px;
+    height: 24px;
+    align-content: center;
 }
 
-.option:hover {
+.categoryItem:hover, .optionItem:hover {
     background-color: #e9ecef;
     color: #007bff;
 }
 
-.option.selected {
+.categoryItem.selected, .optionItem.selected {
     background-color: #007bff;
     color: white;
     font-weight: bold;
+}
+
+.smallFont {
+    font-size: 12px;
 }
   

@@ -22,7 +22,6 @@ const TeamCreation: React.FC = () => {
     const [selectedDomains, setSelectedDomains] = useState<number[]>([]);
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
-    const [selectedMyPosition, setSelectedMyPosition] = useState<string | null>(null);
     const [N, setN] = useState<number>(0);
     const [inputValue, setInputValue] = useState<string>("0");
     const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra;
@@ -94,14 +93,6 @@ const TeamCreation: React.FC = () => {
             setSelectedDomains([...selectedDomains, domainId]);
         } else {
             alert("최대 2개의 도메인만 선택할 수 있습니다.");
-        }
-    };
-
-    const handleMyPositionClick = (position: string) => {
-        if (selectedMyPosition === position) {
-            setSelectedMyPosition(null);
-        } else {
-            setSelectedMyPosition(position);
         }
     };
 
@@ -342,19 +333,6 @@ const TeamCreation: React.FC = () => {
                                     />
                                 </div>
                             ))}
-                        </div>
-                        <div className={styles.myPosition}>
-                            <span>내 포지션</span>
-                            <div className={styles.myPositionTag}>
-                                {["FE", "BE", "Infra", "미정"].map((tag) => (
-                                    <Tag
-                                        key={tag}
-                                        text={tag}
-                                        useDefaultColors={selectedMyPosition !== tag}
-                                        onClick={() => handleMyPositionClick(tag)}
-                                    />
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </div>

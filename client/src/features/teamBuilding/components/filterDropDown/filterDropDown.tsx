@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './filterDropDown.module.css';
+import styles from './FilterDropDown.module.css';
 
 interface Option {
   value: string;

@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import { useParams } from 'react-router-dom';
 import styles from './TeamBuildingPage.module.css'
 import Tag from '../../features/teamBuilding/components/tag/Tag'
@@ -6,6 +6,7 @@ import { PiCrownSimpleFill } from "react-icons/pi";
 import { AiOutlineMore } from "react-icons/ai";
 import Button from '../../components/button/Button';
 import TagSelector from '../../features/teamBuilding/components/tagSelector/TagSelector';
+import { getPostInfo } from '@/features/teamBuilding/apis/teamBuildingDetail/getPostInfo';
 
 const TeamBuildingDetailPage = () => {
   
@@ -37,12 +38,9 @@ const TeamBuildingDetailPage = () => {
       { id: 2, content: 'comment2', createdAt: new Date(), author: 'XXX', authorImg: 'https://picsum.photos/250/250', position: 'BE' },
     ],
   }
-
-  const [isPostEditing, setIsPostEditing] = useState(false);
-  const [editedPostContent, setEditedPostContent] = useState(data.content);
   
   const loggedInUser = {
-    name: 'aaa',
+    name: 'XXX',
   };
 
   const isAuthor = loggedInUser?.name === data.author;
@@ -55,14 +53,6 @@ const TeamBuildingDetailPage = () => {
       setIsCommentEditing(false);
       setEditedCommentContent('');
     }
-  };
-
-  const handleEditPost = () => {
-    setIsPostEditing(true);
-  };
-  
-  const handleSavePost = () => {
-    setIsPostEditing(false);
   };
 
   const handleEditComment = (commentContent:string) => {
@@ -100,27 +90,13 @@ const TeamBuildingDetailPage = () => {
             </div>
           </div>
           <div className={styles.postContent}>
-            {isPostEditing ? (
-              <textarea
-                value={editedPostContent}
-                onChange={(e) => setEditedPostContent(e.target.value)}
-                className={styles.editPostInput}
-              />
-            ) : (
-              data.content
-            )}
+            {data.content}
           </div>
           {isAuthor ? (
             <div className={styles.buttonSection}>
-              {isPostEditing ? (
-                <button onClick={handleSavePost} className={`${styles.authorButton} ${styles.startButton}`}>저장</button>
-              ) : (
-                <>
-                  <button className={`${styles.authorButton} ${styles.startButton}`}>팀 구성 완료</button>
-                  <button onClick={handleEditPost} className={`${styles.authorButton} ${styles.editButton}`}>게시글 수정</button>
-                  <button className={`${styles.authorButton} ${styles.deleteButton}`}>게시글 삭제</button>
-                </>
-              )}
+                <button className={`${styles.authorButton} ${styles.startButton}`}>팀 구성 완료</button>
+                <button className={`${styles.authorButton} ${styles.editButton}`}>게시글 수정</button>
+                <button className={`${styles.authorButton} ${styles.deleteButton}`}>게시글 삭제</button>
             </div>
           ) : (
             <div className={styles.commentForm}>
@@ -192,7 +168,10 @@ const TeamBuildingDetailPage = () => {
           </div>
         </div>
         <div className={styles.teamSection}>
-          <p>모집 현황</p>
+          <div className={styles.teamSectionHeader}>
+            <span>모집 현황</span>
+            <button>Edit</button>
+          </div>
           <div className={styles.memberList}>
             {data.member.map((member) => (
               <div key={member.id} className={styles.memberItem}>

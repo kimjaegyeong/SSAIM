@@ -56,6 +56,13 @@
     padding: 5px 20px;
 }
 
+.teamSectionHeader {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .memberItem {
     display: flex;
     justify-content: space-between;
