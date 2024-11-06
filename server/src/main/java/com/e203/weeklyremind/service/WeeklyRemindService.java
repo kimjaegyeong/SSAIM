@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,51 +32,45 @@ public class WeeklyRemindService {
 
     public boolean saveWeeklyRemind(WeeklyRemindRequestDto message, int projectId) {
 
-        if(!userRepository.existsById(message.getUserId())) {
-            return false;
-        }
-
         String summary = chatAiService.generateWeeklyRemind(message, projectId);
 
-        Optional<User> user = userRepository.findById(message.getUserId());
-        ProjectMember author = null;
-        if(user.isPresent()) {
-            author = projectMemberRepository.findByUser(user.get());
+        ProjectMember projectMember = projectMemberRepository
+                .findById(message.getProjectMemberId())
+                .orElse(null);
+
+        if (projectMember == null) {
+            return false;
         }
-        Project project = null;
-        if(projectRepository.existsById(projectId)) {
-            project = projectRepository.findById(projectId).get();
-        }
+        Project project = projectRepository.findById(projectId).orElse(null);
 
         WeeklyRemind weeklyRemind = WeeklyRemind.builder()
                 .weeklyRemindContents(summary)
                 .projectId(project)
-                .remindAuthor(author).build();
+                .weeklyRemindAuthor(projectMember)
+                .weeklyRemindDate(message.getWeeklyRemindDate()).build();
 
         weeklyRemindRepository.save(weeklyRemind);
 
         return true;
     }
 
-    public List<WeeklyRemindResponseDto> searchWeeklyRemind (int projectId, int author) {
+    public List<WeeklyRemindResponseDto> searchWeeklyRemind (int projectId, Integer author
+            ,LocalDate startDate, LocalDate endDate) {
 
-        Project project = projectRepository.findById(projectId)
-                .orElse(null);
-
-        ProjectMember authorMember = projectMemberRepository.findById(author)
-                .orElse(null);
-
-        //내가 진행중인 플젝의 주간회고만 가져오기
-        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthorAndProjectId(authorMember, project);
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyReminds(projectId, startDate
+        , endDate, author);
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {
             weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
-                    .authorId(weeklyRemind.getRemindAuthor().getId())
+                    .projectMemberId(weeklyRemind.getWeeklyRemindAuthor().getId())
                     .projectId(weeklyRemind.getProjectId().getId())
                     .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
                     .content(weeklyRemind.getWeeklyRemindContents())
-                    .author(weeklyRemind.getRemindAuthor().getUser().getUserName()).build());
+                    .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName())
+                    .weeklyRemindDate(weeklyRemind.getWeeklyRemindDate())
+                    .userImage(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserProfileImage())
+                    .build());
         }
 
         return weeklyRemindResponseDtoList;
@@ -91,16 +86,16 @@ public class WeeklyRemindService {
         }
 
         //나의 주간회고만 가져오기
-        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByRemindAuthor(authorMember);
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByWeeklyRemindAuthor(authorMember);
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {
             weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
-                    .authorId(weeklyRemind.getRemindAuthor().getId())
+                    .projectMemberId(weeklyRemind.getWeeklyRemindAuthor().getId())
                     .projectId(weeklyRemind.getProjectId().getId())
                     .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
                     .content(weeklyRemind.getWeeklyRemindContents())
-                    .author(weeklyRemind.getRemindAuthor().getUser().getUserName()).build());
+                    .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName()).build());
         }
 
         return weeklyRemindResponseDtoList;

@@ -4,23 +4,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Getter
 @NoArgsConstructor
 public class WeeklyRemindResponseDto {
 
-    private int authorId;
+    private int projectMemberId;
     private int projectId;
     private int weeklyRemindId;
     private String content;
-    private String author;
+    private String username;
+    private String userImage;
+    private LocalDate weeklyRemindDate;
 
     @Builder
-    private WeeklyRemindResponseDto(int authorId, int projectId, int weeklyRemindId, String content, String author) {
+    private WeeklyRemindResponseDto(int projectMemberId, int projectId, int weeklyRemindId, String content, String username
+    , String userImage, LocalDate weeklyRemindDate) {
 
         this.weeklyRemindId = weeklyRemindId;
-        this.authorId = authorId;
+        this.projectMemberId = projectMemberId;
         this.projectId = projectId;
         this.content = content;
-        this.author = author;
+        this.username = username;
+        this.userImage = userImage;
+        this.weeklyRemindDate = weeklyRemindDate;
     }
 }

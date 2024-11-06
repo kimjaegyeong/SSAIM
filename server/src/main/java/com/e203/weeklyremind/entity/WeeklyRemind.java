@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -30,13 +32,17 @@ public class WeeklyRemind extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "weekly_remind_author")
-    private ProjectMember remindAuthor;
+    private ProjectMember weeklyRemindAuthor;
+
+    private LocalDate weeklyRemindDate;
 
     @Builder
-    private WeeklyRemind(String weeklyRemindContents, Project projectId, ProjectMember remindAuthor) {
+    private WeeklyRemind(String weeklyRemindContents, Project projectId, ProjectMember weeklyRemindAuthor
+    , LocalDate weeklyRemindDate) {
         this.weeklyRemindContents = weeklyRemindContents;
         this.projectId = projectId;
-        this.remindAuthor = remindAuthor;
+        this.weeklyRemindAuthor = weeklyRemindAuthor;
+        this.weeklyRemindDate = weeklyRemindDate;
     }
 
 }
