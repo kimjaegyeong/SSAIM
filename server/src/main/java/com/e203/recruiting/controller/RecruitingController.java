@@ -71,4 +71,18 @@ public class RecruitingController {
             return ResponseEntity.status(200).body("게시글 수정이 완료되었습니다.");
         }
     }
+
+    @DeleteMapping("/api/v1/recruiting/posts/{postId}")
+    public ResponseEntity<String> removePost(@PathVariable(name = "postId") int postId,
+                                             @RequestHeader("Authorization") String auth) {
+        int userId = jwtUtil.getUserId(auth.substring(7));
+        String result = recruitingService.removePost(postId, userId);
+        if (result.equals("Not Authorized")) {
+            return ResponseEntity.status(403).body("권한이 없습니다.");
+        } else if (result.equals("Not found")) {
+            return ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+        } else {
+            return ResponseEntity.status(200).body("삭제되었습니다.");
+        }
+    }
 }
