@@ -9,7 +9,7 @@ export const createSprintRemind = async (projectId: number, sprintRemindpostData
     console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("Error creating daily remind:", error);
+    console.error("Error creating sprint remind:", error);
     throw error;
   }
 };

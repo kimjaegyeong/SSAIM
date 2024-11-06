@@ -9,24 +9,64 @@ import TeamSprint from './team/TeamSprint';
 import SprintModal from './SprintModal';
 import moment from 'moment';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+import {useSprintRemind} from '@/features/project/hooks/remind/useSprintRemind';
 
 
 const SprintContainer = () => {
     const { projectId } = useParams<{ projectId: string }>();
+    const { pmId } = usePmIdStore();
     const [myTeam, setMyTeam] = useState('나의 회고');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [selectedDateInfo, setSelectedDateInfo] = useState<{ checkDate: string; startDate: string; endDate: string } | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formattedDate, setFormattedDate] = useState('');
-    const { pmId } = usePmIdStore();
+
+    const { data: sprintRemindData, isError, error } = useSprintRemind({
+      projectId: Number(projectId),
+      projectMemberId: undefined,   
+      checkDate: undefined,      
+      startDate: undefined,      
+      endDate: undefined,       
+    });
+
+    useEffect(() => {
+      if (sprintRemindData) {
+        console.log("Sprint Remind Data:", sprintRemindData);
+      }
+    }, [sprintRemindData, isError, error]);
+
+    
+
+    const handleDateChange = (dateInfo: { checkDate: string; startDate: string; endDate: string }) => {
+      console.log("checkDate:", dateInfo.checkDate);
+      console.log("startDate:", dateInfo.startDate);
+      console.log("endDate:", dateInfo.endDate);
+      // 선택한 날짜를 상태로 저장
+      setSelectedDate(new Date(dateInfo.checkDate));
+      setSelectedDateInfo(dateInfo);
+    };
+
+    const MyfilteredContents = sprintRemindData?.filter((item) =>
+      item.projectMemberId === pmId &&
+      selectedDateInfo &&
+      item.startDate >= selectedDateInfo.startDate &&
+      item.endDate <= selectedDateInfo.endDate
+    ) || [];
+
+    const TeamfilteredContents = sprintRemindData?.filter((item) =>
+      selectedDateInfo &&
+      item.startDate >= selectedDateInfo.startDate &&
+      item.endDate <= selectedDateInfo.endDate
+    ) || [];
+
     
     useEffect(() => {
-      console.log(pmId);
       const month = moment(selectedDate).format('M'); // 현재 선택된 월
       const year = moment(selectedDate).format('YYYY'); // 현재 선택된 연도
       const startOfMonth = moment(selectedDate).startOf('month'); // 선택한 날짜의 월 시작일
       const weekNumber = Math.ceil((selectedDate.getDate() + startOfMonth.day()) / 7); // 주차 계산
       setFormattedDate(`${year}년 ${month}월 ${weekNumber}주차`); // 원하는 형식으로 포맷팅
-  }, [selectedDate, pmId]);
+  }, [selectedDate]);
 
     const handleOpenModal = () => {
       setIsModalOpen(true);
@@ -45,8 +85,8 @@ const SprintContainer = () => {
             formattedDate={formattedDate}
         />
         <div className={styles.remindContent}>
-          {myTeam === '나의 회고' && <MySprint />}
-          {myTeam === '팀원 회고' && <TeamSprint/>}
+          {myTeam === '나의 회고' && <MySprint contents={MyfilteredContents}/>}
+          {myTeam === '팀원 회고' && <TeamSprint contents={TeamfilteredContents}/>}
         </div>
         
       </div>
@@ -55,7 +95,7 @@ const SprintContainer = () => {
           🚀 주간 회고 생성
         </Button>
         <p className={styles.description}>조회할 날짜를 선택해주세요</p>
-        <WeekCalendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
+        <WeekCalendar selectedDate={selectedDate} onDateChange={handleDateChange} />
       </div>
 
       <SprintModal isOpen={isModalOpen} onClose={handleCloseModal} projectId={Number(projectId)}>

@@ -6,7 +6,7 @@ import styles from './WeekCalendar.module.css';
 
 interface WeekCalendarProps {
   selectedDate: Date;
-  onDateChange: (date: Date) => void;
+  onDateChange: (dateInfo: { checkDate: string; startDate: string; endDate: string }) => void;
 }
 
 const getMonday = (date: Date): Date => {
@@ -15,12 +15,24 @@ const getMonday = (date: Date): Date => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + difference);
 };
 
+const getFriday = (date: Date): Date => {
+  const monday = getMonday(date);
+  return new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 4); // Friday is 4 days after Monday
+};
+
 const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange }) => {
   const weekStart = getMonday(selectedDate);
 
   const handleDateChange = (date: Date) => {
     const monday = getMonday(date);
-    onDateChange(monday);
+    const friday = getFriday(date);
+    const dateInfo = {
+      checkDate: moment(date).format('YYYY-MM-DD'),
+      startDate: moment(monday).format('YYYY-MM-DD'),
+      endDate: moment(friday).format('YYYY-MM-DD'),
+    };
+
+    onDateChange(dateInfo);
   };
 
   // 주말(토요일, 일요일) 비활성화
