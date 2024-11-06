@@ -72,7 +72,7 @@ public class WeeklyRemindService {
                     .startDate(weeklyRemind.getWeeklyRemindStardDate())
                     .endDate(weeklyRemind.getWeeklyRemindEndDate())
                     .userImage(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserProfileImage())
-                    .build());
+                    .userId(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserId()).build());
         }
 
         return weeklyRemindResponseDtoList;
@@ -80,14 +80,15 @@ public class WeeklyRemindService {
 
     public List<WeeklyRemindResponseDto> searchDevelopmentStory (Integer userId) {
 
-        ProjectMember authorMember = projectMemberRepository.findById(userId).orElse(null);
-
-        if(authorMember == null) {
+        User user = userRepository.findById(userId).orElse(null);
+        if(user == null) {
             return null;
         }
 
-        //나의 주간회고만 가져오기
-        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByWeeklyRemindAuthor(authorMember);
+        ProjectMember projectMember = projectMemberRepository.findByUser(user);
+
+
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByWeeklyRemindAuthor(projectMember);
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {
@@ -96,7 +97,10 @@ public class WeeklyRemindService {
                     .projectId(weeklyRemind.getProjectId().getId())
                     .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
                     .content(weeklyRemind.getWeeklyRemindContents())
-                    .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName()).build());
+                    .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName())
+                    .startDate(weeklyRemind.getWeeklyRemindStardDate())
+                    .endDate(weeklyRemind.getWeeklyRemindEndDate())
+                    .userId(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserId()).build());
         }
 
         return weeklyRemindResponseDtoList;

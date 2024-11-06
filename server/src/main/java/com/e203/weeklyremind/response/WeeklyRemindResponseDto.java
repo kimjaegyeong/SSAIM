@@ -18,10 +18,11 @@ public class WeeklyRemindResponseDto {
     private String userImage;
     private LocalDate startDate;
     private LocalDate endDate;
+    private int userId;
 
     @Builder
     private WeeklyRemindResponseDto(int projectMemberId, int projectId, int weeklyRemindId, String content, String username
-    , String userImage, LocalDate startDate, LocalDate endDate) {
+    , String userImage, LocalDate startDate, LocalDate endDate, int userId) {
 
         this.weeklyRemindId = weeklyRemindId;
         this.projectMemberId = projectMemberId;
@@ -31,5 +32,6 @@ public class WeeklyRemindResponseDto {
         this.userImage = userImage;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.userId = userId;
     }
 }
