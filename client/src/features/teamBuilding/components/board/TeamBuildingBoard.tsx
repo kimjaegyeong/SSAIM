@@ -13,13 +13,16 @@ type TeamBuildingData = {
     postId: number;
     campus: number;
     postTitle: string;
-    firstDomain: string;
-    secondDomain: string;
-    status: string;
+    firstDomain: number;
+    secondDomain: number;
+    status: number;
     recruitedTotal: number;
     memberTotal: number;
     authorProfileImageUrl: string;
     authorName: string;
+    memberInfra: number;
+    memberBackend: number;
+    memberFrontend: number;
 };
 
 const TeamBuildingBoard: React.FC = () => {
@@ -41,12 +44,48 @@ const TeamBuildingBoard: React.FC = () => {
         console.log(data);
     }, []);
 
+    const regionMap: Record<string, string> = {
+        '1': '서울',
+        '2': '대전',
+        '3': '광주',
+        '4': '구미',
+        '5': '부울경'
+    };
+    
+    const domainMap: Record<string, string> = {
+        '1': '웹기술',
+        '2': '웹디자인',
+        '3': '모바일',
+        '4': 'AIoT',
+        '5': 'AI영상',
+        '6': 'AI음성',
+        '7': '추천',
+        '8': '분산',
+        '9': '자율주행',
+        '10': '스마트홈',
+        '11': 'P2P',
+        '12': '디지털거래',
+        '13': '메타버스',
+        '14': '핀테크',
+        '15': '자유주제',
+        '16': '기업연계'
+    };
+    
+    const statusMap: Record<string, string> = {
+        '1': '모집',
+        '0': '마감'
+    };
+
     // 필터링 상태 관리
     const [selectedRegion, setSelectedRegion] = useState('');
     const [selectedDomain, setSelectedDomain] = useState('');
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedState, setSelectedState] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+
+    const getRegionLabel = (id: number) => regionMap[id.toString()] || 'Unknown';
+    const getDomainLabel = (id: number) => domainMap[id.toString()] || 'Unknown';
+    const getStatusLabel = (id: number) => statusMap[id.toString()] || 'Unknown';
 
     const regionOptions = [
         { value: '1', label: '서울' },
@@ -212,20 +251,20 @@ const TeamBuildingBoard: React.FC = () => {
 
                             return (
                                 <div key={index} className={styles.boardItem} onClick={() => navigate(`/team-building/detail/${item.postId}`)}>
-                                    <span className={styles.region}>[{regionName}]</span>
+                                    <span className={styles.region}>[{getRegionLabel(item.campus)}]</span>
                                     <span className={styles.title}>{item.postTitle}</span>
                                     <div className={styles.category}>
-                                        <Tag text={item.firstDomain} />
-                                        <Tag text={item.secondDomain} />
+                                        <Tag text={getDomainLabel(item.firstDomain)} />
+                                        <Tag text={getDomainLabel(item.secondDomain)} />
                                     </div>
                                     <div className={styles.state}>
-                                        <Tag text={item.status} />
+                                        <Tag text={getStatusLabel(item.status)} />
                                         <span>{item.recruitedTotal}/{item.memberTotal}</span>
                                     </div>
                                     <div className={styles.position}>
-                                        {/* {item.position.map((pos, posIndex) => (
-                                            <Tag key={posIndex} text={pos} />
-                                        ))} */}
+                                        {item.memberFrontend > 0 && <Tag text={'FE'} />}
+                                        {item.memberBackend > 0 && <Tag text={'BE'} />}
+                                        {item.memberInfra > 0 && <Tag text={'Infra'} />}
                                     </div>
                                     <div className={styles.profile}>
                                         <img
