@@ -1,3 +1,8 @@
+server:
+  ssl:
+    key-store: classpath:ssl/keystore.p12
+    key-store-password: ENC(ZhwAAvI0E4+27aMceE1yX6S4xGNQ8hv7)
+    key-store-type: PKCS12
 spring:
   application:
     name: server
