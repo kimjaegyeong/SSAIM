@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.http.HttpStatus.*;
 import com.e203.dailyremind.response.DailyRemindResponseDto;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -45,10 +47,15 @@ public class DailyRemindController {
         }
     }
 
-    @GetMapping("/api/v1/projects/{projectId}/daily-remind/{author}")
-    public ResponseEntity<List<DailyRemindResponseDto>> getDailyRemind(@PathVariable("projectId") int projectId, @PathVariable("author") int author) {
+    @GetMapping("/api/v1/projects/{projectId}/daily-remind")
+    public ResponseEntity<List<DailyRemindResponseDto>> getDailyRemind(
+            @PathVariable("projectId") int projectId,
+            @RequestParam(required = false) Integer projectMemberId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
 
-        List<DailyRemindResponseDto> results = dailyRemindService.searchDailyRemind(projectId, author);
+
+        List<DailyRemindResponseDto> results = dailyRemindService.searchDailyRemind(projectId, projectMemberId, startDate, endDate);
 
         if (results == null) {
             return ResponseEntity.status(FORBIDDEN).body(null);
@@ -57,11 +64,11 @@ public class DailyRemindController {
         return ResponseEntity.status(OK).body(results);
     }
 
-    @GetMapping("/api/v1/projects/{projectId}/daily-remind")
-    public ResponseEntity<List<DailyRemindResponseDto>> getTeamDailyRemind(@PathVariable("projectId") int projectId) {
-
-        List<DailyRemindResponseDto> results = dailyRemindService.searchTeamDailyRemind(projectId);
-
-        return ResponseEntity.status(OK).body(results);
-    }
+//    @GetMapping("/api/v1/projects/{projectId}/daily-remind")
+//    public ResponseEntity<List<DailyRemindResponseDto>> getTeamDailyRemind(@PathVariable("projectId") int projectId) {
+//
+//        List<DailyRemindResponseDto> results = dailyRemindService.searchTeamDailyRemind(projectId);
+//
+//        return ResponseEntity.status(OK).body(results);
+//    }
 }

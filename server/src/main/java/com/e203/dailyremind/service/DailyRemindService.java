@@ -8,18 +8,20 @@ import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
-import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@Slf4j
 public class DailyRemindService {
 
     private final DailyRemindRepository dailyRemindRepository;
@@ -29,46 +31,45 @@ public class DailyRemindService {
 
     public boolean saveDailyRemind(DailyRemindRequestDto requestDto, int projectId) {
 
-        Project project = projectRepository.findById(projectId).orElse(null);
-        User user = userRepository.findById(requestDto.getDailyRemindAuthor()).orElse(null);
-        ProjectMember projectMember = projectMemberRepository.findByUser(user);
+        log.info("projectId: {}", projectId);
 
-        if (user == null) {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        ProjectMember projectMember = projectMemberRepository.findById(requestDto.getProjectMemberId()).orElse(null);
+
+        if (projectMember == null) {
             return false;
         }
 
         DailyRemind dailyRemind = DailyRemind.builder()
                 .dailyRemindAuthor(projectMember)
                 .dailyRemindContents(requestDto.getDailyRemindContents())
-                .project(project).build();
+                .project(project)
+                .dailyRemindDate(requestDto.getDailyRemindDate()).build();
 
         dailyRemindRepository.save(dailyRemind);
 
         return true;
     }
 
-    public List<DailyRemindResponseDto> searchDailyRemind(int projectId, int author) {
+    public List<DailyRemindResponseDto> searchDailyRemind(Integer projectId, Integer projectMemberId
+    , LocalDate startDate, LocalDate endDate) {
 
-        Project project = projectRepository.findById(projectId).get();
 
-        ProjectMember projectMember = projectMemberRepository.findByUser(userRepository.findById(author).orElse(null));
-
-        List<DailyRemind> dailyRemindList = dailyRemindRepository.findByProjectIdAndDailyRemindAuthor(project, projectMember);
+        List<DailyRemind> dailyRemindList = dailyRemindRepository.searchDailyReminds(projectMemberId
+        , startDate, endDate, projectId);
         List<DailyRemindResponseDto> dailyRemindResponseDtoList = new ArrayList<>();
-
-        if (projectMember == null) {
-            return null;
-        }
 
 
         for (DailyRemind dailyRemind : dailyRemindList) {
             dailyRemindResponseDtoList.add(DailyRemindResponseDto.builder()
-                    .memberUserId(dailyRemind.getDailyRemindAuthor().getId())
+                    .projectMemberId(dailyRemind.getDailyRemindAuthor().getId())
                     .message(dailyRemind.getDailyRemindContents())
                     .projectId(dailyRemind.getProjectId().getId())
                     .username(dailyRemind.getDailyRemindAuthor().getUser().getUserName())
                     .dailyRemindId(dailyRemind.getDailyRemindId())
                     .userId(dailyRemind.getDailyRemindAuthor().getUser().getUserId())
+                    .dailyRemindDate(dailyRemind.getDailyRemindDate())
+                    .userImage(dailyRemind.getDailyRemindAuthor().getUser().getUserProfileImage())
                     .build());
         }
 
@@ -84,7 +85,7 @@ public class DailyRemindService {
 
         for (DailyRemind dailyRemind : dailyRemindList) {
             dailyRemindResponseDtoList.add(DailyRemindResponseDto.builder()
-                    .memberUserId(dailyRemind.getDailyRemindAuthor().getId())
+                    .projectMemberId(dailyRemind.getDailyRemindAuthor().getId())
                     .message(dailyRemind.getDailyRemindContents())
                     .projectId(dailyRemind.getProjectId().getId())
                     .username(dailyRemind.getDailyRemindAuthor().getUser().getUserName())
