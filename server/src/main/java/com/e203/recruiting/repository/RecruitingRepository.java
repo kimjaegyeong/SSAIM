@@ -11,10 +11,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RecruitingRepository extends JpaRepository<BoardRecruiting, Integer> {
 
-    BoardRecruiting findByRecruitingId(int recruitingId);
+    BoardRecruiting findByRecruitingIdAndDeletedAtIsNull(int recruitingId);
 
     @Query("SELECT r FROM BoardRecruiting r " +
-            "WHERE (:title IS NULL OR r.title LIKE CONCAT('%', :title, '%')) " +
+            "WHERE (r.deletedAt IS NULL)" +
+            "AND (:title IS NULL OR r.title LIKE CONCAT('%', :title, '%')) " +
             "AND (:position IS NULL OR (" +
             "   (:position = 1 AND r.memberFrontend > 0) OR " +
             "   (:position = 2 AND r.memberBackend > 0) OR " +

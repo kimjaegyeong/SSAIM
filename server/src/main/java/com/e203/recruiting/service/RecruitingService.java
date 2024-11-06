@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -60,43 +59,61 @@ public class RecruitingService {
 
     @Transactional
     public RecruitingPostDetailResponseDto getPost(int postId, int userId) {
-
-        BoardRecruiting recruiting = recruitingRepository.findByRecruitingId(postId);
+        BoardRecruiting recruiting = findRecruitingPost(postId);
         if (recruiting == null) {
             return null;
         }
+        List<RecruitingMember> members = recruiting.getRecruitingMembers().stream()
+                .filter(member -> member.getDeletedAt() == null).toList();
+        List<RecruitingMemberResponseDto> recruitingMembers = getActiveRecruitingMembers(recruiting);
+        List<RecruitingCandidateResponseDto> recruitingCandidates = getRecruitingCandidates(recruiting, userId);
 
-        List<RecruitingMemberResponseDto> recruitingMembers;
-        List<RecruitingCandidateResponseDto> recruitingCandidates;
+        return createResponseDto(recruiting, recruitingMembers, recruitingCandidates);
+    }
 
-        recruitingMembers = recruiting.getRecruitingMembers().stream().filter(
-                        member -> member.getRecruitingMemberStatus() == 1
-                )
-                .map(RecruitingMemberResponseDto::fromEntity).toList();
+    private BoardRecruiting findRecruitingPost(int postId) {
+        return recruitingRepository.findByRecruitingIdAndDeletedAtIsNull(postId);
+    }
 
-        // 작성자라면, 지원자가 모두 보이게
+    private List<RecruitingMemberResponseDto> getActiveRecruitingMembers(BoardRecruiting recruiting) {
+        return recruiting.getRecruitingMembers().stream()
+                .filter(member -> member.getRecruitingMemberStatus() == 1)
+                .map(RecruitingMemberResponseDto::fromEntity)
+                .toList();
+    }
+
+    private List<RecruitingCandidateResponseDto> getRecruitingCandidates(BoardRecruiting recruiting, int userId) {
         if (userId == recruiting.getAuthor().getUserId()) {
-            recruitingCandidates =
-                    recruiting.getRecruitingMembers().stream().filter(
-                                    member -> member.getRecruitingMemberStatus() != 1
-                            )
-                            .map(RecruitingCandidateResponseDto::fromEntity).toList();
-        } else {    // 작성자가 아니라면, 본인의 지원만 보이게
-            recruitingCandidates =
-                    recruiting.getRecruitingMembers().stream().filter(
-                                    member -> member.getUser().getUserId() == userId
-                                            && member.getRecruitingMemberStatus() != 1
-                            )
-                            .map(RecruitingCandidateResponseDto::fromEntity).toList();
+            return getAllCandidates(recruiting);
+        } else {
+            return getUserCandidates(recruiting, userId);
         }
+    }
 
-        RecruitingPostDetailResponseDto dto = RecruitingPostDetailResponseDto.fromEntity(recruiting, recruitingMembers,
-                recruitingCandidates);
+    private List<RecruitingCandidateResponseDto> getAllCandidates(BoardRecruiting recruiting) {
+        return recruiting.getRecruitingMembers().stream()
+                .filter(member -> member.getRecruitingMemberStatus() != 1)
+                .map(RecruitingCandidateResponseDto::fromEntity)
+                .toList();
+    }
 
+    private List<RecruitingCandidateResponseDto> getUserCandidates(BoardRecruiting recruiting, int userId) {
+        return recruiting.getRecruitingMembers().stream()
+                .filter(member -> member.getUser().getUserId() == userId
+                        && member.getRecruitingMemberStatus() != 1)
+                .map(RecruitingCandidateResponseDto::fromEntity)
+                .toList();
+    }
+
+    private RecruitingPostDetailResponseDto createResponseDto(BoardRecruiting recruiting,
+                                                              List<RecruitingMemberResponseDto> recruitingMembers,
+                                                              List<RecruitingCandidateResponseDto> recruitingCandidates) {
+        RecruitingPostDetailResponseDto dto = RecruitingPostDetailResponseDto.fromEntity(recruiting, recruitingMembers, recruitingCandidates);
         dto.setRecruitedTotal(recruitingMembers.size());
         dto.setCandidateCount(recruiting.getRecruitingMembers().size() - recruitingMembers.size());
         return dto;
     }
+
 
     public List<RecruitingPostResponseDto> searchPosts(String title, Integer position, Integer campus,
                                                        Integer domain, Integer status, Integer page) {
@@ -126,7 +143,7 @@ public class RecruitingService {
     }
 
     private BoardRecruiting findPost(int postId) {
-        return recruitingRepository.findByRecruitingId(postId);
+        return recruitingRepository.findByRecruitingIdAndDeletedAtIsNull(postId);
     }
 
     private String validateUserAuthorization(BoardRecruiting post, int userId) {
