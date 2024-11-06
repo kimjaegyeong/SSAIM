@@ -5,10 +5,14 @@ import { FaRegClock } from "react-icons/fa6";
 import { ImPencil } from "react-icons/im";
 import Button from '../../../../../../components/button/Button';
 import CreateCalendar from './CreateCalendar';
+import { createDailyRemind }from '@features/project/apis/remind/createDailyRemind';
+import { DailyRemindPostDTO } from '@features/project/types/remind/DailyRemindDTO';
+import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 
 const DayMyCreate = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
+  const { pmId } = usePmIdStore();
   const [keepText, setKeepText] = useState("");
   const [problemText, setProblemText] = useState("");
   const [tryText, setTryText] = useState("");
@@ -30,8 +34,36 @@ const DayMyCreate = () => {
     weekday: 'short',
   }).format(currentDate).replace(/ (\S+)$/, ' ($1)');
 
-  const handleButtonClick = () => {
-    navigate(`/project/${projectId}/remind`); 
+  const handleButtonClick = async () => {
+    if (!projectId) {
+      console.error("Project ID is missing");
+      return;
+    }
+    if (pmId === null) {
+      console.error("Project Member ID is missing");
+      return;
+    }
+
+    const dailyRemindContents = `🟢 Keep: ${keepText}\n🟠 Problem: ${problemText}\n🔵 Try: ${tryText}`;
+    const dailyRemindDate = currentDate.toLocaleDateString("ko-KR", {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).replace(/\. /g, '-').replace('.', ''); // "YYYY-MM-DD" 형식으로 변환
+
+    const dailyRemindData: DailyRemindPostDTO = {
+      dailyRemindContents,
+      projectMemberId: pmId, // 실제 projectMemberId를 여기에 설정해야 함
+      dailyRemindDate,
+    };
+
+    try {
+      await createDailyRemind(Number(projectId), dailyRemindData);
+      console.log(dailyRemindData)
+      navigate(`/project/${projectId}/remind`); // API 성공 시 리다이렉트
+    } catch (error) {
+      console.error("Failed to create daily remind:", error);
+    }
   };
 
   const handlePencilClick = () => {

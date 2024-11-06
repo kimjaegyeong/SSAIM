@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect , useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'; 
 import styles from './DailyContainer.module.css';
 import FilterHeader from './FilterHeader';
@@ -7,6 +7,14 @@ import DayMyRemind from '../daily/dayMy/DayMyRemind';
 import WeekRemind from '..//daily/week/WeekRemind';
 import Button from '../../../../../components/button/Button';
 import DayCalendar from './DayCalendar';
+import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
+import useUserStore from '@/stores/useUserStore';
+import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+
+interface ProjectMember {
+  userId: number;
+  pmId: number;
+}
 
 const DailyContainer = () => {
   const navigate = useNavigate();
@@ -14,6 +22,21 @@ const DailyContainer = () => {
   const [dayWeek, setDayWeek] = useState('1일');
   const [myTeam, setMyTeam] = useState('나의 회고');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const { data: projectInfo } = useProjectInfo(Number(projectId));
+  const { userId } = useUserStore();
+  const { setPmId } = usePmIdStore();
+
+  useEffect(() => {
+    if (projectInfo && projectInfo.projectMemberFindResponseDtoList && userId) {
+      const projectMember = projectInfo.projectMemberFindResponseDtoList.find(
+        (member: ProjectMember) => member.userId === userId // 타입 지정
+      );
+      if (projectMember) {
+        setPmId(projectMember.pmId); // pmId 상태 업데이트
+      }
+    }
+  }, [projectInfo, userId, setPmId]);
 
   const formattedDate = new Intl.DateTimeFormat('ko', {
     year: 'numeric',
