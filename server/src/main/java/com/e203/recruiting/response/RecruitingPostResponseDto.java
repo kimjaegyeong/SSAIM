@@ -1,16 +1,18 @@
 package com.e203.recruiting.response;
 
+import com.e203.global.entity.ProjectDomain;
 import com.e203.recruiting.entity.BoardRecruiting;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitingPostResponseDto {
 
-    private int postId;
+    private Integer postId;
 
     private String authorProfileImageUrl;
 
@@ -20,19 +22,19 @@ public class RecruitingPostResponseDto {
 
     private String postContent;
 
-    private int firstDomain;
+    private Integer firstDomain;
 
-    private int secondDomain;
+    private Integer secondDomain;
 
-    private int campus;
+    private Integer campus;
 
-    private int memberTotal;
+    private Integer memberTotal;
 
-    private int memberInfra;
+    private Integer memberInfra;
 
-    private int memberBackend;
+    private Integer memberBackend;
 
-    private int memberFrontend;
+    private Integer memberFrontend;
 
     private LocalDateTime createdDate;
 
@@ -41,12 +43,12 @@ public class RecruitingPostResponseDto {
     private Integer status;
 
     @Setter
-    private int recruitedTotal;
+    private Integer recruitedTotal;
 
     @Builder
-    private RecruitingPostResponseDto(int postId, String authorProfileImageUrl, String authorName, String postTitle,
-                                      String postContent, int firstDomain, int secondDomain, int campus,
-                                      int memberTotal, int memberInfra, int memberBackend, int memberFrontend,
+    private RecruitingPostResponseDto(Integer postId, String authorProfileImageUrl, String authorName, String postTitle,
+                                      String postContent, Integer firstDomain, Integer secondDomain, Integer campus,
+                                      Integer memberTotal, Integer memberInfra, Integer memberBackend, Integer memberFrontend,
                                       LocalDateTime createdDate, LocalDateTime updatedDate, Integer status) {
         this.postId = postId;
         this.authorProfileImageUrl = authorProfileImageUrl;
@@ -71,8 +73,12 @@ public class RecruitingPostResponseDto {
         this.authorName = recruiting.getAuthor().getUserName();
         this.postTitle = recruiting.getTitle();
         this.postContent = recruiting.getContent();
-        this.firstDomain = recruiting.getFirstDomain().getProjectDomainId();
-        this.secondDomain = recruiting.getSecondDomain().getProjectDomainId();
+        this.firstDomain = Optional.ofNullable(recruiting.getFirstDomain())
+                .map(ProjectDomain::getProjectDomainId)
+                .orElse(null);
+        this.secondDomain = Optional.ofNullable(recruiting.getSecondDomain())
+                .map(ProjectDomain::getProjectDomainId)
+                .orElse(null);
         this.campus = recruiting.getCampus();
         this.memberTotal = recruiting.getMemberTotal();
         this.memberInfra = recruiting.getMemberInfra();
@@ -90,8 +96,12 @@ public class RecruitingPostResponseDto {
                 .authorName(recruiting.getAuthor().getUserName())
                 .postTitle(recruiting.getTitle())
                 .postContent(recruiting.getContent())
-                .firstDomain(recruiting.getFirstDomain().getProjectDomainId())
-                .secondDomain(recruiting.getSecondDomain().getProjectDomainId())
+                .firstDomain(Optional.ofNullable(recruiting.getFirstDomain())
+                        .map(ProjectDomain::getProjectDomainId)
+                        .orElse(null))
+                .secondDomain(Optional.ofNullable(recruiting.getSecondDomain())
+                        .map(ProjectDomain::getProjectDomainId)
+                        .orElse(null))
                 .campus(recruiting.getCampus())
                 .memberTotal(recruiting.getMemberTotal())
                 .memberInfra(recruiting.getMemberInfra())
