@@ -6,6 +6,8 @@ import EditProjectInfoModal from './editProjectInfo/EditProjectInfo';
 import { useState } from 'react';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import { ProjectInfoMemberDTO } from '../../types/ProjectDTO';
+import { dateToString } from '@/utils/dateToString';
+import leaderCrown from '@/assets/project/leaderCrown.png';
 
 interface ProjectInfoProps {
   projectId: number;
@@ -14,7 +16,7 @@ interface ProjectInfoProps {
 const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { data: projectInfo } = useProjectInfo(projectId);
-  console.log(projectId)
+  console.log(projectId);
   console.log(projectInfo);
   return (
     <div className={styles.projectInfoContainer}>
@@ -24,11 +26,11 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
           <div className={styles.projectText}>
             <h2>{projectInfo.name}</h2>
             <p>
-              프로젝트 기간: {projectInfo.startDate} ~ {projectInfo.endDate}
+              프로젝트 기간: {dateToString(projectInfo.startDate)} ~ {dateToString(projectInfo.endDate)}
             </p>
             <div className={styles.dates}>
-              <span>프로젝트 생성일: {projectInfo.createdAt}</span>
-              <span>최근 수정일: {projectInfo.modifiedAt}</span>
+              {/* <span>프로젝트 생성일: {projectInfo.createdAt}</span>
+              <span>최근 수정일: {projectInfo.modifiedAt}</span> */}
             </div>
           </div>
           <span
@@ -62,8 +64,9 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
       <div className={styles.rightSection}>
         <h3>팀원 정보</h3>
         <div className={styles.teamMembers}>
-          {projectInfo.projectMemberFindResponseDtoList?.map((member:ProjectInfoMemberDTO) => (
+          {projectInfo.projectMemberFindResponseDtoList?.map((member: ProjectInfoMemberDTO) => (
             <div key={member.userId} className={styles.teamMember}>
+              {member.role === 1 ? <img src={leaderCrown} alt="leaderCrown" className={styles.leaderCrown} /> : null}
               <img src={member.profileImage} alt={member.name} className={styles.memberImage} />
               <span>{member.name}</span>
             </div>
