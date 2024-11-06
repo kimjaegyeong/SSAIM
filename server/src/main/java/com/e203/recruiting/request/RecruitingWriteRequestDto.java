@@ -21,18 +21,18 @@ public class RecruitingWriteRequestDto {
 
     private LocalDate endDate;
 
-    private int firstDomain;
+    private Integer firstDomain;
 
-    private int secondDomain;
+    private Integer secondDomain;
 
-    private int campus;
+    private Integer campus;
 
-    private int memberTotal;
+    private Integer memberTotal;
 
-    private int memberInfra;
+    private Integer memberInfra;
 
-    private int memberBackend;
+    private Integer memberBackend;
 
-    private int memberFrontend;
+    private Integer memberFrontend;
 
 }

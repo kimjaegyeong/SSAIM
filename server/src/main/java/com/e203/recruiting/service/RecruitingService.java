@@ -13,7 +13,6 @@ import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
 import com.e203.recruiting.response.RecruitingPostResponseDto;
 import com.e203.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -109,12 +108,12 @@ public class RecruitingService {
     }
 
     @Transactional
-    public String updatePost(RecruitingEditRequestDto dto, int userId) {
-        BoardRecruiting post = recruitingRepository.findByRecruitingId(dto.getRecruitingId());
+    public String updatePost(int postId, RecruitingEditRequestDto dto, int userId) {
+        BoardRecruiting post = recruitingRepository.findByRecruitingId(postId);
         if (post == null) {
             return "Not found";
         }
-        if (post.getAuthor().getUserId() != userId || dto.getRecruitingId() != post.getRecruitingId()) {
+        if (post.getAuthor().getUserId() != userId) {
             return "Not authorized";
         }
 
@@ -134,7 +133,6 @@ public class RecruitingService {
                     }
                 }
             }
-            post.setRecruitingMembers(newMembers);
         }
 
 
@@ -154,12 +152,12 @@ public class RecruitingService {
         if (dto.getFirstDomain() != null) {
             updateField(new ProjectDomain(dto.getFirstDomain()), post::setFirstDomain);
         } else {
-            updateField(null, post::setFirstDomain);
+            post.setFirstDomain(null);
         }
         if (dto.getSecondDomain() != null) {
             updateField(new ProjectDomain(dto.getSecondDomain()), post::setSecondDomain);
         } else {
-            updateField(null, post::setFirstDomain);
+            post.setSecondDomain(null);
         }
     }
 

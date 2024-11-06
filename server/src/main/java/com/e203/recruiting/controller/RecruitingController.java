@@ -59,9 +59,10 @@ public class RecruitingController {
 
     @PatchMapping("/api/v1/recruiting/posts/{postId}")
     public ResponseEntity<String> updatePost(@RequestBody RecruitingEditRequestDto dto,
+                                             @PathVariable(name = "postId") int postId,
                                              @RequestHeader("Authorization") String auth) {
         int userId = jwtUtil.getUserId(auth.substring(7));
-        String result = recruitingService.updatePost(dto, userId);
+        String result = recruitingService.updatePost(postId, dto, userId);
         if (result.equals("Not Authorized")) {
             return ResponseEntity.status(403).body("권한이 없습니다.");
         } else if (result.equals("Not found")) {

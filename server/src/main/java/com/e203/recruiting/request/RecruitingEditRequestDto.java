@@ -12,8 +12,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitingEditRequestDto {
 
-    private Integer recruitingId;
-
     private String title;
 
     private String content;
