@@ -5,7 +5,11 @@ import { SprintRemindPostDTO } from '@features/project/types/remind/SprintRemndD
 export const createSprintRemind = async (projectId: number, sprintRemindpostData: SprintRemindPostDTO) => {
   try {
     console.log(sprintRemindpostData);
-    const response = await apiClient.post(`${config.BASE_URL}/projects/${projectId}/weekly-remind`, sprintRemindpostData);
+    const response = await apiClient.post(`${config.BASE_URL}/projects/${projectId}/weekly-remind`, sprintRemindpostData,
+        {
+            timeout: 30000, // Timeout increased to 10 seconds
+        }
+    );
     console.log(response.data);
     return response.data;
   } catch (error) {

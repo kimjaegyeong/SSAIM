@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import moment from 'moment';
 import styles from './WeekCalendar.module.css';
 
 interface WeekCalendarProps {
-  selectedDate: Date;
+  selectedDate?: Date; // 선택적 프로퍼티로 변경
   onDateChange: (dateInfo: { checkDate: string; startDate: string; endDate: string }) => void;
 }
 
@@ -21,7 +21,23 @@ const getFriday = (date: Date): Date => {
 };
 
 const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange }) => {
-  const weekStart = getMonday(selectedDate);
+  // selectedDate가 없다면 오늘 날짜로 설정
+  const [date, setDate] = useState<Date>(selectedDate || new Date());
+
+  const weekStart = getMonday(date);
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 오늘 날짜를 기준으로 정보를 전달
+    const monday = getMonday(new Date());
+    const friday = getFriday(new Date());
+    const dateInfo = {
+      checkDate: moment(new Date()).format('YYYY-MM-DD'),
+      startDate: moment(monday).format('YYYY-MM-DD'),
+      endDate: moment(friday).format('YYYY-MM-DD'),
+    };
+
+    onDateChange(dateInfo); // 오늘 날짜의 정보를 전달
+  }, [onDateChange]);
 
   const handleDateChange = (date: Date) => {
     const monday = getMonday(date);
@@ -32,6 +48,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
       endDate: moment(friday).format('YYYY-MM-DD'),
     };
 
+    setDate(date);  // 새로운 날짜로 상태 업데이트
     onDateChange(dateInfo);
   };
 
@@ -45,7 +62,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
     <div className={styles.calendarWrapper}>
       <Calendar
         onChange={(date) => handleDateChange(date as Date)}
-        value={selectedDate}
+        value={date}  // state에서 관리하는 날짜 사용
         formatDay={(_, date) => moment(date).format('D')}
         formatYear={(_, date) => moment(date).format('YYYY')}
         calendarType="gregory"
@@ -62,7 +79,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
           
           // 특정 날짜에 따라 스타일을 직접 적용합니다
           if (isWeekday && isCurrentWeek) {
-            return `${styles.weekdayTile} ${date.getTime() === selectedDate.getTime() ? styles.activeTile : ''}`;
+            return `${styles.weekdayTile} ${date.getTime() === date.getTime() ? styles.activeTile : ''}`;
           }
           return '';
         }}
@@ -71,7 +88,6 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
           const isToday = moment().isSame(date, 'day');
           return isToday ? <span className={styles.todayMarker} /> : null;
         }}
-        
       />
     </div>
   );

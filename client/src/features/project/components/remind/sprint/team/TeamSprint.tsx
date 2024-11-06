@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from './TeamSprint.module.css';
 import TeamSprintCard from './TeamSprintCard';
 
@@ -13,9 +13,6 @@ interface TeamSprintProps {
 }
 
 const TeamSprint: React.FC<TeamSprintProps> = ({ contents }) => {
-  useEffect(() => {
-    console.log('Contents:', contents);
-  }, [contents]);
 
   return (
     <div className={styles.teamReview}>

@@ -3,6 +3,10 @@ import styles from './SprintModal.module.css';
 import Button from '../../../../../components/button/Button';
 import { useDailyRemind } from '@features/project/hooks/remind/useDailyRemind';
 import { DailyRemindGetDTO } from '@features/project/types/remind/DailyRemindDTO';
+import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+import { createSprintRemind } from '@features/project/apis/remind/createSprintRemind';
+import Loading from '@/components/loading/Loading';
+import { useSprintRemind } from '@/features/project/hooks/remind/useSprintRemind';
 
 interface SprintModalProps {
   isOpen: boolean;
@@ -14,14 +18,23 @@ interface SprintOption {
   id: string;
   label: string;
   period: string;
+  startDate: string;
+  endDate: string;
 }
 
 const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId }) => {
+  const { pmId } = usePmIdStore();
   const [selectedSprint, setSelectedSprint] = useState<string | null>(null);
   const [sprintOptions, setSprintOptions] = useState<SprintOption[]>([]);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
 
   // useDailyRemind 호출
   const { data: dailyReminds } = useDailyRemind({ projectId });
+
+  // useSprintRemind 훅에서 refetch를 가져옴
+  const { refetch } = useSprintRemind({
+    projectId,
+  });
 
   useEffect(() => {
     if (dailyReminds) {
@@ -49,7 +62,9 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
           return {
             id: `sprint${index + 1}`,
             label: `${year}년 ${month}월 ${week}주차`,
-            period: `${startDate} ~ ${endDate}`
+            period: `${startDate} ~ ${endDate}`,
+            startDate: startDate, 
+            endDate: endDate 
           };
         });
       };
@@ -61,6 +76,33 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
 
   const handleSprintSelect = (sprintId: string) => {
     setSelectedSprint(sprintId);
+  };
+
+  const handleCreateSprintRemind = async () => {
+    if (selectedSprint && pmId !== null) {
+      const selectedOption = sprintOptions.find((option) => option.id === selectedSprint);
+      if (selectedOption) {
+        const sprintRemindPostData = {
+          projectMemberId: pmId, // pmId (프로젝트 멤버 ID)
+          startDate: selectedOption.startDate, // 선택된 스프린트의 startDate
+          endDate: selectedOption.endDate // 선택된 스프린트의 endDate
+        };
+        
+        setIsLoading(true); // 로딩 시작
+
+        try {
+          const response = await createSprintRemind(projectId, sprintRemindPostData);
+          console.log('Sprint Remind created:', response);
+          // 성공적으로 생성된 후 모달 닫기
+          refetch();
+          onClose();
+        } catch (error) {
+          console.error('Error creating sprint remind:', error);
+        } finally {
+          setIsLoading(false); // 로딩 종료
+        }
+      }
+    }
   };
 
   if (!isOpen) return null;
@@ -92,7 +134,13 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
             ))}
           </div>
         </div>
-        <Button size="medium" colorType="purple">주간 회고 생성하기</Button>
+        {isLoading ? ( // 로딩 중일 때
+          <Loading />
+        ) : (
+          <Button size="medium" colorType="purple" onClick={handleCreateSprintRemind}>
+            주간 회고 생성하기
+          </Button>
+        )}
       </div>
     </div>
   );

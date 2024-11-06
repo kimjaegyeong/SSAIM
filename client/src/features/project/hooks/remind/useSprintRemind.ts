@@ -11,16 +11,19 @@ interface UseSprintRemindParams {
 }
 
 export const useSprintRemind = ({
-    projectId,
-    projectMemberId,
-    checkDate,
-    startDate,
-    endDate,
-  }: UseSprintRemindParams) => {
-    return useQuery<SprintRemindGetDTO[]>({
-      queryKey: ['sprintRemind', projectId, projectMemberId,checkDate, startDate, endDate].filter(Boolean), // undefined 값 제외
-      queryFn: () => fetchSprintRemind(projectId, projectMemberId,checkDate, startDate, endDate), // 항상 fetchSprintRemind 호출
-      enabled: !!projectId, // projectId가 있을 때만 쿼리 실행
-    });
-  };
-  
+  projectId,
+  projectMemberId,
+  checkDate,
+  startDate,
+  endDate,
+}: UseSprintRemindParams) => {
+  // refetch를 반환값에 추가
+  const queryResult = useQuery<SprintRemindGetDTO[]>({
+    queryKey: ['sprintRemind', projectId, projectMemberId, checkDate, startDate, endDate].filter(Boolean),
+    queryFn: () => fetchSprintRemind(projectId, projectMemberId, checkDate, startDate, endDate),
+    enabled: !!projectId, // projectId가 있을 때만 쿼리 실행
+  });
+
+  // refetch를 반환값에 포함
+  return { ...queryResult, refetch: queryResult.refetch };
+};

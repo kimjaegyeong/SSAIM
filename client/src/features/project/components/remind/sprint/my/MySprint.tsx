@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from './MySprint.module.css';
 
 interface Content {
@@ -10,11 +10,6 @@ interface MySprintProps {
 }
 
 const MySprint: React.FC<MySprintProps> = ({ contents }) => {
-  // 컴포넌트가 렌더링될 때 contents를 콘솔로 출력
-  useEffect(() => {
-    console.log('Contents:', contents);
-  }, [contents]);
-
   const [keep, problem, trySection] = contents[0]?.content.split("\n\n") || [];
 
   return (

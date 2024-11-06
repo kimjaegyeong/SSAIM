@@ -38,12 +38,11 @@ const SprintContainer = () => {
     
 
     const handleDateChange = (dateInfo: { checkDate: string; startDate: string; endDate: string }) => {
-      console.log("checkDate:", dateInfo.checkDate);
-      console.log("startDate:", dateInfo.startDate);
-      console.log("endDate:", dateInfo.endDate);
-      // 선택한 날짜를 상태로 저장
-      setSelectedDate(new Date(dateInfo.checkDate));
-      setSelectedDateInfo(dateInfo);
+      // 날짜 정보가 변경되었을 때만 상태 업데이트
+      if (!selectedDateInfo || dateInfo.checkDate !== selectedDateInfo.checkDate) {
+        setSelectedDate(new Date(dateInfo.checkDate));
+        setSelectedDateInfo(dateInfo);
+      }
     };
 
     const MyfilteredContents = sprintRemindData?.filter((item) =>
