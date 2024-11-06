@@ -2,20 +2,18 @@ import React, { useState } from 'react';
 import styles from './MypageComponent.module.css';
 import { FaPen } from 'react-icons/fa6';
 import HexagonChart from './commitChart/HexagonChart';
-
+import { useUserInfoData } from '../hooks/useUserInfoData';
+import useUserStore from '@/stores/useUserStore';
 const MypageComponent: React.FC = () => {
-  const user = {
-    name: '유기상',
-    cohort: '11기',
-    region: '부울경',
-    profileImage: 'path/to/profileImage.jpg', // 프로필 이미지 경로
-  };
+  
 
   // 상태 메시지와 스택 관련 상태
   const [statusMessage, setStatusMessage] = useState('열심히 배우는 중입니다!');
   const [stacks, setStacks] = useState('React, TypeScript, Node.js');
   const [isEditing, setIsEditing] = useState(false);
   const dummyData = [60, 80, 50, 70, 40, 90];
+  const {userId} = useUserStore();
+  const {data : userInfo} = useUserInfoData(userId);
 
   // 상태 메시지 및 스택 편집 시작 함수
   const handleEditClick = () => {
@@ -41,7 +39,7 @@ const MypageComponent: React.FC = () => {
     <div className={styles.myPageContainer}>
       {/* 헤더 */}
       <header className={styles.header}>
-        <h1>{user.name} 님의 프로필 페이지</h1>
+        <h1>{userInfo?.userName} 님의 프로필 페이지</h1>
         <FaPen className={styles.modifyIcon} onClick={handleEditClick} />
       </header>
 
@@ -49,14 +47,14 @@ const MypageComponent: React.FC = () => {
       <div className={styles.bodyContainer}>
         {/* 왼쪽 위 - 프로필 사진 및 리본 */}
         <div className={styles.profileSection}>
-          <img src={user.profileImage} alt="프로필 사진" className={styles.profileImage} />
-          <div className={styles.ribbon}>{`${user.cohort} ${user.region}`}</div>
+          <img src={userInfo?.userProfileImage} alt="프로필 사진" className={styles.profileImage} />
+          <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${userInfo?.userCampus}`}</div>
         </div>
 
         {/* 오른쪽 위 - 이름, 기수, 지역, 상태 메시지 */}
         <div className={styles.infoSection}>
-          <h2>{user.name}</h2>
-          <p>{`${user.cohort} ${user.region}`}</p>
+          <h2>{userInfo?.userName}</h2>
+          <p>{`${userInfo?.userGeneration} ${userInfo?.userCampus}`}</p>
           <hr />
           <div className={styles.infoFooter}>
             {isEditing ? (

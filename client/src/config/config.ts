@@ -5,7 +5,7 @@ interface Config {
 }
 
 const devConfig: Config = {
-  BASE_URL: 'http://k11e203.p.ssafy.io:8080/api/v1',
+  BASE_URL: 'https://k11e203.p.ssafy.io:8080/api/v1',
 };
 
 const prodConfig: Config = {
