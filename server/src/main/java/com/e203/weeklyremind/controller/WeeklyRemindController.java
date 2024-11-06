@@ -22,7 +22,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class WeeklyRemindController {
 
     private final WeeklyRemindService weeklyRemindService;
-    private final ChatAiService chatAiService;
 
     @PostMapping("/api/v1/projects/{projectId}/weekly-remind")
     public ResponseEntity<String> createWeeklyRemind(@RequestBody WeeklyRemindRequestDto message, @PathVariable int projectId) {
@@ -41,19 +40,21 @@ public class WeeklyRemindController {
     public ResponseEntity<List<WeeklyRemindResponseDto>> getWeeklyRemind(
             @PathVariable int projectId,
             @RequestParam(required = false) Integer projectMemberId,
+            @RequestParam(required = false) LocalDate checkDate,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate){
 
         List<WeeklyRemindResponseDto> weeklyRemindList = weeklyRemindService.searchWeeklyRemind(projectId, projectMemberId,
-                startDate, endDate);
+                checkDate, startDate, endDate);
 
         return ResponseEntity.status(OK).body(weeklyRemindList);
     }
 
-    @GetMapping("/api/v1/projects/development-story/{projectMemberId}")
-    public ResponseEntity<List<WeeklyRemindResponseDto>> getDevelopmentStory(@PathVariable("author") int author) {
+    @GetMapping("/api/v1/projects/development-story")
+    public ResponseEntity<List<WeeklyRemindResponseDto>> getDevelopmentStory(
+            @RequestParam(required = false) Integer userId) {
 
-        List<WeeklyRemindResponseDto> result = weeklyRemindService.searchDevelopmentStory(author);
+        List<WeeklyRemindResponseDto> result = weeklyRemindService.searchDevelopmentStory(userId);
 
         if(result == null) {
             return ResponseEntity.status(FORBIDDEN).body(null);
