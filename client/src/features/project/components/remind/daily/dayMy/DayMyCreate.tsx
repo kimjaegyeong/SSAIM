@@ -57,6 +57,8 @@ const DayMyCreate = () => {
       dailyRemindDate,
     };
 
+    console.log(dailyRemindData)
+
     try {
       await createDailyRemind(Number(projectId), dailyRemindData);
       console.log(dailyRemindData)

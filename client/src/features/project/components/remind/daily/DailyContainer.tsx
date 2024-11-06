@@ -73,8 +73,12 @@ const DailyContainer = () => {
 
   const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
 
-  const filteredMessages = dailyRemindData?.filter((item) =>
+  const dayMyfilteredMessages = dailyRemindData?.filter((item) =>
     item.projectMemberId === pmId && item.dailyRemindDate === formattedSelectedDate
+  ) || [];
+
+  const dayTeamFilteredMessages = dailyRemindData?.filter(
+    (item) => item.dailyRemindDate === formattedSelectedDate
   ) || [];
 
   return (
@@ -88,8 +92,8 @@ const DailyContainer = () => {
           formattedDate={formattedDate}
         />
         <div className={styles.remindContent}>
-          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={filteredMessages} />}
-          {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind />}
+          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={dayMyfilteredMessages} />}
+          {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind messages={dayTeamFilteredMessages}/>}
           {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind />}
           {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind />}
         </div>
