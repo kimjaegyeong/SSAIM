@@ -38,41 +38,45 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
 
   useEffect(() => {
     if (dailyReminds) {
-      // 주 단위로 그룹화하는 함수
       const groupByWeek = (reminds: DailyRemindGetDTO[]): SprintOption[] => {
         const weeks: Record<string, DailyRemindGetDTO[]> = {};
-
+  
         reminds.forEach((remind) => {
           const date = new Date(remind.dailyRemindDate);
-          const month = date.getMonth() + 1; // 월 (0~11이므로 1을 더해줌)
-          const week = Math.ceil(date.getDate() / 7); // 해당 달 기준으로 주차 계산
+          const month = date.getMonth() + 1;
+          const week = Math.ceil(date.getDate() / 7);
           const weekKey = `${date.getFullYear()}-${month}-${week}`;
           
           if (!weeks[weekKey]) weeks[weekKey] = [];
           weeks[weekKey].push(remind);
         });
-
-        // 각 주 데이터를 SprintOption 배열로 변환
+  
         return Object.keys(weeks).map((weekKey, index) => {
           const [year, month, week] = weekKey.split('-');
           const weekData = weeks[weekKey];
-          const startDate = weekData[0].dailyRemindDate;
-          const endDate = weekData[weekData.length - 1].dailyRemindDate;
-          
+  
+          // 주의 첫 번째 날을 기준으로 주의 월요일과 금요일 계산
+          const firstDate = new Date(weekData[0].dailyRemindDate);
+          const monday = new Date(firstDate);
+          const friday = new Date(firstDate);
+  
+          monday.setDate(firstDate.getDate() - firstDate.getDay() + 1); // 월요일 (일요일이 0이므로 +1)
+          friday.setDate(monday.getDate() + 4); // 금요일 (월요일 + 4일)
+  
           return {
             id: `sprint${index + 1}`,
             label: `${year}년 ${month}월 ${week}주차`,
-            period: `${startDate} ~ ${endDate}`,
-            startDate: startDate, 
-            endDate: endDate 
+            period: `${monday.toISOString().split('T')[0]} ~ ${friday.toISOString().split('T')[0]}`,
+            startDate: monday.toISOString().split('T')[0],
+            endDate: friday.toISOString().split('T')[0]
           };
         });
       };
-
-      // 그룹화된 주 단위 옵션을 설정
+  
       setSprintOptions(groupByWeek(dailyReminds));
     }
   }, [dailyReminds]);
+  
 
   const handleSprintSelect = (sprintId: string) => {
     setSelectedSprint(sprintId);
