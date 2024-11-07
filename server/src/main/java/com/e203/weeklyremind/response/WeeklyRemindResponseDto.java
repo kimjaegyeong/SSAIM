@@ -1,5 +1,6 @@
 package com.e203.weeklyremind.response;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,31 +8,32 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WeeklyRemindResponseDto {
 
-    private int projectMemberId;
-    private int projectId;
-    private int weeklyRemindId;
-    private String content;
+    private Integer projectMemberId;
+    private Integer projectId;
     private String username;
     private String userImage;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private int userId;
+    private Integer userId;
+    private String projectName;
+    private LocalDate projectStartDate;
+    private LocalDate projectEndDate;
+    private WeeklyRemindDto weeklyRemind;
 
     @Builder
-    private WeeklyRemindResponseDto(int projectMemberId, int projectId, int weeklyRemindId, String content, String username
-    , String userImage, LocalDate startDate, LocalDate endDate, int userId) {
+    private WeeklyRemindResponseDto(Integer projectMemberId, Integer projectId, String username
+    , String userImage, Integer userId, WeeklyRemindDto weeklyRemind, String projectName
+    , LocalDate projectStartDate, LocalDate projectEndDate) {
 
-        this.weeklyRemindId = weeklyRemindId;
         this.projectMemberId = projectMemberId;
         this.projectId = projectId;
-        this.content = content;
         this.username = username;
         this.userImage = userImage;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.userId = userId;
+        this.weeklyRemind = weeklyRemind;
+        this.projectName = projectName;
+        this.projectStartDate = projectStartDate;
+        this.projectEndDate = projectEndDate;
     }
 }
