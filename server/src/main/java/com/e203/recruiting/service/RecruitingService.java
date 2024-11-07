@@ -3,7 +3,9 @@ package com.e203.recruiting.service;
 import com.e203.global.entity.ProjectDomain;
 import com.e203.recruiting.entity.BoardRecruiting;
 import com.e203.recruiting.entity.RecruitingMember;
+import com.e203.recruiting.repository.RecruitingMemberRepository;
 import com.e203.recruiting.repository.RecruitingRepository;
+import com.e203.recruiting.request.RecruitingApplyRequestDto;
 import com.e203.recruiting.request.RecruitingEditRequestDto;
 import com.e203.recruiting.request.RecruitingMemberEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
@@ -30,6 +32,8 @@ public class RecruitingService {
 
     private final RecruitingRepository recruitingRepository;
 
+    private final RecruitingMemberRepository recruitingMemberRepository;
+
     @Transactional
     public void createPost(RecruitingWriteRequestDto dto) {
 
@@ -39,8 +43,12 @@ public class RecruitingService {
                 .content(dto.getContent())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
-                .firstDomain(new ProjectDomain(dto.getFirstDomain()))
-                .secondDomain(new ProjectDomain(dto.getSecondDomain()))
+                .firstDomain(Optional.ofNullable(dto.getFirstDomain())
+                        .map(ProjectDomain::new)
+                        .orElse(null))
+                .secondDomain(Optional.ofNullable(dto.getSecondDomain())
+                        .map(ProjectDomain::new)
+                        .orElse(null))
                 .campus(dto.getCampus())
                 .memberTotal(dto.getMemberTotal())
                 .memberInfra(dto.getMemberInfra())
@@ -204,5 +212,33 @@ public class RecruitingService {
                 .forEach(member -> member.setDeletedAt(LocalDateTime.now()));
 
         return "Deleted";
+    }
+
+    @Transactional
+    public String crateRecruitingMember(int postId, RecruitingApplyRequestDto dto) {
+
+        BoardRecruiting recruiting = recruitingRepository.findByRecruitingIdAndDeletedAtIsNull(postId);
+
+        if (recruiting == null) {
+            return "Not found";
+        }
+
+        List<RecruitingMember> members = recruitingMemberRepository.searchMemberByUserId(dto.getUserId());
+
+        if (!members.isEmpty()) {
+            return "Duplicated";
+        }
+
+        RecruitingMember applicant = RecruitingMember.builder()
+                .boardRecruiting(recruiting)
+                .user(new User(dto.getUserId()))
+                .recruitingMemberMessage(dto.getMessage())
+                .recruitingMemberPosition(dto.getPosition())
+                .recruitingMemberStatus(0)
+                .build();
+
+        recruitingMemberRepository.save(applicant);
+
+        return "Done";
     }
 }

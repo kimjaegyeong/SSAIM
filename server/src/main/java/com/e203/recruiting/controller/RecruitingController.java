@@ -1,6 +1,7 @@
 package com.e203.recruiting.controller;
 
 import com.e203.jwt.JWTUtil;
+import com.e203.recruiting.request.RecruitingApplyRequestDto;
 import com.e203.recruiting.request.RecruitingEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
 import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
@@ -36,6 +37,7 @@ public class RecruitingController {
     public ResponseEntity<RecruitingPostDetailResponseDto> getPost(@PathVariable(name = "postId") int postId,
                                                                    @RequestHeader("Authorization") String auth) {
         int userId = jwtUtil.getUserId(auth.substring(7));
+        System.out.println(userId);
         RecruitingPostDetailResponseDto dto = recruitingService.getPost(postId, userId);
 
         if (dto == null) {
@@ -83,6 +85,23 @@ public class RecruitingController {
             return ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
         } else {
             return ResponseEntity.status(200).body("삭제되었습니다.");
+        }
+    }
+
+    @PostMapping("/api/v1/recruiting/posts/{postId}/applicants")
+    public ResponseEntity<String> applyTeam(@PathVariable(name = "postId") int postId,
+                                            @RequestHeader("Authorization") String auth,
+                                            @RequestBody RecruitingApplyRequestDto dto) {
+        if (!jwtUtil.isPermitted(dto.getUserId(), auth)) {
+            return ResponseEntity.status(403).body("권한이 없습니다.");
+        }
+        String result = recruitingService.crateRecruitingMember(postId, dto);
+        if (result.equals("Duplicated")) {
+            return ResponseEntity.status(403).body("중복 지원은 불가합니다.");
+        } else if (result.equals("Not found")) {
+            return ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+        } else {
+            return ResponseEntity.status(200).body("신청이 완료되었습니다.");
         }
     }
 }
