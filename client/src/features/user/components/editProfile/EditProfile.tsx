@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import styles from './EditProfile.module.css';
-
-interface UserProfile {
-  userName: string;
-  userPw: string;
-  userEmail: string;
-  userClass: number;
-  userCampus: number;
-  userGeneration: number;
-  userNickname: string;
-  userBirth: string;
-  userGender: number;
-  userPhone: string;
-}
-
+import { UserInfoEditDTO } from '@features/user/types/UserInfoDTO';
+import useUserStore from '@/stores/useUserStore';
+import { editUserData } from '@/features/myPage/apis/editUserData';
+import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
+import { regionMap, getRegionLabel } from '@/utils/labelUtils';
+import { useNavigate } from 'react-router-dom';
 const EditProfile: React.FC = () => {
-  const [profile, setProfile] = useState<UserProfile>({
+  const { userId } = useUserStore();
+  const { data: userInfo } = useUserInfoData(userId);
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState<UserInfoEditDTO>({
     userName: '',
-    userPw: '',
     userEmail: '',
-    userClass: 0,
     userCampus: 0,
     userGeneration: 0,
     userNickname: '',
@@ -30,18 +23,36 @@ const EditProfile: React.FC = () => {
   });
 
   useEffect(() => {
-    // 초기 데이터 로드 (예: API로부터 사용자 정보 가져오기)
-    axios.get('/api/users/me').then((response) => {
-      setProfile(response.data);
-    });
-  }, []);
+    if (userInfo) {
+      const userInfoEdit: UserInfoEditDTO = {
+        userEmail: userInfo.userEmail,
+        userName: userInfo.userName,
+        userNickname: userInfo.userNickname,
+        userPhone: userInfo.userPhone,
+        userGender: userInfo.userGender,
+        userGeneration: userInfo.userGeneration,
+        userCampus: userInfo.userCampus,
+        userBirth: userInfo.userBirth,
+        userProfileMessage: userInfo.userProfileMessage ?? undefined,
+        userSkills: userInfo.userSkills ?? undefined,
+        userRole: userInfo.userRole,
+        userProfileImage: userInfo.userProfileImage,
+      };
+      setProfile(userInfoEdit);
+    }
+  }, [userInfo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setProfile((prevProfile) => ({ ...prevProfile, [name]: value }));
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    editUserData(userId, profile)
+      .then(() => navigate(`/profile/${userId}`))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className={styles.editProfileContainer}>
@@ -58,16 +69,6 @@ const EditProfile: React.FC = () => {
           />
         </label>
         <label>
-          비밀번호:
-          <input
-            type="password"
-            name="userPw"
-            value={profile.userPw}
-            onChange={handleChange}
-            className={styles.input}
-          />
-        </label>
-        <label>
           이메일:
           <input
             type="email"
@@ -78,24 +79,14 @@ const EditProfile: React.FC = () => {
           />
         </label>
         <label>
-          클래스:
-          <input
-            type="number"
-            name="userClass"
-            value={profile.userClass}
-            onChange={handleChange}
-            className={styles.input}
-          />
-        </label>
-        <label>
           캠퍼스:
-          <input
-            type="number"
-            name="userCampus"
-            value={profile.userCampus}
-            onChange={handleChange}
-            className={styles.input}
-          />
+          <select name="userCampus" value={profile.userCampus} onChange={handleChange} className={styles.input}>
+            {Object.keys(regionMap).map((key) => (
+              <option key={key} value={key}>
+                {getRegionLabel(Number(key))}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
           기수:
