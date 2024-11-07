@@ -5,6 +5,7 @@ import HexagonChart from './commitChart/HexagonChart';
 import { useUserInfoData } from '../hooks/useUserInfoData';
 import useUserStore from '@/stores/useUserStore';
 import { editUserData } from '../apis/editUserData';
+import { getRegionLabel } from '@/utils/labelUtils';
 const MypageComponent: React.FC = () => {
   // 프로필 페이지 정보 및 userId
   const { userId } = useUserStore();
@@ -83,7 +84,7 @@ const MypageComponent: React.FC = () => {
         <div className={styles.profileSection}>
           <div className={styles.profileImageContainer}>
             <img src={userInfo?.userProfileImage} alt="프로필 사진" className={styles.profileImage} />
-            <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${userInfo?.userCampus}`}</div>
+            <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${userInfo? getRegionLabel(userInfo?.userCampus) : null}`}</div>
           </div>
         </div>
 
@@ -91,7 +92,7 @@ const MypageComponent: React.FC = () => {
         <div className={styles.infoSection}>
           <div className={styles.infoHeader}>
             <h2>{userInfo?.userName}</h2>
-            <p>{`${userInfo?.userGeneration} ${userInfo?.userCampus}`}</p>
+            <p>{`${userInfo?.userGeneration}기 ${userInfo ? getRegionLabel(userInfo?.userCampus) : null}`}</p>
           </div>
           <hr />
           <div className={styles.infoFooter}>
