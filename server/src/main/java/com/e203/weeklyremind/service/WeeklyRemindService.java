@@ -79,15 +79,11 @@ public class WeeklyRemindService {
                     .projectMemberId(weeklyRemind.getWeeklyRemindAuthor().getId())
                     .projectId(weeklyRemind.getProjectId().getId())
                     .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName())
-                    .userId(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserId())
-                    .projectName(weeklyRemind.getProjectId().getTitle())
-                    .projectStartDate(weeklyRemind.getProjectId().getStartDate().toLocalDate())
-                    .projectEndDate(weeklyRemind.getProjectId().getEndDate().toLocalDate())
                     .userImage(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserProfileImage())
                     .content(weeklyRemind.getWeeklyRemindContents())
                     .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
-                    .weeklyremindstartDate(weeklyRemind.getWeeklyRemindStardDate())
-                    .weeklyremindendDate(weeklyRemind.getWeeklyRemindEndDate()).build());
+                    .startDate(weeklyRemind.getWeeklyRemindStardDate())
+                    .endDate(weeklyRemind.getWeeklyRemindEndDate()).build());
         }
 
         return weeklyRemindResponseDtoList;
