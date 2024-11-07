@@ -3,16 +3,18 @@ import apiClient from '../../../apis/apiClient';
 
 interface JiraApiKeyPayload {
   jiraApi: string;
+  jiraProjectId : string;
 }
 
 interface GitlabApiKeyPayload {
   gitlabApi: string;
+  gitlabProjectId : string;
 }
 
 
 export const fetchApiKey = async (
   type: 'jira' | 'gitlab',
-  method: 'patch' | 'post',
+  method: 'patch',
   apiKey: JiraApiKeyPayload | GitlabApiKeyPayload,
   projectId: number
 ) => {

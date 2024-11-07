@@ -55,6 +55,9 @@
   border-top: 1px solid #ddd; /* 헤더와 바디 사이의 회색 선 */
   border-bottom: 1px solid #ddd; /* 바디와 푸터 사이의 회색 선 */
   text-align: center;
+  display : flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .bodyRight {
@@ -68,11 +71,12 @@
 }
 
 .input {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+  margin-bottom: 10px;
 }
 
 /* 모달 푸터 */
