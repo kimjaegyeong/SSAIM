@@ -1,4 +1,4 @@
-import NetworkErrorImg from '../../assets/error/networkError.png'
+import NetworkErrorImg from '../../assets/error/NetworkError.png'
 import styles from './NetworkErrorPage.module.css';
 import Button from '../../components/button/Button';
 
