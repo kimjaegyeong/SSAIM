@@ -67,10 +67,6 @@ const DailyContainer = () => {
     weekday: 'short',
   }).format(selectedDate).replace(/ (\S+)$/, ' ($1)');
 
-  const handleButtonClick = () => {
-    navigate(`/project/${projectId}/remind/create`); 
-  };
-
   const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
 
   const dayMyfilteredMessages = dailyRemindData?.filter((item) =>
@@ -80,6 +76,18 @@ const DailyContainer = () => {
   const dayTeamFilteredMessages = dailyRemindData?.filter(
     (item) => item.dailyRemindDate === formattedSelectedDate
   ) || [];
+
+  const myfilteredMessages = dailyRemindData?.filter((item) =>
+    item.projectMemberId === pmId 
+  ) || [];
+
+  const handleButtonClick = () => {
+    navigate(`/project/${projectId}/remind/create`,
+      {
+        state: { myfilteredMessages },
+      }
+    ); 
+  };
 
   return (
     <div className={styles.container}>
