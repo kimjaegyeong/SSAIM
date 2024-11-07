@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect  } from 'react';
 import { useNavigate, useParams, useLocation  } from 'react-router-dom'; 
 import styles from './DayMyCreate.module.css';
 import { FaRegClock } from "react-icons/fa6";
@@ -6,17 +6,18 @@ import { ImPencil } from "react-icons/im";
 import Button from '../../../../../../components/button/Button';
 import CreateCalendar from './CreateCalendar';
 import { createDailyRemind }from '@features/project/apis/remind/createDailyRemind';
-import { DailyRemindPostDTO } from '@features/project/types/remind/DailyRemindDTO';
+import { editDailyRemind } from '@features/project/apis/remind/editDailyRemind';
+import { DailyRemindPostDTO, DailyRemindPutDTO  } from '@features/project/types/remind/DailyRemindDTO';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 
 const DayMyCreate = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { pmId } = usePmIdStore();
+  console.log(pmId)
 
   const location = useLocation();
   const { myfilteredMessages } = location.state || {};
-  console.log(myfilteredMessages);
 
   const [keepText, setKeepText] = useState("");
   const [problemText, setProblemText] = useState("");
@@ -42,7 +43,39 @@ const DayMyCreate = () => {
   interface DailyRemindMessage {
     dailyRemindDate: string;
     message: string;
+    dailyRemindId?: number;
   }
+
+  // 섹션별 메시지를 추출하는 함수
+  const extractSectionMessage = (msg: string, prefix: string, nextPrefix?: string) => {
+    const startIndex = msg.indexOf(prefix);
+    if (startIndex === -1) return null;
+    const endIndex = nextPrefix ? msg.indexOf(nextPrefix, startIndex) : msg.length;
+    return msg.substring(startIndex + prefix.length, endIndex).trim();
+  };
+
+  // currentDate와 일치하는 메시지를 찾아 keep, problem, try 텍스트로 설정
+  useEffect(() => {
+    const todayMessage = myfilteredMessages?.find((message: DailyRemindMessage) => {
+      const messageDate = new Date(message.dailyRemindDate);
+      return messageDate.toLocaleDateString("ko-KR") === currentDate.toLocaleDateString("ko-KR");
+    });
+
+    if (todayMessage) {
+      console.log(todayMessage)
+      const keepPart = extractSectionMessage(todayMessage.message, '🟢 Keep:', '🟠 Problem:');
+      const problemPart = extractSectionMessage(todayMessage.message, '🟠 Problem:', '🔵 Try:');
+      const tryPart = extractSectionMessage(todayMessage.message, '🔵 Try:');
+
+      setKeepText(keepPart || "");
+      setProblemText(problemPart || "");
+      setTryText(tryPart || "");
+    } else {
+      setKeepText("");
+      setProblemText("");
+      setTryText("");
+    }
+  }, [currentDate, myfilteredMessages]);
 
   // dailyRemindDate와 selectedDate가 일치하는 메시지 찾기
   const matchingMessage = myfilteredMessages?.find(
@@ -70,18 +103,29 @@ const DayMyCreate = () => {
       day: '2-digit'
     }).replace(/\. /g, '-').replace('.', ''); // "YYYY-MM-DD" 형식으로 변환
 
-    const dailyRemindData: DailyRemindPostDTO = {
-      dailyRemindContents,
-      projectMemberId: pmId, // 실제 projectMemberId를 여기에 설정해야 함
-      dailyRemindDate,
-    };
-
-    console.log(dailyRemindData)
+    const todayMessage = myfilteredMessages?.find((message: DailyRemindMessage) => {
+      const messageDate = new Date(message.dailyRemindDate);
+      return messageDate.toLocaleDateString("ko-KR") === currentDate.toLocaleDateString("ko-KR");
+    });
 
     try {
-      await createDailyRemind(Number(projectId), dailyRemindData);
-      console.log(dailyRemindData)
-      navigate(`/project/${projectId}/remind`); // API 성공 시 리다이렉트
+      if (todayMessage && todayMessage.dailyRemindId) {
+        const dailyRemindData: DailyRemindPutDTO = {
+          dailyRemindContents,
+          dailyRemindAuthor: pmId,
+          dailyRemindId: todayMessage.dailyRemindId,
+        };
+        console.log(dailyRemindData);
+        await editDailyRemind(Number(projectId), todayMessage.dailyRemindId, dailyRemindData);
+      } else {
+        const dailyRemindData: DailyRemindPostDTO = {
+          dailyRemindContents,
+          projectMemberId: pmId,
+          dailyRemindDate,
+        };
+        await createDailyRemind(Number(projectId), dailyRemindData);
+      }
+      navigate(`/project/${projectId}/remind`);
     } catch (error) {
       console.error("Failed to create daily remind:", error);
     }
