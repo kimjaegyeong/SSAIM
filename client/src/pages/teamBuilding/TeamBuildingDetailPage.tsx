@@ -13,6 +13,7 @@ import DefaultProfile from '../../assets/profile/DefaultProfile.png'
 import { deletePost } from '../../features/teamBuilding/apis/teamBuildingDetail/deletePost'
 import { PiCrownSimpleFill } from "react-icons/pi";
 import { HiMinusCircle } from "react-icons/hi2";
+import { createComment } from '@/features/teamBuilding/apis/teamBuildingDetail/createComment';
 
 type TeamBuildingMember = {
   userId: number;
@@ -40,6 +41,7 @@ type TeamBuildingData = {
   postId: number;
   campus: number;
   authorId: number;
+  candidateCount: number;
   postTitle: string;
   postContent: string;
   firstDomain: number;
@@ -62,6 +64,7 @@ const initialData: TeamBuildingData = {
   postId: 0,
   campus: 0,
   authorId: 0,
+  candidateCount: 0,
   postTitle: '',
   postContent: '',
   firstDomain: 0,
@@ -89,6 +92,8 @@ const TeamBuildingDetailPage = () => {
   const [editedCommentContent, setEditedCommentContent] = useState('');
   const [editMembers, setEditMembers] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
+  const [selectedTag, setSelectedTag] = useState<number>(0);
+  const [message, setMessage] = useState<string>('');
 
   const navigate = useNavigate();
 
@@ -115,6 +120,14 @@ const TeamBuildingDetailPage = () => {
 
   const isAuthor = userId === data.authorId;
 
+  const handleTagChange = (tag: number) => {
+    setSelectedTag(tag);
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+  };
+
   const filteredCandidates = isAuthor 
     ? data.recruitingCandidates 
     : data.recruitingCandidates.filter(candidate => candidate.userId === userId);
@@ -132,6 +145,34 @@ const TeamBuildingDetailPage = () => {
       setIsCommentEditing(false);
       setEditedCommentContent('');
     }
+  };
+
+  const handleSubmitComment = () => {
+    if (userId === null) {
+      return;
+    }
+
+    if (!message.trim()) {
+      alert('댓글을 입력해주세요.');
+      return;
+    }
+
+    const params = {
+      userId: userId,
+      position: selectedTag,
+      message: message,
+    };
+    console.log(params);
+
+    createComment(data.postId, params)
+     .then((response) => {
+        console.log(response);
+        setMessage('');
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   const handleEditComment = (commentContent:string) => {
@@ -203,12 +244,17 @@ const TeamBuildingDetailPage = () => {
             </div>
           ) : (
             <div className={styles.commentForm}>
-              <TagSelector />
-              <input className={styles.commentInput} />
-              <button className={styles.submitButton}>지원하기</button>
+              <TagSelector onTagChange={handleTagChange} />
+              <input
+                className={styles.commentInput}
+                value={message}
+                onChange={handleMessageChange}
+                placeholder="지원 메시지를 입력하세요"
+              />
+              <button onClick={handleSubmitComment} className={styles.submitButton}>지원하기</button>
             </div>
           )}
-          <span className={styles.applyCount}>지원 수: {data.recruitingCandidates.length}</span>
+          <span className={styles.applyCount}>지원 수: {data.candidateCount}</span>
           <div className={styles.commentList}>
             {filteredCandidates.map((candidate, index) => (
               <div key={index} className={styles.commentItem}>
