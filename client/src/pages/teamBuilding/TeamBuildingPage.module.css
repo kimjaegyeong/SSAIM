@@ -87,9 +87,16 @@
 
 .memberInfo {
     display: flex;
+    position: relative;
     align-items: center;
     gap: 10px;
-    padding-left: 10px;
+    padding-left: 20px;
+}
+
+.deleteMemberButton {
+    position: absolute;
+    left: -5px;
+    cursor: pointer;
 }
 
 .profileImg {

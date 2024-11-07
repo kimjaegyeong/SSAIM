@@ -11,13 +11,20 @@ import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
 import { formatDateTime } from '../../utils/formatDateTime';
 import DefaultProfile from '../../assets/profile/DefaultProfile.png'
 import { deletePost } from '../../features/teamBuilding/apis/teamBuildingDetail/deletePost'
-
+import { PiCrownSimpleFill } from "react-icons/pi";
+import { HiMinusCircle } from "react-icons/hi2";
 
 type TeamBuildingMember = {
   userId: number;
   userName: string;
   profileImage: string | null;
   position: number;
+};
+
+type MemberDeleteStatus = {
+  userId: number;
+  position: number;
+  delete: boolean;
 };
 
 type TeamBuildingCandidate = {
@@ -80,6 +87,8 @@ const TeamBuildingDetailPage = () => {
   const [activeCommentId, setActiveCommentId] = useState<number | null>(null);
   const [isCommentEditing, setIsCommentEditing] = useState(false);
   const [editedCommentContent, setEditedCommentContent] = useState('');
+  const [editMembers, setEditMembers] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
 
   const navigate = useNavigate();
 
@@ -91,6 +100,13 @@ const TeamBuildingDetailPage = () => {
     getPostInfo(parseInt(postId))
       .then((response) => {
           setData(response);
+          setSelectedMembers(
+            response.recruitingMembers.map((member: TeamBuildingMember) => ({
+              userId: member.userId,
+              position: member.position,
+              delete: false,
+            }))
+          );
       })
       .catch((err) => {
           console.error(err);
@@ -137,6 +153,23 @@ const TeamBuildingDetailPage = () => {
       .catch((err) => {
         console.error(err);
       });
+  };
+
+  const handleEditToggle = () => {
+    if (editMembers) {
+      console.log('선택된 멤버들:', selectedMembers);
+    }
+    setEditMembers(!editMembers);
+  };
+
+  const toggleMemberSelection = (memberId: number) => {
+    setSelectedMembers((prevSelected) =>
+      prevSelected.map((member) =>
+        member.userId === memberId
+          ? { ...member, delete: !member.delete }
+          : member
+      )
+    );
   };
 
   return (
@@ -241,20 +274,41 @@ const TeamBuildingDetailPage = () => {
         <div className={styles.teamSection}>
           <div className={styles.teamSectionHeader}>
             <span>모집 현황</span>
-            <button className={styles.editMemberButton}>Edit</button>
+            <button className={styles.editMemberButton} onClick={handleEditToggle}>
+              {editMembers ? 'Done' : 'Edit'}
+            </button>
           </div>
           <div className={styles.memberList}>
-            {(data.recruitingMembers || []).map((member: TeamBuildingMember) => (
+            {selectedMembers.map((member) => (
               <div key={member.userId} className={styles.memberItem}>
                 <div className={styles.memberInfo}>
-                  <img src={member.profileImage ? member.profileImage : DefaultProfile} alt={member.userName} className={styles.profileImg}/>
-                  <span>{member.userName}</span>
-                  {/* {member.role === 1 && <PiCrownSimpleFill color='#FFCD29'/>} */}
+                  <img
+                    src={
+                      data.recruitingMembers.find((m) => m.userId === member.userId)?.profileImage ||
+                      DefaultProfile
+                    }
+                    alt={member.userId.toString()}
+                    className={styles.profileImg}
+                  />
+                  <span>{data.recruitingMembers.find((m) => m.userId === member.userId)?.userName}</span>
+                  {member.userId === data.authorId && <PiCrownSimpleFill color="#FFCD29" />}
+                  {editMembers && (
+                    <HiMinusCircle
+                      onClick={() => toggleMemberSelection(member.userId)}
+                      className={styles.deleteMemberButton}
+                      style={{
+                        color: member.delete ? 'red' : 'gray',
+                      }}
+                    />
+                  )}
                 </div>
-                <Tag text={getPositionLabel(member.position)}/>
+                <Tag text={getPositionLabel(member.position)} />
               </div>
             ))}
           </div>
+          {editMembers && (
+            <p>모집인원 수정</p>
+          )}
         </div>
       </div>
     </div>
