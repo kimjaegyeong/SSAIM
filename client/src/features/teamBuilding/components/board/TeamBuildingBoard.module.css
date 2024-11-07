@@ -126,6 +126,7 @@
     padding: 8px 10px;
     border-radius: 5px;
     cursor: pointer;
+    border: none;
 }
 
 .searchActions .actionButtons button:nth-child(1) {

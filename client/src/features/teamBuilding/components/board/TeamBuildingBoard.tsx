@@ -152,7 +152,17 @@ const TeamBuildingBoard: React.FC = () => {
           params.title = searchQuery;
         }
       
-        console.log('선택된 필터:', params);
+        setLoading(true);
+        getTeamBuildingList(params)
+            .then((response) => {
+                setData(response);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error(err);
+                setError(true);
+                setLoading(false);
+            });
     };
 
     return (
@@ -207,7 +217,7 @@ const TeamBuildingBoard: React.FC = () => {
                         </div>
                         <div className={styles.actionButtons}>
                             <button onClick={handleSearch}><IoSearchOutline /> 검색</button> 
-                            <button onClick={() => navigate('/team-building/detail/1')}><AiOutlineProfile /> 신청현황</button>
+                            <button><AiOutlineProfile /> 신청현황</button>
                             <button onClick={() => navigate('/team-building/create')}><FiPlus /> 팀 생성</button>
                         </div>
                     </div>
@@ -225,7 +235,7 @@ const TeamBuildingBoard: React.FC = () => {
                                     </div>
                                     <div className={styles.state}>
                                         <Tag text={getStatusLabel(item.status)} />
-                                        <span>{item.recruitedTotal ? item.recruitedTotal : 0}/{item.memberTotal}</span>
+                                        <span>{item.recruitedTotal + 1}/{item.memberTotal}</span>
                                     </div>
                                     <div className={styles.position}>
                                         {item.memberFrontend > 0 && <Tag text={'FE'} />}
