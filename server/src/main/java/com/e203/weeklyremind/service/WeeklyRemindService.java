@@ -28,7 +28,6 @@ public class WeeklyRemindService {
 
     private final WeeklyRemindRepository weeklyRemindRepository;
     private final ProjectMemberRepository projectMemberRepository;
-    private final UserRepository userRepository;
     private final ChatAiService chatAiService;
     private final ProjectRepository projectRepository;
     private final DailyRemindRepository dailyRemindRepository;
@@ -92,15 +91,7 @@ public class WeeklyRemindService {
 
     public List<WeeklyRemindResponseDto> searchDevelopmentStory (Integer userId) {
 
-        User user = userRepository.findById(userId).orElse(null);
-        if(user == null) {
-            return null;
-        }
-
-        ProjectMember projectMember = projectMemberRepository.findByUser(user);
-
-
-        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindByWeeklyRemindAuthor(projectMember);
+        List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindsByUserId(userId);
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {

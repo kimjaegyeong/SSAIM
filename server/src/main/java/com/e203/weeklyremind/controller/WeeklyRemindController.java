@@ -63,5 +63,9 @@ public class WeeklyRemindController {
         return ResponseEntity.status(OK).body(result);
     }
 
+//    @PutMapping("/api/v1/projects/{projectId}/weekly-remind")
+//    public ResponseEntity<String> putWeeklyRemind(@RequestBody WeeklyRemindRequestDto message, @PathVariable int projectId) {
+//
+//    }
 
 }
