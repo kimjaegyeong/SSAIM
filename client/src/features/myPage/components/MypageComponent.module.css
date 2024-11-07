@@ -1,126 +1,153 @@
 .myPageContainer {
-  max-width: 1200px; /* 전체 너비 조정 */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
 .header {
-  /* text-align: center; */
   margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e5e5e5;
   padding-bottom: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #333;
-  position : relative;
+  font-size: 14px;
+  font-weight: 700;
+  color: #444;
+  position: relative;
 }
-
 
 .bodyContainer {
   display: grid;
-  grid-template-columns: 2fr 3fr; /* 왼쪽 2, 오른쪽 3 비율 */
-  grid-auto-rows: min-content; /* 각 row가 컨텐츠에 맞게 최소 높이로 조정 */
+  grid-template-columns: 1fr 2fr;
   gap: 20px;
 }
-
 
 .profileSection {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  background-color: #f8f9fb;
+  border-radius: 12px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.profileImageContainer {
+  position: relative;
+  width: 150px; /* 이미지 컨테이너의 너비 설정 */
+  height: 150px; /* 이미지 컨테이너의 높이 설정 */
+  margin-bottom: 10px;
 }
 
 .profileImage {
-  width: 120px;
-  height: 150px;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  border: 2px solid #e0e0e0;
+  border: 3px solid #e3e3e3;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .ribbon {
+  width: 100%;
+
   position: absolute;
-  bottom: 50px; /* 이미지 아래쪽을 살짝 덮도록 위치 */
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(255, 221, 87, 0.9); /* 반투명 배경 */
+  background-color: #ffe08a;
   color: #333;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 14px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-  width : 100px;
-  text-align: center;
+  padding: 4px 10px;
+  font-weight: 600;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
 }
 
 .infoSection,
 .stacksSection,
 .commitInfoSection {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+  padding: 25px 20px;
   display: flex;
   flex-direction: column;
 }
 
 .infoSection h2 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
+  font-size: 22px;
+  font-weight: 700;
+  color: #444;
 }
 
 .statusMessage {
-  color: #777;
-  font-size: 14px;
-  margin-top: 5px;
+  color: #666;
+  font-size: 15px;
+  margin-top: 8px;
 }
 
-.stacksSection h3 {
+.stacksSection h3,
+.commitInfoSection h3 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
+  font-size: 19px;
+  font-weight: 700;
+  color: #444;
 }
 
 .stacksSection ul {
   list-style: none;
   padding: 0;
   margin-top: 15px;
-  font-size: 14px;
+  font-size: 15px;
   color: #555;
 }
 
-.commitInfoSection h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
-
-.infoFooter{
-  position : relative;
+.infoFooter {
+  position: relative;
 }
 
 .modifyIcon {
-  position : absolute;
-  bottom : 20px;
-  right : 10px;
+  position: absolute;
+  font-size: 16px;
+  top: 8px;
+  right: 10px;
+  color: #888;
+  cursor: pointer;
 }
 
-.statusInput{
-  width : 90%;
-  padding : 10px;
-  border : 1px solid #ddd;
-  border-radius : 4px;
-  height : 100%;
+.statusInput {
+  width: 90%;
+  height: 50px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: #f5f5f5;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+}
+.stackInput {
+  width: 80%;
+  height: 80%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: #f5f5f5;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stacksBody {
+  position: relative;
+  height: 100%;
+}
+.infoHeader {
+  display: flex;
+  align-items: center;
 }
