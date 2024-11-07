@@ -1,18 +1,24 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; 
+import { useState, useEffect  } from 'react';
+import { useNavigate, useParams, useLocation  } from 'react-router-dom'; 
 import styles from './DayMyCreate.module.css';
 import { FaRegClock } from "react-icons/fa6";
 import { ImPencil } from "react-icons/im";
 import Button from '../../../../../../components/button/Button';
 import CreateCalendar from './CreateCalendar';
 import { createDailyRemind }from '@features/project/apis/remind/createDailyRemind';
-import { DailyRemindPostDTO } from '@features/project/types/remind/DailyRemindDTO';
+import { editDailyRemind } from '@features/project/apis/remind/editDailyRemind';
+import { DailyRemindPostDTO, DailyRemindPutDTO  } from '@features/project/types/remind/DailyRemindDTO';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 
 const DayMyCreate = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { pmId } = usePmIdStore();
+  console.log(pmId)
+
+  const location = useLocation();
+  const { myfilteredMessages } = location.state || {};
+
   const [keepText, setKeepText] = useState("");
   const [problemText, setProblemText] = useState("");
   const [tryText, setTryText] = useState("");
@@ -34,6 +40,52 @@ const DayMyCreate = () => {
     weekday: 'short',
   }).format(currentDate).replace(/ (\S+)$/, ' ($1)');
 
+  interface DailyRemindMessage {
+    dailyRemindDate: string;
+    message: string;
+    dailyRemindId?: number;
+  }
+
+  // 섹션별 메시지를 추출하는 함수
+  const extractSectionMessage = (msg: string, prefix: string, nextPrefix?: string) => {
+    const startIndex = msg.indexOf(prefix);
+    if (startIndex === -1) return null;
+    const endIndex = nextPrefix ? msg.indexOf(nextPrefix, startIndex) : msg.length;
+    return msg.substring(startIndex + prefix.length, endIndex).trim();
+  };
+
+  // currentDate와 일치하는 메시지를 찾아 keep, problem, try 텍스트로 설정
+  useEffect(() => {
+    const todayMessage = myfilteredMessages?.find((message: DailyRemindMessage) => {
+      const messageDate = new Date(message.dailyRemindDate);
+      return messageDate.toLocaleDateString("ko-KR") === currentDate.toLocaleDateString("ko-KR");
+    });
+
+    if (todayMessage) {
+      console.log(todayMessage)
+      const keepPart = extractSectionMessage(todayMessage.message, '🟢 Keep:', '🟠 Problem:');
+      const problemPart = extractSectionMessage(todayMessage.message, '🟠 Problem:', '🔵 Try:');
+      const tryPart = extractSectionMessage(todayMessage.message, '🔵 Try:');
+
+      setKeepText(keepPart || "");
+      setProblemText(problemPart || "");
+      setTryText(tryPart || "");
+    } else {
+      setKeepText("");
+      setProblemText("");
+      setTryText("");
+    }
+  }, [currentDate, myfilteredMessages]);
+
+  // dailyRemindDate와 selectedDate가 일치하는 메시지 찾기
+  const matchingMessage = myfilteredMessages?.find(
+    (message: DailyRemindMessage) => {
+      const messageDate = new Date(message.dailyRemindDate);
+      // messageDate와 selectedDate를 비교
+      return messageDate.toLocaleDateString("ko-KR") === selectedDate.toLocaleDateString("ko-KR");
+    }
+  );
+
   const handleButtonClick = async () => {
     if (!projectId) {
       console.error("Project ID is missing");
@@ -51,18 +103,29 @@ const DayMyCreate = () => {
       day: '2-digit'
     }).replace(/\. /g, '-').replace('.', ''); // "YYYY-MM-DD" 형식으로 변환
 
-    const dailyRemindData: DailyRemindPostDTO = {
-      dailyRemindContents,
-      projectMemberId: pmId, // 실제 projectMemberId를 여기에 설정해야 함
-      dailyRemindDate,
-    };
-
-    console.log(dailyRemindData)
+    const todayMessage = myfilteredMessages?.find((message: DailyRemindMessage) => {
+      const messageDate = new Date(message.dailyRemindDate);
+      return messageDate.toLocaleDateString("ko-KR") === currentDate.toLocaleDateString("ko-KR");
+    });
 
     try {
-      await createDailyRemind(Number(projectId), dailyRemindData);
-      console.log(dailyRemindData)
-      navigate(`/project/${projectId}/remind`); // API 성공 시 리다이렉트
+      if (todayMessage && todayMessage.dailyRemindId) {
+        const dailyRemindData: DailyRemindPutDTO = {
+          dailyRemindContents,
+          dailyRemindAuthor: pmId,
+          dailyRemindId: todayMessage.dailyRemindId,
+        };
+        console.log(dailyRemindData);
+        await editDailyRemind(Number(projectId), todayMessage.dailyRemindId, dailyRemindData);
+      } else {
+        const dailyRemindData: DailyRemindPostDTO = {
+          dailyRemindContents,
+          projectMemberId: pmId,
+          dailyRemindDate,
+        };
+        await createDailyRemind(Number(projectId), dailyRemindData);
+      }
+      navigate(`/project/${projectId}/remind`);
     } catch (error) {
       console.error("Failed to create daily remind:", error);
     }
@@ -145,9 +208,13 @@ const DayMyCreate = () => {
                 {formattedDate}
             </div>
             <div className={styles.remindText}>
-                ⭕ Keep: 드디어 OpenCV를 활용한 모델을 프론트에 올렸습니다!!!!!! 실시간으로 mediapipe로 사람의 관절의 포인트를 출력하고 모델에 적용시켜 예측값이 프론트 화면에 나오도록 구현했습니다. 오늘 더 많은 데이터를 수집하기 위해 직접 도복을 입고 촬영을 했는데 꽤 정확도가 높게 나와 만족하고 있습니다.
-⚠ Problem: 모델을 프론트에 올려서 출력한은 것까지 성공했지만 여전히 웹캠의 반응속도가 느립니다. 코드를 좀 더 뜯어보고 개선방안을 찾아보도록 하겠습니다!
-✅ Try: 품새 심사 진행률 + 모델 연결시키기 겨루기에 적용시킬 모델 학습하기
+                {matchingMessage ? (
+                  <>
+                    {matchingMessage.message}
+                  </>
+                ) : (
+                  '선택한 날짜에 대한 회고가 없습니다.'
+                )}
             </div>
         </div>
 

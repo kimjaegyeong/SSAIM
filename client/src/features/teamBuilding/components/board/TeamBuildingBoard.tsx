@@ -1,126 +1,158 @@
 import React, { useState, useEffect } from "react";
 import styles from './TeamBuildingBoard.module.css';
-import DropDown from '../filterDropDown/filterDropDown';
+import DropDown from '../filterDropDown/FilterDropDown';
+import CategoryDropdown from "../filterDropDown/CategoryDropDown";
 import Tag from '../tag/Tag';
-import { GrPowerReset } from "react-icons/gr";
+import { getTeamBuildingList } from "../../apis/teamBuildingBoard/getTeamBuildingList";
 import { AiOutlineProfile } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
+import { IoSearchOutline } from "react-icons/io5";
+import { getDomainLabel, getRegionLabel, getStatusLabel } from "../../../../utils/labelUtils";
+import DefaultProfile from "../../../../assets/profile/DefaultProfile.png"
+
+type TeamBuildingData = {
+    postId: number;
+    campus: number;
+    authorId: number;
+    postTitle: string;
+    firstDomain: number;
+    secondDomain: number;
+    status: number;
+    recruitedTotal: number;
+    memberTotal: number;
+    authorProfileImageUrl: string;
+    authorName: string;
+    memberInfra: number;
+    memberBackend: number;
+    memberFrontend: number;
+};
 
 const TeamBuildingBoard: React.FC = () => {
     const navigate = useNavigate()
-    
-    const data = [
-        { id: 1, title: '팀원 모집 게시글 1', region: '서울', currentMembers: 3, totalMembers: 6, category: ['자유주제', '기업연계'], position: ['FE', 'BE', 'Infra'], author: 'XXX', state: '모집' },
-        { id: 2, title: '팀원 모집 게시글 2', region: '대전', currentMembers: 5, totalMembers: 6, category: ['자유주제', '기업연계'], position: ['FE', 'Infra'], author: 'XXX', state: '모집' },
-        { id: 3, title: '팀원 모집 게시글 3', region: '광주', currentMembers: 6, totalMembers: 6, category: ['자유주제'], position: ['BE'], author: 'XXX', state: '모집' },
-        { id: 4, title: '팀원 모집 게시글 4', region: '구미', currentMembers: 5, totalMembers: 7, category: ['자유주제'], position: ['FE', 'BE'], author: 'XXX', state: '마감' },
-        { id: 5, title: '팀원 모집 게시글 5', region: '부울경', currentMembers: 2, totalMembers: 6, category: ['기업연계'], position: ['FE'], author: 'XXX', state: '모집' },
-        { id: 6, title: '팀원 모집 게시글 6', region: '서울', currentMembers: 3, totalMembers: 6, category: ['자유주제', '기업연계'], position: ['FE', 'BE', 'Infra'], author: 'XXX', state: '모집' },
-        { id: 7, title: '팀원 모집 게시글 7', region: '대전', currentMembers: 4, totalMembers: 5, category: ['자유주제'], position: ['BE', 'FE'], author: 'YYY', state: '모집' },
-        { id: 8, title: '팀원 모집 게시글 8', region: '광주', currentMembers: 3, totalMembers: 4, category: ['기업연계'], position: ['Infra'], author: 'ZZZ', state: '마감' },
-        { id: 9, title: '팀원 모집 게시글 9', region: '서울', currentMembers: 5, totalMembers: 5, category: ['자유주제', '기업연계'], position: ['FE', 'BE'], author: 'AAA', state: '모집' },
-        { id: 10, title: '팀원 모집 게시글 10', region: '부울경', currentMembers: 1, totalMembers: 6, category: ['자유주제'], position: ['FE'], author: 'BBB', state: '모집' },
-        { id: 11, title: '팀원 모집 게시글 11', region: '구미', currentMembers: 3, totalMembers: 6, category: ['기업연계'], position: ['BE', 'Infra'], author: 'CCC', state: '마감' },
-        { id: 12, title: '팀원 모집 게시글 12', region: '서울', currentMembers: 4, totalMembers: 7, category: ['자유주제'], position: ['FE', 'Infra'], author: 'DDD', state: '모집' },
-        { id: 13, title: '팀원 모집 게시글 13', region: '대전', currentMembers: 3, totalMembers: 4, category: ['기업연계'], position: ['Infra', 'BE'], author: 'EEE', state: '마감' },
-        { id: 14, title: '팀원 모집 게시글 14', region: '광주', currentMembers: 5, totalMembers: 5, category: ['자유주제'], position: ['FE', 'BE', 'Infra'], author: 'FFF', state: '모집' },
-        { id: 15, title: '팀원 모집 게시글 15', region: '부울경', currentMembers: 2, totalMembers: 6, category: ['자유주제'], position: ['FE'], author: 'GGG', state: '모집' },
-        { id: 16, title: '팀원 모집 게시글 16', region: '서울', currentMembers: 4, totalMembers: 6, category: ['자유주제', '기업연계'], position: ['FE', 'BE', 'Infra'], author: 'HHH', state: '모집' },
-        { id: 17, title: '팀원 모집 게시글 17', region: '대전', currentMembers: 3, totalMembers: 4, category: ['자유주제'], position: ['Infra'], author: 'III', state: '마감' },
-        { id: 18, title: '팀원 모집 게시글 18', region: '광주', currentMembers: 5, totalMembers: 7, category: ['기업연계'], position: ['BE', 'FE'], author: 'JJJ', state: '모집' },
-        { id: 19, title: '팀원 모집 게시글 19', region: '구미', currentMembers: 4, totalMembers: 6, category: ['자유주제'], position: ['Infra', 'FE'], author: 'KKK', state: '마감' },
-        { id: 20, title: '팀원 모집 게시글 20', region: '부울경', currentMembers: 2, totalMembers: 6, category: ['기업연계'], position: ['FE'], author: 'LLL', state: '마감' },
-        { id: 21, title: '팀원 모집 게시글 21', region: '서울', currentMembers: 4, totalMembers: 6, category: ['자유주제', '기업연계'], position: ['FE', 'BE', 'Infra'], author: 'MMM', state: '모집' },
-        { id: 22, title: '팀원 모집 게시글 22', region: '대전', currentMembers: 5, totalMembers: 6, category: ['자유주제'], position: ['Infra', 'BE'], author: 'NNN', state: '모집' },
-        { id: 23, title: '팀원 모집 게시글 23', region: '광주', currentMembers: 3, totalMembers: 5, category: ['자유주제'], position: ['BE', 'FE'], author: 'OOO', state: '마감' },
-        { id: 24, title: '팀원 모집 게시글 24', region: '부울경', currentMembers: 1, totalMembers: 6, category: ['기업연계'], position: ['Infra'], author: 'PPP', state: '모집' },
-        { id: 25, title: '팀원 모집 게시글 25', region: '서울', currentMembers: 5, totalMembers: 5, category: ['자유주제', '기업연계'], position: ['FE', 'Infra'], author: 'QQQ', state: '모집' },
-        { id: 26, title: '팀원 모집 게시글 26', region: '구미', currentMembers: 4, totalMembers: 6, category: ['자유주제'], position: ['BE', 'Infra'], author: 'RRR', state: '마감' },
-        { id: 27, title: '팀원 모집 게시글 27', region: '광주', currentMembers: 3, totalMembers: 4, category: ['기업연계'], position: ['FE'], author: 'SSS', state: '모집' },
-        { id: 28, title: '팀원 모집 게시글 28', region: '서울', currentMembers: 2, totalMembers: 7, category: ['자유주제', '기업연계'], position: ['BE', 'FE', 'Infra'], author: 'TTT', state: '모집' },
-        { id: 29, title: '팀원 모집 게시글 29', region: '부울경', currentMembers: 3, totalMembers: 6, category: ['자유주제'], position: ['FE'], author: 'UUU', state: '마감' },
-        { id: 30, title: '팀원 모집 게시글 30', region: '대전', currentMembers: 6, totalMembers: 6, category: ['기업연계'], position: ['Infra', 'BE'], author: 'VVV', state: '마감' }
-    ];
-    
+    const [data, setData] = useState<TeamBuildingData[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    useEffect(() => {
+        setLoading(true);
+        getTeamBuildingList()
+            .then((response) => {
+                setData(response);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setError(err);
+                setLoading(false);
+            });
+        console.log(data);
+    }, []);
 
     // 필터링 상태 관리
     const [selectedRegion, setSelectedRegion] = useState('');
-    const [selectedMembers, setSelectedMembers] = useState('');
+    const [selectedDomain, setSelectedDomain] = useState('');
     const [selectedPosition, setSelectedPosition] = useState('');
+    const [selectedState, setSelectedState] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
     const regionOptions = [
-        { value: '서울', label: '서울' },
-        { value: '대전', label: '대전' },
-        { value: '광주', label: '광주' },
-        { value: '구미', label: '구미' },
-        { value: '부울경', label: '부울경' },
-    ];
-    const memberOptions = [
-        { value: '1', label: '1' },
-        { value: '2', label: '2' },
-        { value: '3', label: '3' },
-        { value: '4', label: '4' },
-        { value: '5', label: '5' },
-        { value: '6', label: '6' },
-        { value: '7', label: '7' },
-    ];
-    const positionOptions = [
-        { value: 'FE', label: 'FE' },
-        { value: 'BE', label: 'BE' },
-        { value: 'Infra', label: 'Infra' },
+        { value: '1', label: '서울' },
+        { value: '2', label: '대전' },
+        { value: '3', label: '광주' },
+        { value: '4', label: '구미' },
+        { value: '5', label: '부울경' },
+        { value: '', label: '전체' },
     ];
 
-    const filteredData = data.filter((item) => {
-        const regionMatch = selectedRegion ? item.region === selectedRegion : true;
-        const membersMatch = selectedMembers ? item.currentMembers.toString() === selectedMembers : true;
-        const positionMatch = selectedPosition ? item.position.includes(selectedPosition) : true;
-        const searchMatch = searchQuery ? item.title.includes(searchQuery) : true;
-        return regionMatch && membersMatch && positionMatch && searchMatch;
-    });
-
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-    useEffect(() => {
-        if (currentPage > totalPages) {
-            setCurrentPage(totalPages);
-        }
-    }, [currentPage, totalPages]);
+    const domainCategory = [
+        {
+            label: '공통',
+            options: [
+                { value: '1', label: '웹기술' },
+                { value: '2', label: '웹디자인' },
+                { value: '3', label: '모바일' },
+                { value: '4', label: 'AIoT' },
+            ],
+        },
+        {
+            label: '특화',
+            options: [
+                { value: '5', label: 'AI영상' },
+                { value: '6', label: 'AI음성' },
+                { value: '7', label: '추천' },
+                { value: '8', label: '분산' },
+                { value: '9', label: '자율주행' },
+                { value: '10', label: '스마트홈' },
+                { value: '11', label: 'P2P' },
+                { value: '12', label: '디지털거래' },
+                { value: '13', label: '메타버스' },
+                { value: '14', label: '핀테크' },
+            ],
+        },
+        {
+            label: '자율',
+            options: [
+                { value: '15', label: '자유주제' },
+                { value: '16', label: '기업연계' },
+            ],
+        },
+    ];
     
-    const startPage = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
-    const endPage = Math.min(totalPages, startPage + 4);
+    const stateOptions = [
+        { value: '1', label: '모집' },
+        { value: '0', label: '마감' },
+        { value: '', label: '전체' },
+    ];
+    
+    const positionOptions = [
+        { value: '1', label: 'FE' },
+        { value: '2', label: 'BE' },
+        { value: '3', label: 'Infra' },
+        { value: '', label: '전체' },
+    ];
 
-    const handleSelect = (type: 'region' | 'members' | 'position', selectedOption: { value: string }) => {
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  
+    const handleDropdownToggle = (dropdownName: string) => {
+      setOpenDropdown((prev) => (prev === dropdownName ? null : dropdownName));
+    };
+
+    const handleSelect = (type: 'region' | 'domain' | 'position' | 'state', selectedOption: { value: string }) => {
         if (type === 'region') {
             setSelectedRegion(selectedOption.value);
-        } else if (type === 'members') {
-            setSelectedMembers(selectedOption.value);
+        } else if (type === 'domain') {
+            setSelectedDomain(selectedOption.value);
         } else if (type === 'position') {
             setSelectedPosition(selectedOption.value);
-        }
-        setCurrentPage(1);
+        } else if (type === 'state') {
+            setSelectedState(selectedOption.value);
+        } 
     };
 
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value);
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
-        setCurrentPage(1);
     };
 
-    const resetFilters = () => {
-        setSelectedRegion('');
-        setSelectedMembers('');
-        setSelectedPosition('');
-        setSearchQuery('');
-        setCurrentPage(1);
+    const handleSearch = () => {
+        const params: { [key: string]: any } = {};
+      
+        if (selectedRegion) {
+          params.campus = parseInt(selectedRegion);
+        }
+        if (selectedState) {
+          params.status = parseInt(selectedState);
+        }
+        if (selectedPosition) {
+          params.position = parseInt(selectedPosition);
+        }
+        if (selectedDomain) {
+          params.domain = parseInt(selectedDomain);
+        }
+        if (searchQuery.trim()) {
+          params.title = searchQuery;
+        }
+      
+        console.log('선택된 필터:', params);
     };
 
     return (
@@ -130,23 +162,38 @@ const TeamBuildingBoard: React.FC = () => {
                     <div className={styles.filterSection}>
                         <DropDown 
                             options={regionOptions} 
-                            selectedOption={regionOptions.find(option => option.value === selectedRegion) || null} 
+                            selectedOption={selectedRegion === '' ? null : regionOptions.find(option => option.value === selectedRegion) || null} 
                             onSelect={(option) => handleSelect('region', option)} 
+                            isOpen={openDropdown === '지역'}
+                            onToggle={() => handleDropdownToggle('지역')}
                             placeholder="지역" 
                         />
-                        <DropDown 
-                            options={memberOptions} 
-                            selectedOption={memberOptions.find(option => option.value === selectedMembers) || null} 
-                            onSelect={(option) => handleSelect('members', option)} 
-                            placeholder="인원" 
+                        <CategoryDropdown 
+                            categories={domainCategory} 
+                            selectedOption={
+                                selectedDomain === '' ? null : domainCategory.flatMap(category => category.options).find(option => option.value === selectedDomain) || null
+                            }
+                            onSelect={(option) => handleSelect('domain', option)} 
+                            isOpen={openDropdown === '도메인'}
+                            onToggle={() => handleDropdownToggle('도메인')}
+                            placeholder="도메인" 
                         />
                         <DropDown 
                             options={positionOptions} 
-                            selectedOption={positionOptions.find(option => option.value === selectedPosition) || null} 
+                            selectedOption={selectedPosition === '' ? null : positionOptions.find(option => option.value === selectedPosition) || null} 
                             onSelect={(option) => handleSelect('position', option)} 
+                            isOpen={openDropdown === '직무'}
+                            onToggle={() => handleDropdownToggle('직무')}
                             placeholder="직무" 
                         />
-                        <GrPowerReset onClick={resetFilters} className={styles.resetButton} color="949494"/>
+                        <DropDown 
+                            options={stateOptions} 
+                            selectedOption={selectedState === '' ? null : stateOptions.find(option => option.value === selectedState) || null} 
+                            onSelect={(option) => handleSelect('state', option)} 
+                            isOpen={openDropdown === '상태'}
+                            onToggle={() => handleDropdownToggle('상태')}
+                            placeholder="상태" 
+                        />
                     </div>
                     <div className={styles.searchActions}>
                         <div className={styles.searchBar}>
@@ -155,74 +202,58 @@ const TeamBuildingBoard: React.FC = () => {
                                 type="text" 
                                 placeholder="검색" 
                                 value={searchQuery}
-                                onChange={handleSearch}
+                                onChange={handleInputChange}
                             />
                         </div>
-                        <div className={styles.actionButtons}> 
+                        <div className={styles.actionButtons}>
+                            <button onClick={handleSearch}><IoSearchOutline /> 검색</button> 
                             <button onClick={() => navigate('/team-building/detail/1')}><AiOutlineProfile /> 신청현황</button>
                             <button onClick={() => navigate('/team-building/create')}><FiPlus /> 팀 생성</button>
                         </div>
                     </div>
                 </div>
                 <div className={styles.boardContent}>
-                    {currentItems.length > 0 ? (
-                        currentItems.map((item, index) => (
-                            <div key={index} className={styles.boardItem} onClick={() => navigate(`/team-building/detail/${item.id}`)}>
-                                <span className={styles.region}>[{item.region}]</span>
-                                <span className={styles.title}>{item.title}</span>
-                                <div className={styles.category}>
-                                    {item.category.map((cat, catIndex) => (
-                                        <Tag key={catIndex} text={cat} />
-                                    ))}
+                    {!loading && data?.length > 0 ? (
+                        data.map((item, index) => {
+                            return (
+                                <div key={index} className={styles.boardItem} onClick={() => navigate(`/team-building/detail/${item.postId}`)}>
+                                    <span className={styles.region}>[{getRegionLabel(item.campus)}]</span>
+                                    <span className={styles.title}>{item.postTitle}</span>
+                                    <div className={styles.category}>
+                                        <Tag text={getDomainLabel(item.firstDomain)} />
+                                        { item.secondDomain && <Tag text={getDomainLabel(item.secondDomain)} />}
+                                    </div>
+                                    <div className={styles.state}>
+                                        <Tag text={getStatusLabel(item.status)} />
+                                        <span>{item.recruitedTotal ? item.recruitedTotal : 0}/{item.memberTotal}</span>
+                                    </div>
+                                    <div className={styles.position}>
+                                        {item.memberFrontend > 0 && <Tag text={'FE'} />}
+                                        {item.memberBackend > 0 && <Tag text={'BE'} />}
+                                        {item.memberInfra > 0 && <Tag text={'Infra'} />}
+                                    </div>
+                                    <div className={styles.profile}>
+                                        <img
+                                            src={item.authorProfileImageUrl ? item.authorProfileImageUrl : DefaultProfile}
+                                            alt="Profile Image"
+                                            className={styles.profileImg}
+                                        />
+                                        <span>{item.authorName}</span>
+                                    </div>
                                 </div>
-                                <div className={styles.state}>
-                                    <Tag text={item.state}/>
-                                    <span>{item.currentMembers}/{item.totalMembers}</span>
-                                </div>
-                                <div className={styles.position}>
-                                    {item.position.map((pos, posIndex) => (
-                                        <Tag key={posIndex} text={pos} />
-                                    ))}
-                                </div>
-                                <div className={styles.profile}>
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTL2n26IeEdZUIp0w4g7VtqjHtLzGv-0RbZFQ&s" alt="Profile Image" className={styles.profileImg} />
-                                    <span>{item.author}</span>
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
+                    ) : error ? (
+                        <div className={styles.noResults}>
+                            데이터를 가져오지 못했습니다. 다시 시도하세요.
+                        </div>
+                    ) : loading ? (
+                        <div className={styles.noResults}>
+                            Loading...
+                        </div>
                     ) : (
                         <div className={styles.noResults}>
                             검색 결과가 없습니다.
-                        </div>
-                    )}
-                    {filteredData.length > 0 && (
-                        <div className={`${styles.pagination}`}>
-                            <button 
-                                onClick={() => setCurrentPage((prev) => prev - 1)} 
-                                disabled={currentPage === 1}
-                            >
-                                이전
-                            </button>
-
-                            {Array.from({ length: endPage - startPage + 1 }, (_, i) => {
-                                const pageNumber = startPage + i;
-                                return (
-                                    <button
-                                        key={pageNumber}
-                                        onClick={() => setCurrentPage(pageNumber)}
-                                        className={`${currentPage === pageNumber ? styles.active : ''}`}
-                                    >
-                                        {pageNumber}
-                                    </button>
-                                );
-                            })}
-
-                            <button 
-                                onClick={() => setCurrentPage((prev) => prev + 1)} 
-                                disabled={currentPage === totalPages}
-                            >
-                                다음
-                            </button>
                         </div>
                     )}
                 </div>

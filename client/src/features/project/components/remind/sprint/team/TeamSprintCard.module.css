@@ -22,6 +22,7 @@
 .TeamSprintCard:hover {
     transform: scale(1.1); /* 카드 확대 */
     height: auto; /* 높이를 자동으로 설정하여 전체 텍스트 표시 */
+    max-height:40vh;
     z-index: 10;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
 }
@@ -47,4 +48,7 @@
 
 .reviewText {
     font-size: 13px;
+    white-space: pre-wrap;
+    
 }
+

@@ -1,0 +1,21 @@
+.outputHeader {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 20px 0 40px 0;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.outputButton {
+    width: 25%;
+    padding: 10px 0;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+}
+
+.active {
+    background-color: #bdbcfc;
+}

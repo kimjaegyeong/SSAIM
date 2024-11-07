@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './FeatureSpec.module.css';
+import { MdDelete } from "react-icons/md";
 
 interface FeatureSpec {
   id: number;
@@ -8,13 +9,14 @@ interface FeatureSpec {
   details: string;
   type: string;
   owner: string;
-  priority: number;
+  priority: string;
 }
 
 const FeatureSpecTable: React.FC = () => {
   const [data, setData] = useState<FeatureSpec[]>([
-    { id: 1, category: 'User Management', featureName: 'Login', details: 'Login feature', type: 'BE', owner: 'Yoon Donghee', priority: 1 },
-    { id: 2, category: 'User Management', featureName: 'Sign Up', details: 'Sign up feature', type: 'BE', owner: 'Yoon Donghee', priority: 1 },
+    { id: 1, category: '회원 관리', featureName: '로그인', details: '로그인 기능', type: 'BE', owner: 'XXX', priority: '1' },
+    { id: 2, category: '회원 관리', featureName: '회원가입', details: '회원가입 기능', type: 'BE', owner: 'XXX', priority: '1' },
+    { id: 3, category: '회원 관리', featureName: '비밀번호 찾기', details: '비밀번호 찾기', type: 'BE', owner: 'XXX', priority: '2' },
   ]);
   const [isEditing, setIsEditing] = useState<{ [key: number]: { [field: string]: boolean } }>({});
 
@@ -46,14 +48,32 @@ const FeatureSpecTable: React.FC = () => {
       details: '',
       type: '',
       owner: '',
-      priority: 1,
+      priority: '',
     };
     setData([...data, newRow]);
+  };
+
+  const handleDeleteRow = (index: number) => {
+    const updatedData = data.filter((_, i) => i !== index);
+
+    const reorderedData = updatedData.map((item, idx) => ({
+      ...item,
+      id: idx + 1,
+    }));
+
+    setData(reorderedData);
   };
 
   const autoResize = (element: HTMLTextAreaElement) => {
     element.style.height = 'auto';
     element.style.height = `${element.scrollHeight}px`;
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>, index: number, field: keyof FeatureSpec) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleBlur(index, field);
+    }
   };
 
   useEffect(() => {
@@ -68,19 +88,18 @@ const FeatureSpecTable: React.FC = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Category</th>
-            <th>Feature Name</th>
-            <th>Details</th>
-            <th>Type</th>
-            <th>Owner</th>
-            <th>Priority</th>
+            <th>카테고리</th>
+            <th>기능명</th>
+            <th>내용</th>
+            <th>구분</th>
+            <th>담당자</th>
+            <th>우선순위</th>
+            <th>삭제</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row, index) => (
             <tr key={row.id}>
-              <td>{row.id}</td>
               {['category', 'featureName', 'details', 'type', 'owner', 'priority'].map((field) => (
                 <td
                   key={field}
@@ -97,6 +116,7 @@ const FeatureSpecTable: React.FC = () => {
                           e.target.value
                         )
                       }
+                      onKeyDown={(e) => handleKeyPress(e, index, field as keyof FeatureSpec)}
                       onBlur={() => handleBlur(index, field as keyof FeatureSpec)}
                       autoFocus
                       ref={(el) => el && autoResize(el)}
@@ -106,10 +126,13 @@ const FeatureSpecTable: React.FC = () => {
                   )}
                 </td>
               ))}
+              <td>
+                <MdDelete onClick={() => handleDeleteRow(index)}/>
+              </td>
             </tr>
           ))}
           <tr className={styles.addRow} onClick={addNewRow}>
-            <td colSpan={7} className={styles.addRowText}>
+            <td colSpan={6} className={styles.addRowText}>
               + Add New Row
             </td>
           </tr>

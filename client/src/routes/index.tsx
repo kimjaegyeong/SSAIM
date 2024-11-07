@@ -17,15 +17,21 @@ import RemindListPage from '../pages/remind/RemindListPage';
 import RemindDetailPage from '../pages/remind/RemindDetailPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage';
+import TeamBuildingEditPage from '../pages/teamBuilding/TeamBuildingEditPage';
 import MyPage from '../pages/myPage/MyPage';
 import ProjectCreatePage from '../pages/project/ProjectCreatePage';
 import LoginPage from '../pages/account/login/LoginPage';
+import NetworkErrorPage from '../pages/error/NetworkErrorPage';
+import NotFoundPage from '../pages/error/NotFoundPage';
 import SignUpPage from '@pages/account/signup/SignUpPage';
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/signup" element={<SignUpPage />} />
+    {/* error */}
+    <Route path="/network" element={<NetworkErrorPage />}></Route>
+    <Route path="/notfound" element={<NotFoundPage />}></Route>
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
@@ -43,6 +49,7 @@ const AppRoutes = () => (
       <Route path="/team-building" element={<TeamBuildingListPage />}></Route>
       <Route path="/team-building/create" element={<TeamBuildingCreatePage />}></Route>
       <Route path="/team-building/detail/:postId" element={<TeamBuildingDetailPage />}></Route>
+      <Route path="/team-building/edit/:postId" element={<TeamBuildingEditPage />}></Route>
       {/* 회고 */}
       <Route path="/remind" element={<RemindIntroPage />}></Route>
       <Route path="/remind/create" element={<RemindCreatePage />}></Route>
