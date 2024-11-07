@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitingMemberResponseDto {
 
+    private Integer recruitingMemberId;
+
     private Integer userId;
 
     private String userName;
@@ -21,8 +23,9 @@ public class RecruitingMemberResponseDto {
     private String userEmail;
 
     @Builder
-    private RecruitingMemberResponseDto(Integer userId, String userName, String profileImage,
+    private RecruitingMemberResponseDto(Integer recruitingMemberId, Integer userId, String userName, String profileImage,
                                         Integer position, String userEmail) {
+        this.recruitingMemberId = recruitingMemberId;
         this.userId = userId;
         this.userName = userName;
         this.profileImage = profileImage;
@@ -31,6 +34,7 @@ public class RecruitingMemberResponseDto {
     }
 
     RecruitingMemberResponseDto(RecruitingMember member) {
+        this.recruitingMemberId = member.getId();
         this.userId = member.getUser().getUserId();
         this.userName = member.getUser().getUserName();
         this.profileImage = member.getUser().getUserProfileImage();
@@ -40,6 +44,7 @@ public class RecruitingMemberResponseDto {
 
     public static RecruitingMemberResponseDto fromEntity(RecruitingMember member) {
         return RecruitingMemberResponseDto.builder()
+                .recruitingMemberId(member.getId())
                 .userId(member.getUser().getUserId())
                 .userName(member.getUser().getUserName())
                 .userEmail(member.getUser().getUserEmail())
