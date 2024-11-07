@@ -17,17 +17,14 @@ public class WeeklyRemindResponseDto {
     private String userImage;
     private Integer userId;
     private String projectName;
-    private LocalDate projectStartDate;
-    private LocalDate projectEndDate;
     private Integer weeklyRemindId;
     private String content;
-    private LocalDate weeklyremindstartDate;
-    private LocalDate weeklyremindendDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     @Builder
     private WeeklyRemindResponseDto(Integer projectMemberId, Integer projectId, String username
     , String userImage, Integer userId, Integer weeklyRemindId, String projectName
-    , LocalDate projectStartDate, LocalDate projectEndDate, String content
-    , LocalDate weeklyremindstartDate, LocalDate weeklyremindendDate) {
+    , String content, LocalDate startDate, LocalDate endDate) {
 
         this.projectMemberId = projectMemberId;
         this.projectId = projectId;
@@ -36,10 +33,8 @@ public class WeeklyRemindResponseDto {
         this.userId = userId;
         this.weeklyRemindId = weeklyRemindId;
         this.projectName = projectName;
-        this.projectStartDate = projectStartDate;
-        this.projectEndDate = projectEndDate;
-        this.weeklyremindstartDate = weeklyremindstartDate;
-        this.weeklyremindendDate = weeklyremindendDate;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.content = content;
     }
 }
