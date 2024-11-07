@@ -10,6 +10,7 @@ import TitleInput from "./titleInput/TitleInput";
 import ContentInput from "./contentInput/ContentInput";
 import DomainSelector from "./domainSelector/DomainSelector";
 import RecruitmentSelector from "./recruitmentSelector/RecruitmentSelector";
+import { getPositionLabel } from "../../../../utils/labelUtils";
 import Tag from "../tag/Tag";
 
 interface Recruitment {
@@ -31,7 +32,7 @@ const TeamCreation: React.FC = () => {
     const [N, setN] = useState<number>(0);
     const [inputValue, setInputValue] = useState<string>("0");
     const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra;
-    const [selectedMyPosition, setSelectedMyPosition] = useState<string | null>(null);
+    const [selectedMyPosition, setSelectedMyPosition] = useState<number | null>(null);
 
 
     useEffect(() => {
@@ -75,7 +76,7 @@ const TeamCreation: React.FC = () => {
         return null;
     };
 
-    const handleMyPositionClick = (position: string) => {
+    const handleMyPositionClick = (position: number) => {
         if (selectedMyPosition === position) {
             setSelectedMyPosition(null);
         } else {
@@ -167,6 +168,14 @@ const TeamCreation: React.FC = () => {
 
         const localStartDate = convertToLocalDate(startDate);
         const localEndDate = convertToLocalDate(endDate);
+        const memberFrontend = selectedMyPosition === 0 ? recruitment.FE - 1 : recruitment.FE
+        const memberBackend = selectedMyPosition === 1 ? recruitment.BE - 1 : recruitment.BE
+        const memberInfra = selectedMyPosition === 2 ? recruitment.Infra - 1 : recruitment.Infra
+        
+        if (memberBackend < 0 || memberFrontend < 0 || memberInfra < 0) {
+            alert("내 포지션과 일치하는 인원이 모집 인원보다 많습니다.");
+            return;
+        }
     
         const formData = {
             author: user.userId,
@@ -177,10 +186,10 @@ const TeamCreation: React.FC = () => {
             firstDomain: selectedDomains[0],
             campus: selectedRegion,
             memberTotal: N,
-            memberInfra: selectedMyPosition === "Infra" ? recruitment.Infra - 1 : recruitment.Infra,
-            memberBackend: selectedMyPosition === "BE" ? recruitment.BE - 1 : recruitment.BE,
-            memberFrontend: selectedMyPosition === "FE" ? recruitment.FE - 1 : recruitment.FE,
-            position: 0,
+            memberFrontend: memberFrontend,
+            memberBackend: memberBackend,
+            memberInfra: memberInfra,
+            position: selectedMyPosition,
             ...(selectedDomains[1] ? { secondDomain: selectedDomains[1] } : {}),
         };
         
@@ -219,10 +228,10 @@ const TeamCreation: React.FC = () => {
                     <div className={styles.myPosition}>
                         <span>내 포지션</span>
                         <div className={styles.myPositionTag}>
-                            {["FE", "BE", "Infra"].map((tag) => (
+                            {[0, 1, 2].map((tag) => (
                                 <Tag
                                     key={tag}
-                                    text={tag}
+                                    text={getPositionLabel(tag)}
                                     useDefaultColors={selectedMyPosition !== tag}
                                     onClick={() => handleMyPositionClick(tag)}
                                 />
