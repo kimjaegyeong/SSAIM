@@ -1,6 +1,5 @@
 // src/feature/project/api/fetchWeeklyData.ts
 import apiClient from '@/apis/apiClient';
-import config from '../../../config/config';
 import { UserInfoEditDTO } from '../types/UserInfoDTO';
 
 export const editUserData = async (userId: number | null, userInfoUpdates: UserInfoEditDTO) => {
