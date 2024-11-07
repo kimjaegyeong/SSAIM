@@ -15,8 +15,6 @@ import java.util.List;
 @Repository
 public interface WeeklyRemindRepository extends JpaRepository<WeeklyRemind, Integer> {
 
-    List<WeeklyRemind> findWeeklyRemindByWeeklyRemindAuthor(ProjectMember author);
-
     @Query("SELECT w FROM WeeklyRemind w " +
             "WHERE (:projectId IS NULL OR w.projectId.id = :projectId) " +
             "AND (:authorId IS NULL OR w.weeklyRemindAuthor.id = :authorId) " +
@@ -29,4 +27,12 @@ public interface WeeklyRemindRepository extends JpaRepository<WeeklyRemind, Inte
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    @Query("SELECT wr FROM WeeklyRemind wr " +
+            "JOIN wr.projectId p " +
+            "JOIN ProjectMember pm ON pm.project.id = p.id " +
+            "JOIN pm.user u " +
+            "WHERE u.userId = :userId")
+    List<WeeklyRemind> findWeeklyRemindsByUserId(@Param("userId") int userId);
+
 }
