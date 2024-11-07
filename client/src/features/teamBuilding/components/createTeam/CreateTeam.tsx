@@ -155,7 +155,7 @@ const TeamCreation: React.FC = () => {
             return;
         }
 
-        if (!selectedMyPosition) {
+        if (selectedMyPosition === null) {
             alert("내 포지션을 선택해주세요.");
             return;
         }
