@@ -19,7 +19,7 @@ export interface UserInfoDTO extends BaseUserDTO {
   userProfileImage: string;
 }
 
-export interface UserInfoEditDTO {
+export interface UserInfoEditDTO{
   userEmail?: string;
   userName?: string;
   userNickname?: string;
