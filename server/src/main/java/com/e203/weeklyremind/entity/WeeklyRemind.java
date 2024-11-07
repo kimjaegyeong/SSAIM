@@ -48,4 +48,8 @@ public class WeeklyRemind extends BaseEntity {
         this.weeklyRemindEndDate = weeklyRemindEndDate;
     }
 
+    public void updateWeeklyRemind(String contents) {
+        this.weeklyRemindContents = contents;
+    }
+
 }

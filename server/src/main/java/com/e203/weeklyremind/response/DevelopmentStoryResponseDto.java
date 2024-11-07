@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WeeklyRemindResponseDto {
+public class DevelopmentStoryResponseDto {
 
     private Integer projectMemberId;
     private Integer projectId;
@@ -19,27 +19,21 @@ public class WeeklyRemindResponseDto {
     private String projectName;
     private LocalDate projectStartDate;
     private LocalDate projectEndDate;
-    private Integer weeklyRemindId;
-    private String content;
-    private LocalDate weeklyremindstartDate;
-    private LocalDate weeklyremindendDate;
+    private WeeklyRemindDto weeklyRemind;
+
     @Builder
-    private WeeklyRemindResponseDto(Integer projectMemberId, Integer projectId, String username
-    , String userImage, Integer userId, Integer weeklyRemindId, String projectName
-    , LocalDate projectStartDate, LocalDate projectEndDate, String content
-    , LocalDate weeklyremindstartDate, LocalDate weeklyremindendDate) {
+    private DevelopmentStoryResponseDto(Integer projectMemberId, Integer projectId, String username
+            , String userImage, Integer userId, WeeklyRemindDto weeklyRemind, String projectName
+            , LocalDate projectStartDate, LocalDate projectEndDate) {
 
         this.projectMemberId = projectMemberId;
         this.projectId = projectId;
         this.username = username;
         this.userImage = userImage;
         this.userId = userId;
-        this.weeklyRemindId = weeklyRemindId;
+        this.weeklyRemind = weeklyRemind;
         this.projectName = projectName;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
-        this.weeklyremindstartDate = weeklyremindstartDate;
-        this.weeklyremindendDate = weeklyremindendDate;
-        this.content = content;
     }
 }

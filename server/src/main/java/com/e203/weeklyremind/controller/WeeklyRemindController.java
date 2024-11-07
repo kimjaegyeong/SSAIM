@@ -1,21 +1,17 @@
 package com.e203.weeklyremind.controller;
 
-import org.springframework.http.HttpStatusCode;
+import com.e203.weeklyremind.response.DevelopmentStoryResponseDto;
 import com.e203.weeklyremind.request.WeeklyRemindRequestDto;
 import com.e203.weeklyremind.response.WeeklyRemindResponseDto;
-import com.e203.weeklyremind.service.ChatAiService;
 import com.e203.weeklyremind.service.WeeklyRemindService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 
 @RestController
@@ -52,10 +48,10 @@ public class WeeklyRemindController {
     }
 
     @GetMapping("/api/v1/projects/development-story")
-    public ResponseEntity<List<WeeklyRemindResponseDto>> getDevelopmentStory(
+    public ResponseEntity<List<DevelopmentStoryResponseDto>> getDevelopmentStory(
             @RequestParam(required = false) Integer userId) {
 
-        List<WeeklyRemindResponseDto>result = weeklyRemindService.searchDevelopmentStory(userId);
+        List<DevelopmentStoryResponseDto>result = weeklyRemindService.searchDevelopmentStory(userId);
 
         if(result == null) {
             return ResponseEntity.status(FORBIDDEN).body(null);
@@ -64,9 +60,19 @@ public class WeeklyRemindController {
         return ResponseEntity.status(OK).body(result);
     }
 
-//    @PutMapping("/api/v1/projects/{projectId}/weekly-remind")
-//    public ResponseEntity<String> putWeeklyRemind(@RequestBody WeeklyRemindRequestDto message, @PathVariable int projectId) {
-//
-//    }
+    @PutMapping("/api/v1/projects/{projectId}/weekly-remind/{weeklyRemindId}")
+    public ResponseEntity<String> putWeeklyRemind(@PathVariable int projectId
+    , @PathVariable int weeklyRemindId, @RequestBody WeeklyRemindRequestDto message) {
+
+        boolean result = weeklyRemindService.editWeeklyRemind(weeklyRemindId,
+                projectId, message);
+
+        if(!result) {
+            return ResponseEntity.status(NOT_FOUND).body("주간회고가 존재하지 않습니다.");
+        }
+        else {
+            return ResponseEntity.status(OK).body("주간회고가 새로 생성되었습니다.");
+        }
+    }
 
 }
