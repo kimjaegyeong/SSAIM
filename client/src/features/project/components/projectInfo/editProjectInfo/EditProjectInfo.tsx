@@ -14,8 +14,6 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ onClose }) 
   const [image] = useState(null);
   const [projectName, setProjectName] = useState('');
   const [teamName, setTeamName] = useState('');
-  const [jiraApi, setJiraApi] = useState('');
-  const [gitlabApi, setGitlabApi] = useState('');
 
   const handleImageClick = () => {
     // 이미지 선택 로직
@@ -26,8 +24,6 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ onClose }) 
     console.log('프로젝트 정보 저장:', {
       projectName,
       teamName,
-      jiraApi,
-      gitlabApi,
       startDate,
       endDate,
     });
@@ -43,7 +39,6 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ onClose }) 
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
         <button className={styles.closeButton} onClick={onClose}>X</button>
-        
         <div className={styles.topSection}>
           {/* 왼쪽 구역 - 대표 사진 */}
           <div className={styles.imageSection} onClick={handleImageClick}>
@@ -78,7 +73,7 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ onClose }) 
         </div>
 
         {/* Jira 및 GitLab API 수정 섹션 */}
-        <div className={styles.apiSection}>
+        {/* <div className={styles.apiSection}>
           <input
             type="text"
             placeholder="Jira API"
@@ -93,7 +88,7 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ onClose }) 
             value={gitlabApi}
             onChange={(e) => setGitlabApi(e.target.value)}
           />
-        </div>
+        </div> */}
 
         {/* 프로젝트 기간 입력 */}
         <div className={styles.dateSection}>
