@@ -54,7 +54,7 @@ public class SecurityConfig {
                                 "http://localhost:5173",
                                 "https://localhost:5173",
                                 "https://k11e203.p.ssafy.io"));
-                        config.setAllowedMethods(Collections.singletonList("*"));
+                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
                         config.setMaxAge(3600L);
@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/users", "api/v1/users/login").permitAll()
                         .requestMatchers("/health-check").permitAll()
-                        .requestMatchers("/api/v1/**") .permitAll()
+                        .requestMatchers("/api/v1/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
