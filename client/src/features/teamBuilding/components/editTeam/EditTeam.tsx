@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./EditTeam.module.css";
 import Button from "../../../../components/button/Button";
-import useUserStore from '@/stores/useUserStore';
+import { editRecruiting } from "../../apis/editTeam/editRecruiting"
 import ProjectDatePicker from '../createTeam/projectDatePicker/ProjectDatePicker';
 import RegionSelector from "../createTeam/regionSelector/RegionSelector";
 import TitleInput from "../createTeam/titleInput/TitleInput";
@@ -33,7 +33,6 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
     const [endDate, setEndDate] = useState<string>(initialData?.endDate || "");
     const [N, setN] = useState<number>(initialData?.memberTotal || 0);
     const navigate = useNavigate();
-    const { userId } = useUserStore();
 
     useEffect(() => {
         if (initialData) {
@@ -116,7 +115,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
         return date.toISOString().split("T")[0];
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // 유효성 검사
         if (!title.trim()) {
             alert("제목을 입력해주세요.");
@@ -142,39 +141,36 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
             alert("최소 하나의 도메인을 선택해주세요.");
             return;
         }
-      
-        if (N === 0) {
-            alert("모집 인원은 최소 1명 이상이어야 합니다.");
-            return;
-        }
-
-        const totalMembers = recruitment.Infra + recruitment.BE + recruitment.FE;
-        if (N !== totalMembers) {
-            alert(`총 모집 인원(${N})과 세부 모집 인원의 합(${totalMembers})이 일치하지 않습니다.`);
-            return;
-        }
 
         const localStartDate = convertToLocalDate(startDate);
         const localEndDate = convertToLocalDate(endDate);
     
         const formData = {
-            author: userId,
             title,
             content,
             startDate: localStartDate,
             endDate: localEndDate,
             firstDomain: selectedDomains[0],
-            secondDomain: selectedDomains[1] || null,
             campus: selectedRegion,
             memberTotal: N,
             memberInfra: recruitment.Infra,
             memberBackend: recruitment.BE,
             memberFrontend: recruitment.FE,
+            recruitingMembers: initialData.recruitingMembers.map((member: { userId: number; position: number; }) => ({
+                userId: member.userId,
+                position: member.position,
+                delete: 0
+            })),
+            ...(selectedDomains[1] ? { secondDomain: selectedDomains[1] } : {}),
         };
         
-        console.log(formData);
-
-        navigate(`/team-building/detail/${initialData.postId}`);
+        try {
+            await editRecruiting(initialData.postId, formData); // 서버에 요청을 보냅니다.
+            navigate(`/team-building/detail/${initialData.postId}`); // 성공 시 페이지 이동
+        } catch (error) {
+            console.error(error); // 에러를 콘솔에 출력합니다.
+            alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+        }
     };
 
     return (
@@ -202,7 +198,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
                 </div>
             </div>
             <div className={styles.buttonSection}>
-                <Button size="custom" colorType="blue" onClick={handleSubmit}>생성</Button>
+                <Button size="custom" colorType="blue" onClick={handleSubmit}>수정</Button>
                 <Button size="custom" colorType="red" onClick={() => {navigate(-1)}}>취소</Button>
             </div>
         </>

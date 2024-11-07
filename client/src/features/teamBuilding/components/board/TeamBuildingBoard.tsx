@@ -14,6 +14,7 @@ import DefaultProfile from "../../../../assets/profile/DefaultProfile.png"
 type TeamBuildingData = {
     postId: number;
     campus: number;
+    authorId: number;
     postTitle: string;
     firstDomain: number;
     secondDomain: number;
@@ -220,7 +221,7 @@ const TeamBuildingBoard: React.FC = () => {
                                     <span className={styles.title}>{item.postTitle}</span>
                                     <div className={styles.category}>
                                         <Tag text={getDomainLabel(item.firstDomain)} />
-                                        <Tag text={getDomainLabel(item.secondDomain)} />
+                                        { item.secondDomain && <Tag text={getDomainLabel(item.secondDomain)} />}
                                     </div>
                                     <div className={styles.state}>
                                         <Tag text={getStatusLabel(item.status)} />

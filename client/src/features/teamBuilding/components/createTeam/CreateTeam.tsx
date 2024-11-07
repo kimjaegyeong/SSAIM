@@ -10,6 +10,7 @@ import TitleInput from "./titleInput/TitleInput";
 import ContentInput from "./contentInput/ContentInput";
 import DomainSelector from "./domainSelector/DomainSelector";
 import RecruitmentSelector from "./recruitmentSelector/RecruitmentSelector";
+import Tag from "../tag/Tag";
 
 interface Recruitment {
     FE: number;
@@ -30,6 +31,8 @@ const TeamCreation: React.FC = () => {
     const [N, setN] = useState<number>(0);
     const [inputValue, setInputValue] = useState<string>("0");
     const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra;
+    const [selectedMyPosition, setSelectedMyPosition] = useState<string | null>(null);
+
 
     useEffect(() => {
         setRecruitment({ FE: 0, BE: 0, Infra: 0 });
@@ -72,6 +75,14 @@ const TeamCreation: React.FC = () => {
         return null;
     };
 
+    const handleMyPositionClick = (position: string) => {
+        if (selectedMyPosition === position) {
+            setSelectedMyPosition(null);
+        } else {
+            setSelectedMyPosition(position);
+        }
+    };
+
     const handleDomainClick = (domainId: number) => {
         const domainCategory = getDomainCategory(domainId);
         const selectedCategories = selectedDomains.map(getDomainCategory);
@@ -111,7 +122,7 @@ const TeamCreation: React.FC = () => {
         return date.toISOString().split("T")[0];
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // 유효성 검사
         if (!title.trim()) {
             alert("제목을 입력해주세요.");
@@ -143,6 +154,11 @@ const TeamCreation: React.FC = () => {
             return;
         }
 
+        if (!selectedMyPosition) {
+            alert("내 포지션을 선택해주세요.");
+            return;
+        }
+
         const totalMembers = recruitment.Infra + recruitment.BE + recruitment.FE;
         if (N !== totalMembers) {
             alert(`총 모집 인원(${N})과 세부 모집 인원의 합(${totalMembers})이 일치하지 않습니다.`);
@@ -159,17 +175,22 @@ const TeamCreation: React.FC = () => {
             startDate: localStartDate,
             endDate: localEndDate,
             firstDomain: selectedDomains[0],
-            secondDomain: selectedDomains[1] || null,
             campus: selectedRegion,
             memberTotal: N,
-            memberInfra: recruitment.Infra,
-            memberBackend: recruitment.BE,
-            memberFrontend: recruitment.FE,
+            memberInfra: selectedMyPosition === "Infra" ? recruitment.Infra - 1 : recruitment.Infra,
+            memberBackend: selectedMyPosition === "BE" ? recruitment.BE - 1 : recruitment.BE,
+            memberFrontend: selectedMyPosition === "FE" ? recruitment.FE - 1 : recruitment.FE,
+            position: 0,
+            ...(selectedDomains[1] ? { secondDomain: selectedDomains[1] } : {}),
         };
         
-        createRecruiting(formData)
-
-        navigate('/team-building');
+        try {
+            await createRecruiting(formData); // 서버에 요청을 보냅니다.
+            navigate('/team-building'); // 성공 시 페이지 이동
+        } catch (error) {
+            console.error(error); // 에러를 콘솔에 출력합니다.
+            alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+        }
     };
 
     return (
@@ -195,6 +216,19 @@ const TeamCreation: React.FC = () => {
                 <div className={styles.selectionSection}>
                     <DomainSelector domains={domains} selectedDomains={selectedDomains} onDomainClick={handleDomainClick} />
                     <RecruitmentSelector recruitment={recruitment} totalPositions={totalPositions} N={N} inputValue={inputValue} onInputChange={setInputValue} onSliderChange={handleSliderChange} onNChange={setN} />
+                    <div className={styles.myPosition}>
+                        <span>내 포지션</span>
+                        <div className={styles.myPositionTag}>
+                            {["FE", "BE", "Infra"].map((tag) => (
+                                <Tag
+                                    key={tag}
+                                    text={tag}
+                                    useDefaultColors={selectedMyPosition !== tag}
+                                    onClick={() => handleMyPositionClick(tag)}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className={styles.buttonSection}>

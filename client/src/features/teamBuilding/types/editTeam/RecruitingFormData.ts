@@ -1,5 +1,9 @@
-export interface RecruitingFormData {
-    author: number | null;
+export interface recruitingMembers {
+    userId: number;
+    position: number;
+    delete: boolean;
+
+}export interface RecruitingFormData {
     title: string;
     content: string;
     startDate: string | null;
@@ -11,5 +15,5 @@ export interface RecruitingFormData {
     memberInfra: number;
     memberBackend: number;
     memberFrontend: number;
-    position: number;
+    recruitingMembers: recruitingMembers;
 }

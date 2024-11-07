@@ -10,6 +10,7 @@ import useUserStore from '@/stores/useUserStore';
 import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
 import { formatDateTime } from '../../utils/formatDateTime';
 import DefaultProfile from '../../assets/profile/DefaultProfile.png'
+import { deletePost } from '../../features/teamBuilding/apis/teamBuildingDetail/deletePost'
 
 
 type TeamBuildingMember = {
@@ -31,6 +32,7 @@ type TeamBuildingCandidate = {
 type TeamBuildingData = {
   postId: number;
   campus: number;
+  authorId: number;
   postTitle: string;
   postContent: string;
   firstDomain: number;
@@ -52,6 +54,7 @@ type TeamBuildingData = {
 const initialData: TeamBuildingData = {
   postId: 0,
   campus: 0,
+  authorId: 0,
   postTitle: '',
   postContent: '',
   firstDomain: 0,
@@ -94,21 +97,16 @@ const TeamBuildingDetailPage = () => {
       });
   }, []);
 
-  const isAuthor = userId === 3;
+  const isAuthor = userId === data.authorId;
 
   const filteredCandidates = isAuthor 
     ? data.recruitingCandidates 
     : data.recruitingCandidates.filter(candidate => candidate.userId === userId);
 
-  // 각 포지션별로 모집된 인원 수 계산
-  const frontendCount = data.recruitingMembers.filter(member => member.position === 0).length;
-  const backendCount = data.recruitingMembers.filter(member => member.position === 1).length;
-  const infraCount = data.recruitingMembers.filter(member => member.position === 2).length;
-
   // 남은 인원 계산
-  const remainingFrontend = data.memberFrontend - frontendCount;
-  const remainingBackend = data.memberBackend - backendCount;
-  const remainingInfra = data.memberInfra - infraCount;
+  const remainingFrontend = data.memberFrontend;
+  const remainingBackend = data.memberBackend;
+  const remainingInfra = data.memberInfra;
 
   const toggleModal = (commentId: number) => {
     if (activeCommentId === commentId) {
@@ -130,6 +128,17 @@ const TeamBuildingDetailPage = () => {
     setActiveCommentId(null);
   };
 
+  const handleDeletePost = () => {
+    deletePost(parseInt(postId))
+      .then(() => {
+        alert('게시글이 삭제되었습니다.');
+        navigate('/team-building');
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -144,7 +153,7 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.postHeader}>
             <div className={styles.categorySection}>
                 <Tag text={getDomainLabel(data.firstDomain)} />
-                <Tag text={getDomainLabel(data.secondDomain)} />
+                {data.secondDomain && <Tag text={getDomainLabel(data.secondDomain)} />}
             </div>
             <div className={styles.positionSection}>
               <Tag text={'FE'} /> {remainingFrontend}
@@ -157,7 +166,7 @@ const TeamBuildingDetailPage = () => {
             <div className={styles.buttonSection}>
               <button className={`${styles.authorButton} ${styles.startButton}`}>팀 구성 완료</button>
               <button className={`${styles.authorButton} ${styles.editButton}`} onClick={handleEditPost}>게시글 수정</button>
-              <button className={`${styles.authorButton} ${styles.deleteButton}`}>게시글 삭제</button>
+              <button className={`${styles.authorButton} ${styles.deleteButton}`} onClick={handleDeletePost}>게시글 삭제</button>
             </div>
           ) : (
             <div className={styles.commentForm}>
