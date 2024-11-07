@@ -34,6 +34,5 @@ public class UserEditInfoDto {
 
     private String userPhone;
 
-    private String userProfileImage;
 
 }
