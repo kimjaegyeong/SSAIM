@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./CreateTeam.module.css";
+import styles from "./EditTeam.module.css";
 import Button from "../../../../components/button/Button";
-import { createRecruiting } from "../../apis/createTeam/createRecruiting";
-import useUserStore from '@/stores/useUserStore';
-import ProjectDatePicker from './projectDatePicker/ProjectDatePicker';
-import RegionSelector from "./regionSelector/RegionSelector";
-import TitleInput from "./titleInput/TitleInput";
-import ContentInput from "./contentInput/ContentInput";
-import DomainSelector from "./domainSelector/DomainSelector";
-import RecruitmentSelector from "./recruitmentSelector/RecruitmentSelector";
-import Tag from "../tag/Tag";
+import { editRecruiting } from "../../apis/editTeam/editRecruiting"
+import ProjectDatePicker from '../createTeam/projectDatePicker/ProjectDatePicker';
+import RegionSelector from "../createTeam/regionSelector/RegionSelector";
+import TitleInput from "../createTeam/titleInput/TitleInput";
+import ContentInput from "../createTeam/contentInput/ContentInput";
+import DomainSelector from "../createTeam/domainSelector/DomainSelector";
 
 interface Recruitment {
     FE: number;
@@ -18,25 +15,41 @@ interface Recruitment {
     Infra: number;
 }
 
-const TeamCreation: React.FC = () => {
-    const user = useUserStore();
-    const navigate = useNavigate();
-    const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
-    const [title, setTitle] = useState<string>("");
-    const [content, setContent] = useState<string>("");
-    const [recruitment, setRecruitment] = useState<Recruitment>({ FE: 0, BE: 0, Infra: 0 });
-    const [selectedDomains, setSelectedDomains] = useState<number[]>([]);
-    const [startDate, setStartDate] = useState<string>("");
-    const [endDate, setEndDate] = useState<string>("");
-    const [N, setN] = useState<number>(0);
-    const [inputValue, setInputValue] = useState<string>("0");
-    const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra;
-    const [selectedMyPosition, setSelectedMyPosition] = useState<string | null>(null);
+interface EditTeamProps {
+    initialData?: any;
+}
 
+const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
+    const [selectedRegion, setSelectedRegion] = useState<number | null>(initialData?.campus || null);
+    const [title, setTitle] = useState<string>(initialData?.postTitle || "");
+    const [content, setContent] = useState<string>(initialData?.postContent || "");
+    const [recruitment, setRecruitment] = useState<Recruitment>({
+        FE: initialData?.memberFrontend || 0,
+        BE: initialData?.memberBackend || 0,
+        Infra: initialData?.memberInfra || 0,
+    });
+    const [selectedDomains, setSelectedDomains] = useState<number[]>([initialData?.firstDomain, initialData?.secondDomain].filter(Boolean));
+    const [startDate, setStartDate] = useState<string>(initialData?.startDate || "");
+    const [endDate, setEndDate] = useState<string>(initialData?.endDate || "");
+    const [N, setN] = useState<number>(initialData?.memberTotal || 0);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        setRecruitment({ FE: 0, BE: 0, Infra: 0 });
-    }, [N]);
+        if (initialData) {
+            setSelectedRegion(initialData.campus);
+            setTitle(initialData.postTitle);
+            setContent(initialData.postContent);
+            setRecruitment({
+                FE: initialData.memberFrontend,
+                BE: initialData.memberBackend,
+                Infra: initialData.memberInfra,
+            });
+            setSelectedDomains([initialData.firstDomain, initialData.secondDomain].filter(Boolean));
+            setStartDate(initialData.startDate);
+            setEndDate(initialData.endDate);
+            setN(initialData.memberTotal);
+        }
+    }, [initialData]);
 
     const domains = [
         { id: 1, categoryId: 1, name: "웹기술" },
@@ -75,14 +88,6 @@ const TeamCreation: React.FC = () => {
         return null;
     };
 
-    const handleMyPositionClick = (position: string) => {
-        if (selectedMyPosition === position) {
-            setSelectedMyPosition(null);
-        } else {
-            setSelectedMyPosition(position);
-        }
-    };
-
     const handleDomainClick = (domainId: number) => {
         const domainCategory = getDomainCategory(domainId);
         const selectedCategories = selectedDomains.map(getDomainCategory);
@@ -101,18 +106,6 @@ const TeamCreation: React.FC = () => {
             setSelectedDomains([...selectedDomains, domainId]);
         } else {
             alert("최대 2개의 도메인만 선택할 수 있습니다.");
-        }
-    };
-
-    const handleSliderChange = (role: keyof Recruitment, value: number) => {
-        const parsedValue = isNaN(value) ? 0 : value;
-        const otherTotal = totalPositions - recruitment[role];
-        const maxAllowed = N - otherTotal;
-      
-        if (parsedValue <= maxAllowed) {
-            setRecruitment({ ...recruitment, [role]: parsedValue });
-        } else {
-            setRecruitment({ ...recruitment, [role]: maxAllowed });
         }
     };
 
@@ -148,28 +141,11 @@ const TeamCreation: React.FC = () => {
             alert("최소 하나의 도메인을 선택해주세요.");
             return;
         }
-      
-        if (N === 0) {
-            alert("모집 인원은 최소 1명 이상이어야 합니다.");
-            return;
-        }
-
-        if (!selectedMyPosition) {
-            alert("내 포지션을 선택해주세요.");
-            return;
-        }
-
-        const totalMembers = recruitment.Infra + recruitment.BE + recruitment.FE;
-        if (N !== totalMembers) {
-            alert(`총 모집 인원(${N})과 세부 모집 인원의 합(${totalMembers})이 일치하지 않습니다.`);
-            return;
-        }
 
         const localStartDate = convertToLocalDate(startDate);
         const localEndDate = convertToLocalDate(endDate);
     
         const formData = {
-            author: user.userId,
             title,
             content,
             startDate: localStartDate,
@@ -177,16 +153,20 @@ const TeamCreation: React.FC = () => {
             firstDomain: selectedDomains[0],
             campus: selectedRegion,
             memberTotal: N,
-            memberInfra: selectedMyPosition === "Infra" ? recruitment.Infra - 1 : recruitment.Infra,
-            memberBackend: selectedMyPosition === "BE" ? recruitment.BE - 1 : recruitment.BE,
-            memberFrontend: selectedMyPosition === "FE" ? recruitment.FE - 1 : recruitment.FE,
-            position: 0,
+            memberInfra: recruitment.Infra,
+            memberBackend: recruitment.BE,
+            memberFrontend: recruitment.FE,
+            recruitingMembers: initialData.recruitingMembers.map((member: { userId: number; position: number; }) => ({
+                userId: member.userId,
+                position: member.position,
+                delete: 0
+            })),
             ...(selectedDomains[1] ? { secondDomain: selectedDomains[1] } : {}),
         };
         
         try {
-            await createRecruiting(formData); // 서버에 요청을 보냅니다.
-            navigate('/team-building'); // 성공 시 페이지 이동
+            await editRecruiting(initialData.postId, formData); // 서버에 요청을 보냅니다.
+            navigate(`/team-building/detail/${initialData.postId}`); // 성공 시 페이지 이동
         } catch (error) {
             console.error(error); // 에러를 콘솔에 출력합니다.
             alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
@@ -215,24 +195,10 @@ const TeamCreation: React.FC = () => {
                 {/* 오른쪽 섹션 */}
                 <div className={styles.selectionSection}>
                     <DomainSelector domains={domains} selectedDomains={selectedDomains} onDomainClick={handleDomainClick} />
-                    <RecruitmentSelector recruitment={recruitment} totalPositions={totalPositions} N={N} inputValue={inputValue} onInputChange={setInputValue} onSliderChange={handleSliderChange} onNChange={setN} />
-                    <div className={styles.myPosition}>
-                        <span>내 포지션</span>
-                        <div className={styles.myPositionTag}>
-                            {["FE", "BE", "Infra"].map((tag) => (
-                                <Tag
-                                    key={tag}
-                                    text={tag}
-                                    useDefaultColors={selectedMyPosition !== tag}
-                                    onClick={() => handleMyPositionClick(tag)}
-                                />
-                            ))}
-                        </div>
-                    </div>
                 </div>
             </div>
             <div className={styles.buttonSection}>
-                <Button size="custom" colorType="blue" onClick={handleSubmit}>생성</Button>
+                <Button size="custom" colorType="blue" onClick={handleSubmit}>수정</Button>
                 <Button size="custom" colorType="red" onClick={() => {navigate(-1)}}>취소</Button>
             </div>
         </>
