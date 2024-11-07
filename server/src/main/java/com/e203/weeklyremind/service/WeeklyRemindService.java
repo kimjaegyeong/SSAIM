@@ -11,11 +11,13 @@ import com.e203.user.repository.UserRepository;
 import com.e203.weeklyremind.entity.WeeklyRemind;
 import com.e203.weeklyremind.repository.WeeklyRemindRepository;
 import com.e203.weeklyremind.request.WeeklyRemindRequestDto;
+import com.e203.weeklyremind.response.DevelopmentStoryResponseDto;
 import com.e203.weeklyremind.response.WeeklyRemindDto;
 import com.e203.weeklyremind.response.WeeklyRemindResponseDto;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -72,11 +74,6 @@ public class WeeklyRemindService {
         List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for(WeeklyRemind weeklyRemind : weeklyRemindList) {
-            WeeklyRemindDto weeklyRemindDto = WeeklyRemindDto.builder()
-                    .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
-                    .content(weeklyRemind.getWeeklyRemindContents())
-                    .startDate(weeklyRemind.getWeeklyRemindStardDate())
-                    .endDate(weeklyRemind.getWeeklyRemindEndDate()).build();
 
             weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
                     .projectMemberId(weeklyRemind.getWeeklyRemindAuthor().getId())
@@ -86,16 +83,20 @@ public class WeeklyRemindService {
                     .projectName(weeklyRemind.getProjectId().getTitle())
                     .projectStartDate(weeklyRemind.getProjectId().getStartDate().toLocalDate())
                     .projectEndDate(weeklyRemind.getProjectId().getEndDate().toLocalDate())
-                    .weeklyRemind(weeklyRemindDto).build());
+                    .userImage(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserProfileImage())
+                    .content(weeklyRemind.getWeeklyRemindContents())
+                    .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
+                    .weeklyremindstartDate(weeklyRemind.getWeeklyRemindStardDate())
+                    .weeklyremindendDate(weeklyRemind.getWeeklyRemindEndDate()).build());
         }
 
         return weeklyRemindResponseDtoList;
     }
 
-    public List<WeeklyRemindResponseDto> searchDevelopmentStory (Integer userId) {
+    public List<DevelopmentStoryResponseDto> searchDevelopmentStory (Integer userId) {
 
         List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindsByUserId(userId);
-        List<WeeklyRemindResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
+        List<DevelopmentStoryResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
 
         for (WeeklyRemind weeklyRemind : weeklyRemindList) {
 
@@ -105,7 +106,7 @@ public class WeeklyRemindService {
                     .startDate(weeklyRemind.getWeeklyRemindStardDate())
                     .endDate(weeklyRemind.getWeeklyRemindEndDate()).build();
 
-            weeklyRemindResponseDtoList.add(WeeklyRemindResponseDto.builder()
+            weeklyRemindResponseDtoList.add(DevelopmentStoryResponseDto.builder()
                     .projectMemberId(weeklyRemind.getWeeklyRemindAuthor().getId())
                     .projectId(weeklyRemind.getProjectId().getId())
                     .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName())
@@ -118,5 +119,28 @@ public class WeeklyRemindService {
 
         return weeklyRemindResponseDtoList;
 
+    }
+
+    @Transactional
+    public boolean editWeeklyRemind(int weeklyRemindId, int projectId, WeeklyRemindRequestDto message) {
+        WeeklyRemind weeklyRemind = weeklyRemindRepository.findById(weeklyRemindId).orElse(null);
+        if (weeklyRemind == null) {
+            return false;
+        }
+
+        List<DailyRemind> dailyRemindList = dailyRemindRepository.searchDailyReminds(message.getProjectMemberId(),
+                message.getStartDate(), message.getEndDate(), projectId);
+
+        StringBuilder dailyReminds = new StringBuilder();
+
+        for (DailyRemind dailyRemind : dailyRemindList) {
+            dailyReminds.append(dailyRemind.getDailyRemindContents());
+        }
+
+        String summary = chatAiService.generateWeeklyRemind(dailyReminds.toString(), projectId);
+
+        weeklyRemind.updateWeeklyRemind(summary);
+
+        return true;
     }
 }
