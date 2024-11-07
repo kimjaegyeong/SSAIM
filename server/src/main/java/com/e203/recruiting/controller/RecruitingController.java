@@ -37,7 +37,6 @@ public class RecruitingController {
     public ResponseEntity<RecruitingPostDetailResponseDto> getPost(@PathVariable(name = "postId") int postId,
                                                                    @RequestHeader("Authorization") String auth) {
         int userId = jwtUtil.getUserId(auth.substring(7));
-        System.out.println(userId);
         RecruitingPostDetailResponseDto dto = recruitingService.getPost(postId, userId);
 
         if (dto == null) {
