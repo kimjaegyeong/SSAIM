@@ -24,6 +24,7 @@ import LoginPage from '../pages/account/login/LoginPage';
 import NetworkErrorPage from '../pages/error/NetworkErrorPage';
 import NotFoundPage from '../pages/error/NotFoundPage';
 import SignUpPage from '@pages/account/signup/SignUpPage';
+import EditProfilePage from '@/pages/account/editProfile/EditProfilePage';
 
 const AppRoutes = () => (
   <Routes>
@@ -56,7 +57,8 @@ const AppRoutes = () => (
       <Route path="/remind/list" element={<RemindListPage />}></Route>
       <Route path="/remind/:remindId" element={<RemindDetailPage />}></Route>
       {/* 마이페이지 */}
-      <Route path="/mypage" element={<MyPage />}></Route>
+      <Route path="/profile/edit" element={<EditProfilePage />}></Route>
+      <Route path="/profile/:profileOwnerId" element={<MyPage />}></Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   </Routes>

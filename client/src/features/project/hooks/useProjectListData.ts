@@ -9,8 +9,6 @@ export const useProjectListData = (userId: number|null) => {
       if (userId === null) return []; // userId가 null인 경우 빈 배열 반환
       return await fetchProjectListData(userId);
     },
-
-
     initialData: [], // 초기 렌더링 시 사용될 더미 데이터
   });
 };

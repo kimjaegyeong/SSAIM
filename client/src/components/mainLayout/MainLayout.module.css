@@ -1,8 +1,7 @@
 /* 레이아웃 전체 구조 */
 .mainLayout {
-  margin: 0;
   width : calc(100%-60px);
-  height : 100vh;
+  min-height : 100vh;
 }
 
 

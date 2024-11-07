@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import styles from './SignUpForm.module.css';
 import { FaAngleLeft } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
-import { SignUpFormData } from '@features/user/types/userTypes';
+import { BaseUserDTO } from '@features/user/types/UserInfoDTO';
 import { signUp } from '@features/user/apis/signUpApi';
 
 const SignUpForm: React.FC = () => {
-  const [formData, setFormData] = useState<SignUpFormData>({
+  const [formData, setFormData] = useState<BaseUserDTO>({
     userEmail: '',
     userName: '',
     userPw: '',
