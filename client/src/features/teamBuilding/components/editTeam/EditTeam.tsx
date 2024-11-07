@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./EditTeam.module.css";
 import Button from "../../../../components/button/Button";
-import { createRecruiting } from "../../apis/createTeam/createRecruiting";
 import useUserStore from '@/stores/useUserStore';
 import ProjectDatePicker from '../createTeam/projectDatePicker/ProjectDatePicker';
 import RegionSelector from "../createTeam/regionSelector/RegionSelector";
@@ -34,6 +33,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
     const [endDate, setEndDate] = useState<string>(initialData?.endDate || "");
     const [N, setN] = useState<number>(initialData?.memberTotal || 0);
     const navigate = useNavigate();
+    const { userId } = useUserStore();
 
     useEffect(() => {
         if (initialData) {
@@ -158,7 +158,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
         const localEndDate = convertToLocalDate(endDate);
     
         const formData = {
-            author: user.userId,
+            author: userId,
             title,
             content,
             startDate: localStartDate,
@@ -172,7 +172,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
             memberFrontend: recruitment.FE,
         };
         
-        // 수정 api
+        console.log(formData);
 
         navigate(`/team-building/detail/${initialData.postId}`);
     };

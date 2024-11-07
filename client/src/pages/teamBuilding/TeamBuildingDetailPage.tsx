@@ -9,6 +9,7 @@ import { getPostInfo } from '@/features/teamBuilding/apis/teamBuildingDetail/get
 import useUserStore from '@/stores/useUserStore';
 import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
 import { formatDateTime } from '../../utils/formatDateTime';
+import DefaultProfile from '../../assets/profile/DefaultProfile.png'
 
 
 type TeamBuildingMember = {
@@ -184,7 +185,7 @@ const TeamBuildingDetailPage = () => {
                 </div>
                 <div className={styles.commentAuthor}>
                   <img
-                    src={candidate.profileImage ?? undefined}
+                    src={candidate.profileImage ? candidate.profileImage : DefaultProfile}
                     alt={candidate.userName}
                     className={styles.profileImg}
                   />
@@ -237,7 +238,7 @@ const TeamBuildingDetailPage = () => {
             {(data.recruitingMembers || []).map((member: TeamBuildingMember) => (
               <div key={member.userId} className={styles.memberItem}>
                 <div className={styles.memberInfo}>
-                  <img src={member.profileImage ?? undefined} alt={member.userName} className={styles.profileImg}/>
+                  <img src={member.profileImage ? member.profileImage : DefaultProfile} alt={member.userName} className={styles.profileImg}/>
                   <span>{member.userName}</span>
                   {/* {member.role === 1 && <PiCrownSimpleFill color='#FFCD29'/>} */}
                 </div>

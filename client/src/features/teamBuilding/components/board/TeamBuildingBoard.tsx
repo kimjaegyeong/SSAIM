@@ -9,6 +9,7 @@ import { FiPlus } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 import { IoSearchOutline } from "react-icons/io5";
 import { getDomainLabel, getRegionLabel, getStatusLabel } from "../../../../utils/labelUtils";
+import DefaultProfile from "../../../../assets/profile/DefaultProfile.png"
 
 type TeamBuildingData = {
     postId: number;
@@ -232,7 +233,7 @@ const TeamBuildingBoard: React.FC = () => {
                                     </div>
                                     <div className={styles.profile}>
                                         <img
-                                            src={item.authorProfileImageUrl}
+                                            src={item.authorProfileImageUrl ? item.authorProfileImageUrl : DefaultProfile}
                                             alt="Profile Image"
                                             className={styles.profileImg}
                                         />
