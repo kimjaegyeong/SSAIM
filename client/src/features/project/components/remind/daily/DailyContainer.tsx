@@ -7,11 +7,12 @@ import DayMyRemind from '../daily/dayMy/DayMyRemind';
 import WeekRemind from '..//daily/week/WeekRemind';
 import Button from '../../../../../components/button/Button';
 import DayCalendar from './DayCalendar';
+import WeekCalendar from './week/WeekCalendar';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import useUserStore from '@/stores/useUserStore';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { useDailyRemind } from '@/features/project/hooks/remind/useDailyRemind'; // useDailyRemind 훅을 임포트
-import { format } from 'date-fns';
+import { startOfMonth, differenceInWeeks, format } from 'date-fns';
 
 
 
@@ -28,6 +29,7 @@ const DailyContainer = () => {
   const [dayWeek, setDayWeek] = useState('1일');
   const [myTeam, setMyTeam] = useState('나의 회고');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selecteWeekdDate, setSelectedWeekDate] = useState<Date>(new Date());
 
   const { data: projectInfo } = useProjectInfo(Number(projectId));
   const { userId } = useUserStore();
@@ -60,12 +62,20 @@ const DailyContainer = () => {
     }
   }, [projectInfo, userId, setPmId, projectId, dailyRemindData, isError, error]);
 
-  const formattedDate = new Intl.DateTimeFormat('ko', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short',
-  }).format(selectedDate).replace(/ (\S+)$/, ' ($1)');
+  const formattedDate = dayWeek === '1일'
+  ? new Intl.DateTimeFormat('ko', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'short',
+    }).format(selectedDate).replace(/ (\S+)$/, ' ($1)')
+  : (() => {
+      // 1주일 단위일 때 주차 계산
+      const startOfMonthDate = startOfMonth(selecteWeekdDate);
+      const weekNumber = differenceInWeeks(selecteWeekdDate, startOfMonthDate) + 1;
+
+      return `${format(selecteWeekdDate, 'yyyy년 M월')} ${weekNumber}주차`;
+    })();
 
   const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
 
@@ -89,6 +99,18 @@ const DailyContainer = () => {
     ); 
   };
 
+  const handleWeekDateChange = (dateInfo: { startDate: string; }) => {
+    // 필요한 날짜 정보는 dateInfo의 startDate, endDate 등을 활용
+    const { startDate } = dateInfo;
+    
+    // 필요 시 원하는 형태로 변환
+    // 예: startDate를 기준으로 새로운 Date 객체 생성
+    const newDate = new Date(startDate);
+  
+    // 상태 업데이트
+    setSelectedWeekDate(newDate);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -102,8 +124,8 @@ const DailyContainer = () => {
         <div className={styles.remindContent}>
           {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={dayMyfilteredMessages} />}
           {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind messages={dayTeamFilteredMessages}/>}
-          {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind />}
-          {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind />}
+          {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind messages={myfilteredMessages} selectedWeekDate={selecteWeekdDate}/>}
+          {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind messages={dailyRemindData|| []} selectedWeekDate={selecteWeekdDate}/>}
         </div>
       </div>
       <div className={styles.right}>
@@ -111,7 +133,11 @@ const DailyContainer = () => {
           📝 일일 회고 작성
         </Button>
         <p className={styles.description}>조회할 날짜를 선택해주세요</p>
-        <DayCalendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
+        {dayWeek === '1일' ? (
+          <DayCalendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
+        ) : (
+          <WeekCalendar selectedDate={selecteWeekdDate} onDateChange={handleWeekDateChange} />
+        )}
       </div>
     </div>
   );

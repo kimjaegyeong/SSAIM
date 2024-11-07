@@ -1,55 +1,63 @@
+import { startOfWeek, addDays, format } from 'date-fns';
 import styles from './WeekRemind.module.css';
 
+interface Message {
+  dailyRemindId: number;
+  projectMemberId: number;
+  username: string;
+  userImage: string;
+  message: string;
+  dailyRemindDate: string;
+}
 
+interface WeekRemindProps {
+  messages: Message[];
+  selectedWeekDate: Date;
+}
 
-const WeekRemind = () => {
+const daysOfWeekKor = ["월", "화", "수", "목", "금"];
+
+const WeekRemind: React.FC<WeekRemindProps> = ({ messages, selectedWeekDate }) => {
+  console.log("messages:", messages);
+  console.log("selectedWeekDate:", selectedWeekDate);
+
+  const weekDays = Array.from({ length: 5 }, (_, i) => {
+    const date = addDays(startOfWeek(selectedWeekDate, { weekStartsOn: 1 }), i); // 월요일 기준으로 시작
+    return {
+      date, // Date 객체 그대로 저장
+      day: format(date, 'dd'),         // 일자
+      dayOfWeek: daysOfWeekKor[i],     // 요일을 한국어로 매핑
+    };
+  });
+
   return (
     <div className={styles.weekReview}>
-      <div className={styles.MonSection}>
-        <div className={styles.sectionTitle}>
-            <p className={styles.h3}>21</p>
-            <p className={styles.h3}>월</p>
-        </div>
-        <div className={styles.reviewContainer}>
-            <p className={styles.p}>
-            ⭕ Keep: 드디어 OpenCV를 활용한 모델을 프론트에 올렸습니다!!!!!! 실시간으로 mediapipe로 사람의 관절의 포인트를 출력하고 모델에 적용시켜 예측값이 프론트 화면에 나오도록 구현했습니다. 오늘 더 많은 데이터를 수집하기 위해 직접 도복을 입고 촬영을 했는데 꽤 정확도가 높게 나와 만족하고 있습니다.
-⚠ Problem: 모델을 프론트에 올려서 출력한은 것까지 성공했지만 여전히 웹캠의 반응속도가 느립니다. 코드를 좀 더 뜯어보고 개선방안을 찾아보도록 하겠습니다!
-✅ Try: 품새 심사 진행률 + 모델 연결시키기 겨루기에 적용시킬 모델 학습하기
-            </p>
-        </div>
-      </div>
-      <div className={styles.TusSection}>
-        <div className={styles.sectionTitle}>
-            <p className={styles.h3}>22</p>
-            <p className={styles.h3}>화</p>
-        </div>
-        <div className={styles.reviewContainer}>
-        </div>
-      </div>
-      <div className={styles.WedSection}>
-        <div className={styles.sectionTitle}>
-            <p className={styles.h3}>23</p>
-            <p className={styles.h3}>수</p>
-        </div>
-        <div className={styles.reviewContainer}>
-        </div>
-      </div>
-      <div className={styles.ThuSection}>
-        <div className={styles.sectionTitle}>
-            <p className={styles.h3}>24</p>
-            <p className={styles.h3}>목</p>
-        </div>
-        <div className={styles.reviewContainer}>
-        </div>
-      </div>
-      <div className={styles.FriSection}>
-        <div className={styles.sectionTitle}>
-            <p className={styles.h3}>25</p>
-            <p className={styles.h3}>금</p>
-        </div>
-        <div className={styles.reviewContainer}>
-        </div>
-      </div>
+      {weekDays.map((dayInfo, index) => {
+        // 해당 날짜와 일치하는 messages를 필터링
+        const filteredMessages = messages.filter((message) =>
+          format(new Date(message.dailyRemindDate), 'yyyy-MM-dd') === format(dayInfo.date, 'yyyy-MM-dd')
+        );
+
+        return (
+          <div key={index} className={styles[`${['Mon', 'Tus', 'Wed', 'Thu', 'Fri'][index]}Section`]}>
+            <div className={styles.sectionTitle}>
+              <p className={styles.h3}>{dayInfo.day}</p> {/* 날짜 렌더링 */}
+              <p className={styles.h3}>{dayInfo.dayOfWeek}</p> {/* 요일 렌더링 (한국어) */}
+            </div>
+            <div className={styles.reviewContainer}>
+              {filteredMessages.length > 0 ? (
+                filteredMessages.map((msg) => (
+                  <p key={msg.dailyRemindId} className={styles.p}>
+                    {msg.message}
+                  </p>
+                ))
+              ) : (
+                <p className={styles.p}>해당 날짜에 회고가 없습니다.</p>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
