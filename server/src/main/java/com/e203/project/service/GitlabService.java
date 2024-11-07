@@ -99,9 +99,9 @@ public class GitlabService {
 					.retrieve()
 					.body(String.class);
 
-				if (responseBody == null || responseBody.isEmpty() || responseBody.equals("[]")) {
+				if (!isExist(responseBody) || responseBody.isEmpty() || responseBody.equals("[]")) {
 					return mrList; // 더 이상 데이터가 없으면 종료
-					 }
+				}
 
 				List<GitlabMR> mrs = parseMergeRequests(responseBody);
 				List<GitlabMR> filteredMR = getFilteredMrByPeriod(startDate, endDate, mrs);
@@ -137,7 +137,7 @@ public class GitlabService {
 	private List<GitlabMR> getFilteredMrByPeriod(String startDate, String endDate, List<GitlabMR> mrs) {
 		List<GitlabMR> filteredMR = new ArrayList<>();
 		for (GitlabMR mr : mrs) {
-			if (mr.getMergedAt() == null) {
+			if (!isExist(mr.getMergedAt())) {
 				continue;
 			}
 
