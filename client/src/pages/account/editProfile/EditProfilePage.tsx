@@ -5,7 +5,7 @@ import React from 'react';
 const EditProfilePage:React.FC = () => {
   return (
     <div className={styles.mainLayout}>
-      <div className={styles.loginContainer}>
+      <div className={styles.container}>
         <EditProfile/>
       </div>
     </div>
