@@ -29,10 +29,10 @@ public interface WeeklyRemindRepository extends JpaRepository<WeeklyRemind, Inte
     );
 
     @Query("SELECT wr FROM WeeklyRemind wr " +
-            "JOIN wr.projectId p " +
-            "JOIN ProjectMember pm ON pm.project.id = p.id " +
+            "JOIN wr.weeklyRemindAuthor pm " +
             "JOIN pm.user u " +
             "WHERE u.userId = :userId")
     List<WeeklyRemind> findWeeklyRemindsByUserId(@Param("userId") int userId);
+
 
 }

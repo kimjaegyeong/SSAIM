@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.OK;
@@ -54,7 +55,7 @@ public class WeeklyRemindController {
     public ResponseEntity<List<WeeklyRemindResponseDto>> getDevelopmentStory(
             @RequestParam(required = false) Integer userId) {
 
-        List<WeeklyRemindResponseDto> result = weeklyRemindService.searchDevelopmentStory(userId);
+        List<WeeklyRemindResponseDto>result = weeklyRemindService.searchDevelopmentStory(userId);
 
         if(result == null) {
             return ResponseEntity.status(FORBIDDEN).body(null);
