@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './CategoryDropdown.module.css';
+import styles from './CategoryDropDown.module.css';
 
 interface Option {
   value: string;
