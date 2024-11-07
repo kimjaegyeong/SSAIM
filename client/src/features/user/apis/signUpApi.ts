@@ -1,7 +1,7 @@
 import apiClient from '../../../apis/apiClient';
-import {SignUpFormData} from '@features/user/types/userTypes'
+import {BaseUserDTO} from '@features/user/types/UserInfoDTO'
 
-export const signUp = async (signUpData : SignUpFormData) => {
+export const signUp = async (signUpData : BaseUserDTO) => {
   console.log(signUpData)
   try {
     const response = await apiClient.post('/users', signUpData);

@@ -43,7 +43,7 @@ const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
 // Navbar 컴포넌트 정의
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const {logout} = useUserStore();
+  const {userId, logout} = useUserStore();
   const handleLogout = () =>{
     logout();
     navigate('/login');
@@ -53,7 +53,7 @@ const Navbar: React.FC = () => {
     <div className={styles.sidebarContainer}>
       <div className={styles.navList}>
         {/* 프로필 이미지와 이름 */}
-        <NavItem icon={<div className={styles.profileImage}></div>} text="이름" onClick={() => {navigate('/mypage')}}/>
+        <NavItem icon={<div className={styles.profileImage}></div>} text="이름" onClick={() => {navigate(`/profile/${userId}`)}}/>
 
         {/* 메뉴 아이템 리스트 */}
         {menuItems.map((item, index) => (

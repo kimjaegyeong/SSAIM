@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchUserData } from '../apis/fetchUserData';
-import {UserInfoDTO} from '../types/UserInfoDTO'
+import {UserInfoDTO} from '@features/user/types/UserInfoDTO'
 export const useUserInfoData = (userId: number | null) => {
   return useQuery<UserInfoDTO,Error>({
     queryKey: ['userInfo', userId],

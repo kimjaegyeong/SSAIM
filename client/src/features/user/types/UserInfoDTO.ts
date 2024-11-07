@@ -1,17 +1,21 @@
-export interface UserInfoDTO {
-  userId: number;
-  userName: string;
+export interface BaseUserDTO {
   userEmail: string;
+  userName: string;
+  userPw: string;
   userClass: number;
   userCampus: number;
   userGeneration: number;
   userNickname: string;
-  userProfileMessage: string|null;
-  userSkills: string|null;
-  userRole: number;
   userBirth: string;
   userGender: number;
   userPhone: string;
+}
+
+export interface UserInfoDTO extends BaseUserDTO {
+  userId: number;
+  userProfileMessage: string|null;
+  userSkills: string|null;
+  userRole: number;
   userProfileImage: string;
 }
 

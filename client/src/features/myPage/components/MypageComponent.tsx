@@ -6,17 +6,24 @@ import { useUserInfoData } from '../hooks/useUserInfoData';
 import useUserStore from '@/stores/useUserStore';
 import { editUserData } from '../apis/editUserData';
 import { getRegionLabel } from '@/utils/labelUtils';
-const MypageComponent: React.FC = () => {
+import Button from '@/components/button/Button';
+import { useNavigate } from 'react-router-dom';
+type MypageProps = {
+  profileOwnerId: number;
+};
+const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
+  const navigate = useNavigate();
+
   // 프로필 페이지 정보 및 userId
   const { userId } = useUserStore();
-  const { data: userInfo } = useUserInfoData(userId);
-
+  const { data: userInfo } = useUserInfoData(profileOwnerId);
   // 상태 메시지와 스택 관련 상태
   const [statusMessage, setStatusMessage] = useState('');
   const [stacks, setStacks] = useState('');
   const [isEditingMessage, setIsEditingMessage] = useState(false);
   const [isEditingStack, setIsEditingStack] = useState(false);
 
+  const isProfileOwner = userId === profileOwnerId;
   const dummyData = [60, 80, 50, 70, 40, 90];
   useEffect(() => {
     if (userInfo) {
@@ -76,6 +83,9 @@ const MypageComponent: React.FC = () => {
       {/* 헤더 */}
       <header className={styles.header}>
         <h1>{userInfo?.userName} 님의 프로필 페이지</h1>
+        {isProfileOwner ? <Button size="xsmall" colorType="green" children="개인정보수정" onClick={() => {
+          navigate('/profile/edit');
+        }}></Button> : null}
       </header>
 
       {/* 본문 구역 */}
@@ -84,7 +94,9 @@ const MypageComponent: React.FC = () => {
         <div className={styles.profileSection}>
           <div className={styles.profileImageContainer}>
             <img src={userInfo?.userProfileImage} alt="프로필 사진" className={styles.profileImage} />
-            <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${userInfo? getRegionLabel(userInfo?.userCampus) : null}`}</div>
+            <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${
+              userInfo ? getRegionLabel(userInfo?.userCampus) : null
+            }`}</div>
           </div>
         </div>
 
@@ -96,7 +108,7 @@ const MypageComponent: React.FC = () => {
           </div>
           <hr />
           <div className={styles.infoFooter}>
-            <FaPen className={styles.modifyIcon} onClick={handleEditMessageClick} />
+            {isProfileOwner ? <FaPen className={styles.modifyIcon} onClick={handleEditMessageClick} /> : null}
 
             {isEditingMessage ? (
               <input
@@ -117,7 +129,7 @@ const MypageComponent: React.FC = () => {
           <h3>Stacks</h3>
           <hr />
           <div className={styles.stacksBody}>
-            <FaPen className={styles.modifyIcon} onClick={handleEditStackClick} />
+            {isProfileOwner ? <FaPen className={styles.modifyIcon} onClick={handleEditStackClick} /> : null}
             {isEditingStack ? (
               <input
                 type="text"

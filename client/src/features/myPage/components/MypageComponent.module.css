@@ -12,6 +12,9 @@
   font-weight: 700;
   color: #444;
   position: relative;
+  display : flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .bodyContainer {
