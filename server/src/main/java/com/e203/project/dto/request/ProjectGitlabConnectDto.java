@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProjectGitlabConnectDto {
 	String gitlabApi;
+	String gitlabProjectId;
 
 	@Builder
-	private void ProjectJiraConnectDto(String gitlabApi) {
+	private void ProjectJiraConnectDto(String gitlabApi, String gitlabProjectId) {
 		this.gitlabApi = gitlabApi;
+		this.gitlabProjectId = gitlabProjectId;
 	}
 }
