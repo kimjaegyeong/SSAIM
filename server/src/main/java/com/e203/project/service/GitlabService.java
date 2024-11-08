@@ -72,13 +72,11 @@ public class GitlabService {
 
 		ArrayList<String> allMrList = new ArrayList<>();
 
-		for (GitlabMR mr : allMR) {
-			if (mr.getAssignee() != null) {
-				if (isSameUser(mr.getAssignee().getUsername(), username)) {
-					allMrList.add(mr.getTitle());
-				}
-			}
-		}
+		allMR.stream()
+			.filter(mr -> mr.getAssignee() != null)
+			.filter(mr -> isSameUser(mr.getAssignee().getUsername(), username))
+			.forEach(mr -> allMrList.add(mr.getTitle()));
+
 		return allMrList;
 	}
 
@@ -87,10 +85,10 @@ public class GitlabService {
 		int page = 1;
 		ArrayList<GitlabMR> mrList = new ArrayList<>();
 		while (page < MAXPAGE) {
-			String url = String.format(
-				"%s?state=merged&merged_before=%s&merged_after=%s&per_page=100&page=%d",
-				"https://lab.ssafy.com/api/v4/projects/" + gitlabProjectId + "/merge_requests", startDate, endDate,
-				page);
+			String url =
+				"https://lab.ssafy.com/api/v4/projects/" + gitlabProjectId + "/merge_requests" +
+					"?state=merged&merged_before=" + startDate +
+				"&merged_after="+ endDate +"&per_page=100&page=" + page ;
 
 			try {
 				String responseBody = restClient.get()
