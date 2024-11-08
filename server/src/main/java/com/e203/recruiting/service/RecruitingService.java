@@ -68,7 +68,6 @@ public class RecruitingService {
     @Transactional
     public RecruitingPostDetailResponseDto getPost(int postId, int userId) {
         BoardRecruiting recruiting = findRecruitingPost(postId);
-        System.out.println(userId);
         if (recruiting == null) {
             return null;
         }
