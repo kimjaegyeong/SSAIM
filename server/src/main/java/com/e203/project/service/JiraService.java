@@ -1,5 +1,8 @@
 package com.e203.project.service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,38 +64,59 @@ public class JiraService {
 	@Transactional
 	public JiraResponse getJiraIssues(String startDate, String endDate, int projectId) {
 		ProjectMember leader = getProjectLeader(projectId);
-		if(leader==null){
+		if (leader == null) {
 			return null;
 		}
+
 		String jiraApi = leader.getProject().getJiraApi();
 		String jiraProjectId = leader.getProject().getJiraProjectId();
 		String userEmail = leader.getUser().getUserEmail();
 
 		String jql = "project=\"" + jiraProjectId + "\" + AND created >= \"" + startDate + "\" AND created <= \"" + endDate + "\"";
 		String fields = "summary,status,assignee,customfield_10014,customfield_10031";
-		String url = JIRA_URL + "?jql=" + jql + "&fields=" + fields;
+		String baseUrl = JIRA_URL + "?jql=" + jql + "&fields=" + fields;
 
 		String encodedCredentials = Base64.getEncoder().encodeToString((userEmail + ":" + jiraApi).getBytes());
 
-		try {
-			String responseBody = restClient.get()
-				.uri(url)
-				.header("Authorization", "Basic " + encodedCredentials)
-				.header("Content-Type", "application/json")
-				.retrieve()
-				.body(String.class);
-			return objectMapper.readValue(responseBody, JiraResponse.class);
-		} catch (RestClientException e) {
-			handleException("Error occurred while calling Jira API", e);
-		} catch (JsonProcessingException e) {
-			handleException("Error processing JSON response", e);
-		} catch (IllegalArgumentException e) {
-			handleException("Invalid argument", e);
-		} catch (Exception e) {
-			handleException("An unexpected error occurred", e);
+		JiraResponse allIssues = new JiraResponse();
+		allIssues.setIssues(new ArrayList<>()); // JiraResponse에 이슈 리스트 초기화
+
+		int startAt = 0;
+		int maxResults = 100; // 한 번에 가져올 최대 이슈 수
+		boolean hasMore = true;
+
+		while (hasMore) {
+			String url = baseUrl + "&startAt=" + startAt + "&maxResults=" + maxResults;
+
+			try {
+				String responseBody = restClient.get()
+					.uri(url)
+					.header("Authorization", "Basic " + encodedCredentials)
+					.header("Content-Type", "application/json")
+					.retrieve()
+					.body(String.class);
+
+				JiraResponse response = objectMapper.readValue(responseBody, JiraResponse.class);
+				allIssues.getIssues().addAll(response.getIssues()); // 가져온 이슈를 모두 추가
+
+				startAt += response.getIssues().size();
+				hasMore = startAt < response.getTotal(); // 총 이슈 수와 비교하여 더 가져올 것이 있는지 판단
+			} catch (RestClientException e) {
+				handleException("Error occurred while calling Jira API", e);
+				break; // 예외 발생 시 루프 종료
+			} catch (JsonProcessingException e) {
+				handleException("Error processing JSON response", e);
+				break; // 예외 발생 시 루프 종료
+			} catch (IllegalArgumentException e) {
+				handleException("Invalid argument", e);
+				break; // 예외 발생 시 루프 종료
+			} catch (Exception e) {
+				handleException("An unexpected error occurred", e);
+				break; // 예외 발생 시 루프 종료
+			}
 		}
 
-		return null;
+		return allIssues; // 모든 이슈를 포함한 JiraResponse 반환
 	}
 
 	private ProjectMember getProjectLeader(int projectId) {
