@@ -257,10 +257,16 @@ public class RecruitingService {
         }
 
         if (applicant.getUser().getUserId() == userId) {
-            applicant.setRecruitingMemberPosition(dto.getPosition());
-            applicant.setRecruitingMemberMessage(dto.getMessage());
+            if (dto.getPosition() != null) {
+                applicant.setRecruitingMemberPosition(dto.getPosition());
+            }
+            if (dto.getMessage() != null) {
+                applicant.setRecruitingMemberMessage(dto.getMessage());
+            }
         } else if (recruiting.getAuthor().getUserId() == userId) {
-            applicant.setRecruitingMemberStatus(dto.getStatus());
+            if (dto.getStatus() != null) {
+                applicant.setRecruitingMemberStatus(dto.getStatus());
+            }
         } else {
             return "Not authorized";
         }
