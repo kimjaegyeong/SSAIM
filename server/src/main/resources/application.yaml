@@ -4,6 +4,10 @@ server:
     key-store-password: ENC(ZhwAAvI0E4+27aMceE1yX6S4xGNQ8hv7)
     key-store-type: PKCS12
 spring:
+  naver:
+    cloud:
+      url: ENC(V60O8eTNILfEkz6CQXGUo39Ts3ketkXbhG8m3z5A8+ocwQf3xu8L8omgeDmNDt+57y2hD7uV4DgEr3XeLuG18FajJ93pfZE/m5XIy3+sj5j2rQjYNc9VTyCYRvVIjjiDmc4+ancKTyYdfGKeUkWAxKRZ4wtlouIWKOYp5AYXgRo=)
+      secret: ENC(xA03xBoT+28mrbdQW4sUZL+5HgtlIALzgXpOUEbng2ByQagV//PNUxMGBhLCpTEJ)
   application:
     name: server
   data:
