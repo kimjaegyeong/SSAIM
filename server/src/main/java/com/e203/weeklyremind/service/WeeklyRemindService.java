@@ -92,9 +92,11 @@ public class WeeklyRemindService {
     public List<DevelopmentStoryResponseDto> searchDevelopmentStory (Integer userId) {
 
         List<WeeklyRemind> weeklyRemindList = weeklyRemindRepository.findWeeklyRemindsByUserId(userId);
-        List<DevelopmentStoryResponseDto> weeklyRemindResponseDtoList = new ArrayList<>();
+        Map<Integer, DevelopmentStoryResponseDto> developmentStoryResponseDtoMap = new HashMap<>();
 
         for (WeeklyRemind weeklyRemind : weeklyRemindList) {
+
+            Integer projectId = weeklyRemind.getProjectId().getId();
 
             WeeklyRemindDto weeklyRemindDto = WeeklyRemindDto.builder()
                     .weeklyRemindId(weeklyRemind.getWeeklyRemindId())
@@ -102,18 +104,29 @@ public class WeeklyRemindService {
                     .startDate(weeklyRemind.getWeeklyRemindStardDate())
                     .endDate(weeklyRemind.getWeeklyRemindEndDate()).build();
 
-            weeklyRemindResponseDtoList.add(DevelopmentStoryResponseDto.builder()
-                    .projectMemberId(weeklyRemind.getWeeklyRemindAuthor().getId())
-                    .projectId(weeklyRemind.getProjectId().getId())
-                    .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName())
-                    .userId(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserId())
-                    .projectName(weeklyRemind.getProjectId().getTitle())
-                    .projectStartDate(weeklyRemind.getProjectId().getStartDate().toLocalDate())
-                    .projectEndDate(weeklyRemind.getProjectId().getEndDate().toLocalDate())
-                    .weeklyRemind(weeklyRemindDto).build());
+            if (developmentStoryResponseDtoMap.containsKey(projectId)) {
+                developmentStoryResponseDtoMap.get(projectId).getWeeklyRemind().add(weeklyRemindDto);
+            } else {
+                // 없는 경우 새로운 DevelopmentStoryResponseDto 생성 및 리스트 초기화
+                List<WeeklyRemindDto> weeklyRemindDtos = new ArrayList<>();
+                weeklyRemindDtos.add(weeklyRemindDto);
+
+                DevelopmentStoryResponseDto dto = DevelopmentStoryResponseDto.builder()
+                        .projectMemberId(weeklyRemind.getWeeklyRemindAuthor().getId())
+                        .projectId(projectId)
+                        .username(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserName())
+                        .userId(weeklyRemind.getWeeklyRemindAuthor().getUser().getUserId())
+                        .projectName(weeklyRemind.getProjectId().getTitle())
+                        .projectStartDate(weeklyRemind.getProjectId().getStartDate().toLocalDate())
+                        .projectEndDate(weeklyRemind.getProjectId().getEndDate().toLocalDate())
+                        .weeklyRemind(weeklyRemindDtos)  // 리스트로 설정
+                        .build();
+
+                developmentStoryResponseDtoMap.put(projectId, dto);
+            }
         }
 
-        return weeklyRemindResponseDtoList;
+        return new ArrayList<>(developmentStoryResponseDtoMap.values());
 
     }
 
