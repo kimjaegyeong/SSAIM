@@ -15,4 +15,6 @@ public interface RecruitingMemberRepository extends JpaRepository<RecruitingMemb
             "WHERE (r.user.userId = :userId) " +
             "AND (r.deletedAt IS NULL )")
     List<RecruitingMember> searchMemberByUserId(@Param("userId") Integer userId);
+
+    RecruitingMember findByIdAndDeletedAtIsNull(int id);
 }
