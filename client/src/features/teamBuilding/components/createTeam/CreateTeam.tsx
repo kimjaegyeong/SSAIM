@@ -168,14 +168,6 @@ const TeamCreation: React.FC = () => {
 
         const localStartDate = convertToLocalDate(startDate);
         const localEndDate = convertToLocalDate(endDate);
-        const memberFrontend = selectedMyPosition === 0 ? recruitment.FE - 1 : recruitment.FE
-        const memberBackend = selectedMyPosition === 1 ? recruitment.BE - 1 : recruitment.BE
-        const memberInfra = selectedMyPosition === 2 ? recruitment.Infra - 1 : recruitment.Infra
-        
-        if (memberBackend < 0 || memberFrontend < 0 || memberInfra < 0) {
-            alert("내 포지션과 일치하는 인원이 모집 인원보다 많습니다.");
-            return;
-        }
     
         const formData = {
             author: user.userId,
@@ -186,9 +178,9 @@ const TeamCreation: React.FC = () => {
             firstDomain: selectedDomains[0],
             campus: selectedRegion,
             memberTotal: N,
-            memberFrontend: memberFrontend,
-            memberBackend: memberBackend,
-            memberInfra: memberInfra,
+            memberFrontend: recruitment.FE,
+            memberBackend: recruitment.BE,
+            memberInfra: recruitment.Infra,
             position: selectedMyPosition,
             ...(selectedDomains[1] ? { secondDomain: selectedDomains[1] } : {}),
         };
@@ -228,7 +220,7 @@ const TeamCreation: React.FC = () => {
                     <div className={styles.myPosition}>
                         <span>내 포지션</span>
                         <div className={styles.myPositionTag}>
-                            {[0, 1, 2].map((tag) => (
+                            {[1, 2, 3].map((tag) => (
                                 <Tag
                                     key={tag}
                                     text={getPositionLabel(tag)}

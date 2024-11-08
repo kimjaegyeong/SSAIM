@@ -82,6 +82,6 @@ input[type="date"]:focus {
 }
 
 .backButton:hover {
-  backgroudn-color: #000; /* 진한 색상 */
+  background-color: #000; /* 진한 색상 */
   font-weight: 700; /* 더 굵게 */
 }
