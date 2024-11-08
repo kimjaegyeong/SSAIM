@@ -1,4 +1,3 @@
-// webSocketService.ts
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
@@ -9,29 +8,19 @@ export const connectWebSocket = (token: string, onConnect: () => void) => {
 
   const socket = new SockJS('https://k11e203.p.ssafy.io:8080/ws');
   stompClient = Stomp.over(socket);
+
   stompClient.connect(
     {
       Authorization: `Bearer ${token}`,
     },
     () => {
       console.log('WebSocket connected');
-      onConnect();
+      onConnect(); // 연결 성공 시 콜백 실행
     },
     (error: any) => {
       console.error('WebSocket connection error:', error);
     }
   );
-};
-
-export const subscribeToPath = (subscriptionPath: string, onMessageReceived: (data: any) => void) => {
-  if (stompClient && stompClient.connected) {
-    stompClient.subscribe(subscriptionPath, (message: any) => {
-      const data = JSON.parse(message.body).content;
-      onMessageReceived(data);
-    });
-  } else {
-    console.error('WebSocket is not connected');
-  }
 };
 
 export const sendMessage = (destination: string, content: any) => {

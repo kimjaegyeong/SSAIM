@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './Proposal.module.css';
-import { subscribeToPath, sendMessage } from '@features/project/apis/webSocket/webSocketService';
+import { sendMessage } from '@features/project/apis/webSocket/webSocketService';
 import { getProposal } from '@features/project/apis/webSocket/proposal';
+import { Stomp } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 interface ProposalProps {
   projectId: string;
@@ -33,13 +35,13 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
     effect: false,
   });
 
+  const stompClientRef = useRef<any>(null); // WebSocket client를 참조하기 위한 useRef
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        console.log('Fetching initial data...');
         const data = await getProposal(projectId);
-        console.log('Data received:', data);
         setEditableData(data);
       } catch (error) {
         console.error('Error parsing JSON data:', error);
@@ -47,31 +49,51 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
         setIsLoading(false);
       }
     };
-  
+
     if (isWebSocketConnected) {
-      const subscriptionPath = `/topic/api/v1/projects/${projectId}/proposal`;
-  
-      subscribeToPath(subscriptionPath, (data) => {
-        setEditableData((prevData) => ({ ...prevData, ...data }));
+      const socket = new SockJS('https://k11e203.p.ssafy.io:8080/ws');
+      const stompClient = Stomp.over(socket);
+      stompClientRef.current = stompClient;
+
+      stompClient.connect({}, () => {
+        console.log('WebSocket connected');
+        const subscriptionPath = `/topic/api/v1/projects/${projectId}/proposal`;
+
+        // 메시지 구독
+        stompClient.subscribe(subscriptionPath, (message) => {
+          try {
+            const data = JSON.parse(message.body);
+            console.log('Received message:', data);
+            setEditableData((prevData) => ({ ...prevData, ...data }));
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        });
       });
-  
+
       fetchInitialData();
+
+      return () => {
+        if (stompClientRef.current?.connected) {
+          stompClientRef.current.disconnect(() => {
+            console.log('WebSocket disconnected');
+          });
+        }
+      };
     }
   }, [isWebSocketConnected, projectId]);
 
   const handleFieldChange = (field: keyof EditableData, value: string) => {
-    // 상태 업데이트
     setEditableData((prev) => {
       const updatedData = { ...prev, [field]: value };
-  
-      // WebSocket 연결 여부 확인 후 전체 데이터 전송
-      if (isWebSocketConnected) {
+
+      if (stompClientRef.current && stompClientRef.current.connected) {
         sendMessage(`/app/edit/api/v1/projects/${projectId}/proposal`, updatedData);
       } else {
-        console.warn("WebSocket is not connected. Cannot send message.");
+        console.warn('WebSocket is not connected. Cannot send message.');
       }
-  
-      return updatedData; // 업데이트된 데이터를 반환
+
+      return updatedData;
     });
   };
 
