@@ -1,7 +1,7 @@
 import styles from './Sprint.module.css';
 import Issue from './Issue';
 import Button from '../../../../components/button/Button';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import SprintCreateModal from './SprintCreateModal';
 import { useSprintIssueQuery } from '../../hooks/useSprintIssueData';
 import { useProjectInfo } from '../../hooks/useProjectInfo';
@@ -48,23 +48,25 @@ const WeeklyProgress = () => {
   };
 
   // 요일 매핑 테이블 생성 (예: 월, 화, 수, 목, 금)
-  const dayMap = ['월', '화', '수', '목', '금', '날짜 미지정'];
 
-  const dateMap = useMemo(() => {
-    if (!projectWeekList[currentWeek - 1]) return {};
-
+  const dayMap: Array<'월' | '화' | '수' | '목' | '금' | '날짜미지정'> = ['월', '화', '수', '목', '금', '날짜미지정'];
+  const dateMap: Record<'월' | '화' | '수' | '목' | '금' | '날짜미지정', number | undefined> = useMemo(() => {
+    if (!projectWeekList[currentWeek - 1]) return {
+      월: undefined, 화: undefined, 수: undefined, 목: undefined, 금: undefined, 날짜미지정: undefined,
+    };
+  
     const endDate = new Date(projectWeekList[currentWeek - 1].endDate);
-
+  
     return {
-      금: new Date(endDate).getDate() + 1, // 금요일은 그대로 endDate
-      목: new Date(new Date(endDate).setDate(endDate.getDate())).getDate(),
-      수: new Date(new Date(endDate).setDate(endDate.getDate() - 1)).getDate(),
-      화: new Date(new Date(endDate).setDate(endDate.getDate() - 2)).getDate(),
-      월: new Date(new Date(endDate).setDate(endDate.getDate() - 3)).getDate(),
+      금: endDate.getDate(),
+      목: new Date(endDate.setDate(endDate.getDate() - 1)).getDate(),
+      수: new Date(endDate.setDate(endDate.getDate() - 2)).getDate(),
+      화: new Date(endDate.setDate(endDate.getDate() - 3)).getDate(),
+      월: new Date(endDate.setDate(endDate.getDate() - 4)).getDate(),
+      날짜미지정: undefined,
     };
   }, [projectWeekList, currentWeek]);
-
-  console.log(dateMap);
+    console.log(dateMap);
   // 요일별로 sprintIssues를 분류
   const issuesByDay = useMemo(() => {
     const dayIssueMap: Record<string, any[]> = {
@@ -132,7 +134,7 @@ const WeeklyProgress = () => {
           {dayMap.map((day) => (
             <div key={day} className={styles.dayHeader}>
               {day}
-              {dateMap[day]}
+              {dateMap?.[day]}
             </div>
           ))}
         </div>
