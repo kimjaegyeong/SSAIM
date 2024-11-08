@@ -10,7 +10,7 @@ interface TagSelectorProps {
 
 const TagSelector: React.FC<TagSelectorProps> = ({ onTagChange }) => {
   const [tag, setTag] = useState<number>(0);
-  const tags: number[] = [0, 1, 2];
+  const tags: number[] = [1, 2, 3];
 
   const handleTagChange = (direction: 'up' | 'down') => {
     const currentIndex = tags.indexOf(tag);

@@ -132,11 +132,6 @@ const TeamBuildingDetailPage = () => {
     ? data.recruitingCandidates 
     : data.recruitingCandidates.filter(candidate => candidate.userId === userId);
 
-  // 남은 인원 계산
-  const remainingFrontend = data.memberFrontend;
-  const remainingBackend = data.memberBackend;
-  const remainingInfra = data.memberInfra;
-
   const toggleModal = (commentId: number) => {
     if (activeCommentId === commentId) {
       setActiveCommentId(null);
@@ -230,9 +225,9 @@ const TeamBuildingDetailPage = () => {
                 {data.secondDomain && <Tag text={getDomainLabel(data.secondDomain)} />}
             </div>
             <div className={styles.positionSection}>
-              <Tag text={'FE'} /> {remainingFrontend}
-              <Tag text={'BE'} /> {remainingBackend}
-              <Tag text={'Infra'} /> {remainingInfra}
+              <Tag text={'FE'} /> {data.memberFrontend}
+              <Tag text={'BE'} /> {data.memberBackend}
+              <Tag text={'Infra'} /> {data.memberInfra}
             </div>
           </div>
           <div className={styles.postContent}>{data.postContent}</div>

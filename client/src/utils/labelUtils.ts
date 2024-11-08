@@ -32,9 +32,9 @@ export const statusMap: Record<string, string> = {
 };
 
 export const positionMap: Record<string, string> = {
-    0: 'FE',
-    1: 'BE',
-    2: 'Infra'
+    1: 'FE',
+    2: 'BE',
+    3: 'Infra'
 };
 
 // 각 레이블을 ID로 변환하는 함수들
