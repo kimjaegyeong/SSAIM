@@ -6,10 +6,7 @@ import com.e203.recruiting.entity.RecruitingMember;
 import com.e203.recruiting.repository.RecruitingMemberRepository;
 import com.e203.recruiting.repository.RecruitingRepository;
 import com.e203.recruiting.request.*;
-import com.e203.recruiting.response.RecruitingCandidateResponseDto;
-import com.e203.recruiting.response.RecruitingMemberResponseDto;
-import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
-import com.e203.recruiting.response.RecruitingPostResponseDto;
+import com.e203.recruiting.response.*;
 import com.e203.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -293,5 +289,12 @@ public class RecruitingService {
             return "Not authorized";
         }
 
+    }
+
+    public List<RecruitingApplyResponseDto> searchApplication(int userId) {
+
+        return recruitingMemberRepository.searchMemberByUserId(userId).stream()
+                .map(RecruitingApplyResponseDto::fromEntity)
+                .toList();
     }
 }

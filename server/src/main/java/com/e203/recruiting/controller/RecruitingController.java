@@ -5,12 +5,12 @@ import com.e203.recruiting.request.RecruitingApplicantEditRequestDto;
 import com.e203.recruiting.request.RecruitingApplyRequestDto;
 import com.e203.recruiting.request.RecruitingEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
+import com.e203.recruiting.response.RecruitingApplyResponseDto;
 import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
 import com.e203.recruiting.response.RecruitingPostResponseDto;
 import com.e203.recruiting.service.RecruitingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -134,5 +134,14 @@ public class RecruitingController {
             case "Does not match" -> ResponseEntity.status(403).body("잘못된 요청입니다.");
             default -> ResponseEntity.status(200).body("삭제가 완료되었습니다.");
         };
+    }
+
+    @GetMapping("/api/v1/user/{userId}/applications")
+    public ResponseEntity<List<RecruitingApplyResponseDto>> getApplications(@PathVariable(name = "userId") int userId,
+                                                                            @RequestHeader("Authorization") String auth) {
+        if (!jwtUtil.isPermitted(userId, auth)) {
+            return ResponseEntity.status(403).body(null);
+        }
+        return ResponseEntity.status(200).body(recruitingService.searchApplication(userId));
     }
 }
