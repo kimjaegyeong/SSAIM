@@ -1,13 +1,13 @@
-import { Stomp } from '@stomp/stompjs';
+import { Stomp } from '@stomp/stompjs'; // Stomp를 가져옴
 import SockJS from 'sockjs-client';
 
-export let stompClient: Stomp.Client | null = null;
+export let stompClient: any = null; // Stomp.Client 대신 any로 설정
 
 export const connectWebSocket = (token: string, onConnect: () => void) => {
   if (stompClient?.connected) return;
 
   const socket = new SockJS('https://k11e203.p.ssafy.io:8080/ws');
-  stompClient = Stomp.over(socket);
+  stompClient = Stomp.over(socket); // Stomp 네임스페이스 사용
 
   stompClient.connect(
     {
@@ -36,5 +36,6 @@ export const disconnectWebSocket = () => {
     stompClient.disconnect(() => {
       console.log('WebSocket disconnected');
     });
+    stompClient = null; // WebSocket 클라이언트를 초기화
   }
 };
