@@ -8,7 +8,6 @@ spring:
     name: server
   data:
     mongodb:
-      mongodb:
         uri: ENC(JU21mv6qBbOG/PnK+4k32l0V4LIG8q/12s06PcsJeKqgatCt/xgG5QmU7r0CS6pQg80Phwuq6Wd/dNmaodAybdymjY7PV9zxsj3iALsnk8+DbNW5FCN54Q==)
   ai:
     openai:
