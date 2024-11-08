@@ -8,7 +8,7 @@ spring:
     name: server
   data:
     mongodb:
-        uri: ENC(JU21mv6qBbOG/PnK+4k32l0V4LIG8q/12s06PcsJeKqgatCt/xgG5QmU7r0CS6pQg80Phwuq6Wd/dNmaodAybdymjY7PV9zxsj3iALsnk8+DbNW5FCN54Q==)
+        uri: ENC(1heMzP1zGYEirKr4JJhxvb4EJTjGoJsLRZtaxp76DCYb7YhQZ0YzI1ePd7A/RLPWJA3cDp00zNQSMW9GFJpKtrrgGhl0MdQZOi+lm9k0MNfrie+KA9MGqQ==)
   ai:
     openai:
       api-key: ENC(Q3Uz+kDQOa6uqGIIOPKQir6wuluFtPJh//eW64znzhcEgLQicPcQEbhvzSwIVnYuJJTj0UbT+113Py5wLQJEUsR9X1xViczbxSgwcOZ/2QiSlvZnVVrRs8gKdro6zUhQcVDOacXRa0POlqxgmvXl+u9OMKASTKbiLd0LInJIr2eReoxCpwlAM8xEkFmMg5fImKZahb1VbUwdQXpTHuCqDFOIkoFn9uQN1uVIJy/hDx4=)
