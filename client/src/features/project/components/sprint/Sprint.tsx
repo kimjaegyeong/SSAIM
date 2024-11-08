@@ -18,9 +18,9 @@ const WeeklyProgress = () => {
   );
 
   const [currentWeek, setCurrentWeek] = useState(0);
-  useMemo(()=>{
-    setCurrentWeek(projectWeekList.length-1)
-  },[projectWeekList.length])
+  useMemo(() => {
+    setCurrentWeek(projectWeekList.length - 1);
+  }, [projectWeekList.length]);
   const { data: sprintIssues } = useSprintIssueQuery(
     Number(projectId),
     dateToString(projectWeekList[currentWeek - 1]?.startDate, '-'),
@@ -48,45 +48,60 @@ const WeeklyProgress = () => {
   };
 
   // 요일 매핑 테이블 생성 (예: 월, 화, 수, 목, 금)
-  const dayMap = ["월", "화", "수", "목", "금", "날짜 미지정"];
+  const dayMap = ['월', '화', '수', '목', '금', '날짜 미지정'];
 
   const dateMap = useMemo(() => {
     if (!projectWeekList[currentWeek - 1]) return {};
-  
+
     const endDate = new Date(projectWeekList[currentWeek - 1].endDate);
-  
+
     return {
-      "금": new Date(endDate).getDate(), // 금요일은 그대로 endDate
-      "목": new Date(new Date(endDate).setDate(endDate.getDate() - 1)).getDate(),
-      "수": new Date(new Date(endDate).setDate(endDate.getDate() - 2)).getDate(),
-      "화": new Date(new Date(endDate).setDate(endDate.getDate() - 3)).getDate(),
-      "월": new Date(new Date(endDate).setDate(endDate.getDate() - 4)).getDate(),
+      금: new Date(endDate).getDate() + 1, // 금요일은 그대로 endDate
+      목: new Date(new Date(endDate).setDate(endDate.getDate())).getDate(),
+      수: new Date(new Date(endDate).setDate(endDate.getDate() - 1)).getDate(),
+      화: new Date(new Date(endDate).setDate(endDate.getDate() - 2)).getDate(),
+      월: new Date(new Date(endDate).setDate(endDate.getDate() - 3)).getDate(),
     };
   }, [projectWeekList, currentWeek]);
-      
-  console.log(dateMap)
-      // 요일별로 sprintIssues를 분류
-      const issuesByDay = useMemo(() => {
-        // dayMap을 기반으로 요일별 빈 배열로 초기화
-        const dayIssueMap = dayMap.reduce((acc, day) => {
-          acc[day] = [];
-          return acc;
-        }, {} as Record<string, any[]>);
-      
-        // 각 issue를 dayIssueMap에 분류
-        sprintIssues?.forEach((issue: any) => {
-          const match = issue.title.match(/(월|화|수|목|금)/); // 요일 추출
-          const day = match ? match[0] : "날짜 미지정";
-          if (dayIssueMap[day]) {
-            dayIssueMap[day].push(issue); // 해당 요일에 issue 추가
-          } else {
-            dayIssueMap["날짜 미지정"].push(issue); // 매핑되지 않으면 "날짜 미지정"에 추가
-          }
-        });
-      
-        return dayIssueMap;
-      }, [sprintIssues, dayMap]);
-      
+
+  console.log(dateMap);
+  // 요일별로 sprintIssues를 분류
+  const issuesByDay = useMemo(() => {
+    const dayIssueMap: Record<string, any[]> = {
+      월: [],
+      화: [],
+      수: [],
+      목: [],
+      금: [],
+      날짜미지정: [],
+    };
+
+    sprintIssues?.forEach((issue: any) => {
+      const match = issue.title.match(/(\d{6})/);
+      let day = '날짜 미지정';
+
+      if (match) {
+        const dateStr = match[0];
+        const year = 2000 + parseInt(dateStr.slice(0, 2), 10);
+        const month = parseInt(dateStr.slice(2, 4), 10) - 1;
+        const date = parseInt(dateStr.slice(4, 6), 10);
+
+        const dateObj = new Date(year, month, date);
+        const daysOfWeek = ['일요일', '월', '화', '수', '목', '금', '토'];
+        const weekday = daysOfWeek[dateObj.getDay()];
+
+        // 요일이 월~금에 해당하는 경우에만 요일 지정, 아니면 날짜 미지정에 추가
+        day =
+          weekday === '월' || weekday === '화' || weekday === '수' || weekday === '목' || weekday === '금'
+            ? weekday
+            : '날짜미지정';
+      }
+
+      dayIssueMap[day]?.push(issue);
+    });
+
+    return dayIssueMap;
+  }, [sprintIssues]);
   return (
     <>
       <div className={styles.header}>
@@ -108,12 +123,7 @@ const WeeklyProgress = () => {
         </button>
 
         <div className={styles.buttonPlaceholder}>
-          <Button
-            children="스프린트 생성"
-            colorType="blue"
-            size="small"
-            onClick={handleModalOpen}
-          ></Button>
+          <Button children="스프린트 생성" colorType="blue" size="small" onClick={handleModalOpen}></Button>
         </div>
       </div>
       <div className={styles.weeklyProgressContainer}>
@@ -121,7 +131,8 @@ const WeeklyProgress = () => {
         <div className={styles.contentheader}>
           {dayMap.map((day) => (
             <div key={day} className={styles.dayHeader}>
-              {day}{dateMap[day]}
+              {day}
+              {dateMap[day]}
             </div>
           ))}
         </div>
@@ -130,7 +141,7 @@ const WeeklyProgress = () => {
         <div className={styles.issueGrid}>
           {dayMap.map((day) => (
             <div key={day} className={styles.dayColumn}>
-              {issuesByDay[day].map((issue: any) => (
+              {issuesByDay[day]?.map((issue: any) => (
                 <Issue
                   key={issue.issueKey}
                   title={issue.title}
