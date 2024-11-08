@@ -113,14 +113,26 @@ public class RecruitingController {
         int userId = jwtUtil.getUserId(auth.substring(7));
         String result = recruitingService.updateApplicant(postId, applicantId, userId, dto);
 
-        if (result.equals("Not found")) {
-            return ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
-        } else if (result.equals("Not Authorized")) {
-            return ResponseEntity.status(403).body("권한이 없습니다.");
-        } else if (result.equals("Does not match")) {
-            return ResponseEntity.status(403).body("잘못된 요청입니다.");
-        } else  {
-            return ResponseEntity.status(200).body("수정이 완료되었습니다.");
-        }
+        return switch (result) {
+            case "Not found" -> ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+            case "Not authorized" -> ResponseEntity.status(403).body("권한이 없습니다.");
+            case "Does not match" -> ResponseEntity.status(403).body("잘못된 요청입니다.");
+            default -> ResponseEntity.status(200).body("수정이 완료되었습니다.");
+        };
+    }
+
+    @DeleteMapping("/api/v1/recruiting/posts/{postId}/applicants/{applicantId}")
+    public ResponseEntity<String> removeApplicant(@PathVariable(name = "postId") int postId,
+                                                  @PathVariable(name = "applicantId") int applicantId,
+                                                  @RequestHeader("Authorization") String auth) {
+        int userId = jwtUtil.getUserId(auth.substring(7));
+        String result = recruitingService.removeApplicant(postId, applicantId, userId);
+
+        return switch (result) {
+            case "Not found" -> ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+            case "Not authorized" -> ResponseEntity.status(403).body("권한이 없습니다.");
+            case "Does not match" -> ResponseEntity.status(403).body("잘못된 요청입니다.");
+            default -> ResponseEntity.status(200).body("삭제가 완료되었습니다.");
+        };
     }
 }

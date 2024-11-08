@@ -272,4 +272,26 @@ public class RecruitingService {
 
         return "Done";
     }
+
+    @Transactional
+    public String removeApplicant(int postId, int applicantId, int userId) {
+
+        BoardRecruiting recruiting = recruitingRepository.findByRecruitingIdAndDeletedAtIsNull(postId);
+        RecruitingMember applicant = recruitingMemberRepository.findByIdAndDeletedAtIsNull(applicantId);
+
+        if (recruiting == null || applicant == null) {
+            return "Not found";
+        }
+        if (recruiting.getRecruitingId() != applicant.getBoardRecruiting().getRecruitingId()) {
+            return "Does not match";
+        }
+
+        if (applicant.getUser().getUserId() == userId) {
+            applicant.setDeletedAt(LocalDateTime.now());
+            return "Done";
+        } else {
+            return "Not authorized";
+        }
+
+    }
 }
