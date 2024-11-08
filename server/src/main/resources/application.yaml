@@ -8,9 +8,9 @@ spring:
     name: server
   data:
     mongodb:
-        user: rb5R56qnCmrtE+SZHSxITA==
-        password: /trrcpFOSrkiXU+aCDuqM2RBeIrv9sXW
-        uri: qHVHRsYCKJfzhuGKzJo6t0zd7m4rhRoY1jh4HDvu9LyQFvjjrmvFukBZ1jJJUKWx
+        user: ENC(rb5R56qnCmrtE+SZHSxITA==)
+        password: ENC(/trrcpFOSrkiXU+aCDuqM2RBeIrv9sXW)
+        uri: ENC(qHVHRsYCKJfzhuGKzJo6t0zd7m4rhRoY1jh4HDvu9LyQFvjjrmvFukBZ1jJJUKWx)
       
   ai:
     openai:
