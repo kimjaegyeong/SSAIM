@@ -58,12 +58,12 @@
     box-sizing: border-box;
 }
 
-.h1 {
+.projectName {
     font-size: 30px;
     margin-bottom: 16px;
 }
 
-.p {
+.projectDate {
     font-size: 20px;
 }
 
