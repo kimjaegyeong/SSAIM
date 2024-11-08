@@ -5,7 +5,6 @@ import styles from './RemindDetailPage.module.css';
 import remindBG from '../../assets/remind/remindBG.png';
 import { DevelopStoryDTO } from '@features/remind/types/DevelopStoryDTO';
 
-
 interface CoverProps {
   project: DevelopStoryDTO;
 }
@@ -54,20 +53,18 @@ const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
   )
 );
 
+// 긴 내용을 페이지별로 분할하는 함수
+const splitContentToPages = (content: string, maxLength: number) => {
+  const pages: string[] = [];
+  for (let i = 0; i < content.length; i += maxLength) {
+    pages.push(content.slice(i, i + maxLength));
+  }
+  return pages;
+};
+
 const RemindDetailPage: React.FC = () => {
   const location = useLocation();
   const project = location.state as DevelopStoryDTO;
-
-  const weeklyData = [
-    {
-      image: "/path-to-image-1.jpg",
-      report: "수업의 프로젝트 일기\n정보를 주고받는 것에서 시작한 것이 지금은 서로 문제를 다시 실험하는 곳으로 사례되다. 이 모든 문제의 답은..."
-    },
-    {
-      image: "/path-to-image-2.jpg",
-      report: "두 번째 주간 회고 내용..."
-    }
-  ];
 
   return (
     <div className={styles.mainContainer}>
@@ -100,10 +97,13 @@ const RemindDetailPage: React.FC = () => {
           disableFlipByClick={false}
         >
           <Cover project={project}/>
-          {weeklyData.flatMap((data, index) => [
-            <ImagePage key={`image-${index}`} image={data.image} />,
-            <ReportPage key={`report-${index}`} report={data.report} />
-          ])}
+          {project.weeklyRemind.flatMap((data, index) => {
+            const imagePage = <ImagePage key={`image-${index}`} image={''} />;
+            const reportPages = splitContentToPages(data.content, 700).map((pageContent, pageIndex) => (
+              <ReportPage key={`report-${index}-${pageIndex}`} report={pageContent} />
+            ));
+            return [imagePage, ...reportPages];
+          })}
         </HTMLFlipBook>
       </div>
     </div>

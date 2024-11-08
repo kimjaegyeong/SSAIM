@@ -35,11 +35,15 @@
 }
 
 .book {
-    background-color: #f5f5f5;
+    /* background-image: url('../../assets/remind/woodTexture.png'); 
+    background-size: cover; 
+    background-position: center;  */
+    background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-height: calc(100vh - 40px);
     will-change: transform;
 }
+
 
 .cover {
     background-color: #2c3e50;

@@ -14,5 +14,5 @@ export interface DevelopStoryDTO {
     projectName: string;
     projectStartDate: string;
     projectEndDate: string;
-    weeklyRemind: WeeklyRemind;
+    weeklyRemind: WeeklyRemind[];
   }
