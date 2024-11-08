@@ -1,6 +1,12 @@
 import styles from './Issue.module.css';
 import StatusSwitch from './StatusSwitch';
 
+
+interface IssueProps {
+  title : string;
+  status : "해야 할 일" | "진행 중" | "완료";
+  epicName
+}
 const Issue = () => {
   return (
     <div className={styles.issueContainer}>

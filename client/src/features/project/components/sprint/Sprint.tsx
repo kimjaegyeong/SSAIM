@@ -28,7 +28,7 @@ const WeeklyProgress = () => {
       <div className={styles.weeklyProgressContainer}>
         {/* 요일 헤더 */}
         <div className={styles.contentheader}>
-          {['월', '화', '수', '목', '금'].map((day) => (
+          {['월', '화', '수', '목', '금', '날짜 미지정'].map((day) => (
             <div key={day} className={styles.dayHeader}>
               {day}
             </div>
@@ -37,9 +37,8 @@ const WeeklyProgress = () => {
 
         {/* 요일별 이슈 */}
         <div className={styles.issueGrid}>
-          {['월', '화', '수', '목', '금'].map((day) => (
+          {['월', '화', '수', '목', '금','날짜 미지정'].map((day) => (
             <div key={day} className={styles.dayColumn}>
-              <Issue />
               <Issue />
             </div>
           ))}
