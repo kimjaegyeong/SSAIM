@@ -21,7 +21,7 @@ const Issue:React.FC<IssueProps> = ({title, status, epicCode, storyPoint}) => {
 
       {/* 하단 - 에픽 이름, 스토리 포인트, 상태 */}
       <div className={styles.issueFooter}>
-        <span className={styles.epicName}>{epicCode}</span>
+        <span className={styles.epicName}>{epicCode?.split('-')[1]}</span>
         <span className={styles.storyPoint}>{storyPoint}</span>
         <StatusSwitch status={status} onChange={()=>{}}/>
       </div>

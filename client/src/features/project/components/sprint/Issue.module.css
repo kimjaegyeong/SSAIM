@@ -1,8 +1,9 @@
 .issueContainer {
-  width: 100%;
+  width: 230px;
   border: 1px solid #ddd;
   padding: 10px;
   background-color: #f9f9f9;
+  margin : 3px 0;
 }
 
 .issueHeader {
@@ -33,6 +34,7 @@
 
 .epicName {
   color: #888;
+  max-width : 30px;
 }
 
 .storyPoint {
