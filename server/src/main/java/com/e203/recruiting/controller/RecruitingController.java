@@ -1,6 +1,7 @@
 package com.e203.recruiting.controller;
 
 import com.e203.jwt.JWTUtil;
+import com.e203.recruiting.request.RecruitingApplicantEditRequestDto;
 import com.e203.recruiting.request.RecruitingApplyRequestDto;
 import com.e203.recruiting.request.RecruitingEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
@@ -101,6 +102,25 @@ public class RecruitingController {
             return ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
         } else {
             return ResponseEntity.status(200).body("신청이 완료되었습니다.");
+        }
+    }
+
+    @PatchMapping("/api/v1/recruiting/posts/{postId}/applicants/{applicantId}")
+    public ResponseEntity<String> editApplicant(@PathVariable(name = "postId") int postId,
+                                                @PathVariable(name = "applicantId") int applicantId,
+                                                @RequestBody RecruitingApplicantEditRequestDto dto,
+                                                @RequestHeader("Authorization") String auth) {
+        int userId = jwtUtil.getUserId(auth.substring(7));
+        String result = recruitingService.updateApplicant(postId, applicantId, userId, dto);
+
+        if (result.equals("Not found")) {
+            return ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+        } else if (result.equals("Not Authorized")) {
+            return ResponseEntity.status(403).body("권한이 없습니다.");
+        } else if (result.equals("Does not match")) {
+            return ResponseEntity.status(403).body("잘못된 요청입니다.");
+        } else  {
+            return ResponseEntity.status(200).body("수정이 완료되었습니다.");
         }
     }
 }
