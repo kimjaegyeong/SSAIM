@@ -5,10 +5,7 @@ import com.e203.recruiting.entity.BoardRecruiting;
 import com.e203.recruiting.entity.RecruitingMember;
 import com.e203.recruiting.repository.RecruitingMemberRepository;
 import com.e203.recruiting.repository.RecruitingRepository;
-import com.e203.recruiting.request.RecruitingApplyRequestDto;
-import com.e203.recruiting.request.RecruitingEditRequestDto;
-import com.e203.recruiting.request.RecruitingMemberEditRequestDto;
-import com.e203.recruiting.request.RecruitingWriteRequestDto;
+import com.e203.recruiting.request.*;
 import com.e203.recruiting.response.RecruitingCandidateResponseDto;
 import com.e203.recruiting.response.RecruitingMemberResponseDto;
 import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
@@ -25,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -75,40 +73,41 @@ public class RecruitingService {
         }
         List<RecruitingMember> members = recruiting.getRecruitingMembers().stream()
                 .filter(member -> member.getDeletedAt() == null).toList();
-        List<RecruitingMemberResponseDto> recruitingMembers = getActiveRecruitingMembers(recruiting);
-        List<RecruitingCandidateResponseDto> recruitingCandidates = getRecruitingCandidates(recruiting, userId);
+        List<RecruitingMemberResponseDto> recruitingMembers = getActiveRecruitingMembers(members);
+        List<RecruitingCandidateResponseDto> recruitingCandidates = getRecruitingCandidates(recruiting, members, userId);
 
-        return createResponseDto(recruiting, recruitingMembers, recruitingCandidates);
+        return createResponseDto(recruiting, members, recruitingMembers, recruitingCandidates);
     }
 
     private BoardRecruiting findRecruitingPost(int postId) {
         return recruitingRepository.findByRecruitingIdAndDeletedAtIsNull(postId);
     }
 
-    private List<RecruitingMemberResponseDto> getActiveRecruitingMembers(BoardRecruiting recruiting) {
-        return recruiting.getRecruitingMembers().stream()
+    private List<RecruitingMemberResponseDto> getActiveRecruitingMembers(List<RecruitingMember> recruiting) {
+        return recruiting.stream()
                 .filter(member -> member.getRecruitingMemberStatus() == 1)
                 .map(RecruitingMemberResponseDto::fromEntity)
                 .toList();
     }
 
-    private List<RecruitingCandidateResponseDto> getRecruitingCandidates(BoardRecruiting recruiting, int userId) {
+    private List<RecruitingCandidateResponseDto> getRecruitingCandidates(BoardRecruiting recruiting,
+                                                                         List<RecruitingMember> members, int userId) {
         if (userId == recruiting.getAuthor().getUserId()) {
-            return getAllCandidates(recruiting);
+            return getAllCandidates(members);
         } else {
-            return getUserCandidates(recruiting, userId);
+            return getUserCandidates(members, userId);
         }
     }
 
-    private List<RecruitingCandidateResponseDto> getAllCandidates(BoardRecruiting recruiting) {
-        return recruiting.getRecruitingMembers().stream()
+    private List<RecruitingCandidateResponseDto> getAllCandidates(List<RecruitingMember> members) {
+        return members.stream()
                 .filter(member -> member.getRecruitingMemberStatus() != 1)
                 .map(RecruitingCandidateResponseDto::fromEntity)
                 .toList();
     }
 
-    private List<RecruitingCandidateResponseDto> getUserCandidates(BoardRecruiting recruiting, int userId) {
-        return recruiting.getRecruitingMembers().stream()
+    private List<RecruitingCandidateResponseDto> getUserCandidates(List<RecruitingMember> members, int userId) {
+        return members.stream()
                 .filter(member -> member.getUser().getUserId() == userId
                         && member.getRecruitingMemberStatus() != 1)
                 .map(RecruitingCandidateResponseDto::fromEntity)
@@ -116,11 +115,12 @@ public class RecruitingService {
     }
 
     private RecruitingPostDetailResponseDto createResponseDto(BoardRecruiting recruiting,
+                                                              List<RecruitingMember> members,
                                                               List<RecruitingMemberResponseDto> recruitingMembers,
                                                               List<RecruitingCandidateResponseDto> recruitingCandidates) {
         RecruitingPostDetailResponseDto dto = RecruitingPostDetailResponseDto.fromEntity(recruiting, recruitingMembers, recruitingCandidates);
         dto.setRecruitedTotal(recruitingMembers.size());
-        dto.setCandidateCount(recruiting.getRecruitingMembers().size() - recruitingMembers.size());
+        dto.setCandidateCount(members.size() - recruitingMembers.size());
         return dto;
     }
 
@@ -238,6 +238,37 @@ public class RecruitingService {
                 .build();
 
         recruitingMemberRepository.save(applicant);
+
+        return "Done";
+    }
+
+    @Transactional
+    public String updateApplicant(int postId, int applicantId, int userId, RecruitingApplicantEditRequestDto dto) {
+
+        BoardRecruiting recruiting = recruitingRepository.findByRecruitingIdAndDeletedAtIsNull(postId);
+        RecruitingMember applicant = recruitingMemberRepository.findByIdAndDeletedAtIsNull(applicantId);
+
+        if (recruiting == null || applicant == null) {
+            return "Not found";
+        }
+        if (recruiting.getRecruitingId() != applicant.getBoardRecruiting().getRecruitingId()) {
+            return "Does not match";
+        }
+
+        if (applicant.getUser().getUserId() == userId) {
+            if (dto.getPosition() != null) {
+                applicant.setRecruitingMemberPosition(dto.getPosition());
+            }
+            if (dto.getMessage() != null) {
+                applicant.setRecruitingMemberMessage(dto.getMessage());
+            }
+        } else if (recruiting.getAuthor().getUserId() == userId) {
+            if (dto.getStatus() != null) {
+                applicant.setRecruitingMemberStatus(dto.getStatus());
+            }
+        } else {
+            return "Not authorized";
+        }
 
         return "Done";
     }
