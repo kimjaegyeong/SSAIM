@@ -13,11 +13,12 @@ interface Message {
 interface WeekRemindProps {
   messages: Message[];
   selectedWeekDate: Date;
+  selectedMemberId?: number | null;
 }
 
 const daysOfWeekKor = ["월", "화", "수", "목", "금"];
 
-const WeekRemind: React.FC<WeekRemindProps> = ({ messages, selectedWeekDate }) => {
+const WeekRemind: React.FC<WeekRemindProps> = ({ messages, selectedWeekDate, selectedMemberId }) => {
   console.log("messages:", messages);
   console.log("selectedWeekDate:", selectedWeekDate);
 
@@ -33,10 +34,14 @@ const WeekRemind: React.FC<WeekRemindProps> = ({ messages, selectedWeekDate }) =
   return (
     <div className={styles.weekReview}>
       {weekDays.map((dayInfo, index) => {
-        // 해당 날짜와 일치하는 messages를 필터링
-        const filteredMessages = messages.filter((message) =>
-          format(new Date(message.dailyRemindDate), 'yyyy-MM-dd') === format(dayInfo.date, 'yyyy-MM-dd')
+        // 해당 날짜와 일치하는 messages를 필터링하여 전체 메시지와 멤버별 메시지를 각각 관리
+        const filteredMessages = messages.filter(
+          (message) => format(new Date(message.dailyRemindDate), 'yyyy-MM-dd') === format(dayInfo.date, 'yyyy-MM-dd')
         );
+
+        const memberFilteredMessages = selectedMemberId
+          ? filteredMessages.filter((message) => message.projectMemberId === selectedMemberId)
+          : filteredMessages;
 
         return (
           <div key={index} className={styles[`${['Mon', 'Tus', 'Wed', 'Thu', 'Fri'][index]}Section`]}>
@@ -45,15 +50,17 @@ const WeekRemind: React.FC<WeekRemindProps> = ({ messages, selectedWeekDate }) =
               <p className={styles.h3}>{dayInfo.dayOfWeek}</p> {/* 요일 렌더링 (한국어) */}
             </div>
             <div className={styles.reviewContainer}>
-              {filteredMessages.length > 0 ? (
-                filteredMessages.map((msg) => (
-                  <p key={msg.dailyRemindId} className={styles.p}>
-                    {msg.message}
-                  </p>
-                ))
-              ) : (
-                <p className={styles.p}>해당 날짜에 회고가 없습니다.</p>
-              )}
+              <div className={styles.reviewText}>
+                {memberFilteredMessages.length > 0 ? (
+                  memberFilteredMessages.map((msg) => (
+                    <p key={msg.dailyRemindId} className={styles.p}>
+                      {msg.message}
+                    </p>
+                  ))
+                ) : (
+                  <p className={styles.p}>해당 날짜에 회고가 없습니다.</p>
+                )}
+              </div>
             </div>
           </div>
         );

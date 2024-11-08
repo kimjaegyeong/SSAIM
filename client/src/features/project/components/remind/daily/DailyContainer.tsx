@@ -30,6 +30,7 @@ const DailyContainer = () => {
   const [myTeam, setMyTeam] = useState('나의 회고');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selecteWeekdDate, setSelectedWeekDate] = useState<Date>(new Date());
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
 
   const { data: projectInfo } = useProjectInfo(Number(projectId));
   const { userId } = useUserStore();
@@ -100,15 +101,13 @@ const DailyContainer = () => {
   };
 
   const handleWeekDateChange = (dateInfo: { startDate: string; }) => {
-    // 필요한 날짜 정보는 dateInfo의 startDate, endDate 등을 활용
     const { startDate } = dateInfo;
-    
-    // 필요 시 원하는 형태로 변환
-    // 예: startDate를 기준으로 새로운 Date 객체 생성
     const newDate = new Date(startDate);
-  
-    // 상태 업데이트
     setSelectedWeekDate(newDate);
+  };
+
+  const handleMemberClick = (pmId: number) => {
+    setSelectedMemberId(pmId);
   };
 
   return (
@@ -120,12 +119,14 @@ const DailyContainer = () => {
           myTeam={myTeam}
           setMyTeam={setMyTeam}
           formattedDate={formattedDate}
+          projectId={Number(projectId)}
+          onMemberClick={handleMemberClick}
         />
         <div className={styles.remindContent}>
           {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={dayMyfilteredMessages} />}
           {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind messages={dayTeamFilteredMessages}/>}
           {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind messages={myfilteredMessages} selectedWeekDate={selecteWeekdDate}/>}
-          {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind messages={dailyRemindData|| []} selectedWeekDate={selecteWeekdDate}/>}
+          {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind messages={dailyRemindData|| []} selectedWeekDate={selecteWeekdDate} selectedMemberId={selectedMemberId}/>}
         </div>
       </div>
       <div className={styles.right}>

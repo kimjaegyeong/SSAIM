@@ -74,6 +74,18 @@
 
 }
 
+.reviewText {
+    margin: 0px;
+    font-size: 14px;
+    height: 57vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.reviewText::-webkit-scrollbar {
+    display: none; /* 스크롤바 숨기기 (Chrome, Safari, Edge) */
+}
+
 .p {
     margin: 0px;
     font-size: 14px;

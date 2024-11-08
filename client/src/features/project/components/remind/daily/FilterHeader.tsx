@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState  } from 'react';
 import styles from './FilterHeader.module.css';
 import { FaRegClock } from "react-icons/fa6";
 import { IoSunny } from "react-icons/io5";
 import { MdOutlineViewWeek } from "react-icons/md";
 import Button from '../../../../../components/button/Button';
+import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
+import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
 
 interface FilterHeaderProps {
   dayWeek: string;
@@ -11,14 +13,66 @@ interface FilterHeaderProps {
   myTeam: string;
   setMyTeam: (value: string) => void;
   formattedDate: string;
+  projectId: number;
+  onMemberClick: (pmId: number) => void;
 }
 
-const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam, setMyTeam, formattedDate }) => {
+const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam, setMyTeam, formattedDate, projectId, onMemberClick  }) => {
+  const { data: projectInfo } = useProjectInfo(projectId);
+  const [selectedPmId, setSelectedPmId] = useState<number | null>(null);
+  const [hoveredMemberName, setHoveredMemberName] = useState<string | null>(null);
+  console.log("projectId", projectId);
+  console.log("projectInfo",projectInfo);
+
+  // 기본 pmId 설정
+  useEffect(() => {
+    if (projectInfo?.projectMemberFindResponseDtoList?.length && selectedPmId === null) {
+      const firstPmId = Math.min(...projectInfo.projectMemberFindResponseDtoList.map((member:ProjectInfoMemberDTO) => member.pmId));
+      setSelectedPmId(firstPmId);
+      onMemberClick(firstPmId);
+    }
+  }, [projectInfo, selectedPmId, onMemberClick]);
+
+
+  const handleMouseEnter = (name: string) => {
+    setHoveredMemberName(name);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredMemberName(null);
+  };
+
+  const handleMemberClick = (pmId: number) => {
+    setSelectedPmId(pmId);  // 클릭 시 선택된 멤버의 ID를 설정
+    onMemberClick(pmId);     // 부모로 이벤트 전달
+  };
+
   return (
     <div className={styles.filterHeader}>
       <div className={styles.dateTitle}>
         <FaRegClock style={{ strokeWidth: 4, color: "#007bff" }} />
         {formattedDate}
+        {dayWeek === '1주일' && myTeam === '팀원 회고' && (
+          <div className={styles.members}>
+            {projectInfo?.projectMemberFindResponseDtoList?.map((member: ProjectInfoMemberDTO) => (
+              <div
+                key={member.pmId}
+                className={styles.teamMember}
+                onClick={() => handleMemberClick(member.pmId)}
+                onMouseEnter={() => handleMouseEnter(member.name)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <img 
+                  src={member.profileImage} 
+                  className={`${styles.memberImage} ${selectedPmId === member.pmId ? styles.selected : ''}`} 
+                />
+                {hoveredMemberName === member.name && (
+                  <div className={styles.tooltip}>{member.name}</div>
+                )}
+              </div>
+            ))}
+         </div>
+        )}
       </div>
       <div className={styles.filter}>
         <div className={styles.dayWeek}>
