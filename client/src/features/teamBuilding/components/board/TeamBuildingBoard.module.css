@@ -12,7 +12,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 0px;
-    min-width: 840px;
+    min-width: 930px;
 }
 
 .filterSection {
@@ -33,7 +33,7 @@
 .boardItem {
     display: flex;
     flex-direction: row;
-    min-width: 800px;
+    min-width: 890px;
     border: 1px solid #d9d9d9;
     padding: 15px 20px;
     justify-content: space-between;
@@ -80,7 +80,7 @@
 
 .profile {
     display: flex;
-    width: 10%;
+    width: 15%;
     gap: 10px;
     align-items: center;
 }
@@ -123,19 +123,27 @@
     justify-content: center;
     align-items: center;
     gap: 5px;
-    width: 110px;
     padding: 8px 10px;
     border-radius: 5px;
     cursor: pointer;
+    border: none;
 }
 
-.searchActions .actionButtons button:first-child {
-    background-color: #949494;
+.searchActions .actionButtons button:nth-child(1) {
+    background-color: #000000;
+    width: 90px;
     color: white;
 }
 
-.searchActions .actionButtons button:last-child {
+.searchActions .actionButtons button:nth-child(2) {
+    background-color: #949494;
+    width: 110px;
+    color: white;
+}
+
+.searchActions .actionButtons button:nth-child(3) {
     background-color: #007bff;
+    width: 110px;
     color: white;
 }
 

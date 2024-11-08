@@ -17,15 +17,22 @@ import RemindListPage from '../pages/remind/RemindListPage';
 import RemindDetailPage from '../pages/remind/RemindDetailPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage';
+import TeamBuildingEditPage from '../pages/teamBuilding/TeamBuildingEditPage';
 import MyPage from '../pages/myPage/MyPage';
 import ProjectCreatePage from '../pages/project/ProjectCreatePage';
 import LoginPage from '../pages/account/login/LoginPage';
+import NetworkErrorPage from '../pages/error/NetworkErrorPage';
+import NotFoundPage from '../pages/error/NotFoundPage';
 import SignUpPage from '@pages/account/signup/SignUpPage';
+import EditProfilePage from '@/pages/account/editProfile/EditProfilePage';
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/signup" element={<SignUpPage />} />
+    {/* error */}
+    <Route path="/network" element={<NetworkErrorPage />}></Route>
+    <Route path="/notfound" element={<NotFoundPage />}></Route>
     <Route element={<MainLayout />}>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
@@ -43,13 +50,15 @@ const AppRoutes = () => (
       <Route path="/team-building" element={<TeamBuildingListPage />}></Route>
       <Route path="/team-building/create" element={<TeamBuildingCreatePage />}></Route>
       <Route path="/team-building/detail/:postId" element={<TeamBuildingDetailPage />}></Route>
+      <Route path="/team-building/edit/:postId" element={<TeamBuildingEditPage />}></Route>
       {/* 회고 */}
       <Route path="/remind" element={<RemindIntroPage />}></Route>
       <Route path="/remind/create" element={<RemindCreatePage />}></Route>
       <Route path="/remind/list" element={<RemindListPage />}></Route>
       <Route path="/remind/:remindId" element={<RemindDetailPage />}></Route>
       {/* 마이페이지 */}
-      <Route path="/mypage" element={<MyPage />}></Route>
+      <Route path="/profile/edit" element={<EditProfilePage />}></Route>
+      <Route path="/profile/:profileOwnerId" element={<MyPage />}></Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   </Routes>

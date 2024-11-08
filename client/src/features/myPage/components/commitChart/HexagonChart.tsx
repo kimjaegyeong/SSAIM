@@ -32,6 +32,8 @@ const HexagonChart: React.FC<HexagonChartProps> = ({ data }) => {
   };
 
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       r: {
         beginAtZero: true,
@@ -43,7 +45,11 @@ const HexagonChart: React.FC<HexagonChartProps> = ({ data }) => {
     },
   };
 
-  return <Radar data={chartData} options={options} />;
+  return (
+    <div style={{ width: '400px', height: '400px' }}>
+      <Radar data={chartData} options={options} />
+    </div>
+  );
 };
 
 export default HexagonChart;
