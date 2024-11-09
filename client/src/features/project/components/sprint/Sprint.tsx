@@ -8,7 +8,7 @@ import { useProjectInfo } from '../../hooks/useProjectInfo';
 import { useParams } from 'react-router-dom';
 import calculateWeeks from '../../utils/calculateWeeks';
 import { dateToString } from '@/utils/dateToString';
-
+import {ProjectInfoMemberDTO} from '@features/project/types/ProjectDTO'
 const WeeklyProgress = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
@@ -121,13 +121,13 @@ const WeeklyProgress = () => {
     <>
       <div className={styles.header}>
       <div className={styles.teamProfiles}>
-  {projectMembers.map((member) => (
+  {projectMembers?.map((member:ProjectInfoMemberDTO) => (
     <div
       key={member.name}
       className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
       onClick={() => handleFilterMember(member.name)}
     >
-      <img src={member.profilePicture} alt={member.name} />
+      <img src={member.profileImage} alt={member.name} />
     </div>
   ))}
 </div>
