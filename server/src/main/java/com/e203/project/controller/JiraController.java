@@ -41,11 +41,11 @@ public class JiraController {
 	public ResponseEntity<List<JiraIssueResponseDto>> findAllJiraIssue(@PathVariable("projectId") int projectId,
 		@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
 		List<JiraIssueResponseDto> allJiraIssues = jiraService.findAllJiraIssues(startDate, endDate, projectId);
-		if(allJiraIssues==null){ //Jira 조회 중 에러 발생
+		if(allJiraIssues==null){
 			return ResponseEntity.status(NOT_FOUND).body(null);
 		}
-		if(allJiraIssues.isEmpty()){ //Jira Issue가 아직 없는 경우
-			return ResponseEntity.status(NOT_FOUND).body(null);
+		if(allJiraIssues.isEmpty()){
+			return ResponseEntity.status(OK).body(allJiraIssues);
 		}
 		return ResponseEntity.status(OK).body(allJiraIssues);
 	}
