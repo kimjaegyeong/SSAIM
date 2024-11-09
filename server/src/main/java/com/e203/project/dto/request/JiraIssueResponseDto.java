@@ -1,6 +1,6 @@
 package com.e203.project.dto.request;
 
-import com.e203.project.dto.jiraapi.JiraIssue;
+import com.e203.project.dto.jiraapi.JiraContent;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -26,14 +26,15 @@ public class JiraIssueResponseDto {
 		this.allocator = allocator;
 	}
 
-	public static JiraIssueResponseDto transferDto(JiraIssue jiraIssue){
+	public static JiraIssueResponseDto transferDto(JiraContent jiraContent){
 		return JiraIssueResponseDto.builder()
-			.title(jiraIssue.getFields().getSummary())
-			.epicCode(jiraIssue.getFields().getEpicCode())
-			.progress(jiraIssue.getFields().getStatus().getProgress())
-			.storyPoint(jiraIssue.getFields().getStoryPoint() ==null ? 0 : jiraIssue.getFields().getStoryPoint())
-			.allocator(jiraIssue.getFields().getAssignee() == null ? "할당되지 않음" : jiraIssue.getFields().getAssignee().getDisplayName())
-			.issueKey(jiraIssue.getKey())
+			.title(jiraContent.getFields().getSummary())
+			.epicCode(jiraContent.getFields().getEpicCode())
+			.progress(jiraContent.getFields().getStatus().getProgress())
+			.storyPoint(jiraContent.getFields().getStoryPoint() ==null ? 0 : jiraContent.getFields().getStoryPoint())
+			.allocator(
+				jiraContent.getFields().getAssignee() == null ? "할당되지 않음" : jiraContent.getFields().getAssignee().getDisplayName())
+			.issueKey(jiraContent.getKey())
 			.build();
 	}
 }

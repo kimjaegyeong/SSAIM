@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.e203.project.dto.request.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
-import com.e203.project.dto.response.ProjectJiraEpicDto;
+import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
 import com.e203.project.service.JiraService;
 
 import lombok.RequiredArgsConstructor;
@@ -51,8 +51,8 @@ public class JiraController {
 	}
 
 	@GetMapping("/api/v1/projects/{projectId}/epics")
-	public ResponseEntity<List<ProjectJiraEpicDto>> findAllEpic(@PathVariable("projectId") int projectId){
-		List<ProjectJiraEpicDto> epics = jiraService.getEpics(projectId);
+	public ResponseEntity<List<ProjectJiraEpicResponseDto>> findAllEpic(@PathVariable("projectId") int projectId){
+		List<ProjectJiraEpicResponseDto> epics = jiraService.findAllEpics(projectId);
 		if(epics==null){
 			return ResponseEntity.status(NOT_FOUND).body(null);
 		}
