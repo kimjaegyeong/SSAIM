@@ -35,14 +35,23 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
     effect: false,
   });
 
-  const stompClientRef = useRef<any>(null); // WebSocket client를 참조하기 위한 useRef
+  const stompClientRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
         const data = await getProposal(projectId);
-        setEditableData(data);
+
+        const filledData = {
+          title: data.title || '',
+          description: data.description || '',
+          background: data.background || '',
+          feature: data.feature || '',
+          effect: data.effect || '',
+        };
+
+        setEditableData(filledData);
       } catch (error) {
         console.error('Error parsing JSON data:', error);
       } finally {
@@ -59,12 +68,19 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
         console.log('WebSocket connected');
         const subscriptionPath = `/topic/api/v1/projects/${projectId}/proposal`;
 
-        // 메시지 구독
         stompClient.subscribe(subscriptionPath, (message) => {
           try {
             const data = JSON.parse(message.body);
             console.log('Received message:', data);
-            setEditableData((prevData) => ({ ...prevData, ...data }));
+
+            setEditableData((prevData) => ({
+              ...prevData,
+              title: data.title || prevData.title,
+              description: data.description || prevData.description,
+              background: data.background || prevData.background,
+              feature: data.feature || prevData.feature,
+              effect: data.effect || prevData.effect,
+            }));
           } catch (error) {
             console.error('Error parsing WebSocket message:', error);
           }
