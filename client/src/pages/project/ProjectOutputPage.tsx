@@ -56,7 +56,7 @@ const ProjectOutputPage = () => {
       </div>
       {showOutput === 'proposal' && <Proposal projectId={projectId as string} isWebSocketConnected={isWebSocketConnected} />}
       {showOutput === 'featureSpec' && <FeatureSpec projectId={projectId as string} isWebSocketConnected={isWebSocketConnected} />}
-      {showOutput === 'APIspec' && <ApiSpec />}
+      {showOutput === 'APIspec' && <ApiSpec projectId={projectId as string} isWebSocketConnected={isWebSocketConnected} />}
       {showOutput === 'ERD' && <ERD />}
     </div>
   );
