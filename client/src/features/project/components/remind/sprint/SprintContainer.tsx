@@ -10,6 +10,7 @@ import SprintModal from './SprintModal';
 import moment from 'moment';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import {useSprintRemind} from '@/features/project/hooks/remind/useSprintRemind';
+import { dateToWeek } from '@/utils/dateToWeek';
 
 
 const SprintContainer = () => {
@@ -40,8 +41,10 @@ const SprintContainer = () => {
     const handleDateChange = (dateInfo: { checkDate: string; startDate: string; endDate: string }) => {
       // 날짜 정보가 변경되었을 때만 상태 업데이트
       if (!selectedDateInfo || dateInfo.checkDate !== selectedDateInfo.checkDate) {
-        setSelectedDate(new Date(dateInfo.checkDate));
+        const newDate = new Date(dateInfo.checkDate);
+      setSelectedDate(newDate);
         setSelectedDateInfo(dateInfo);
+        setFormattedDate(dateToWeek(newDate));
       }
     };
 
@@ -60,12 +63,9 @@ const SprintContainer = () => {
 
     
     useEffect(() => {
-      const month = moment(selectedDate).format('M'); // 현재 선택된 월
-      const year = moment(selectedDate).format('YYYY'); // 현재 선택된 연도
-      const startOfMonth = moment(selectedDate).startOf('month'); // 선택한 날짜의 월 시작일
-      const weekNumber = Math.ceil((selectedDate.getDate() + startOfMonth.day()) / 7); // 주차 계산
-      setFormattedDate(`${year}년 ${month}월 ${weekNumber}주차`); // 원하는 형식으로 포맷팅
-      console.log(formattedDate)
+      console.log("selectedDate: ",selectedDate);
+      setFormattedDate(dateToWeek(selectedDate)); // 원하는 형식으로 포맷팅
+      console.log("formattedDate: ", formattedDate)
   }, [selectedDate]);
 
     const handleOpenModal = () => {
