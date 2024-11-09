@@ -1,17 +1,4 @@
-import { create } from 'zustand';
-import { ProjectDTO } from '@features/project/types/ProjectDTO';
-
-interface ProjectWithWeeks extends ProjectDTO {
-  weeks: Array<{ startDate: Date; endDate: Date }>;
-}
-
-interface ProjectState {
-  projectList: ProjectWithWeeks[];
-  setProjectList: (projectList: ProjectDTO[]) => void;
-}
-
-// 주차 리스트 계산 함수 (금요일 ~ 다음 주 금요일 기준)
-const calculateWeeks = (start: Date, end: Date): Array<{ startDate: Date; endDate: Date }> => {
+ const calculateWeeks = (start: Date, end: Date): Array<{ startDate: Date; endDate: Date }> => {
   const weeks = [];
   const currentStart = new Date(start);
 
@@ -40,17 +27,4 @@ const calculateWeeks = (start: Date, end: Date): Array<{ startDate: Date; endDat
 
   return weeks;
 };
-
-const useProjectStore = create<ProjectState>((set) => ({
-  projectList: [],
-  setProjectList: (projectList) => {
-    const projectListWithWeeks = projectList.map((project) => ({
-      ...project,
-      weeks: calculateWeeks(new Date(project.startDate as Date), new Date(project.endDate as Date)),
-    }));
-    set({ projectList: projectListWithWeeks });
-    console.log(projectListWithWeeks)
-  },
-}));
-
-export default useProjectStore;
+export default calculateWeeks

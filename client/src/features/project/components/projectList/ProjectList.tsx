@@ -54,7 +54,7 @@ const ProjectList: React.FC = () => {
       <div className={styles.header}>
         <h1 className={styles.projectTitle}>프로젝트 목록</h1>
         <div>
-          {projectListData?.length > 0 && (
+          {projectListData&&projectListData?.length > 0 && (
             <Button children={'프로젝트 생성'} size="small" colorType="blue" onClick={handleCreateClick} />
           )}
         </div>
