@@ -10,5 +10,5 @@ import lombok.Setter;
 public class JiraResponse {
 	private int maxResults;
 	private int total;
-	private List<JiraIssue> issues;
+	private List<JiraContent> issues;
 }

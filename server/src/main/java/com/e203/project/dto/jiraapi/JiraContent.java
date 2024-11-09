@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JiraIssue {
+public class JiraContent {
 	private String id;
 	private String self;
 	private String key;
