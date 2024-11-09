@@ -15,9 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import com.e203.project.dto.jiraepic.Epic;
+import com.e203.project.dto.jiraepic.EpicIssue;
 import com.e203.project.dto.request.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.jiraapi.JiraResponse;
+import com.e203.project.dto.response.ProjectJiraEpicDto;
 import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
@@ -53,12 +56,11 @@ public class JiraService {
 	@Transactional
 	public List<JiraIssueResponseDto> findAllJiraIssues(String startDate, String endDate, int projectId) {
 		JiraResponse jiraIssues = getJiraIssues(startDate, endDate, projectId);
-		if(jiraIssues ==null){
+		if (jiraIssues == null) {
 			return null;
 		}
-		return jiraIssues.getIssues() == null ? null : jiraIssues.getIssues().stream()
-			.map(JiraIssueResponseDto::transferDto)
-			.collect(Collectors.toList());
+		return jiraIssues.getIssues() == null ? null :
+			jiraIssues.getIssues().stream().map(JiraIssueResponseDto::transferDto).collect(Collectors.toList());
 	}
 
 	@Transactional
@@ -72,7 +74,9 @@ public class JiraService {
 		String jiraProjectId = leader.getProject().getJiraProjectId();
 		String userEmail = leader.getUser().getUserEmail();
 
-		String jql = "project=\"" + jiraProjectId + "\" + AND created >= \"" + startDate + "\" AND created <= \"" + endDate + "\"";
+		String jql =
+			"project=\"" + jiraProjectId + "\" + AND created >= \"" + startDate + "\" AND created <= \"" + endDate
+				+ "\"";
 		String fields = "summary,status,assignee,customfield_10014,customfield_10031";
 		String baseUrl = JIRA_URL + "?jql=" + jql + "&fields=" + fields;
 
@@ -89,12 +93,7 @@ public class JiraService {
 			String url = baseUrl + "&startAt=" + startAt + "&maxResults=" + maxResults;
 
 			try {
-				String responseBody = restClient.get()
-					.uri(url)
-					.header("Authorization", "Basic " + encodedCredentials)
-					.header("Content-Type", "application/json")
-					.retrieve()
-					.body(String.class);
+				String responseBody = getRequestString(url, encodedCredentials);
 
 				JiraResponse response = objectMapper.readValue(responseBody, JiraResponse.class);
 				allIssues.getIssues().addAll(response.getIssues()); // 가져온 이슈를 모두 추가
@@ -103,20 +102,86 @@ public class JiraService {
 				hasMore = startAt < response.getTotal(); // 총 이슈 수와 비교하여 더 가져올 것이 있는지 판단
 			} catch (RestClientException e) {
 				handleException("Error occurred while calling Jira API", e);
-				break; // 예외 발생 시 루프 종료
+				break;
 			} catch (JsonProcessingException e) {
 				handleException("Error processing JSON response", e);
-				break; // 예외 발생 시 루프 종료
+				break;
 			} catch (IllegalArgumentException e) {
 				handleException("Invalid argument", e);
-				break; // 예외 발생 시 루프 종료
+				break;
 			} catch (Exception e) {
 				handleException("An unexpected error occurred", e);
-				break; // 예외 발생 시 루프 종료
+				break;
 			}
 		}
 
 		return allIssues; // 모든 이슈를 포함한 JiraResponse 반환
+	}
+
+
+	public List<ProjectJiraEpicDto> getEpics(int projectId) {
+		ProjectMember leader = getProjectLeader(projectId);
+		if (leader == null) {
+			return null;
+		}
+		String jiraApi = leader.getProject().getJiraApi();
+		String jiraProjectId = leader.getProject().getJiraProjectId();
+		String userEmail = leader.getUser().getUserEmail();
+
+		String jql = "project=\"" + jiraProjectId + "\""
+			+" AND issuetype=Epic"
+			+"&fields=key,summary";
+		String baseUrl = JIRA_URL + "?jql=" + jql;
+		String encodedCredentials = Base64.getEncoder().encodeToString((userEmail + ":" + jiraApi).getBytes());
+
+		int startAt = 0;
+		int maxResults = 100; // 한 번에 가져올 최대 이슈 수
+		boolean hasMore = true;
+		List<ProjectJiraEpicDto> epicList = new ArrayList<>();
+
+		while (hasMore) {
+			String url = baseUrl + "&startAt=" + startAt + "&maxResults=" + maxResults;
+			try {
+				String responseBody = getRequestString(url, encodedCredentials);
+				Epic epic = objectMapper.readValue(responseBody, Epic.class);
+
+				for(EpicIssue issue : epic.getIssues()) {
+					if(issue.getEpicFields()==null) {
+						continue;
+					}
+					ProjectJiraEpicDto dto = ProjectJiraEpicDto.builder()
+						.key(issue.getKey())
+						.summary(issue.getEpicFields().getSummary())
+						.build();
+					epicList.add(dto);
+				}
+				startAt += epic.getIssues().size();
+				hasMore = startAt < epic.getTotal(); // 총 이슈 수와 비교하여 더 가져올 것이 있는지 판단
+			} catch (RestClientException e) {
+				handleException("Error occurred while calling Jira API", e);
+				break;
+			} catch (JsonProcessingException e) {
+				handleException("Error processing JSON response", e);
+				break;
+			} catch (IllegalArgumentException e) {
+				handleException("Invalid argument", e);
+				break;
+			} catch (Exception e) {
+				handleException("An unexpected error occurred", e);
+				break;
+			}
+		}
+		return epicList;
+	}
+
+	private String getRequestString(String url, String encodedCredentials) {
+		String responseBody = restClient.get()
+			.uri(url)
+			.header("Authorization", "Basic " + encodedCredentials)
+			.header("Content-Type", "application/json")
+			.retrieve()
+			.body(String.class);
+		return responseBody;
 	}
 
 	private ProjectMember getProjectLeader(int projectId) {
@@ -128,6 +193,6 @@ public class JiraService {
 	}
 
 	private void handleException(String message, Exception e) {
-		log.error(message,e);
+		log.error(message, e);
 	}
 }
