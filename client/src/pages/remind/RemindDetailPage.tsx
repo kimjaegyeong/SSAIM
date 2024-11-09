@@ -1,18 +1,25 @@
-// RemindDetailPage.tsx
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import HTMLFlipBook from 'react-pageflip';
 import styles from './RemindDetailPage.module.css';
 import remindBG from '../../assets/remind/remindBG.png';
+import { DevelopStoryDTO } from '@features/remind/types/DevelopStoryDTO';
+
+interface CoverProps {
+  project: DevelopStoryDTO;
+}
 
 // 표지 컴포넌트
-const Cover = React.forwardRef<HTMLDivElement>((_, ref) => (
-  <div className={styles.cover} ref={ref}>
-    <div className={styles.coverContent}>
-      <h1 className={styles.h1}>레전드 프로젝트 1주차</h1>
-      <p className={styles.p}>2024-10-14 ~ 2024-10-18</p>
+const Cover = React.forwardRef<HTMLDivElement, CoverProps>(
+  ({ project }, ref) => (
+    <div className={styles.cover} ref={ref}>
+      <div className={styles.coverContent}>
+        <h1 className={styles.projectName}>{project.projectName}</h1>
+        <p className={styles.projectDate}>{project.projectStartDate} ~ {project.projectEndDate}</p>
+      </div>
     </div>
-  </div>
-));
+  )
+);
 
 // 이미지 페이지 props 타입 정의
 interface ImagePageProps {
@@ -46,17 +53,18 @@ const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
   )
 );
 
+// 긴 내용을 페이지별로 분할하는 함수
+const splitContentToPages = (content: string, maxLength: number) => {
+  const pages: string[] = [];
+  for (let i = 0; i < content.length; i += maxLength) {
+    pages.push(content.slice(i, i + maxLength));
+  }
+  return pages;
+};
+
 const RemindDetailPage: React.FC = () => {
-  const weeklyData = [
-    {
-      image: "/path-to-image-1.jpg",
-      report: "수업의 프로젝트 일기\n정보를 주고받는 것에서 시작한 것이 지금은 서로 문제를 다시 실험하는 곳으로 사례되다. 이 모든 문제의 답은..."
-    },
-    {
-      image: "/path-to-image-2.jpg",
-      report: "두 번째 주간 회고 내용..."
-    }
-  ];
+  const location = useLocation();
+  const project = location.state as DevelopStoryDTO;
 
   return (
     <div className={styles.mainContainer}>
@@ -88,11 +96,14 @@ const RemindDetailPage: React.FC = () => {
           showPageCorners={true}
           disableFlipByClick={false}
         >
-          <Cover />
-          {weeklyData.flatMap((data, index) => [
-            <ImagePage key={`image-${index}`} image={data.image} />,
-            <ReportPage key={`report-${index}`} report={data.report} />
-          ])}
+          <Cover project={project}/>
+          {project.weeklyRemind.flatMap((data, index) => {
+            const imagePage = <ImagePage key={`image-${index}`} image={''} />;
+            const reportPages = splitContentToPages(data.content, 700).map((pageContent, pageIndex) => (
+              <ReportPage key={`report-${index}-${pageIndex}`} report={pageContent} />
+            ));
+            return [imagePage, ...reportPages];
+          })}
         </HTMLFlipBook>
       </div>
     </div>
