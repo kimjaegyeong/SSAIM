@@ -10,39 +10,29 @@ import calculateWeeks from '../../utils/calculateWeeks';
 import { dateToString } from '@/utils/dateToString';
 
 const WeeklyProgress = () => {
-  //데이터 로드
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
-  // 프로젝트 주차 리스트
   const projectWeekList = calculateWeeks(
     new Date(projectInfo.startDate as Date),
     new Date(projectInfo.endDate as Date)
   );
-  // 프로젝트 멤버 리스트
   const projectMembers = projectInfo?.projectMemberFindResponseDtoList;
-  // console.log(projectMembers)
-  // 현재 주차 설정
   const [currentWeek, setCurrentWeek] = useState(0);
-  // 프로젝트의 가장 최신 주차로 설정(이거 나중에 바꿔야됨 오늘 날짜기준 이번주로)
+  const [selectedMember, setSelectedMember] = useState<string | null>(null); // 선택된 멤버 상태 추가
+
   useMemo(() => {
     setCurrentWeek(projectWeekList.length - 1);
   }, [projectWeekList.length]);
-  // 해당 주차의 이슈 조회
+
   const { data: sprintIssues } = useSprintIssueQuery(
     Number(projectId),
     dateToString(projectWeekList[currentWeek - 1]?.startDate, '-'),
     dateToString(projectWeekList[currentWeek - 1]?.endDate, '-')
   );
 
-  // 스프린트 생성 모달 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleModalOpen = () => {
-    setIsModalOpen(true);
-  };
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
+  const handleModalOpen = () => setIsModalOpen(true);
+  const handleModalClose = () => setIsModalOpen(false);
 
   const handleIncreaseWeek = () => {
     if (currentWeek < projectWeekList.length - 1) {
@@ -54,15 +44,7 @@ const WeeklyProgress = () => {
     if (currentWeek > 0) {
       setCurrentWeek(currentWeek - 1);
     }
-
-    console.log(projectWeekList);
-    console.log(
-      dateToString(projectWeekList[currentWeek - 1]?.startDate, '-'),
-      dateToString(projectWeekList[currentWeek - 1]?.endDate, '-')
-    );
   };
-
-  // 요일 매핑 테이블 생성 (예: Mon, Tue, Wed, Thu, Fri)
 
   const dayMap: Array<'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | '날짜미지정'> = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', '날짜미지정'];
   const dateMap: Record<'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | '날짜미지정', number | undefined> = useMemo(() => {
@@ -75,10 +57,9 @@ const WeeklyProgress = () => {
         Fri: undefined,
         날짜미지정: undefined,
       };
-  
+
     const endDate = new Date(projectWeekList[currentWeek - 1].endDate);
-  
-    const Thu = new Date(endDate); // Thu요일 날짜
+    const Thu = new Date(endDate);
     const Wed = new Date(Thu);
     Wed.setDate(Wed.getDate() - 1);
     const Tue = new Date(Wed);
@@ -87,7 +68,7 @@ const WeeklyProgress = () => {
     Mon.setDate(Mon.getDate() - 1);
     const Fri = new Date(Thu);
     Fri.setDate(Fri.getDate() + 1);
-  
+
     return {
       Mon: Mon.getDate(),
       Tue: Tue.getDate(),
@@ -97,8 +78,8 @@ const WeeklyProgress = () => {
       날짜미지정: undefined,
     };
   }, [projectWeekList, currentWeek]);
-    // console.log(dateMap);
-  // 요일별로 sprintIssues를 분류
+
+  // 요일별로 이슈를 필터링하며, 선택된 멤버의 이슈만 포함
   const issuesByDay = useMemo(() => {
     const dayIssueMap: Record<string, any[]> = {
       Mon: [],
@@ -110,6 +91,8 @@ const WeeklyProgress = () => {
     };
 
     sprintIssues?.forEach((issue: any) => {
+      if (selectedMember && issue.allocater !== selectedMember) return; // 선택된 멤버가 아니면 필터링
+
       const match = issue.title.match(/(\d{6})/);
       let day = '날짜 미지정';
 
@@ -118,38 +101,36 @@ const WeeklyProgress = () => {
         const year = 2000 + parseInt(dateStr.slice(0, 2), 10);
         const month = parseInt(dateStr.slice(2, 4), 10) - 1;
         const date = parseInt(dateStr.slice(4, 6), 10);
-
         const dateObj = new Date(year, month, date);
         const daysOfWeek = ['일요일', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', '토'];
-        // console.log(issue.title, dateObj.getDay());
         const weekday = daysOfWeek[dateObj.getDay()];
-
-        // 요일이 Mon~Fri에 해당하는 경우에만 요일 지정, 아니면 날짜 미지정에 추가
-        day =
-          weekday === 'Mon' || weekday === 'Tue' || weekday === 'Wed' || weekday === 'Thu' || weekday === 'Fri'
-            ? weekday
-            : '날짜미지정';
+        day = weekday === 'Mon' || weekday === 'Tue' || weekday === 'Wed' || weekday === 'Thu' || weekday === 'Fri' ? weekday : '날짜미지정';
       }
 
       dayIssueMap[day]?.push(issue);
     });
 
     return dayIssueMap;
-  }, [sprintIssues]);
+  }, [sprintIssues, selectedMember]);
+
+  const handleFilterMember = (memberName: string) => {
+    setSelectedMember(selectedMember === memberName ? null : memberName); // 클릭된 멤버 필터링 상태 전환
+  };
 
   return (
     <>
       <div className={styles.header}>
-        <div className={styles.teamProfiles}>
-          {projectMembers.map((member) => {
-            return;
-            <div className={styles.profilePicture}>
-              <img src={member.profilePicture} alt="" />
-            </div>;
-          })}
-          <div className={styles.profilePicture}></div>
-          <div className={styles.profilePicture}></div>
-        </div>
+      <div className={styles.teamProfiles}>
+  {projectMembers.map((member) => (
+    <div
+      key={member.name}
+      className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
+      onClick={() => handleFilterMember(member.name)}
+    >
+      <img src={member.profilePicture} alt={member.name} />
+    </div>
+  ))}
+</div>
         <button className={styles.arrowButton} onClick={handleDecreaseWeek}>
           &lt;
         </button>
@@ -167,7 +148,6 @@ const WeeklyProgress = () => {
         </div>
       </div>
       <div className={styles.weeklyProgressContainer}>
-        {/* 요일 헤더 */}
         <div className={styles.contentheader}>
           {dayMap.map((day) => (
             <div key={day} className={styles.dayHeader}>
@@ -177,7 +157,6 @@ const WeeklyProgress = () => {
           ))}
         </div>
 
-        {/* 요일별 이슈 */}
         <div className={styles.issueGrid}>
           {dayMap.map((day) => (
             <div key={day} className={styles.dayColumn}>

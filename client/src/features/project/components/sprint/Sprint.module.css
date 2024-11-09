@@ -69,3 +69,15 @@
   cursor: pointer;
   padding: 0 10px;
 }
+.profilePicture {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.activeProfile {
+  border: 2px solid #4A90E2; /* 활성화된 상태의 테두리 색상 */
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* 활성화된 상태의 그림자 효과 */
+}
