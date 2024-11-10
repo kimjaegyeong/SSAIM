@@ -136,7 +136,7 @@ public class RecruitingController {
         };
     }
 
-    @GetMapping("/api/v1/user/{userId}/applications")
+    @GetMapping("/api/v1/users/{userId}/applications")
     public ResponseEntity<List<RecruitingApplyResponseDto>> getApplications(@PathVariable(name = "userId") int userId,
                                                                             @RequestHeader("Authorization") String auth) {
         if (!jwtUtil.isPermitted(userId, auth)) {
