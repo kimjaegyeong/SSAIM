@@ -57,7 +57,7 @@ public class MeetingService {
                     .meetingTitle(meeting.getMeetingTitle())
                     .meetingVoiceScript(sttResponseDto)
                     .meetingVoiceUrl(meeting.getMeetingVoiceUrl())
-                    .projectId(meeting.getProjectId().getId())
+                    .projectId(meeting.getProject().getId())
                     .meetingCreateTime(meeting.getCreatedAt())
                     .meetingVoiceTime(meeting.getMeetingVoiceTime()).build());
         }
@@ -76,7 +76,7 @@ public class MeetingService {
 
         return MeetingResponseDto.builder()
                 .meetingCreateTime(meeting.getCreatedAt())
-                .projectId(meeting.getProjectId().getId())
+                .projectId(meeting.getProject().getId())
                 .meetingId(meeting.getMeetingId())
                 .meetingTitle(meeting.getMeetingTitle())
                 .meetingVoiceUrl(meeting.getMeetingVoiceUrl())
@@ -99,7 +99,7 @@ public class MeetingService {
                 .meetingTitle(meetingRequestDto.getMeetingTitle())
                 .meetingVoiceScript(upload)
                 .meetingVoiceUrl("")
-                .projectId(project)
+                .project(project)
                 .meetingVoiceTime(getLastEndValue(upload)).build();
 
         meetingRepository.save(meeting);
