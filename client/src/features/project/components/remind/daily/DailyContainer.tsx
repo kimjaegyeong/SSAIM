@@ -12,7 +12,7 @@ import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import useUserStore from '@/stores/useUserStore';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { useDailyRemind } from '@/features/project/hooks/remind/useDailyRemind'; // useDailyRemind 훅을 임포트
-import { startOfMonth, differenceInWeeks, format } from 'date-fns';
+import { format } from 'date-fns';
 import { dateToWeek } from '@/utils/dateToWeek';
 
 

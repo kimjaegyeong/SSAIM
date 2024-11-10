@@ -7,6 +7,7 @@ import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { createSprintRemind } from '@features/project/apis/remind/createSprintRemind';
 import Loading from '@/components/loading/Loading';
 import { useSprintRemind } from '@/features/project/hooks/remind/useSprintRemind';
+import { dateToWeek } from '@/utils/dateToWeek';
 
 interface SprintModalProps {
   isOpen: boolean;
@@ -21,6 +22,21 @@ interface SprintOption {
   startDate: string;
   endDate: string;
 }
+
+const getMonday = (date: Date): Date => {
+  const day = date.getDay();
+  const difference = (day === 0 ? -6 : 1) - day; // 일요일(0)을 기준으로 월요일을 계산
+  const monday = new Date(date);
+  monday.setDate(date.getDate() + difference);
+  return monday;
+};
+
+const getFriday = (date: Date): Date => {
+  const monday = getMonday(date); // 월요일을 기준으로 금요일 계산
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4); // 월요일에서 4일 후가 금요일
+  return friday;
+};
 
 const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId }) => {
   const { pmId } = usePmIdStore();
@@ -43,29 +59,24 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
   
         reminds.forEach((remind) => {
           const date = new Date(remind.dailyRemindDate);
-          const month = date.getMonth() + 1;
-          const week = Math.ceil(date.getDate() / 7);
-          const weekKey = `${date.getFullYear()}-${month}-${week}`;
+          const monday = getMonday(date); // 월요일을 기준으로 주 구하기
+          const friday = getFriday(date); // 금요일을 기준으로 주 구하기
+          const weekKey = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}_${friday.getDate()}`;
           
           if (!weeks[weekKey]) weeks[weekKey] = [];
           weeks[weekKey].push(remind);
         });
   
         return Object.keys(weeks).map((weekKey, index) => {
-          const [year, month, week] = weekKey.split('-');
           const weekData = weeks[weekKey];
   
-          // 주의 첫 번째 날을 기준으로 주의 월요일과 금요일 계산
           const firstDate = new Date(weekData[0].dailyRemindDate);
-          const monday = new Date(firstDate);
-          const friday = new Date(firstDate);
-  
-          monday.setDate(firstDate.getDate() - firstDate.getDay() + 1); // 월요일 (일요일이 0이므로 +1)
-          friday.setDate(monday.getDate() + 4); // 금요일 (월요일 + 4일)
-  
+          const monday = getMonday(firstDate);
+          const friday = getFriday(firstDate);
+
           return {
             id: `sprint${index + 1}`,
-            label: `${year}년 ${month}월 ${week}주차`,
+            label: dateToWeek(friday), // 금요일을 기준으로 주의 라벨 설정
             period: `${monday.toISOString().split('T')[0]} ~ ${friday.toISOString().split('T')[0]}`,
             startDate: monday.toISOString().split('T')[0],
             endDate: friday.toISOString().split('T')[0]
@@ -76,7 +87,6 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
       setSprintOptions(groupByWeek(dailyReminds));
     }
   }, [dailyReminds]);
-  
 
   const handleSprintSelect = (sprintId: string) => {
     setSelectedSprint(sprintId);
@@ -138,7 +148,7 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
             ))}
           </div>
         </div>
-        {isLoading ? ( // 로딩 중일 때
+        {isLoading ? (
           <Loading />
         ) : (
           <Button size="medium" colorType="purple" onClick={handleCreateSprintRemind}>
