@@ -3,15 +3,18 @@ package com.e203.project.controller;
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.e203.project.dto.request.JiraIssueCreateRequestDto;
 import com.e203.project.dto.request.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
@@ -27,7 +30,7 @@ public class JiraController {
 
 	@PatchMapping("/api/v1/projects/{projectId}/jira-api")
 	public ResponseEntity<String> connectJiraApi(@PathVariable("projectId") int projectId,
-		 @RequestBody ProjectJiraConnectDto projectJiraConnectDto) {
+		@RequestBody ProjectJiraConnectDto projectJiraConnectDto) {
 
 		boolean result = jiraService.setJiraApi(projectJiraConnectDto, projectId);
 
@@ -41,22 +44,32 @@ public class JiraController {
 	public ResponseEntity<List<JiraIssueResponseDto>> findAllJiraIssue(@PathVariable("projectId") int projectId,
 		@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
 		List<JiraIssueResponseDto> allJiraIssues = jiraService.findAllJiraIssues(startDate, endDate, projectId);
-		if(allJiraIssues==null){
+		if (allJiraIssues == null) {
 			return ResponseEntity.status(NOT_FOUND).body(null);
 		}
-		if(allJiraIssues.isEmpty()){
+		if (allJiraIssues.isEmpty()) {
 			return ResponseEntity.status(OK).body(allJiraIssues);
 		}
 		return ResponseEntity.status(OK).body(allJiraIssues);
 	}
 
 	@GetMapping("/api/v1/projects/{projectId}/epics")
-	public ResponseEntity<List<ProjectJiraEpicResponseDto>> findAllEpic(@PathVariable("projectId") int projectId){
+	public ResponseEntity<List<ProjectJiraEpicResponseDto>> findAllEpic(@PathVariable("projectId") int projectId) {
 		List<ProjectJiraEpicResponseDto> epics = jiraService.findAllEpics(projectId);
-		if(epics==null){
+		if (epics == null) {
 			return ResponseEntity.status(NOT_FOUND).body(null);
 		}
 		return ResponseEntity.status(OK).body(epics);
 	}
 
+	@PostMapping("/api/v1/projects/{projectId}/issue")
+	public ResponseEntity<String> createIssue(@PathVariable("projectId") int projectId,
+		@RequestBody JiraIssueCreateRequestDto dto) {
+		ResponseEntity<Map> issue = jiraService.createIssue(projectId, dto);
+		System.out.println(issue.getStatusCode());
+		if (issue.getStatusCode() == CREATED) {
+			return ResponseEntity.status(OK).body("이슈 생성에 성공했습니다.");
+		}
+		return ResponseEntity.status(NOT_FOUND).body("이슈 생성에 실패했습니다.");
+	}
 }
