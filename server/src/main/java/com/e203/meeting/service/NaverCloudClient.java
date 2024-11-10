@@ -49,6 +49,7 @@ public class NaverCloudClient {
         };
     }
 
+    @Getter
     public static class Boosting {
         private String words;
 
@@ -61,6 +62,7 @@ public class NaverCloudClient {
         }
     }
 
+    @Getter
     public static class Diarization {
         private Boolean enable = Boolean.FALSE;
         private Integer speakerCountMin;
@@ -91,6 +93,7 @@ public class NaverCloudClient {
         }
     }
 
+    @Getter
     public static class Sed {
         private Boolean enable = Boolean.FALSE;
 
