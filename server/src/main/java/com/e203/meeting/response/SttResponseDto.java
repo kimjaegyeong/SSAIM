@@ -29,7 +29,7 @@ public class SttResponseDto {
 
     // @JsonCreator를 사용한 생성자 Jackson 라이브러리에서 JSON을 Java 객체로 역직렬화할 때 사용할 생성자를 지정하는 역할을 합니다.
     @JsonCreator
-    public SttResponseDto(
+    protected SttResponseDto(
             @JsonProperty("result") String result,
             @JsonProperty("message") String message,
             @JsonProperty("token") String token,

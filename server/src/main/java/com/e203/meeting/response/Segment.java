@@ -22,7 +22,7 @@ public class Segment {
 
     // @JsonCreator를 사용한 생성자 Jackson 라이브러리에서 JSON을 Java 객체로 역직렬화할 때 사용할 생성자를 지정하는 역할을 합니다.
     @JsonCreator
-    public Segment(
+    protected Segment(
             @JsonProperty("start") int start,
             @JsonProperty("end") int end,
             @JsonProperty("text") String text,
