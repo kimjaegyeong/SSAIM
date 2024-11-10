@@ -19,6 +19,7 @@ import com.e203.project.dto.request.JiraIssueRequestDto;
 import com.e203.project.dto.response.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
+import com.e203.project.dto.response.SprintResponseDto;
 import com.e203.project.service.JiraService;
 
 import lombok.RequiredArgsConstructor;
@@ -82,5 +83,14 @@ public class JiraController {
 			return ResponseEntity.status(OK).body("이슈 수정에 성공했습니다.");
 		}
 		return ResponseEntity.status(NOT_FOUND).body("이슈 수정에 실패했습니다.");
+	}
+
+	@GetMapping("/api/v1/project/{projectId}/sprint")
+	public ResponseEntity<List<SprintResponseDto>> findAllSprints(@PathVariable("projectId") int projectId) {
+		List<SprintResponseDto> sprints = jiraService.findAllSprints(projectId);
+		if(sprints==null){
+			ResponseEntity.status(NOT_FOUND).body(null);
+		}
+		return ResponseEntity.status(OK).body(sprints);
 	}
 }

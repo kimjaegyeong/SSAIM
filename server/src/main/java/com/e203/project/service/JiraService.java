@@ -17,11 +17,14 @@ import org.springframework.web.client.RestClient;
 
 import com.e203.project.dto.jiraapi.JiraContent;
 import com.e203.project.dto.jiraapi.JiraIssueFields;
+import com.e203.project.dto.jiraapi.Sprint;
+import com.e203.project.dto.jiraapi.SprintResponse;
 import com.e203.project.dto.request.JiraIssueRequestDto;
 import com.e203.project.dto.response.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.jiraapi.JiraResponse;
 import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
+import com.e203.project.dto.response.SprintResponseDto;
 import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
@@ -39,7 +42,7 @@ public class JiraService {
 	private final ProjectMemberRepository projectMemberRepository;
 	private final RestClient restClient;
 	private final ObjectMapper objectMapper;
-	private final String JIRA_URL = "https://ssafy.atlassian.net/rest/api/3/search";
+	private final String JIRA_URL = "https://ssafy.atlassian.net/rest";
 
 	@Transactional
 	public Boolean setJiraApi(ProjectJiraConnectDto jiraConnectDto, int projectId) {
@@ -49,7 +52,7 @@ public class JiraService {
 		}
 		project.setJiraApi(jiraConnectDto.getJiraApi());
 		project.setJiraProjectId(jiraConnectDto.getJiraProjectId());
-
+		project.setJiraBoardId(jiraConnectDto.getJiraBoardId());
 		return true;
 	}
 
@@ -92,7 +95,7 @@ public class JiraService {
 		if (leader == null) {
 			return null;
 		}
-		String jiraUrl = "https://ssafy.atlassian.net/rest/api/3/issue";
+		String jiraUri = JIRA_URL+"/api/3/issue";
 		String jiraApi = leader.getProject().getJiraApi();
 		String jiraProjectId = leader.getProject().getJiraProjectId();
 		String userEmail = leader.getUser().getUserEmail();
@@ -101,7 +104,7 @@ public class JiraService {
 		JiraIssueFields jiraIssueFields = JiraIssueFields.transferJsonObject(dto, jiraProjectId);
 
 		ResponseEntity<Map> response = restClient.post()
-			.uri(jiraUrl)
+			.uri(jiraUri)
 			.contentType(MediaType.APPLICATION_JSON)
 			.header("Authorization", "Basic " + encodedCredentials)
 			.body(jiraIssueFields)
@@ -116,7 +119,7 @@ public class JiraService {
 		if (leader == null) {
 			return null;
 		}
-		String jiraUrl = "https://ssafy.atlassian.net/rest/api/3/issue/"+dto.getIssueKey();
+		String jiraUri = JIRA_URL+"/api/3/issue/"+dto.getIssueKey();
 		String jiraApi = leader.getProject().getJiraApi();
 		String jiraProjectId = leader.getProject().getJiraProjectId();
 		String userEmail = leader.getUser().getUserEmail();
@@ -125,7 +128,7 @@ public class JiraService {
 		JiraIssueFields jiraIssueFields = JiraIssueFields.transferJsonObject(dto, jiraProjectId);
 
 		ResponseEntity<Map> response = restClient.put()
-			.uri(jiraUrl)
+			.uri(jiraUri)
 			.contentType(MediaType.APPLICATION_JSON)
 			.header("Authorization", "Basic " + encodedCredentials)
 			.body(jiraIssueFields)
@@ -133,7 +136,40 @@ public class JiraService {
 			.toEntity(Map.class);
 
 		return response;
+	}
 
+
+	public List<SprintResponseDto> findAllSprints(int projectId) {
+		ProjectMember leader = getProjectLeader(projectId);
+		if (leader == null) {
+			return null;
+		}
+
+		String jiraApi = leader.getProject().getJiraApi();
+		String userEmail = leader.getUser().getUserEmail();
+		String jiraProjectBoardId = leader.getProject().getJiraBoardId();
+		String jiraUri = JIRA_URL + "/agile/1.0/board/" + jiraProjectBoardId + "/sprint?jql=";
+		String encodedCredentials = Base64.getEncoder().encodeToString((userEmail + ":" + jiraApi).getBytes());
+
+		int startAt = 0;
+		int maxResults = 100;
+		boolean hasMore = true;
+		List<Sprint> sprints = new ArrayList<>();
+		while (hasMore) {
+			String uri = jiraUri + "startAt=" + startAt + "&maxResults=" + maxResults;
+			try {
+				String responseBody = getRequestString(jiraUri, encodedCredentials);
+				SprintResponse sprintResponse = objectMapper.readValue(responseBody, SprintResponse.class);
+
+				sprints.addAll(sprintResponse.getValues());
+				startAt += sprintResponse.getValues().size();
+				hasMore = startAt < sprintResponse.getTotal();
+			} catch (Exception e) {
+				handleException("Error occurred while calling Jira API", e);
+			}
+		}
+
+		return sprints.stream().map(SprintResponseDto::transferDto).collect(Collectors.toList());
 	}
 
 
@@ -144,9 +180,9 @@ public class JiraService {
 		boolean hasMore = true;
 
 		while (hasMore) {
-			String url = JIRA_URL + "?jql=" + jql + "&fields=" + fields + "&startAt=" + startAt + "&maxResults=" + maxResults;
+			String jiraUri = JIRA_URL + "/api/3/search?jql=" + jql + "&fields=" + fields + "&startAt=" + startAt + "&maxResults=" + maxResults;
 			try {
-				String responseBody = getRequestString(url, encodedCredentials);
+				String responseBody = getRequestString(jiraUri, encodedCredentials);
 				JiraResponse response = objectMapper.readValue(responseBody, JiraResponse.class);
 				issues.addAll(response.getIssues());
 				startAt += response.getIssues().size();
@@ -159,9 +195,9 @@ public class JiraService {
 		return issues;
 	}
 
-	private String getRequestString(String url, String encodedCredentials) {
+	private String getRequestString(String jiraUri, String encodedCredentials) {
 		return restClient.get()
-			.uri(url)
+			.uri(jiraUri)
 			.header("Authorization", "Basic " + encodedCredentials)
 			.header("Content-Type", "application/json")
 			.retrieve()
@@ -179,4 +215,5 @@ public class JiraService {
 	private void handleException(String message, Exception e) {
 		log.error(message, e);
 	}
+
 }
