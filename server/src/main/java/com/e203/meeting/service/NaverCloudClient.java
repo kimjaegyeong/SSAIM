@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,13 +21,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 
 @Service
 public class NaverCloudClient {
@@ -111,7 +109,7 @@ public class NaverCloudClient {
         private String completion = "sync";
         private String callback;
         private Map<String, Object> userdata;
-        private Boolean wordAlignment = Boolean.TRUE;
+        private Boolean wordAlignment = Boolean.FALSE;
         private Boolean fullText = Boolean.TRUE;
         private List<Boosting> boostings;
         private String forbiddens;

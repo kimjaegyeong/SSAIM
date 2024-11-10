@@ -4,6 +4,7 @@ import com.e203.global.entity.BaseEntity;
 import com.e203.project.entity.Project;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +29,19 @@ public class Meeting extends BaseEntity {
     @Column(columnDefinition = "TEXT", name = "meeting_voice_script")
     private String meetingVoiceScript;
 
+    @Column(name = "meeting_voice_time")
+    private Integer meetingVoiceTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project projectId;
+
+    @Builder
+    private Meeting(String meetingTitle, String meetingVoiceUrl, String meetingVoiceScript, Integer meetingVoiceTime, Project projectId) {
+        this.meetingTitle = meetingTitle;
+        this.meetingVoiceUrl = meetingVoiceUrl;
+        this.meetingVoiceScript = meetingVoiceScript;
+        this.meetingVoiceTime = meetingVoiceTime;
+        this.projectId = projectId;
+    }
 }
