@@ -1,5 +1,6 @@
 package com.e203.meeting.controller;
 
+import com.e203.meeting.request.FixSpeakerNameRequestDto;
 import com.e203.meeting.request.MeetingRequestDto;
 import com.e203.meeting.response.MeetingResponseDto;
 import com.e203.meeting.service.MeetingService;
@@ -52,6 +53,20 @@ public class MeetingController {
         }
         else {
             return ResponseEntity.status(OK).body("회의 스크립트가 생성되었습니다.");
+        }
+    }
+
+    @PutMapping("/api/v1/projects/{projectId}/meetings/{meetingId}")
+    public ResponseEntity<String> putMeeting(@RequestBody List<FixSpeakerNameRequestDto> fixSpeakerNameRequestDtos
+        , @PathVariable("meetingId") int meetingId) throws Exception {
+
+        boolean result = meetingService.editMeeting(fixSpeakerNameRequestDtos, meetingId);
+
+        if (!result) {
+            return ResponseEntity.status(NOT_FOUND).body("수정에 실패했습니다.");
+        }
+        else {
+            return ResponseEntity.status(OK).body("수정에 성공했습니다.");
         }
     }
 }
