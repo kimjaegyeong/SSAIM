@@ -44,4 +44,8 @@ public class Meeting extends BaseEntity {
         this.meetingVoiceTime = meetingVoiceTime;
         this.projectId = projectId;
     }
+
+    public void updateMeetingVoiceScript(String meetingScript) {
+        this.meetingVoiceScript = meetingScript;
+    }
 }
