@@ -1,14 +1,15 @@
 package com.e203.project.dto.request;
 
-import com.e203.project.dto.jiraapi.JiraIssueCreate;
-
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class JiraIssueCreateRequestDto {
+@NoArgsConstructor
+public class JiraIssueRequestDto {
+	private String issueKey;
 	private String summary;
 	private String description;
 	private String assignee;
@@ -17,8 +18,9 @@ public class JiraIssueCreateRequestDto {
 	private int storyPoint;
 
 	@Builder
-	private JiraIssueCreateRequestDto(String summary, String description, String assignee,
+	private JiraIssueRequestDto(String issueKey,String summary, String description, String assignee,
 		String epicType, String issueType, int storyPoint) {
+		this.issueKey = issueKey;
 		this.summary = summary;
 		this.description = description;
 		this.assignee = assignee;

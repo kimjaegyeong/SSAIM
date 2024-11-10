@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.e203.project.dto.request.JiraIssueCreateRequestDto;
+import com.e203.project.dto.request.JiraIssueRequestDto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -13,14 +13,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JiraIssueFields {
-	JiraIssueCreate fields;
+	JiraIssueRequest fields;
 
 	@Builder
-	private JiraIssueFields(JiraIssueCreate fields) {
+	private JiraIssueFields(JiraIssueRequest fields) {
 		this.fields= fields;
 	}
 
-	public static JiraIssueFields transferJsonObject(JiraIssueCreateRequestDto dto, String jiraProjectId) {
+	public static JiraIssueFields transferJsonObject(JiraIssueRequestDto dto, String jiraProjectId) {
 		Map<String, String> content = new HashMap<String, String>();
 		content.put("text", dto.getDescription());
 		content.put("type", "text");
@@ -32,23 +32,23 @@ public class JiraIssueFields {
 			.content(List.of(issueContent))
 			.build();
 
-		JiraIssueCreate jiraIssueCreate = new JiraIssueCreate();
-		jiraIssueCreate.setProject(new HashMap<>(){{
+		JiraIssueRequest jiraIssueRequest = new JiraIssueRequest();
+		jiraIssueRequest.setProject(new HashMap<>(){{
 			put("key", jiraProjectId);
 		}});
-		jiraIssueCreate.setSummary(dto.getSummary());
-		jiraIssueCreate.setEpicKey(dto.getEpicKey());
-		jiraIssueCreate.setStoryPoint(dto.getStoryPoint());
-		jiraIssueCreate.setDescription(issueDescription);
-		jiraIssueCreate.setIssueType(new HashMap<>() {{
+		jiraIssueRequest.setSummary(dto.getSummary());
+		jiraIssueRequest.setEpicKey(dto.getEpicKey());
+		jiraIssueRequest.setStoryPoint(dto.getStoryPoint());
+		jiraIssueRequest.setDescription(issueDescription);
+		jiraIssueRequest.setIssueType(new HashMap<>() {{
 			put("name", dto.getIssueType());
 		}});
-		jiraIssueCreate.setAssignee(new HashMap<>() {{
+		jiraIssueRequest.setAssignee(new HashMap<>() {{
 			put("name", dto.getAssignee());
 		}});
 
 		return JiraIssueFields.builder()
-			.fields(jiraIssueCreate)
+			.fields(jiraIssueRequest)
 			.build();
 	}
 
