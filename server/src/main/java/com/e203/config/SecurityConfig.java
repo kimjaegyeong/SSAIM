@@ -51,6 +51,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedOrigins(List.of(
+                                "http://localhost:3000",
                                 "http://localhost:5173",
                                 "https://localhost:5173",
                                 "https://k11e203.p.ssafy.io"));
@@ -69,7 +70,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/users", "api/v1/users/login").permitAll()
                         .requestMatchers("/health-check").permitAll()
-                        .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,13 +20,12 @@ public class DevelopmentStoryResponseDto {
     private String projectName;
     private LocalDate projectStartDate;
     private LocalDate projectEndDate;
-    private WeeklyRemindDto weeklyRemind;
+    private List<WeeklyRemindDto> weeklyRemind;  // List로 변경
 
     @Builder
-    private DevelopmentStoryResponseDto(Integer projectMemberId, Integer projectId, String username
-            , String userImage, Integer userId, WeeklyRemindDto weeklyRemind, String projectName
-            , LocalDate projectStartDate, LocalDate projectEndDate) {
-
+    public DevelopmentStoryResponseDto(Integer projectMemberId, Integer projectId, String username,
+                                       String userImage, Integer userId, List<WeeklyRemindDto> weeklyRemind,
+                                       String projectName, LocalDate projectStartDate, LocalDate projectEndDate) {
         this.projectMemberId = projectMemberId;
         this.projectId = projectId;
         this.username = username;

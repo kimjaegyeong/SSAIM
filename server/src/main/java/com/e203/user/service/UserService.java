@@ -98,6 +98,7 @@ public class UserService {
         updateField(dto.getUserNickname(), user::setUserNickname);
         updateField(dto.getUserPw(), pw -> user.setUserPw(hashPassword(pw)));
         updateField(dto.getUserGender(), user::setUserGender);
+        updateField(dto.getUserSkills(), user::setUserSkills);
         updateField(dto.getUserBirth(), user::setUserBirth);
         updateField(dto.getUserClass(), user::setUserClass);
         updateField(dto.getUserGeneration(), user::setUserGeneration);

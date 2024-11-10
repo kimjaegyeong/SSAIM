@@ -12,6 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 import com.e203.project.dto.request.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.jiraapi.JiraResponse;
+import com.e203.project.dto.response.ProjectJiraEpicDto;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
@@ -66,5 +67,13 @@ public class JiraServiceTest {
 	public void findJiraIssueDto(){
 		List<JiraIssueResponseDto> allJiraIssues = jiraService.findAllJiraIssues("2024-10-21", "2024-10-25", 1);
 		allJiraIssues.forEach(System.out::println);
+		System.out.println(allJiraIssues.size());
+	}
+
+	@Test
+	@DisplayName("Project Epic 조회")
+	public void findEpics(){
+		List<ProjectJiraEpicDto> list = jiraService.getEpics(1);
+		list.stream().forEach(System.out::println);
 	}
 }

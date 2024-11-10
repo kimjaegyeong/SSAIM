@@ -23,8 +23,8 @@ public class FunctionDescriptionWebSocketController {
 	// WebSocket 메시지 처리
 	@MessageMapping("/edit/api/v1/projects/{projectId}/function-description") // WebSocket 메시지 매핑
 	@SendTo("/topic/api/v1/projects/{projectId}/function-description") // 구독자에게 보낼 경로
-	public FunctionDescription editFuncDesc(@DestinationVariable String projectId
+	public String editFuncDesc(@DestinationVariable String projectId
 		, @Payload String newContent) {
-		return functionDescriptionService.updateFuncDescContent(projectId, newContent);
+		return functionDescriptionService.updateFuncDescContent(projectId, newContent).getContent();
 	}
 }

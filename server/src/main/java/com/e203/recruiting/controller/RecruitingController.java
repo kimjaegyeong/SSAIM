@@ -1,15 +1,16 @@
 package com.e203.recruiting.controller;
 
 import com.e203.jwt.JWTUtil;
+import com.e203.recruiting.request.RecruitingApplicantEditRequestDto;
 import com.e203.recruiting.request.RecruitingApplyRequestDto;
 import com.e203.recruiting.request.RecruitingEditRequestDto;
 import com.e203.recruiting.request.RecruitingWriteRequestDto;
+import com.e203.recruiting.response.RecruitingApplyResponseDto;
 import com.e203.recruiting.response.RecruitingPostDetailResponseDto;
 import com.e203.recruiting.response.RecruitingPostResponseDto;
 import com.e203.recruiting.service.RecruitingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -102,5 +103,45 @@ public class RecruitingController {
         } else {
             return ResponseEntity.status(200).body("신청이 완료되었습니다.");
         }
+    }
+
+    @PatchMapping("/api/v1/recruiting/posts/{postId}/applicants/{applicantId}")
+    public ResponseEntity<String> editApplicant(@PathVariable(name = "postId") int postId,
+                                                @PathVariable(name = "applicantId") int applicantId,
+                                                @RequestBody RecruitingApplicantEditRequestDto dto,
+                                                @RequestHeader("Authorization") String auth) {
+        int userId = jwtUtil.getUserId(auth.substring(7));
+        String result = recruitingService.updateApplicant(postId, applicantId, userId, dto);
+
+        return switch (result) {
+            case "Not found" -> ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+            case "Not authorized" -> ResponseEntity.status(403).body("권한이 없습니다.");
+            case "Does not match" -> ResponseEntity.status(403).body("잘못된 요청입니다.");
+            default -> ResponseEntity.status(200).body("수정이 완료되었습니다.");
+        };
+    }
+
+    @DeleteMapping("/api/v1/recruiting/posts/{postId}/applicants/{applicantId}")
+    public ResponseEntity<String> removeApplicant(@PathVariable(name = "postId") int postId,
+                                                  @PathVariable(name = "applicantId") int applicantId,
+                                                  @RequestHeader("Authorization") String auth) {
+        int userId = jwtUtil.getUserId(auth.substring(7));
+        String result = recruitingService.removeApplicant(postId, applicantId, userId);
+
+        return switch (result) {
+            case "Not found" -> ResponseEntity.status(404).body("게시글을 찾을 수 없습니다.");
+            case "Not authorized" -> ResponseEntity.status(403).body("권한이 없습니다.");
+            case "Does not match" -> ResponseEntity.status(403).body("잘못된 요청입니다.");
+            default -> ResponseEntity.status(200).body("삭제가 완료되었습니다.");
+        };
+    }
+
+    @GetMapping("/api/v1/users/{userId}/applications")
+    public ResponseEntity<List<RecruitingApplyResponseDto>> getApplications(@PathVariable(name = "userId") int userId,
+                                                                            @RequestHeader("Authorization") String auth) {
+        if (!jwtUtil.isPermitted(userId, auth)) {
+            return ResponseEntity.status(403).body(null);
+        }
+        return ResponseEntity.status(200).body(recruitingService.searchApplication(userId));
     }
 }
