@@ -25,7 +25,8 @@ public class UserController {
     private final JWTUtil jwtUtil;
 
     @PostMapping("/api/v1/users")
-    public ResponseEntity<String> signUp(@RequestBody UserSignUpRequestDto userSignUpRequestDto, @RequestParam(value = "userProfileImage", required = false) MultipartFile profileImage) {
+    public ResponseEntity<String> signUp(@RequestPart("userInfo") UserSignUpRequestDto userSignUpRequestDto,
+                                         @RequestPart(value = "userProfileImage", required = false) MultipartFile profileImage) {
         boolean isSucceed = userService.createUser(userSignUpRequestDto, profileImage);
         if (isSucceed) {
             return ResponseEntity.status(200).body("회원가입이 완료되었습니다.");
@@ -35,8 +36,8 @@ public class UserController {
     }
 
     @PatchMapping("/api/v1/users/{userId}")
-    public ResponseEntity<String> editInfo(@PathVariable int userId, @RequestBody UserEditInfoDto dto,
-                                           @RequestParam(value = "userProfileImage", required = false) MultipartFile profileImage,
+    public ResponseEntity<String> editInfo(@PathVariable int userId, @RequestPart("userInfo") UserEditInfoDto dto,
+                                           @RequestPart(value = "userProfileImage", required = false) MultipartFile profileImage,
                                            @RequestHeader("Authorization") String authToken) {
         if (!jwtUtil.isPermitted(userId, authToken)) {
             return ResponseEntity.status(403).body("권한이 없습니다.");
