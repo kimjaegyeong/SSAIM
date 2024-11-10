@@ -3,16 +3,21 @@ package com.e203.project.service;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 import com.e203.project.dto.jiraapi.JiraContent;
+import com.e203.project.dto.jiraapi.JiraIssueFields;
+import com.e203.project.dto.request.JiraIssueCreateRequestDto;
 import com.e203.project.dto.request.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.jiraapi.JiraResponse;
@@ -81,6 +86,31 @@ public class JiraService {
 		List<JiraContent> epics = retrieve(jql, fields, encodedCredentials);
 		return epics.stream().map(ProjectJiraEpicResponseDto::transferDto).collect(Collectors.toList());
 	}
+
+	public ResponseEntity<Map> createIssue(int projectId, JiraIssueCreateRequestDto dto) {
+		ProjectMember leader = getProjectLeader(projectId);
+		if (leader == null) {
+			return null;
+		}
+		String jiraUrl = "https://ssafy.atlassian.net/rest/api/3/issue";
+		String jiraApi = leader.getProject().getJiraApi();
+		String jiraProjectId = leader.getProject().getJiraProjectId();
+		String userEmail = leader.getUser().getUserEmail();
+		String encodedCredentials = Base64.getEncoder().encodeToString((userEmail + ":" + jiraApi).getBytes());
+
+		JiraIssueFields jiraIssueFields = JiraIssueFields.transferJsonObject(dto, jiraProjectId);
+
+		ResponseEntity<Map> response = restClient.post()
+			.uri(jiraUrl)
+			.contentType(MediaType.APPLICATION_JSON)
+			.header("Authorization", "Basic " + encodedCredentials)
+			.body(jiraIssueFields)
+			.retrieve()
+			.toEntity(Map.class);
+
+		return response;
+	}
+
 
 	private List<JiraContent> retrieve(String jql, String fields, String encodedCredentials) {
 		List<JiraContent> issues = new ArrayList<>();
