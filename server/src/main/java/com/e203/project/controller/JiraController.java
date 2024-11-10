@@ -77,7 +77,7 @@ public class JiraController {
 	public ResponseEntity<String> modifyIssue(@PathVariable("projectId") int projectId,
 		@RequestBody JiraIssueRequestDto dto){
 		ResponseEntity<Map> result = jiraService.modifyIssue(projectId, dto);
-		System.out.println(result);
+
 		if(result.getStatusCode()==NO_CONTENT){
 			return ResponseEntity.status(OK).body("이슈 수정에 성공했습니다.");
 		}
