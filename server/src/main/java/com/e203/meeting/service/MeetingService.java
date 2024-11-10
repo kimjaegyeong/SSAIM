@@ -5,14 +5,17 @@ import com.e203.meeting.repository.MeetingRepository;
 import com.e203.meeting.request.FixSpeakerNameRequestDto;
 import com.e203.meeting.request.MeetingRequestDto;
 import com.e203.meeting.response.MeetingResponseDto;
+import com.e203.meeting.response.MeetingSummaryResponseDto;
 import com.e203.meeting.response.SttResponseDto;
 import com.e203.project.entity.Project;
 import com.e203.project.repository.ProjectRepository;
 
+import com.e203.weeklyremind.service.ChatAiService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,8 @@ public class MeetingService {
     private final NaverCloudClient naverCloudClient;
     private final MeetingRepository meetingRepository;
     private final ProjectRepository projectRepository;
+    private final ChatAiService chatAiService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public List<MeetingResponseDto> getMeetings(int projectId) throws Exception {
@@ -121,6 +126,24 @@ public class MeetingService {
         }
         meeting.updateMeetingVoiceScript(meetingScript);
         return true;
+    }
+
+    public MeetingSummaryResponseDto createMeetingSummary(int meetingId) throws Exception {
+        Meeting meeting = meetingRepository.findById(meetingId).orElse(null);
+        if (meeting == null) {
+            return null;
+        }
+
+        JsonNode rootNode = objectMapper.readTree(meeting.getMeetingVoiceScript());
+        TextNode textsNode = (TextNode) rootNode.path("text");
+
+        String message = textsNode.asText();
+
+        MeetingSummaryResponseDto meetingSummaryResponseDto = MeetingSummaryResponseDto.builder()
+                .meetingSummary(chatAiService.generateMeetingSummary(message))
+                .meetingId(meetingId).build();
+
+        return meetingSummaryResponseDto;
     }
 
     // 음성 길이 반환(초 단위)

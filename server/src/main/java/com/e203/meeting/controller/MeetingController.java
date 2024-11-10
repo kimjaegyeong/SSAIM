@@ -3,6 +3,7 @@ package com.e203.meeting.controller;
 import com.e203.meeting.request.FixSpeakerNameRequestDto;
 import com.e203.meeting.request.MeetingRequestDto;
 import com.e203.meeting.response.MeetingResponseDto;
+import com.e203.meeting.response.MeetingSummaryResponseDto;
 import com.e203.meeting.service.MeetingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,19 @@ public class MeetingController {
         }
         else {
             return ResponseEntity.status(OK).body("수정에 성공했습니다.");
+        }
+    }
+
+    @PostMapping("/api/v1/projects/{projectId}/meetings/{meetingId}")
+    public ResponseEntity<MeetingSummaryResponseDto> createMeetingSummary(@PathVariable("meetingId") int meetingId) throws Exception {
+
+        MeetingSummaryResponseDto meetingSummary = meetingService.createMeetingSummary(meetingId);
+
+        if(meetingSummary == null) {
+            return ResponseEntity.status(NOT_FOUND).body(null);
+        }
+        else {
+            return ResponseEntity.status(OK).body(meetingSummary);
         }
     }
 }
