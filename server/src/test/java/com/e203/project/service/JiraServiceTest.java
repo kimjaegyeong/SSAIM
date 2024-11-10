@@ -15,6 +15,7 @@ import com.e203.project.dto.request.JiraIssueRequestDto;
 import com.e203.project.dto.response.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
+import com.e203.project.dto.response.SprintResponseDto;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
@@ -85,5 +86,12 @@ public class JiraServiceTest {
 
 		ResponseEntity<Map> issue = jiraService.createIssue(1, build);
 		System.out.println(issue);
+	}
+
+	@Test
+	@DisplayName("Jira Sprint 조회")
+	public void findSprint(){
+		List<SprintResponseDto> allSprints = jiraService.findAllSprints(1);
+		allSprints.stream().forEach(sprintResponseDto -> System.out.println(sprintResponseDto.getName()));
 	}
 }
