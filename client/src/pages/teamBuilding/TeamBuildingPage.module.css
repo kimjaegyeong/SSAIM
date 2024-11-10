@@ -254,3 +254,7 @@
     cursor: pointer;
     padding: 0;
 }
+
+.memberList {
+    margin-bottom: 30px;
+}

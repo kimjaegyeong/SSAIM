@@ -6,6 +6,11 @@ export interface createCommentParams {
     message: string;
 }
 
+export interface editCommentParams {
+    position: number;
+    message: string;
+}
+
 export const getPostInfo = async(postId:number) => {
     try{
         const response = await apiClient.get(`/recruiting/posts/${postId}`);
@@ -31,6 +36,17 @@ export const deletePost = async(postId:number) => {
 export const createComment = async(postId:number, params: createCommentParams) => {
     try{
         const response = await apiClient.post(`/recruiting/posts/${postId}/applicants`, params);
+        console.log(response.data);
+        return response.data;
+    } catch (error){
+        console.log(error);
+        throw error;
+    }
+}
+
+export const editComment = async(postId:number, applicantId:number, params: editCommentParams) => {
+    try{
+        const response = await apiClient.patch(`/recruiting/posts/${postId}/applicants/${applicantId}`, params);
         console.log(response.data);
         return response.data;
     } catch (error){

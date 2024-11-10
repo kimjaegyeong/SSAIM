@@ -9,65 +9,17 @@ import useUserStore from '@/stores/useUserStore';
 import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
 import { formatDateTime } from '../../utils/formatDateTime';
 import DefaultProfile from '../../assets/profile/DefaultProfile.png'
-import { getPostInfo, deletePost, createComment, deleteComment } from '../../features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail'
+import { getPostInfo, deletePost, createComment, editComment, deleteComment } from '../../features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail'
 import { PiCrownSimpleFill } from "react-icons/pi";
 import { HiMinusCircle } from "react-icons/hi2";
 import RecruitmentSelector from '@/features/teamBuilding/components/createTeam/recruitmentSelector/RecruitmentSelector';
 import { editRecruiting } from '@/features/teamBuilding/apis/editTeam/editRecruiting';
-
-interface Recruitment {
-  FE: number;
-  BE: number;
-  Infra: number;
-}
-
-type TeamBuildingMember = {
-  userId: number;
-  userName: string;
-  profileImage: string | null;
-  position: number;
-};
-
-type MemberDeleteStatus = {
-  userId: number;
-  position: number;
-  delete: boolean;
-};
-
-type TeamBuildingCandidate = {
-  userId: number;
-  userName: string;
-  profileImage: string | null;
-  position: number;
-  message: string | null;
-  status: number;
-  recruitingMemberId: number;
-};
-
-type TeamBuildingData = {
-  postId: number;
-  campus: number;
-  authorId: number;
-  candidateCount: number;
-  startDate: string;
-  endDate: string;
-  postTitle: string;
-  postContent: string;
-  firstDomain: number;
-  secondDomain: number;
-  createdDate: string;
-  updatedDate: string;
-  status: number;
-  recruitedTotal: number;
-  memberTotal: number;
-  authorProfileImageUrl: string;
-  authorName: string;
-  memberInfra: number;
-  memberBackend: number;
-  memberFrontend: number;
-  recruitingMembers: TeamBuildingMember[];
-  recruitingCandidates: TeamBuildingCandidate[];
-};
+import { 
+  Recruitment, 
+  TeamBuildingData, 
+  TeamBuildingMember, 
+  MemberDeleteStatus, 
+} from '@/features/teamBuilding/types/teamBuildingDetail/TeamBuildingDetailTypes';
 
 const initialData: TeamBuildingData = {
   postId: 0,
@@ -186,9 +138,32 @@ const TeamBuildingDetailPage = () => {
     setEditedCommentContent(commentContent);
   };
 
-  const handleSaveComment = () => {
-    setIsCommentEditing(false);
-    setActiveCommentId(null);
+  const handleSaveComment = async () => {
+    if (activeCommentId === null || !editedCommentContent.trim()) {
+        alert("내용을 입력해주세요.");
+        return;
+    }
+
+    const editedCandidate = filteredCandidates[activeCommentId];
+
+    if (!editedCandidate) {
+        alert("수정할 댓글을 찾을 수 없습니다.");
+        return;
+    }
+
+    const params = {
+        position: selectedTag, // 수정된 포지션
+        message: editedCommentContent, // 수정된 메시지
+    };
+
+    try {
+        await editComment(data.postId, editedCandidate.recruitingMemberId, params);
+        alert("댓글이 성공적으로 수정되었습니다.");
+        window.location.reload(); // 수정 후 페이지 새로고침
+    } catch (error) {
+        console.error("댓글 수정 중 오류가 발생했습니다:", error);
+        alert("댓글 수정 중 문제가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   const handleDeleteComment = (postId:string, commentId: number) => {
@@ -299,11 +274,12 @@ const TeamBuildingDetailPage = () => {
           );
           return;
       }
+
       handleSubmit()
     }
 
     setEditMembers(!editMembers);
-};
+  };
 
   const toggleMemberSelection = (memberId: number) => {
     setSelectedMembers((prevSelected) =>
@@ -334,13 +310,15 @@ const TeamBuildingDetailPage = () => {
             delete: selectedMembers.find((m) => m.userId === member.userId)?.delete ? 1 : 0,
         })),
     };
-    
-    try {
-        await editRecruiting(data.postId, formData); // 서버에 요청을 보냅니다.
-    } catch (error) {
-        console.error(error); // 에러를 콘솔에 출력합니다.
-        alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
-    }
+    editRecruiting(data.postId, formData)
+      .then((response) => {
+          console.log(response);
+          window.location.reload();
+      })
+      .catch((err) => {
+          console.error(err);
+          alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+      });
   };
 
   return (
@@ -388,7 +366,11 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.commentList}>
             {filteredCandidates.map((candidate, index) => (
               <div key={index} className={styles.commentItem}>
-                <Tag text={getPositionLabel(candidate.position)} disablePointerCursor={true}/>
+                {isCommentEditing && activeCommentId === index ? (
+                  <TagSelector onTagChange={handleTagChange} initialTag={candidate.position}/>
+                ):(
+                  <Tag text={getPositionLabel(candidate.position)} disablePointerCursor={true}/>
+                )}
                 <div className={styles.commentContent}>
                   {isCommentEditing && activeCommentId === index ? (
                     <input
@@ -470,7 +452,7 @@ const TeamBuildingDetailPage = () => {
                   />
                   <span>{data.recruitingMembers.find((m) => m.userId === member.userId)?.userName}</span>
                   {member.userId === data.authorId && <PiCrownSimpleFill color="#FFCD29" />}
-                  {editMembers && (
+                  {editMembers && member.userId !== data.authorId && (
                     <HiMinusCircle
                       onClick={() => toggleMemberSelection(member.userId)}
                       className={styles.deleteMemberButton}

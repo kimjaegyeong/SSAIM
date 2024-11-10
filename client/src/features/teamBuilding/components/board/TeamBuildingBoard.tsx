@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { IoSearchOutline } from "react-icons/io5";
 import { getDomainLabel, getRegionLabel, getStatusLabel } from "../../../../utils/labelUtils";
 import DefaultProfile from "../../../../assets/profile/DefaultProfile.png"
-import ApplicationsModal from "../modal/applicationsModal";
+import ApplicationsModal from "../modal/ApplicationsModal";
 
 type TeamBuildingData = {
     postId: number;
