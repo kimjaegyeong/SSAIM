@@ -66,7 +66,7 @@ public class JiraController {
 	public ResponseEntity<String> createIssue(@PathVariable("projectId") int projectId,
 		@RequestBody JiraIssueCreateRequestDto dto) {
 		ResponseEntity<Map> issue = jiraService.createIssue(projectId, dto);
-		System.out.println(issue.getStatusCode());
+
 		if (issue.getStatusCode() == CREATED) {
 			return ResponseEntity.status(OK).body("이슈 생성에 성공했습니다.");
 		}
