@@ -9,7 +9,7 @@ interface TagSelectorProps {
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({ onTagChange }) => {
-  const [tag, setTag] = useState<number>(0);
+  const [tag, setTag] = useState<number>(1);
   const tags: number[] = [1, 2, 3];
 
   const handleTagChange = (direction: 'up' | 'down') => {

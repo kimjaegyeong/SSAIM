@@ -5,15 +5,13 @@ import Tag from '../../features/teamBuilding/components/tag/Tag'
 import { AiOutlineMore } from "react-icons/ai";
 import Button from '../../components/button/Button';
 import TagSelector from '../../features/teamBuilding/components/tagSelector/TagSelector';
-import { getPostInfo } from '@/features/teamBuilding/apis/teamBuildingDetail/getPostInfo';
 import useUserStore from '@/stores/useUserStore';
 import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
 import { formatDateTime } from '../../utils/formatDateTime';
 import DefaultProfile from '../../assets/profile/DefaultProfile.png'
-import { deletePost } from '../../features/teamBuilding/apis/teamBuildingDetail/deletePost'
+import { getPostInfo, deletePost, createComment, deleteComment } from '../../features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail'
 import { PiCrownSimpleFill } from "react-icons/pi";
 import { HiMinusCircle } from "react-icons/hi2";
-import { createComment } from '@/features/teamBuilding/apis/teamBuildingDetail/createComment';
 import RecruitmentSelector from '@/features/teamBuilding/components/createTeam/recruitmentSelector/RecruitmentSelector';
 import { editRecruiting } from '@/features/teamBuilding/apis/editTeam/editRecruiting';
 
@@ -43,6 +41,7 @@ type TeamBuildingCandidate = {
   position: number;
   message: string | null;
   status: number;
+  recruitingMemberId: number;
 };
 
 type TeamBuildingData = {
@@ -104,7 +103,7 @@ const TeamBuildingDetailPage = () => {
   const [editedCommentContent, setEditedCommentContent] = useState('');
   const [editMembers, setEditMembers] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
-  const [selectedTag, setSelectedTag] = useState<number>(0);
+  const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
 
   const navigate = useNavigate();
@@ -190,6 +189,17 @@ const TeamBuildingDetailPage = () => {
   const handleSaveComment = () => {
     setIsCommentEditing(false);
     setActiveCommentId(null);
+  };
+
+  const handleDeleteComment = (postId:string, commentId: number) => {
+    deleteComment(parseInt(postId), commentId)
+      .then((response) => {
+        console.log(response);
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   const handleNChange = (n: number) => {
@@ -428,7 +438,7 @@ const TeamBuildingDetailPage = () => {
                             수정
                           </button>
                         )}
-                        <button className={styles.modalButton}>삭제</button>
+                        <button className={styles.modalButton} onClick={() => {handleDeleteComment(postId, candidate.recruitingMemberId )}}>삭제</button>
                       </div>
                     )}
                   </div>
