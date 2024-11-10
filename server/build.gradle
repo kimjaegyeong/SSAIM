@@ -58,6 +58,8 @@ dependencies {
     //mongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 
+    // AWS
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {
