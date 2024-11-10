@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 public class ProjectJiraConnectDto {
 	private String jiraApi;
 	private String jiraProjectId;
+	private String jiraBoardId;
 	@Builder
-	private ProjectJiraConnectDto(String jiraApi, String jiraProjectId) {
+	private ProjectJiraConnectDto(String jiraApi, String jiraProjectId, String jiraBoardId) {
 		this.jiraApi = jiraApi;
 		this.jiraProjectId = jiraProjectId;
+		this.jiraBoardId = jiraBoardId;
 	}
 }

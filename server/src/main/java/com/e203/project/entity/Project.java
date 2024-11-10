@@ -60,6 +60,10 @@ public class Project extends BaseEntity {
 	@Setter
 	private String jiraProjectId;
 
+	@Column(name = "project_jira_board_id")
+	@Setter
+	private String jiraBoardId;
+
 	@Column(name = "project_progress_front")
 	@Setter
 	private Double progressFront =0.0; //이거 왜 안 먹히지 ?

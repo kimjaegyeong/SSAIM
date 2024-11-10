@@ -49,7 +49,7 @@ public class JiraService {
 		}
 		project.setJiraApi(jiraConnectDto.getJiraApi());
 		project.setJiraProjectId(jiraConnectDto.getJiraProjectId());
-
+		project.setJiraBoardId(jiraConnectDto.getJiraBoardId());
 		return true;
 	}
 
