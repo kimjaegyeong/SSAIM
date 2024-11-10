@@ -46,7 +46,7 @@ public class UserService {
                 .userNickname(userSignupRequestDto.getUserNickname())
                 .userGeneration(userSignupRequestDto.getUserGeneration())
                 .userRole(0)
-                .userProfileImage("")
+                .userProfileImage(uploadProfileImage(profileImage))
                 .build();
 
         userRepository.save(user);
