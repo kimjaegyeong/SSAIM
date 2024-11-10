@@ -14,6 +14,14 @@ import { deletePost } from '../../features/teamBuilding/apis/teamBuildingDetail/
 import { PiCrownSimpleFill } from "react-icons/pi";
 import { HiMinusCircle } from "react-icons/hi2";
 import { createComment } from '@/features/teamBuilding/apis/teamBuildingDetail/createComment';
+import RecruitmentSelector from '@/features/teamBuilding/components/createTeam/recruitmentSelector/RecruitmentSelector';
+import { editRecruiting } from '@/features/teamBuilding/apis/editTeam/editRecruiting';
+
+interface Recruitment {
+  FE: number;
+  BE: number;
+  Infra: number;
+}
 
 type TeamBuildingMember = {
   userId: number;
@@ -42,6 +50,8 @@ type TeamBuildingData = {
   campus: number;
   authorId: number;
   candidateCount: number;
+  startDate: string;
+  endDate: string;
   postTitle: string;
   postContent: string;
   firstDomain: number;
@@ -65,6 +75,8 @@ const initialData: TeamBuildingData = {
   campus: 0,
   authorId: 0,
   candidateCount: 0,
+  startDate: '',
+  endDate: '',
   postTitle: '',
   postContent: '',
   firstDomain: 0,
@@ -167,7 +179,7 @@ const TeamBuildingDetailPage = () => {
       })
       .catch((err) => {
         console.error(err);
-      });
+      }); 
   };
 
   const handleEditComment = (commentContent:string) => {
@@ -178,6 +190,72 @@ const TeamBuildingDetailPage = () => {
   const handleSaveComment = () => {
     setIsCommentEditing(false);
     setActiveCommentId(null);
+  };
+
+  const handleNChange = (n: number) => {
+    if (data.recruitedTotal > n) {
+        alert(
+            `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${n})을 초과할 수 없습니다.`
+        );
+        return;
+    }
+
+    // 현재 recruitingMembers의 각 포지션의 최소값 계산
+    const calculateMinimumRecruitment = () => {
+        const FECount = data.recruitingMembers.filter(
+            (member) => member.position === 1
+        ).length;
+
+        const BECount = data.recruitingMembers.filter(
+            (member) => member.position === 2
+        ).length;
+
+        const InfraCount = data.recruitingMembers.filter(
+            (member) => member.position === 3
+        ).length;
+
+        return { FECount, BECount, InfraCount };
+    };
+
+    const { FECount, BECount, InfraCount } = calculateMinimumRecruitment();
+
+    setData((prevData) => {
+        const adjustedRecruitment = {
+            memberFrontend: FECount,
+            memberBackend: BECount,
+            memberInfra: InfraCount,
+        };
+
+        return {
+            ...prevData,
+            memberTotal: n,
+            ...adjustedRecruitment,
+        };
+    });
+  };
+
+  const handleSliderChange = (role: keyof Recruitment, value: number) => {
+    const parsedValue = isNaN(value) ? 0 : value;
+
+    const otherTotal =
+        role === 'FE'
+            ? data.memberBackend + data.memberInfra
+            : role === 'BE'
+            ? data.memberFrontend + data.memberInfra
+            : data.memberFrontend + data.memberBackend;
+
+    const maxAllowed = data.memberTotal - otherTotal;
+
+    setData((prevData) => ({
+        ...prevData,
+        [role === 'FE'
+            ? 'memberFrontend'
+            : role === 'BE'
+            ? 'memberBackend'
+            : 'memberInfra']: Math.min(parsedValue, maxAllowed),
+    }));
+
+    console.log(`Updated ${role} to ${Math.min(parsedValue, maxAllowed)}`);
   };
 
   const handleDeletePost = () => {
@@ -193,10 +271,29 @@ const TeamBuildingDetailPage = () => {
 
   const handleEditToggle = () => {
     if (editMembers) {
-      console.log('선택된 멤버들:', selectedMembers);
+      // Done 버튼 검증
+      const totalMembers = data.memberFrontend + data.memberBackend + data.memberInfra;
+
+      // 모집 인원 합이 총 인원을 초과하거나 부족한 경우
+      if (totalMembers !== data.memberTotal) {
+          alert(
+              `총 모집 인원(${data.memberTotal})과 세부 포지션 합(${totalMembers})이 일치하지 않습니다.`
+          );
+          return;
+      }
+
+      // 모집된 멤버 수가 총 모집 인원을 초과하는 경우
+      if (data.recruitedTotal > data.memberTotal) {
+          alert(
+              `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${data.memberTotal})을 초과할 수 없습니다.`
+          );
+          return;
+      }
+      handleSubmit()
     }
+
     setEditMembers(!editMembers);
-  };
+};
 
   const toggleMemberSelection = (memberId: number) => {
     setSelectedMembers((prevSelected) =>
@@ -206,6 +303,34 @@ const TeamBuildingDetailPage = () => {
           : member
       )
     );
+  };
+
+  const handleSubmit = async () => {
+    const formData = {
+        title: data.postTitle,
+        content: data.postContent,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        firstDomain: data.firstDomain,
+        secondDomain: data.secondDomain,
+        campus: data.campus,
+        memberTotal: data.memberTotal,
+        memberInfra: data.memberInfra,
+        memberBackend: data.memberBackend,
+        memberFrontend: data.memberFrontend,
+        recruitingMembers: data.recruitingMembers.map((member) => ({
+            userId: member.userId,
+            position: member.position,
+            delete: selectedMembers.find((m) => m.userId === member.userId)?.delete ? 1 : 0,
+        })),
+    };
+    
+    try {
+        await editRecruiting(data.postId, formData); // 서버에 요청을 보냅니다.
+    } catch (error) {
+        console.error(error); // 에러를 콘솔에 출력합니다.
+        alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+    }
   };
 
   return (
@@ -315,9 +440,11 @@ const TeamBuildingDetailPage = () => {
         <div className={styles.teamSection}>
           <div className={styles.teamSectionHeader}>
             <span>모집 현황</span>
-            <button className={styles.editMemberButton} onClick={handleEditToggle}>
-              {editMembers ? 'Done' : 'Edit'}
-            </button>
+            {isAuthor &&
+              <button className={styles.editMemberButton} onClick={handleEditToggle}>
+                {editMembers ? 'Done' : 'Edit'}
+              </button>
+            }
           </div>
           <div className={styles.memberList}>
             {selectedMembers.map((member) => (
@@ -348,7 +475,21 @@ const TeamBuildingDetailPage = () => {
             ))}
           </div>
           {editMembers && (
-            <p>모집인원 수정</p>
+            <RecruitmentSelector
+              recruitment={{
+                  FE: data.memberFrontend,
+                  BE: data.memberBackend,
+                  Infra: data.memberInfra,
+              }}
+              N={data.memberTotal}
+              inputValue={data.memberTotal.toString()}
+              onInputChange={(value) => {
+                  const total = parseInt(value, 10);
+                  handleNChange(total);
+              }}
+              onSliderChange={handleSliderChange}
+              onNChange={handleNChange}
+            />
           )}
         </div>
       </div>

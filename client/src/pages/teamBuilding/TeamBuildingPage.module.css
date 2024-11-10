@@ -223,6 +223,7 @@
     border: none;
     font-size: 14px;
     border-radius: 6px;
+    cursor: pointer;
 }
 
 .startButton {

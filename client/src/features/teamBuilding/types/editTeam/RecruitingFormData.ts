@@ -3,7 +3,9 @@ export interface recruitingMembers {
     position: number;
     delete: boolean;
 
-}export interface RecruitingFormData {
+}
+
+export interface RecruitingFormData {
     title: string;
     content: string;
     startDate: string | null;
@@ -15,5 +17,9 @@ export interface recruitingMembers {
     memberInfra: number;
     memberBackend: number;
     memberFrontend: number;
-    recruitingMembers: recruitingMembers;
+    recruitingMembers: Array<{
+        userId: number;
+        position: number;
+        delete: number;
+    }>;
 }

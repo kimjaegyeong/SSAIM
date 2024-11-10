@@ -10,7 +10,6 @@ interface Recruitment {
 
 interface RecruitmentSelectorProps {
     recruitment: Recruitment;
-    totalPositions: number;
     N: number;
     inputValue: string;
     onInputChange: (value: string) => void;
