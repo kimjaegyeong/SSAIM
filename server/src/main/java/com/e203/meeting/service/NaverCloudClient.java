@@ -9,6 +9,7 @@ import java.util.Map;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -50,6 +51,7 @@ public class NaverCloudClient {
     }
 
     @Getter
+    @Setter
     public static class Boosting {
         private String words;
 
@@ -63,6 +65,7 @@ public class NaverCloudClient {
     }
 
     @Getter
+    @Setter
     public static class Diarization {
         private Boolean enable = Boolean.FALSE;
         private Integer speakerCountMin;
@@ -94,6 +97,7 @@ public class NaverCloudClient {
     }
 
     @Getter
+    @Setter
     public static class Sed {
         private Boolean enable = Boolean.FALSE;
 
@@ -107,6 +111,7 @@ public class NaverCloudClient {
     }
 
     @Getter
+    @Setter
     public static class NestRequestEntity {
         private String language = "ko-KR";
         private String completion = "sync";

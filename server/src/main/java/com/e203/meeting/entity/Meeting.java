@@ -34,15 +34,15 @@ public class Meeting extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    private Project projectId;
+    private Project project;
 
     @Builder
-    private Meeting(String meetingTitle, String meetingVoiceUrl, String meetingVoiceScript, Integer meetingVoiceTime, Project projectId) {
+    private Meeting(String meetingTitle, String meetingVoiceUrl, String meetingVoiceScript, Integer meetingVoiceTime, Project project) {
         this.meetingTitle = meetingTitle;
         this.meetingVoiceUrl = meetingVoiceUrl;
         this.meetingVoiceScript = meetingVoiceScript;
         this.meetingVoiceTime = meetingVoiceTime;
-        this.projectId = projectId;
+        this.project = project;
     }
 
     public void updateMeetingVoiceScript(String meetingScript) {

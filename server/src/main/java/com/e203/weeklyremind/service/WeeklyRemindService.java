@@ -52,7 +52,7 @@ public class WeeklyRemindService {
             dailyReminds.append(dailyRemind.getDailyRemindContents());
         }
 
-        String summary = chatAiService.generateWeeklyRemind(dailyReminds.toString(), projectId);
+        String summary = chatAiService.generateWeeklyRemind(dailyReminds.toString());
 
         WeeklyRemind weeklyRemind = WeeklyRemind.builder()
                 .weeklyRemindContents(summary)
@@ -146,7 +146,7 @@ public class WeeklyRemindService {
             dailyReminds.append(dailyRemind.getDailyRemindContents());
         }
 
-        String summary = chatAiService.generateWeeklyRemind(dailyReminds.toString(), projectId);
+        String summary = chatAiService.generateWeeklyRemind(dailyReminds.toString());
 
         weeklyRemind.updateWeeklyRemind(summary);
 
