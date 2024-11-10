@@ -11,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 
-import com.e203.project.dto.request.JiraIssueCreateRequestDto;
-import com.e203.project.dto.request.JiraIssueResponseDto;
+import com.e203.project.dto.request.JiraIssueRequestDto;
+import com.e203.project.dto.response.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
 import com.e203.project.entity.ProjectMember;
@@ -74,7 +74,7 @@ public class JiraServiceTest {
 	@Test
 	@DisplayName("Project Issue 등록")
 	public void findIssue(){
-		JiraIssueCreateRequestDto build = JiraIssueCreateRequestDto.builder()
+		JiraIssueRequestDto build = JiraIssueRequestDto.builder()
 			.issueType("Story")
 			.summary("api test")
 			.description("description test")

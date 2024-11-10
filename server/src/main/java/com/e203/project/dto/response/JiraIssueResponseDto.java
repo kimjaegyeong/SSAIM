@@ -1,4 +1,4 @@
-package com.e203.project.dto.request;
+package com.e203.project.dto.response;
 
 import com.e203.project.dto.jiraapi.JiraContent;
 

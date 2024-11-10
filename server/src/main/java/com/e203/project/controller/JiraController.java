@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.e203.project.dto.request.JiraIssueCreateRequestDto;
-import com.e203.project.dto.request.JiraIssueResponseDto;
+import com.e203.project.dto.request.JiraIssueRequestDto;
+import com.e203.project.dto.response.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
 import com.e203.project.service.JiraService;
@@ -64,12 +65,22 @@ public class JiraController {
 
 	@PostMapping("/api/v1/projects/{projectId}/issue")
 	public ResponseEntity<String> createIssue(@PathVariable("projectId") int projectId,
-		@RequestBody JiraIssueCreateRequestDto dto) {
-		ResponseEntity<Map> issue = jiraService.createIssue(projectId, dto);
-
-		if (issue.getStatusCode() == CREATED) {
+		@RequestBody JiraIssueRequestDto dto) {
+		ResponseEntity<Map> result = jiraService.createIssue(projectId, dto);
+		if (result.getStatusCode() == CREATED) {
 			return ResponseEntity.status(OK).body("이슈 생성에 성공했습니다.");
 		}
 		return ResponseEntity.status(NOT_FOUND).body("이슈 생성에 실패했습니다.");
+	}
+
+	@PutMapping("/api/v1/projects/{projectId}/issue")
+	public ResponseEntity<String> modifyIssue(@PathVariable("projectId") int projectId,
+		@RequestBody JiraIssueRequestDto dto){
+		ResponseEntity<Map> result = jiraService.modifyIssue(projectId, dto);
+
+		if(result.getStatusCode()==NO_CONTENT){
+			return ResponseEntity.status(OK).body("이슈 수정에 성공했습니다.");
+		}
+		return ResponseEntity.status(NOT_FOUND).body("이슈 수정에 실패했습니다.");
 	}
 }

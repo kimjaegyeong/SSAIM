@@ -17,8 +17,8 @@ import org.springframework.web.client.RestClient;
 
 import com.e203.project.dto.jiraapi.JiraContent;
 import com.e203.project.dto.jiraapi.JiraIssueFields;
-import com.e203.project.dto.request.JiraIssueCreateRequestDto;
-import com.e203.project.dto.request.JiraIssueResponseDto;
+import com.e203.project.dto.request.JiraIssueRequestDto;
+import com.e203.project.dto.response.JiraIssueResponseDto;
 import com.e203.project.dto.request.ProjectJiraConnectDto;
 import com.e203.project.dto.jiraapi.JiraResponse;
 import com.e203.project.dto.response.ProjectJiraEpicResponseDto;
@@ -87,7 +87,7 @@ public class JiraService {
 		return epics.stream().map(ProjectJiraEpicResponseDto::transferDto).collect(Collectors.toList());
 	}
 
-	public ResponseEntity<Map> createIssue(int projectId, JiraIssueCreateRequestDto dto) {
+	public ResponseEntity<Map> createIssue(int projectId, JiraIssueRequestDto dto) {
 		ProjectMember leader = getProjectLeader(projectId);
 		if (leader == null) {
 			return null;
@@ -109,6 +109,31 @@ public class JiraService {
 			.toEntity(Map.class);
 
 		return response;
+	}
+
+	public ResponseEntity<Map> modifyIssue(int projectId, JiraIssueRequestDto dto) {
+		ProjectMember leader = getProjectLeader(projectId);
+		if (leader == null) {
+			return null;
+		}
+		String jiraUrl = "https://ssafy.atlassian.net/rest/api/3/issue/"+dto.getIssueKey();
+		String jiraApi = leader.getProject().getJiraApi();
+		String jiraProjectId = leader.getProject().getJiraProjectId();
+		String userEmail = leader.getUser().getUserEmail();
+		String encodedCredentials = Base64.getEncoder().encodeToString((userEmail + ":" + jiraApi).getBytes());
+
+		JiraIssueFields jiraIssueFields = JiraIssueFields.transferJsonObject(dto, jiraProjectId);
+
+		ResponseEntity<Map> response = restClient.put()
+			.uri(jiraUrl)
+			.contentType(MediaType.APPLICATION_JSON)
+			.header("Authorization", "Basic " + encodedCredentials)
+			.body(jiraIssueFields)
+			.retrieve()
+			.toEntity(Map.class);
+
+		return response;
+
 	}
 
 
