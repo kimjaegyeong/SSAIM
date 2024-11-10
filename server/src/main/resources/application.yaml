@@ -34,3 +34,21 @@ spring:
   logging:
     level:
       org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+cloud:
+  aws:
+    s3:
+      bucket: ENC(fq697tmFV3OHQLZOGqQAba+ZLwUKjJRb)
+    credentials:
+      access-key: ENC(jKK17HUN1wKki+Sy+ToRoke9E6HSdzlXE3A1eBmCaAQ=)
+      secret-key: ENC(pIxK6ZbcPRyLp+3nrtxQuy5XSZwSl/NUdtlmE4pTBTMapQrKyA6exgz3WlQcW6cjTwEyMNALh6w=)
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    cloudfront: ENC(PjxAffgcS0Ykunp4ZT6xC2HxfVw5PRDWeCaOLiO3jCItSWEooUbP9crTq5Gfv++2)
