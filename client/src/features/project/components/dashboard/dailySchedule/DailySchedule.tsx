@@ -4,17 +4,17 @@ import Task from '../task/Task';
 import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 import { useDashboardStore } from '../../../stores/useDashboardStore';
-import { IssueDTO } from '@/features/project/types/dashboard/WeeklyDataDTO';
+import { IssueDTO, GitlabDTO } from '@/features/project/types/dashboard/WeeklyDataDTO';
 interface DailyScheduleProps {
   day: DayOfWeek;
   date: number;
   jiraData : IssueDTO[] | [];
-  gitlabData : any[];
+  gitlabData : GitlabDTO[];
   meetingData : any[];
 
 }
 
-const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData }) => {
+const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData, gitlabData }) => {
   const { weekdayIndex } = useDashboardStore();
   const { data: weeklyData } = useDashboardData();
   const dayIdx = weekdayIndex[day];
@@ -28,8 +28,8 @@ const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData }) =>
         {jiraData?.length > 0 && (
           <Task taskType="jira" day={day} tasks={jiraData} />
         )}
-        {weeklyData?.dailyData[dayIdx]?.gitlab?.length > 0 && (
-          <Task taskType="gitlab" day={day} tasks={weeklyData?.dailyData[dayIdx].gitlab} />
+        {gitlabData?.length > 0 &&(
+          <Task taskType="gitlab" day={day} tasks={gitlabData} />
         )}
         {weeklyData?.dailyData[dayIdx]?.meeting?.length > 0 && (
           <Task taskType="meeting" day={day} tasks={weeklyData?.dailyData[dayIdx].meeting} />

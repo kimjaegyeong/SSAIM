@@ -7,7 +7,10 @@ import { useSprintIssueQuery } from '@/features/project/hooks/useSprintIssueData
 import useUserStore from '@/stores/useUserStore';
 import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 import { dateToString } from '@/utils/dateToString';
-import { IssueDTO } from '@/features/project/types/dashboard/WeeklyDataDTO';
+import { useGitlabData } from '@features/project/hooks/useGitlabData';
+import { IssueDTO, GitlabDTO } from '@/features/project/types/dashboard/WeeklyDataDTO';
+import { ISOStringFormat } from 'date-fns';
+
 interface WeeklyScheduleProps {
   weeklyStartDate: Date;
 }
@@ -33,13 +36,15 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
   const month = endDate?.getMonth();
   const day = endDate?.getDate();
   const userName = userInfo?.userName;
-  console.log(userName)
+  console.log(userName);
   const { data: sprintIssues } = useSprintIssueQuery(
     projectId,
     dateToString(startDate, '-'),
     dateToString(endDate, '-')
   );
-  const filterdIssues = sprintIssues?.filter((issue:IssueDTO)=>{return issue.allocator === userName})
+  const filterdIssues = sprintIssues?.filter((issue: IssueDTO) => {
+    return issue.allocator === userName;
+  }).filter((issue: IssueDTO)=>{ return issue.progress === '완료'});
   const weekMap = {
     Monday: { date: new Date(year, month, day - 3) },
     Tuesday: { date: new Date(year, month, day - 2) },
@@ -49,11 +54,16 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
     Saturday: { date: new Date(year, month, day + 2) },
     Sunday: { date: new Date(year, month, day + 3) },
   };
-
+  const { data: gitlabData } = useGitlabData(
+    projectId,
+    startDate ? (new Date(startDate).toISOString() as ISOStringFormat) : null,
+    endDate ? (new Date(endDate).toISOString() as ISOStringFormat) : null
+  );
+  console.log(gitlabData);
   // `sprintIssues` 데이터를 요일별로 분류하는 로직
   const dashboardData = useMemo(() => {
     const dataByDay: {
-      [key in DayOfWeek]: { jira: IssueDTO[]; gitlab: any[]; meeting: any[] };
+      [key in DayOfWeek]: { jira: IssueDTO[]; gitlab: GitlabDTO[]; meeting: any[] };
     } = {
       Monday: { jira: [], gitlab: [], meeting: [] },
       Tuesday: { jira: [], gitlab: [], meeting: [] },
@@ -63,8 +73,14 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
       Saturday: { jira: [], gitlab: [], meeting: [] },
       Sunday: { jira: [], gitlab: [], meeting: [] },
     };
-
-    filterdIssues?.forEach((issue:IssueDTO) => {
+    gitlabData?.forEach((mr: GitlabDTO) => {
+      const mergeDate = new Date(mr.mergeDate);
+      const dayOfWeek = mergeDate.getDay(); // 요일 인덱스 계산 (0=일요일, 1=월요일, ...)
+      const weekDay = weekDays[dayOfWeek - 1] || '날짜미지정';
+      dataByDay[weekDay as DayOfWeek]?.gitlab.push(mr);
+      console.log(mr);
+    });
+    filterdIssues?.forEach((issue: IssueDTO) => {
       const match = issue.title.match(/(\d{6})/); // `title`에서 날짜 추출
       if (match) {
         const dateStr = match[0];
@@ -83,7 +99,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
     });
 
     return dataByDay;
-  }, [sprintIssues]);
+  }, [gitlabData, filterdIssues]);
   console.log(sprintIssues);
   console.log(dashboardData);
   return (
