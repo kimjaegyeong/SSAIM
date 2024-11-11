@@ -29,3 +29,7 @@ export interface IssueDTO extends TaskDTO {
   storyPoint: number;
   issueKey: string;
 }
+export interface GitlabDTO extends TaskDTO {
+  mergeDate : Date;
+
+}
