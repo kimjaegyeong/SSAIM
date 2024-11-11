@@ -47,6 +47,11 @@ const MeetingDetail = () => {
     }
   };
 
+  // 화자 수정 API 호출 함수
+  const EditSpeckerClick = async () => {
+
+  }
+
 
   return (
     <div className={styles.container}>
@@ -64,7 +69,7 @@ const MeetingDetail = () => {
               <div key={index} className={styles.participantBox}>
                 <img src="profile.jpg"alt="profile" />
                 <div className={styles.participantComment}>
-                  <p className={styles.participantName}>{segment.speaker.name}</p>
+                  <p className={styles.participantName} onClick={EditSpeckerClick}>{segment.speaker.name}</p>
                   <p className={styles.comment}>{segment.text}</p>
                 </div>
               </div>

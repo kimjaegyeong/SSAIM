@@ -21,7 +21,7 @@ const MeetingList = () => {
     const getMeetings = async () => {
       try {
         const data = await fetchMeetingList(Number(projectId)); // projectId를 숫자로 변환해서 API 호출
-        setMeetings(data); // meetings 상태에 데이터 저장
+        setMeetings(data.reverse()); // meetings 상태에 데이터 저장
       } catch (error) {
         console.error('Error fetching meetings:', error);
       }
