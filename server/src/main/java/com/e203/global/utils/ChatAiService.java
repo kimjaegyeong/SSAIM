@@ -30,7 +30,19 @@ public class ChatAiService {
                 .content();
     }
 
-    public String generateProposal() {
-        return null;
+    public String generateProposal(String message) {
+
+        return chatClient.prompt()
+                .system("사용자의 요청을 바탕으로 소프트웨어 프로젝트 기획서를 작성해줘. 기획서 양식은 아래와 같이 한글로 자세하게 작성해줘.\n" +
+                        "{\n" +
+                        "\t  \"title\": \"[서비스 명]\",\n" +
+                        "\t  \"description\": \"[서비스 소개]\", \n" +
+                        "\t  \"background\": \"[기획 배경]\",\n" +
+                        "\t  \"feature\":\"[주요 기능 소개]\",\n" +
+                        "\t  \"effect\": \"[기대효과]\"" +
+                        "}\n")
+                .user(message)
+                .call()
+                .content();
     }
 }
