@@ -69,13 +69,14 @@ public class ProposalService {
         return getProposal(projectId);
     }
 
-    public Proposal saveProposal(String projectId) {
-        Proposal proposal = Proposal.builder()
-                .projectId(projectId)
-                .content("")
-                .build();
-        return proposalRepository.save(proposal);
-    }
+	public Proposal saveProposal(String projectId) {
+		String defaultForm = "{\"title\": \"\",\"description\": \"\",\"background\": \"\",\"feature\":\"\",\"effect\": \"\"}";
+		Proposal proposal = Proposal.builder()
+			.projectId(projectId)
+			.content(defaultForm)
+			.build();
+		return proposalRepository.save(proposal);
+	}
 
     public String generateProposal(int projectId, int userId, String message) {
         Optional<Project> project = projectRepository.findById(projectId);
@@ -88,4 +89,5 @@ public class ProposalService {
 
         return chatAiService.generateProposal(message);
     }
+
 }
