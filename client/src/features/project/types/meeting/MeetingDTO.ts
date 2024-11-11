@@ -26,7 +26,7 @@ export interface MeetingListDTO {
 export interface Speaker {
     label: string;
     name: string;
-    edited: boolean;
+    edited?: boolean;
   }
   
   // Segment 정보를 정의합니다.
@@ -57,4 +57,8 @@ export interface Speaker {
     sttResponseDto: SttResponseDto;
     meetingCreateTime: string; // Date 타입으로 변환할 경우 `string`을 `Date`로 변경
     meetingVoiceTime: number;
+  }
+
+  export interface SpeakersPutDTO {
+    speakers: Speaker[];
   }
