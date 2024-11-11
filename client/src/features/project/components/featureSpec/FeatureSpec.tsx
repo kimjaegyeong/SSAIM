@@ -9,7 +9,6 @@ interface FeatureSpecData {
   domain: string[];
   featureName: string[];
   description: string[];
-  type: string[];
   owner: string[];
   priority: string[];
 }
@@ -24,7 +23,6 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     domain: [],
     featureName: [],
     description: [],
-    type: [],
     owner: [],
     priority: [],
   });
@@ -80,7 +78,6 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       domain: [...data.domain, ''],
       featureName: [...data.featureName, ''],
       description: [...data.description, ''],
-      type: [...data.type, ''],
       owner: [...data.owner, ''],
       priority: [...data.priority, ''],
     };
@@ -103,7 +100,6 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       domain: data.domain.filter((_, i) => i !== index),
       featureName: data.featureName.filter((_, i) => i !== index),
       description: data.description.filter((_, i) => i !== index),
-      type: data.type.filter((_, i) => i !== index),
       owner: data.owner.filter((_, i) => i !== index),
       priority: data.priority.filter((_, i) => i !== index),
     };
@@ -179,10 +175,9 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>도메인</th>
+            <th>구분</th>
             <th>기능명</th>
             <th>내용</th>
-            <th>구분</th>
             <th>담당자</th>
             <th>우선순위</th>
             <th>삭제</th>
@@ -191,7 +186,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
         <tbody>
           {data.domain.map((_, index) => (
             <tr key={index}>
-              {(['domain', 'featureName', 'description', 'type', 'owner', 'priority'] as const).map((column) => (
+              {(['domain', 'featureName', 'description', 'owner', 'priority'] as const).map((column) => (
                 <td
                   key={column}
                   onClick={() => handleEditClick(index, column)}
@@ -217,7 +212,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
             </tr>
           ))}
           <tr className={styles.addRow} onClick={addNewRow}>
-            <td colSpan={7} className={styles.addRowText}>
+            <td colSpan={6} className={styles.addRowText}>
               + Add New Row
             </td>
           </tr>
