@@ -7,6 +7,7 @@ import MeetingItem from './MeetingItem';
 import MeetingModal from './MeetingModal';
 import { fetchMeetingList } from '@features/project/apis/meeting/fetchMeetingList';
 import { MeetingItemDTO } from '../../types/meeting/MeetingDTO';
+import meetingNoImage from '@/assets/meeting/meetingImage.png'
 
 const MeetingList = () => {
   const navigate = useNavigate();
@@ -49,14 +50,21 @@ const MeetingList = () => {
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <div className={styles.meetingList}>
-          {meetings.map((meeting) => (
-            <MeetingItem
-              key={meeting.meetingId}
-              meeting={meeting}
-              onClick={handleMeetingClick}
-            />
-          ))}
+      <div className={styles.meetingList}>
+          {meetings.length > 0 ? (
+            meetings.map((meeting) => (
+              <MeetingItem
+                key={meeting.meetingId}
+                meeting={meeting}
+                onClick={handleMeetingClick}
+              />
+            ))
+          ) : (
+            <div className={styles.noMeetings}>
+              <img src={meetingNoImage} alt="No Meetings" className={styles.noMeetingsImage} />
+              <p>생성된 회의가 없습니다.</p>
+            </div>
+          )}
         </div>
         
       </div>

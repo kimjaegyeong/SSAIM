@@ -122,13 +122,7 @@ const MeetingCreatePage = () => {
       console.log("Meeting created successfully:", response);
 
       // API 호출 성공 후, 원하는 페이지로 이동
-      navigate(`/project/${projectId}/meeting/${response.meetingId}`, {
-        state: {
-          title: meetingTitle,
-          minutes: timer.minutes,
-          audioUrl: audioURL,
-        },
-      });
+      navigate(`/project/${projectId}/meeting/${response.meetingId}`);
     } catch (error) {
       console.error("Error uploading meeting:", error);
     }
