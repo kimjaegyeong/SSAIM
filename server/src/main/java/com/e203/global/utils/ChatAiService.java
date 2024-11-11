@@ -1,7 +1,5 @@
-package com.e203.weeklyremind.service;
+package com.e203.global.utils;
 
-import com.e203.weeklyremind.request.WeeklyRemindRequestDto;
-import com.e203.weeklyremind.response.WeeklyRemindResponseDto;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +25,22 @@ public class ChatAiService {
 
         return chatClient.prompt()
                 .system("아래의 내용을 전체 대화의 주제, 나온 의견들, 미래 방향성의 3주제로 나누어서 요약해줘")
+                .user(message)
+                .call()
+                .content();
+    }
+
+    public String generateProposal(String message) {
+
+        return chatClient.prompt()
+                .system("사용자의 요청을 바탕으로 소프트웨어 프로젝트 기획서를 작성해줘. 기획서 양식은 아래와 같이 한글로 자세하게 작성해줘.\n" +
+                        "{\n" +
+                        "\t  \"title\": \"[서비스 명]\",\n" +
+                        "\t  \"description\": \"[서비스 소개]\", \n" +
+                        "\t  \"background\": \"[기획 배경]\",\n" +
+                        "\t  \"feature\":\"[주요 기능 소개]\",\n" +
+                        "\t  \"effect\": \"[기대효과]\"" +
+                        "}\n")
                 .user(message)
                 .call()
                 .content();
