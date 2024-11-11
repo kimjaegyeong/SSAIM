@@ -8,6 +8,8 @@ export type TeamBuildingMember = {
     userId: number;
     userName: string;
     profileImage: string | null;
+    recruitingMemberId: number;
+    userEmail: string | null;
     position: number;
 };
 

@@ -14,12 +14,8 @@ import { PiCrownSimpleFill } from "react-icons/pi";
 import { HiMinusCircle } from "react-icons/hi2";
 import RecruitmentSelector from '@/features/teamBuilding/components/createTeam/recruitmentSelector/RecruitmentSelector';
 import { editRecruiting } from '@/features/teamBuilding/apis/editTeam/editRecruiting';
-import { 
-  Recruitment, 
-  TeamBuildingData, 
-  TeamBuildingMember, 
-  MemberDeleteStatus, 
-} from '@/features/teamBuilding/types/teamBuildingDetail/TeamBuildingDetailTypes';
+import { Recruitment, TeamBuildingData, TeamBuildingMember, MemberDeleteStatus } from '@/features/teamBuilding/types/teamBuildingDetail/TeamBuildingDetailTypes';
+import useTeamStore from '@/features/project/stores/useTeamStore';
 
 const initialData: TeamBuildingData = {
   postId: 0,
@@ -57,7 +53,8 @@ const TeamBuildingDetailPage = () => {
   const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
   const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
-
+  const { addMember, setLeaderId, resetStore } = useTeamStore();
+  
   const navigate = useNavigate();
 
   const handleEditPost = () => {
@@ -321,6 +318,20 @@ const TeamBuildingDetailPage = () => {
       });
   };
 
+  const teamBuildingComplete = () => {
+    resetStore()
+    data.recruitingMembers.forEach((member: TeamBuildingMember) => {
+      addMember({
+        userId: member.userId,
+        userName: member.userName,
+        userEmail: member.userEmail || "unknown@example.com",
+        userProfileImage: member.profileImage || "/default-profile.png",
+      })
+    });
+    setLeaderId(data.authorId)
+    navigate(`/project/create`);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -346,7 +357,7 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.postContent}>{data.postContent}</div>
           {isAuthor ? (
             <div className={styles.buttonSection}>
-              <button className={`${styles.authorButton} ${styles.startButton}`}>팀 구성 완료</button>
+              <button className={`${styles.authorButton} ${styles.startButton}`} onClick={teamBuildingComplete}>팀 구성 완료</button>
               <button className={`${styles.authorButton} ${styles.editButton}`} onClick={handleEditPost}>게시글 수정</button>
               <button className={`${styles.authorButton} ${styles.deleteButton}`} onClick={handleDeletePost}>게시글 삭제</button>
             </div>
