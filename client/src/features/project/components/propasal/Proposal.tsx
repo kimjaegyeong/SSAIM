@@ -165,7 +165,11 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
                         onKeyDown={(e) => handleKeyPress(e, field)}
                       ></textarea>
                     ) : (
-                      value
+                      <div
+                        className={styles.readOnly}
+                      >
+                        {value || '비어 있음'}
+                      </div>
                     )}
                   </td>
                 </tr>
