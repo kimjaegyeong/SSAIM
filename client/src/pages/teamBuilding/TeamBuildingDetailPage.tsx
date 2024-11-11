@@ -5,66 +5,25 @@ import Tag from '../../features/teamBuilding/components/tag/Tag'
 import { AiOutlineMore } from "react-icons/ai";
 import Button from '../../components/button/Button';
 import TagSelector from '../../features/teamBuilding/components/tagSelector/TagSelector';
-import { getPostInfo } from '@/features/teamBuilding/apis/teamBuildingDetail/getPostInfo';
 import useUserStore from '@/stores/useUserStore';
 import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
 import { formatDateTime } from '../../utils/formatDateTime';
 import DefaultProfile from '../../assets/profile/DefaultProfile.png'
-import { deletePost } from '../../features/teamBuilding/apis/teamBuildingDetail/deletePost'
+import { getPostInfo, deletePost, createComment, editComment, deleteComment } from '../../features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail'
 import { PiCrownSimpleFill } from "react-icons/pi";
 import { HiMinusCircle } from "react-icons/hi2";
-import { createComment } from '@/features/teamBuilding/apis/teamBuildingDetail/createComment';
-
-type TeamBuildingMember = {
-  userId: number;
-  userName: string;
-  profileImage: string | null;
-  position: number;
-};
-
-type MemberDeleteStatus = {
-  userId: number;
-  position: number;
-  delete: boolean;
-};
-
-type TeamBuildingCandidate = {
-  userId: number;
-  userName: string;
-  profileImage: string | null;
-  position: number;
-  message: string | null;
-  status: number;
-};
-
-type TeamBuildingData = {
-  postId: number;
-  campus: number;
-  authorId: number;
-  candidateCount: number;
-  postTitle: string;
-  postContent: string;
-  firstDomain: number;
-  secondDomain: number;
-  createdDate: string;
-  updatedDate: string;
-  status: number;
-  recruitedTotal: number;
-  memberTotal: number;
-  authorProfileImageUrl: string;
-  authorName: string;
-  memberInfra: number;
-  memberBackend: number;
-  memberFrontend: number;
-  recruitingMembers: TeamBuildingMember[];
-  recruitingCandidates: TeamBuildingCandidate[];
-};
+import RecruitmentSelector from '@/features/teamBuilding/components/createTeam/recruitmentSelector/RecruitmentSelector';
+import { editRecruiting } from '@/features/teamBuilding/apis/editTeam/editRecruiting';
+import { Recruitment, TeamBuildingData, TeamBuildingMember, MemberDeleteStatus } from '@/features/teamBuilding/types/teamBuildingDetail/TeamBuildingDetailTypes';
+import useTeamStore from '@/features/project/stores/useTeamStore';
 
 const initialData: TeamBuildingData = {
   postId: 0,
   campus: 0,
   authorId: 0,
   candidateCount: 0,
+  startDate: '',
+  endDate: '',
   postTitle: '',
   postContent: '',
   firstDomain: 0,
@@ -92,9 +51,10 @@ const TeamBuildingDetailPage = () => {
   const [editedCommentContent, setEditedCommentContent] = useState('');
   const [editMembers, setEditMembers] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
-  const [selectedTag, setSelectedTag] = useState<number>(0);
+  const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
-
+  const { addMember, setLeaderId, resetStore } = useTeamStore();
+  
   const navigate = useNavigate();
 
   const handleEditPost = () => {
@@ -167,7 +127,7 @@ const TeamBuildingDetailPage = () => {
       })
       .catch((err) => {
         console.error(err);
-      });
+      }); 
   };
 
   const handleEditComment = (commentContent:string) => {
@@ -175,9 +135,109 @@ const TeamBuildingDetailPage = () => {
     setEditedCommentContent(commentContent);
   };
 
-  const handleSaveComment = () => {
-    setIsCommentEditing(false);
-    setActiveCommentId(null);
+  const handleSaveComment = async () => {
+    if (activeCommentId === null || !editedCommentContent.trim()) {
+        alert("내용을 입력해주세요.");
+        return;
+    }
+
+    const editedCandidate = filteredCandidates[activeCommentId];
+
+    if (!editedCandidate) {
+        alert("수정할 댓글을 찾을 수 없습니다.");
+        return;
+    }
+
+    const params = {
+        position: selectedTag, // 수정된 포지션
+        message: editedCommentContent, // 수정된 메시지
+    };
+
+    try {
+        await editComment(data.postId, editedCandidate.recruitingMemberId, params);
+        alert("댓글이 성공적으로 수정되었습니다.");
+        window.location.reload(); // 수정 후 페이지 새로고침
+    } catch (error) {
+        console.error("댓글 수정 중 오류가 발생했습니다:", error);
+        alert("댓글 수정 중 문제가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handleDeleteComment = (postId:string, commentId: number) => {
+    deleteComment(parseInt(postId), commentId)
+      .then((response) => {
+        console.log(response);
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const handleNChange = (n: number) => {
+    if (data.recruitedTotal > n) {
+        alert(
+            `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${n})을 초과할 수 없습니다.`
+        );
+        return;
+    }
+
+    // 현재 recruitingMembers의 각 포지션의 최소값 계산
+    const calculateMinimumRecruitment = () => {
+        const FECount = data.recruitingMembers.filter(
+            (member) => member.position === 1
+        ).length;
+
+        const BECount = data.recruitingMembers.filter(
+            (member) => member.position === 2
+        ).length;
+
+        const InfraCount = data.recruitingMembers.filter(
+            (member) => member.position === 3
+        ).length;
+
+        return { FECount, BECount, InfraCount };
+    };
+
+    const { FECount, BECount, InfraCount } = calculateMinimumRecruitment();
+
+    setData((prevData) => {
+        const adjustedRecruitment = {
+            memberFrontend: FECount,
+            memberBackend: BECount,
+            memberInfra: InfraCount,
+        };
+
+        return {
+            ...prevData,
+            memberTotal: n,
+            ...adjustedRecruitment,
+        };
+    });
+  };
+
+  const handleSliderChange = (role: keyof Recruitment, value: number) => {
+    const parsedValue = isNaN(value) ? 0 : value;
+
+    const otherTotal =
+        role === 'FE'
+            ? data.memberBackend + data.memberInfra
+            : role === 'BE'
+            ? data.memberFrontend + data.memberInfra
+            : data.memberFrontend + data.memberBackend;
+
+    const maxAllowed = data.memberTotal - otherTotal;
+
+    setData((prevData) => ({
+        ...prevData,
+        [role === 'FE'
+            ? 'memberFrontend'
+            : role === 'BE'
+            ? 'memberBackend'
+            : 'memberInfra']: Math.min(parsedValue, maxAllowed),
+    }));
+
+    console.log(`Updated ${role} to ${Math.min(parsedValue, maxAllowed)}`);
   };
 
   const handleDeletePost = () => {
@@ -193,8 +253,28 @@ const TeamBuildingDetailPage = () => {
 
   const handleEditToggle = () => {
     if (editMembers) {
-      console.log('선택된 멤버들:', selectedMembers);
+      // Done 버튼 검증
+      const totalMembers = data.memberFrontend + data.memberBackend + data.memberInfra;
+
+      // 모집 인원 합이 총 인원을 초과하거나 부족한 경우
+      if (totalMembers !== data.memberTotal) {
+          alert(
+              `총 모집 인원(${data.memberTotal})과 세부 포지션 합(${totalMembers})이 일치하지 않습니다.`
+          );
+          return;
+      }
+
+      // 모집된 멤버 수가 총 모집 인원을 초과하는 경우
+      if (data.recruitedTotal > data.memberTotal) {
+          alert(
+              `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${data.memberTotal})을 초과할 수 없습니다.`
+          );
+          return;
+      }
+
+      handleSubmit()
     }
+
     setEditMembers(!editMembers);
   };
 
@@ -206,6 +286,50 @@ const TeamBuildingDetailPage = () => {
           : member
       )
     );
+  };
+
+  const handleSubmit = async () => {
+    const formData = {
+        title: data.postTitle,
+        content: data.postContent,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        firstDomain: data.firstDomain,
+        secondDomain: data.secondDomain,
+        campus: data.campus,
+        memberTotal: data.memberTotal,
+        memberInfra: data.memberInfra,
+        memberBackend: data.memberBackend,
+        memberFrontend: data.memberFrontend,
+        recruitingMembers: data.recruitingMembers.map((member) => ({
+            userId: member.userId,
+            position: member.position,
+            delete: selectedMembers.find((m) => m.userId === member.userId)?.delete ? 1 : 0,
+        })),
+    };
+    editRecruiting(data.postId, formData)
+      .then((response) => {
+          console.log(response);
+          window.location.reload();
+      })
+      .catch((err) => {
+          console.error(err);
+          alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+      });
+  };
+
+  const teamBuildingComplete = () => {
+    resetStore()
+    data.recruitingMembers.forEach((member: TeamBuildingMember) => {
+      addMember({
+        userId: member.userId,
+        userName: member.userName,
+        userEmail: member.userEmail || "unknown@example.com",
+        userProfileImage: member.profileImage || "/default-profile.png",
+      })
+    });
+    setLeaderId(data.authorId)
+    navigate(`/project/create`);
   };
 
   return (
@@ -233,7 +357,7 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.postContent}>{data.postContent}</div>
           {isAuthor ? (
             <div className={styles.buttonSection}>
-              <button className={`${styles.authorButton} ${styles.startButton}`}>팀 구성 완료</button>
+              <button className={`${styles.authorButton} ${styles.startButton}`} onClick={teamBuildingComplete}>팀 구성 완료</button>
               <button className={`${styles.authorButton} ${styles.editButton}`} onClick={handleEditPost}>게시글 수정</button>
               <button className={`${styles.authorButton} ${styles.deleteButton}`} onClick={handleDeletePost}>게시글 삭제</button>
             </div>
@@ -253,7 +377,11 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.commentList}>
             {filteredCandidates.map((candidate, index) => (
               <div key={index} className={styles.commentItem}>
-                <Tag text={getPositionLabel(candidate.position)} disablePointerCursor={true}/>
+                {isCommentEditing && activeCommentId === index ? (
+                  <TagSelector onTagChange={handleTagChange} initialTag={candidate.position}/>
+                ):(
+                  <Tag text={getPositionLabel(candidate.position)} disablePointerCursor={true}/>
+                )}
                 <div className={styles.commentContent}>
                   {isCommentEditing && activeCommentId === index ? (
                     <input
@@ -303,7 +431,7 @@ const TeamBuildingDetailPage = () => {
                             수정
                           </button>
                         )}
-                        <button className={styles.modalButton}>삭제</button>
+                        <button className={styles.modalButton} onClick={() => {handleDeleteComment(postId, candidate.recruitingMemberId )}}>삭제</button>
                       </div>
                     )}
                   </div>
@@ -315,9 +443,11 @@ const TeamBuildingDetailPage = () => {
         <div className={styles.teamSection}>
           <div className={styles.teamSectionHeader}>
             <span>모집 현황</span>
-            <button className={styles.editMemberButton} onClick={handleEditToggle}>
-              {editMembers ? 'Done' : 'Edit'}
-            </button>
+            {isAuthor &&
+              <button className={styles.editMemberButton} onClick={handleEditToggle}>
+                {editMembers ? 'Done' : 'Edit'}
+              </button>
+            }
           </div>
           <div className={styles.memberList}>
             {selectedMembers.map((member) => (
@@ -333,7 +463,7 @@ const TeamBuildingDetailPage = () => {
                   />
                   <span>{data.recruitingMembers.find((m) => m.userId === member.userId)?.userName}</span>
                   {member.userId === data.authorId && <PiCrownSimpleFill color="#FFCD29" />}
-                  {editMembers && (
+                  {editMembers && member.userId !== data.authorId && (
                     <HiMinusCircle
                       onClick={() => toggleMemberSelection(member.userId)}
                       className={styles.deleteMemberButton}
@@ -348,7 +478,21 @@ const TeamBuildingDetailPage = () => {
             ))}
           </div>
           {editMembers && (
-            <p>모집인원 수정</p>
+            <RecruitmentSelector
+              recruitment={{
+                  FE: data.memberFrontend,
+                  BE: data.memberBackend,
+                  Infra: data.memberInfra,
+              }}
+              N={data.memberTotal}
+              inputValue={data.memberTotal.toString()}
+              onInputChange={(value) => {
+                  const total = parseInt(value, 10);
+                  handleNChange(total);
+              }}
+              onSliderChange={handleSliderChange}
+              onNChange={handleNChange}
+            />
           )}
         </div>
       </div>

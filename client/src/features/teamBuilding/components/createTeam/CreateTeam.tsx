@@ -216,7 +216,7 @@ const TeamCreation: React.FC = () => {
                 {/* 오른쪽 섹션 */}
                 <div className={styles.selectionSection}>
                     <DomainSelector domains={domains} selectedDomains={selectedDomains} onDomainClick={handleDomainClick} />
-                    <RecruitmentSelector recruitment={recruitment} totalPositions={totalPositions} N={N} inputValue={inputValue} onInputChange={setInputValue} onSliderChange={handleSliderChange} onNChange={setN} />
+                    <RecruitmentSelector recruitment={recruitment} N={N} inputValue={inputValue} onInputChange={setInputValue} onSliderChange={handleSliderChange} onNChange={setN} />
                     <div className={styles.myPosition}>
                         <span>내 포지션</span>
                         <div className={styles.myPositionTag}>
