@@ -12,7 +12,8 @@ import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import useUserStore from '@/stores/useUserStore';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { useDailyRemind } from '@/features/project/hooks/remind/useDailyRemind'; // useDailyRemind 훅을 임포트
-import { startOfMonth, differenceInWeeks, format } from 'date-fns';
+import { format } from 'date-fns';
+import { dateToWeek } from '@/utils/dateToWeek';
 
 
 
@@ -70,13 +71,7 @@ const DailyContainer = () => {
       day: 'numeric',
       weekday: 'short',
     }).format(selectedDate).replace(/ (\S+)$/, ' ($1)')
-  : (() => {
-      // 1주일 단위일 때 주차 계산
-      const startOfMonthDate = startOfMonth(selecteWeekdDate);
-      const weekNumber = differenceInWeeks(selecteWeekdDate, startOfMonthDate) + 1;
-
-      return `${format(selecteWeekdDate, 'yyyy년 M월')} ${weekNumber}주차`;
-    })();
+  : dateToWeek(selecteWeekdDate);
 
   const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
 
