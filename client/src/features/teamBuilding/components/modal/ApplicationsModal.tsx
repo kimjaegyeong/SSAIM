@@ -59,33 +59,37 @@ const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }
                     </button>
                 </div>
                 <div className={styles.modalBody}>
-                    {applications.map((application, index) => (
-                        <div
-                            key={index}
-                            className={styles.applicationRow}
-                            onClick={() => navigate(`/team-building/detail/${application.recruitingId}`)}
-                        >
-                            <span className={styles.title}>{application.recruitingTitle}</span>
-                            <div className={styles.tags}>
-                                <Tag text={getDomainLabel(application.firstDomain)} />
-                                {application.secondDomain && (
-                                    <Tag text={getDomainLabel(application.secondDomain)} />
-                                )}
-                            </div>
-                            <Tag text={getPositionLabel(application.position)} />
-                            <span
-                                className={`${styles.status} ${
-                                    application.status === 1
-                                    ? styles.accepted
-                                    : application.status === 0
-                                    ? styles.pending
-                                    : styles.rejected
-                                }`}
+                    {applications.length === 0 ? (
+                        <div className={styles.noApplications}>신청내역이 없습니다.</div>
+                    ) : (
+                        applications.map((application, index) => (
+                            <div
+                                key={index}
+                                className={styles.applicationRow}
+                                onClick={() => navigate(`/team-building/detail/${application.recruitingId}`)}
                             >
-                                {getApplicationStatusLabel(application.status)}
-                            </span>
-                        </div>
-                    ))}
+                                <span className={styles.title}>{application.recruitingTitle}</span>
+                                <div className={styles.tags}>
+                                    <Tag text={getDomainLabel(application.firstDomain)} />
+                                    {application.secondDomain && (
+                                        <Tag text={getDomainLabel(application.secondDomain)} />
+                                    )}
+                                </div>
+                                <Tag text={getPositionLabel(application.position)} />
+                                <span
+                                    className={`${styles.status} ${
+                                        application.status === 1
+                                            ? styles.accepted
+                                            : application.status === 0
+                                            ? styles.pending
+                                            : styles.rejected
+                                    }`}
+                                >
+                                    {getApplicationStatusLabel(application.status)}
+                                </span>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
