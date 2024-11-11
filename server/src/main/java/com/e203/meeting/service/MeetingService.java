@@ -45,7 +45,7 @@ public class MeetingService {
             return null;
         }
 
-        List<Meeting> meetingList = meetingRepository.findByprojectId(project);
+        List<Meeting> meetingList = meetingRepository.findByproject(project);
         List<MeetingResponseDto> meetingResponseDtoList = new ArrayList<>();
 
         for (Meeting meeting : meetingList) {
