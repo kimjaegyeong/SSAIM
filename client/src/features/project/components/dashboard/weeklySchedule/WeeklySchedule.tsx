@@ -44,7 +44,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
   );
   const filterdIssues = sprintIssues?.filter((issue: IssueDTO) => {
     return issue.allocator === userName;
-  });
+  }).filter((issue: IssueDTO)=>{ return issue.progress === '완료'});
   const weekMap = {
     Monday: { date: new Date(year, month, day - 3) },
     Tuesday: { date: new Date(year, month, day - 2) },

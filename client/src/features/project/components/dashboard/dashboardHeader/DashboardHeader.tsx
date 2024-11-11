@@ -1,6 +1,6 @@
 import { useProjectListData } from '@/features/project/hooks/useProjectListData';
 import styles from './DashboardHeader.module.css';
-import React, { useEffect, } from 'react';
+import React, { useEffect } from 'react';
 import useUserStore from '@/stores/useUserStore';
 import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
 import { dateToString } from '@/utils/dateToString';
@@ -16,14 +16,30 @@ const DashboardHeader: React.FC = () => {
   // 초기 상태 설정: projectId와 currentWeek 설정
   useEffect(() => {
     if (projectListData && projectListData.length > 0) {
-      setProjectId(Number(projectListData[0].id));
-      setProjectWeek(new Date(projectListData[0].startDate), new Date(projectListData[0].endDate));
+      setProjectId(Number(projectListData[projectListData.length - 1].id));
+      setProjectWeek(
+        new Date(projectListData[projectListData.length - 1].startDate),
+        new Date(projectListData[projectListData.length - 1].endDate)
+      );
     }
   }, [projectListData, setProjectId]);
 
   useEffect(() => {
     if (projectWeekList && projectWeekList.length > 0) {
-      setCurrentWeek(projectWeekList.length - 1);
+      let flag = 0;
+      for (let i = 0; i < projectWeekList.length; i++) {
+        const year = projectWeekList[i].endDate.getFullYear();
+        const month = projectWeekList[i].endDate.getMonth();
+        const day = projectWeekList[i].endDate.getDate();
+        if (new Date(year, month, day - 3) <= new Date() && new Date() <= new Date(year, month, day + 3)) {
+          setCurrentWeek(i);
+          flag = 1;
+          break;
+        }
+      }
+      if (!flag) {
+        setCurrentWeek(projectWeekList.length - 1);
+      }
     }
   }, [projectWeekList, setCurrentWeek]);
 

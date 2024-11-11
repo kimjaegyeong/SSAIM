@@ -3,7 +3,9 @@ import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, TooltipItem } from 'chart.js';
 import styles from './ProgressChart.module.css';
-
+import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
+import { useProjectListData } from '@/features/project/hooks/useProjectListData';
+import useUserStore from '@/stores/useUserStore';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface ChartDataProps {
@@ -12,11 +14,14 @@ interface ChartDataProps {
 }
 
 const ProgressChart: React.FC = () => {
-  const chartsData: ChartDataProps[] = [
-    { label: 'Backend', progress: 70 },
-    { label: 'Frontend', progress: 45 },
-  ];
-
+  // const chartsData: ChartDataProps[] = [
+  //   { label: 'Backend', progress: 70 },
+  //   { label: 'Frontend', progress: 45 },
+  // ];
+  const {userId } = useUserStore();
+  const {projectId} = useDashboardStore();
+  const {data : projectListData} = useProjectListData(userId);
+  const chartsData: ChartDataProps[] = [{label : 'Backend', progress : projectListData?.find(project => project.id === projectId)?.progressBack ||0},{label : 'Frontend', progress : projectListData?.find(project => project.id === projectId)?.progressFront || 0}]
   const createChartData = (progress: number) => ({
     labels: ['Completed', 'Remaining'],
     datasets: [
