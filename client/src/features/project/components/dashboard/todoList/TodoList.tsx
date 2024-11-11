@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './TodoList.module.css';
 import { useDashboardData } from '../../../hooks/useDashboardData';
-import { JiraDTO } from '../../../types/dashboard/WeeklyDataDTO';
+import { IssueDTO } from '../../../types/dashboard/WeeklyDataDTO';
+import { useSprintIssueQuery } from '@/features/project/hooks/useSprintIssueData';
+import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
+import { dateToString } from '@/utils/dateToString';
 
 interface TodoListItemProps {
-  task: JiraDTO;
+  task: IssueDTO;
 }
 
 const TodoListItem: React.FC<TodoListItemProps> = ({ task }) => {
@@ -12,18 +15,44 @@ const TodoListItem: React.FC<TodoListItemProps> = ({ task }) => {
   return (
     <div className={styles.todoListItem}>
       <div>
-        <span className={styles.taskEpic}>{task.epic}</span>
+        <span className={styles.taskEpic}>{task.epicCode}</span>
         <span className={styles.taskTitle}>{task.title}</span>
       </div>
-      <span className={styles.taskPriority}>{task.priority}</span>
+      <span className={styles.taskPriority}>{task.storyPoint}</span>
     </div>
   );
 };
 
 const TodoList: React.FC = () => {
+  const { projectId, projectWeekList } = useDashboardStore();
   const { data: weeklyData } = useDashboardData();
-  const todoList = weeklyData.todoList;
-  if (!weeklyData || !weeklyData.todoList) {
+  const [latestWeekIdx, setLatestWeekIdx] = useState(0);
+  useEffect(() => {
+    if (projectWeekList && projectWeekList.length > 0) {
+      let flag = 0;
+      for (let i = 0; i < projectWeekList.length; i++) {
+        const year = projectWeekList[i].endDate.getFullYear();
+        const month = projectWeekList[i].endDate.getMonth();
+        const day = projectWeekList[i].endDate.getDate();
+        if (new Date(year, month, day - 3) <= new Date() && new Date() <= new Date(year, month, day + 3)) {
+          flag = 1;
+          setLatestWeekIdx(i);
+          break;
+        }
+      }
+      if (!flag) {
+        setLatestWeekIdx(projectWeekList.length - 1);
+      }
+    }
+  }, [projectWeekList]);
+  const { data: sprintIssues } = useSprintIssueQuery(
+    projectId,
+    dateToString(projectWeekList[latestWeekIdx]?.startDate, '-'),
+    dateToString(projectWeekList[latestWeekIdx]?.endDate, '-')
+  );
+
+  const todoList = sprintIssues?.filter((issue: IssueDTO) => issue.progress !== '완료');
+  if (!weeklyData || !weeklyData?.todoList) {
     return <div>할 일이 없습니다.</div>;
   }
 
@@ -31,9 +60,9 @@ const TodoList: React.FC = () => {
     <div className={styles.todoList}>
       <div className={styles.todoListHeader}>할 일</div>
       <div className={styles.todoListBody}>
-        {todoList.length > 0 &&
-          todoList.map((t) => {
-            return <TodoListItem task={t as JiraDTO} />;
+        {todoList?.length > 0 &&
+          todoList.map((t: IssueDTO) => {
+            return <TodoListItem task={t} />;
           })}
       </div>
     </div>

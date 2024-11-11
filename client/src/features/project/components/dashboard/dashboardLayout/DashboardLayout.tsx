@@ -15,7 +15,7 @@ const DashboardLayout = () => {
       <WeeklySchedule weeklyStartDate={new Date('2024-10-30')} />
       <div className={styles.dashboardBottom}>
       <div className={styles.chartContainer}>
-      <ProgressChart/>
+      <ProgressChart />
       </div>
       <TodoList/>
       </div>

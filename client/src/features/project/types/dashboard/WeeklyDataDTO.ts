@@ -24,8 +24,12 @@ export interface WeeklyDataDTO {
 export interface IssueDTO extends TaskDTO {
   allocator: string;
   title: string;
-  status: '해야 할 일' | '진행 중' | '완료';
+  progress: '해야 할 일' | '진행 중' | '완료';
   epicCode: string;
   storyPoint: number;
   issueKey: string;
+}
+export interface GitlabDTO extends TaskDTO {
+  mergeDate : Date;
+
 }
