@@ -12,7 +12,7 @@
   }
   
 .modalContent {
-    width: 35vw;
+    width: auto;
     height: auto;
     background: white;
     padding: 30px;
