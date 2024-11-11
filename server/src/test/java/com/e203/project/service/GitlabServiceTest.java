@@ -1,13 +1,17 @@
 package com.e203.project.service;
 
 import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
 import com.e203.project.dto.gitlabapi.GitlabMR;
 import com.e203.project.dto.response.ProjectGitlabMRResponseDto;
+import com.mongodb.assertions.Assertions;
 
 @SpringBootTest
 public class GitlabServiceTest {
@@ -34,6 +38,7 @@ public class GitlabServiceTest {
 
 	@Test
 	public void testConnectWebhook(){
-		// gitlabService.connectGitlabWebHook("")
+		boolean mapResponseEntity = gitlabService.connectWebhook("821395", "ZAzUAjNW-iihg1iTXHRr");
+		Assertions.assertTrue(mapResponseEntity);
 	}
 }
