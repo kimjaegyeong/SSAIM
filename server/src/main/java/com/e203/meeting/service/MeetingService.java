@@ -5,10 +5,7 @@ import com.e203.meeting.entity.Meeting;
 import com.e203.meeting.repository.MeetingRepository;
 import com.e203.meeting.request.FixSpeakerNameRequestDto;
 import com.e203.meeting.request.MeetingRequestDto;
-import com.e203.meeting.response.MeetingResponseDto;
-import com.e203.meeting.response.MeetingSummaryResponseDto;
-import com.e203.meeting.response.OneMeetingResponseDto;
-import com.e203.meeting.response.SttResponseDto;
+import com.e203.meeting.response.*;
 import com.e203.project.entity.Project;
 import com.e203.project.repository.ProjectRepository;
 
@@ -89,11 +86,11 @@ public class MeetingService {
                 .sttResponseDto(sttResponseDto)
                 .meetingVoiceTime(meeting.getMeetingVoiceTime()).build();
     }
-    public boolean createMeeting(MeetingRequestDto meetingRequestDto, MultipartFile audiofile) throws Exception {
+    public MeetingIdResponseDto createMeeting(MeetingRequestDto meetingRequestDto, MultipartFile audiofile) throws Exception {
 
         Project project = projectRepository.findById(meetingRequestDto.getProjectId()).orElse(null);
         if (project == null) {
-            return false;
+            return null;
         }
 
         String audioLink = fileUploader.upload(audiofile);
@@ -110,9 +107,11 @@ public class MeetingService {
                 .project(project)
                 .meetingVoiceTime(getLastEndValue(upload)).build();
 
-        meetingRepository.save(meeting);
+        Meeting save = meetingRepository.save(meeting);
 
-        return true;
+        MeetingIdResponseDto meetingIdResponseDto = MeetingIdResponseDto.builder().meetingId(save.getMeetingId()).build();
+
+        return meetingIdResponseDto;
 
     }
 
