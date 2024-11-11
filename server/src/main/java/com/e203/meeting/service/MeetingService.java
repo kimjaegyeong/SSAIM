@@ -1,11 +1,13 @@
 package com.e203.meeting.service;
 
+import com.e203.global.utils.FileUploader;
 import com.e203.meeting.entity.Meeting;
 import com.e203.meeting.repository.MeetingRepository;
 import com.e203.meeting.request.FixSpeakerNameRequestDto;
 import com.e203.meeting.request.MeetingRequestDto;
 import com.e203.meeting.response.MeetingResponseDto;
 import com.e203.meeting.response.MeetingSummaryResponseDto;
+import com.e203.meeting.response.OneMeetingResponseDto;
 import com.e203.meeting.response.SttResponseDto;
 import com.e203.project.entity.Project;
 import com.e203.project.repository.ProjectRepository;
@@ -33,6 +35,8 @@ public class MeetingService {
     private final NaverCloudClient naverCloudClient;
     private final MeetingRepository meetingRepository;
     private final ProjectRepository projectRepository;
+
+    private final FileUploader fileUploader;
     private final ChatAiService chatAiService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -52,11 +56,13 @@ public class MeetingService {
             //jsonString을 Json으로 변경
             SttResponseDto sttResponseDto = objectMapper.readValue(meeting.getMeetingVoiceScript(), SttResponseDto.class);
 
+            // 첫 번째 Segment의 text 값 가져오기
+            String firstText = sttResponseDto.getSegments().get(0).getText();
+
             meetingResponseDtoList.add(MeetingResponseDto.builder()
                     .meetingId(meeting.getMeetingId())
                     .meetingTitle(meeting.getMeetingTitle())
-                    .meetingVoiceScript(sttResponseDto)
-                    .meetingVoiceUrl(meeting.getMeetingVoiceUrl())
+                    .meetingFirstVoiceText(firstText)
                     .projectId(meeting.getProject().getId())
                     .meetingCreateTime(meeting.getCreatedAt())
                     .meetingVoiceTime(meeting.getMeetingVoiceTime()).build());
@@ -65,7 +71,7 @@ public class MeetingService {
         return meetingResponseDtoList;
     }
 
-    public MeetingResponseDto getMeeting(int meetingId) throws Exception{
+    public OneMeetingResponseDto getMeeting(int meetingId) throws Exception{
         Meeting meeting = meetingRepository.findById(meetingId).orElse(null);
         if (meeting == null) {
             return null;
@@ -74,13 +80,13 @@ public class MeetingService {
         //jsonString을 Json으로 변경
         SttResponseDto sttResponseDto = objectMapper.readValue(meeting.getMeetingVoiceScript(), SttResponseDto.class);
 
-        return MeetingResponseDto.builder()
+        return OneMeetingResponseDto.builder()
                 .meetingCreateTime(meeting.getCreatedAt())
                 .projectId(meeting.getProject().getId())
                 .meetingId(meeting.getMeetingId())
                 .meetingTitle(meeting.getMeetingTitle())
                 .meetingVoiceUrl(meeting.getMeetingVoiceUrl())
-                .meetingVoiceScript(sttResponseDto)
+                .sttResponseDto(sttResponseDto)
                 .meetingVoiceTime(meeting.getMeetingVoiceTime()).build();
     }
     public boolean createMeeting(MeetingRequestDto meetingRequestDto, MultipartFile audiofile) throws Exception {
@@ -90,6 +96,8 @@ public class MeetingService {
             return false;
         }
 
+        String audioLink = fileUploader.upload(audiofile);
+
         // 클로버 AI 쓰는 부분
         NaverCloudClient.NestRequestEntity requestEntity = new NaverCloudClient.NestRequestEntity();
         //AI 결과물을 String으로 저장
@@ -98,7 +106,7 @@ public class MeetingService {
         Meeting meeting = Meeting.builder()
                 .meetingTitle(meetingRequestDto.getMeetingTitle())
                 .meetingVoiceScript(upload)
-                .meetingVoiceUrl("")
+                .meetingVoiceUrl(audioLink)
                 .project(project)
                 .meetingVoiceTime(getLastEndValue(upload)).build();
 

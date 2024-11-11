@@ -4,6 +4,7 @@ import com.e203.meeting.request.FixSpeakerNameRequestDto;
 import com.e203.meeting.request.MeetingRequestDto;
 import com.e203.meeting.response.MeetingResponseDto;
 import com.e203.meeting.response.MeetingSummaryResponseDto;
+import com.e203.meeting.response.OneMeetingResponseDto;
 import com.e203.meeting.service.MeetingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,9 @@ public class MeetingController {
     }
 
     @GetMapping("/api/v1/projects/{projectId}/meetings/{meetingId}")
-    public ResponseEntity<MeetingResponseDto> getMeeting(@PathVariable("meetingId") int meetingId) throws Exception {
+    public ResponseEntity<OneMeetingResponseDto> getMeeting(@PathVariable("meetingId") int meetingId) throws Exception {
 
-        MeetingResponseDto result = meetingService.getMeeting(meetingId);
+        OneMeetingResponseDto result = meetingService.getMeeting(meetingId);
         if (result == null) {
             return ResponseEntity.status(NOT_FOUND).body(null);
         }
