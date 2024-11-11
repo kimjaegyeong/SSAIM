@@ -21,7 +21,7 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
   stompClient,
 }) => {
   const [editingField, setEditingField] = useState<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   // Key 이름 매핑
   const keyMappings: Record<string, string> = {
@@ -35,9 +35,8 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
   };
 
   useEffect(() => {
-    if (editingField && textareaRef.current) {
-      textareaRef.current.focus();
-      textareaRef.current.select(); // 텍스트 전체 선택
+    if (editingField && inputRefs.current[editingField]) {
+      inputRefs.current[editingField]?.focus();
     }
   }, [editingField]);
 
@@ -55,18 +54,6 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
         JSON.stringify(updatedData)
       );
     }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault(); // 기본 Enter 동작 방지
-      setEditingField(null); // 편집 종료
-    }
-  };
-
-  const autoResize = (textarea: HTMLTextAreaElement) => {
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
   };
 
   const handleFieldClick = (key: string) => {
@@ -97,14 +84,13 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
     <div className={styles.modalOverlay} onClick={onClose}>
       <div
         className={styles.modalContent}
-        onClick={(e) => e.stopPropagation()} // 클릭 이벤트 버블링 방지
+        onClick={(e) => e.stopPropagation()}
       >
-        <textarea
+        <input
           className={styles.descriptionTextarea}
           value={data.description[rowIndex]}
+          placeholder="API 이름을 입력하세요."
           onChange={(e) => handleInputChange('description', e.target.value)}
-          onKeyDown={(e) => handleKeyDown(e)}
-          placeholder="API 이름"
         />
         <div className={styles.keyValueList}>
           {Object.keys(data).map((key) =>
@@ -112,19 +98,17 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
               <div key={key} className={styles.keyValueRow}>
                 <span className={styles.key}>{keyMappings[key] || key}</span>
                 {editingField === key ? (
-                  <textarea
-                    ref={textareaRef}
+                  <input
+                    ref={(el) => (inputRefs.current[key] = el)}
                     className={styles.valueTextarea}
                     value={data[key][rowIndex]}
                     onChange={(e) => handleInputChange(key, e.target.value)}
-                    onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
-                    onKeyDown={(e) => handleKeyDown(e)}
                   />
                 ) : (
                   <span
                     className={`${styles.valueText} ${!data[key][rowIndex] ? styles.placeholder : ''}`}
                     onClick={(e) => {
-                      e.stopPropagation(); // 클릭 이벤트 버블링 방지
+                      e.stopPropagation();
                       handleFieldClick(key);
                     }}
                   >
@@ -143,7 +127,11 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
                 className={styles.bodyTextarea}
                 value={data[key][rowIndex]}
                 onChange={(e) => handleInputChange(key, e.target.value)}
-                onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
+                onInput={(e) => {
+                  const textarea = e.target as HTMLTextAreaElement;
+                  textarea.style.height = 'auto';
+                  textarea.style.height = `${textarea.scrollHeight}px`;
+                }}
               />
             </div>
           ))}
