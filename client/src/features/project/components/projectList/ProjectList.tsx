@@ -7,6 +7,7 @@ import { dateToString } from '../../../../utils/dateToString';
 import { useNavigate } from 'react-router-dom';
 import EmptyProjectList from './EmptyProjectList';
 import useUserStore from '@/stores/useUserStore';
+import useTeamStore from '@/features/project/stores/useTeamStore';
 
 interface ProjectListItemProps {
   projectInfo: ProjectDTO;
@@ -38,6 +39,7 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
 const ProjectList: React.FC = () => {
   const { userId } = useUserStore();
   console.log(userId);
+  const { resetStore } = useTeamStore();
   const { data: projectListData } = useProjectListData(userId);
   console.log('Fetched Project List Data:', projectListData);
 
@@ -47,6 +49,7 @@ const ProjectList: React.FC = () => {
     navigate(`/project/${projectId}/info`);
   };
   const handleCreateClick = () => {
+    resetStore()
     navigate('/project/create');
   };
   return (
