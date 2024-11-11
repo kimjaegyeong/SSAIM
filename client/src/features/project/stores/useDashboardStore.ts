@@ -23,6 +23,7 @@ interface DashboardState {
   // endDate : string;
   setStartDate: (date: string) => void; // 날짜를 업데이트하는 함수
   toggleTask: (day: DayOfWeek, taskType: TaskType) => void;
+  resetTaskStatus: () => void;
 }
 
 // Zustand store 생성
@@ -34,7 +35,10 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   },
   currentWeek: 0,
   setCurrentWeek: (idx) => {
-    set(() => ({ currentWeek: idx }));
+    set((state) => {
+      state.resetTaskStatus();
+      return { currentWeek: idx };
+    });
     console.log(idx);
   },
   projectWeekList: [],
@@ -81,4 +85,17 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     })),
   startDate: '2024-10-28', // 초기값 설정
   setStartDate: (date) => set(() => ({ startDate: date })), // startDate 업데이트 함수
+  resetTaskStatus: () => {
+    set(() => ({
+      taskStatus: {
+        Monday: { jira: false, gitlab: false, meeting: false },
+        Tuesday: { jira: false, gitlab: false, meeting: false },
+        Wednesday: { jira: false, gitlab: false, meeting: false },
+        Thursday: { jira: false, gitlab: false, meeting: false },
+        Friday: { jira: false, gitlab: false, meeting: false },
+        Saturday: { jira: false, gitlab: false, meeting: false },
+        Sunday: { jira: false, gitlab: false, meeting: false },
+      },
+    }));
+  },
 }));

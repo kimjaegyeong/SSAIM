@@ -5,10 +5,9 @@ import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
 import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
 import { useSprintIssueQuery } from '@/features/project/hooks/useSprintIssueData';
 import useUserStore from '@/stores/useUserStore';
-import { useProjectListData } from '@/features/project/hooks/useProjectListData';
 import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 import { dateToString } from '@/utils/dateToString';
-import { IssueDTO } from '@/features/project/types/dashboard/IssueDTO';
+import { IssueDTO } from '@/features/project/types/dashboard/WeeklyDataDTO';
 interface WeeklyScheduleProps {
   weeklyStartDate: Date;
 }
@@ -65,7 +64,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
       Sunday: { jira: [], gitlab: [], meeting: [] },
     };
 
-    filterdIssues?.forEach((issue) => {
+    filterdIssues?.forEach((issue:IssueDTO) => {
       const match = issue.title.match(/(\d{6})/); // `title`에서 날짜 추출
       if (match) {
         const dateStr = match[0];
@@ -96,8 +95,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
             date={weekMap[day]?.date?.getDate()}
             day={day}
             jiraData={dashboardData[day]?.jira}
-            gitlabData={dashboardData[day].gitlab}
-            meetingData={dashboardData[day].meeting}
+            gitlabData={dashboardData[day]?.gitlab}
+            meetingData={dashboardData[day]?.meeting}
           />
         ))}
       </div>

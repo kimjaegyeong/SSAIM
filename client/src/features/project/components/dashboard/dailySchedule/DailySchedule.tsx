@@ -9,6 +9,9 @@ interface DailyScheduleProps {
   day: DayOfWeek;
   date: number;
   jiraData : IssueDTO[] | [];
+  gitlabData : any[];
+  meetingData : any[];
+
 }
 
 const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData }) => {

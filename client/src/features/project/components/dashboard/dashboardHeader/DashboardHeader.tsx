@@ -1,15 +1,12 @@
 import { useProjectListData } from '@/features/project/hooks/useProjectListData';
 import styles from './DashboardHeader.module.css';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, } from 'react';
 import useUserStore from '@/stores/useUserStore';
 import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
 import { dateToString } from '@/utils/dateToString';
-import { HiCurrencyDollar } from 'react-icons/hi2';
-import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 
 const DashboardHeader: React.FC = () => {
   const { userId } = useUserStore();
-  const { data: userInfo } = useUserInfoData(userId);
   const { data: projectListData } = useProjectListData(userId);
   const { projectId, setProjectId, setProjectWeek, currentWeek, projectWeekList, setCurrentWeek } = useDashboardStore();
   // 선택된 프로젝트의 제목 가져오기

@@ -16,8 +16,8 @@ const ProjectCreate = () => {
     title: '',
     name: '',
     profileImage: '',
-    startDate: null,
-    endDate: null,
+    startDate: new Date(),
+    endDate: new Date(),
     teamMembers: [],
   });
   const { members, leaderId } = useTeamStore();
