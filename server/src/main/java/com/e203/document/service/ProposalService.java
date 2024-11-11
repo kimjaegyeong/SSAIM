@@ -61,7 +61,7 @@ public class ProposalService {
 	}
 
 	public Proposal saveProposal(String projectId) {
-		String defaultForm = "{\"Domain\": [],\"FeatureName\": [],\"Description\": [],\"Type\": [],\"owner\": [],\"priority\": []}";
+		String defaultForm = "{\"title\": \"\",\"description\": \"\",\"background\": \"\",\"feature\":\"\",\"effect\": \"\"}";
 		Proposal proposal = Proposal.builder()
 			.projectId(projectId)
 			.content(defaultForm)
