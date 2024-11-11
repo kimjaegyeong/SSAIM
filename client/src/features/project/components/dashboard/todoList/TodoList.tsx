@@ -3,8 +3,6 @@ import styles from './TodoList.module.css';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 import { IssueDTO } from '../../../types/dashboard/WeeklyDataDTO';
 import { useSprintIssueQuery } from '@/features/project/hooks/useSprintIssueData';
-import { useProjectListData } from '@/features/project/hooks/useProjectListData';
-import useUserStore from '@/stores/useUserStore';
 import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
 import { dateToString } from '@/utils/dateToString';
 
@@ -26,10 +24,8 @@ const TodoListItem: React.FC<TodoListItemProps> = ({ task }) => {
 };
 
 const TodoList: React.FC = () => {
-  const { userId } = useUserStore();
   const { projectId, projectWeekList } = useDashboardStore();
   const { data: weeklyData } = useDashboardData();
-  const { data: projectListData } = useProjectListData(projectId);
   const [latestWeekIdx, setLatestWeekIdx] = useState(0);
   useEffect(() => {
     if (projectWeekList && projectWeekList.length > 0) {
