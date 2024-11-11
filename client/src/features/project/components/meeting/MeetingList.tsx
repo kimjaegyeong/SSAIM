@@ -7,8 +7,6 @@ import MeetingItem from './MeetingItem';
 import MeetingModal from './MeetingModal';
 import { fetchMeetingList } from '@features/project/apis/meeting/fetchMeetingList';
 import { MeetingItemDTO } from '../../types/meeting/MeetingDTO';
-import {formatMeetingTime, formatMeetingDuration} from '../../utils/meetingTime';
-
 
 const MeetingList = () => {
   const navigate = useNavigate();
@@ -23,7 +21,6 @@ const MeetingList = () => {
     const getMeetings = async () => {
       try {
         const data = await fetchMeetingList(Number(projectId)); // projectId를 숫자로 변환해서 API 호출
-        console.log('Fetched meetings:', data); // API 결과 출력
         setMeetings(data); // meetings 상태에 데이터 저장
       } catch (error) {
         console.error('Error fetching meetings:', error);
@@ -38,13 +35,7 @@ const MeetingList = () => {
 
   const handleMeetingClick = (meeting: MeetingItemDTO) => {
     console.log('Selected meeting:', meeting);
-    navigate(`/project/${projectId}/meeting/${meeting.meetingId}`, {
-      state: {
-        title: meeting.meetingTitle,
-        date: formatMeetingTime(meeting.meetingCreateTime),
-        duration: formatMeetingDuration(meeting.meetingVoiceTime)
-      }
-    });
+    navigate(`/project/${projectId}/meeting/${meeting.meetingId}`);
   };
   
   const handleOpenModal = () => {
