@@ -24,6 +24,8 @@ import com.e203.project.entity.Project;
 import com.e203.project.entity.ProjectMember;
 import com.e203.project.repository.ProjectMemberRepository;
 import com.e203.project.repository.ProjectRepository;
+import com.e203.user.entity.User;
+import com.e203.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +41,7 @@ public class GitlabService {
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
 	private final RestClient restClient;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public boolean setGitlabApi(ProjectGitlabConnectDto gitlabDto, int projectId) {
@@ -55,6 +58,7 @@ public class GitlabService {
 		return true;
 	}
 
+
 	public List<ProjectGitlabMRResponseDto> findUserMR(String startDate, String endDate, Integer projectId,
 		int userId) {
 		if (!isExist(projectId)) {
@@ -67,7 +71,8 @@ public class GitlabService {
 
 		String gitlabApiKey = leader.getProject().getGitlabApi();
 		String gitlabProjectId = leader.getProject().getGitlabProjectId();
-		String userEmail = leader.getUser().getUserEmail();
+		User user = userRepository.findByUserId(userId);
+		String userEmail = user.getUserEmail();
 
 		StringTokenizer st = new StringTokenizer(userEmail, "@");
 		String username = st.nextToken();
