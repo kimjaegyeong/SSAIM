@@ -1,4 +1,4 @@
-export const dateToString = (date : Date|string|null) => {
+export const dateToString = (date : Date|string|null, parser='.') => {
   if(!date){
     return null;
   }
@@ -10,5 +10,5 @@ export const dateToString = (date : Date|string|null) => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  return `${year}.${month}.${day}`;
+  return `${year}${parser}${month}${parser}${day}`;
 }

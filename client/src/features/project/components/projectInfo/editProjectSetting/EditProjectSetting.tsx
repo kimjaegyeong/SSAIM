@@ -30,6 +30,7 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
   const modalData = modalContent[type];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState<string>('');
+  const [externalProjectId, setExternalProjectId] = useState<string>('');
   const { data: projectInfo } = useProjectInfo(projectId);
 
   const existingApiKey = type === 'jira' ? projectInfo?.jiraApi : projectInfo?.gitlabApi;
@@ -44,13 +45,12 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
     setIsModalOpen(true);
   };
   const handleSave = async () => {
-    const apiKeyPayload = type === 'jira' ? { jiraApi: apiKey } : { gitlabApi: apiKey };
+    const apiKeyPayload =
+      type === 'jira'
+        ? { jiraApi: apiKey, jiraProjectId: externalProjectId }
+        : { gitlabApi: apiKey, gitlabProjectId: externalProjectId };
     console.log(apiKeyPayload);
-    if (existingApiKey) {
-      await fetchApiKey(modalData.content, 'patch', apiKeyPayload, projectId);
-    } else {
-      await fetchApiKey(modalData.content, 'post', apiKeyPayload, projectId);
-    }
+    await fetchApiKey(modalData.content, 'patch', apiKeyPayload, projectId);
   };
 
   const handleCancel = () => {
@@ -72,6 +72,13 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
             <p>{modalData?.title}</p>
           </div>
           <div className={styles.bodyRight}>
+            <input
+              type="text"
+              placeholder={`${modalData.content} Project Id`}
+              className={styles.input}
+              value={externalProjectId}
+              onChange={(e) => setExternalProjectId(e.target.value)}
+            />
             <input
               type="text"
               placeholder={`${modalData.content} API Key`}

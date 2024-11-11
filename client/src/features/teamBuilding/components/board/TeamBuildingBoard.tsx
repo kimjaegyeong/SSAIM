@@ -3,13 +3,15 @@ import styles from './TeamBuildingBoard.module.css';
 import DropDown from '../filterDropDown/FilterDropDown';
 import CategoryDropdown from "../filterDropDown/CategoryDropDown";
 import Tag from '../tag/Tag';
-import { getTeamBuildingList } from "../../apis/teamBuildingBoard/getTeamBuildingList";
+import useUserStore from "@/stores/useUserStore";
+import { getTeamBuildingList } from "../../apis/teamBuildingBoard/teamBuildingBoard";
 import { AiOutlineProfile } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 import { IoSearchOutline } from "react-icons/io5";
 import { getDomainLabel, getRegionLabel, getStatusLabel } from "../../../../utils/labelUtils";
 import DefaultProfile from "../../../../assets/profile/DefaultProfile.png"
+import ApplicationsModal from "../modal/ApplicationsModal";
 
 type TeamBuildingData = {
     postId: number;
@@ -33,6 +35,16 @@ const TeamBuildingBoard: React.FC = () => {
     const [data, setData] = useState<TeamBuildingData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { userId } = useUserStore();
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     useEffect(() => {
         setLoading(true);
@@ -217,7 +229,7 @@ const TeamBuildingBoard: React.FC = () => {
                         </div>
                         <div className={styles.actionButtons}>
                             <button onClick={handleSearch}><IoSearchOutline /> 검색</button> 
-                            <button><AiOutlineProfile /> 신청현황</button>
+                            <button onClick={openModal}><AiOutlineProfile /> 신청현황</button>
                             <button onClick={() => navigate('/team-building/create')}><FiPlus /> 팀 생성</button>
                         </div>
                     </div>
@@ -268,6 +280,7 @@ const TeamBuildingBoard: React.FC = () => {
                     )}
                 </div>
             </div>
+            {isModalOpen && <ApplicationsModal userId={userId} onClose={closeModal} />}
         </>
     );
 };

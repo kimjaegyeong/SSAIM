@@ -10,3 +10,14 @@ export const getTeamBuildingList = async (params = {}) => {
         throw error;
     }
 };
+
+export const getApplications = async (userId: number) => {
+    try {
+        const response = await apiClient.get(`/users/${userId}/applications`);
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};

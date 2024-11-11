@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './ProjectHeader.module.css';
+import { useProjectInfo } from '../hooks/useProjectInfo';
 
 interface ProjectHeaderProps {
   projectId: string;
@@ -8,7 +9,7 @@ interface ProjectHeaderProps {
 
 const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
   const location = useLocation();
-
+  const {data : projectInfo} = useProjectInfo(Number(projectId));
   const isActiveLink = (path: string) => {
     return location.pathname.startsWith(path); // 경로가 주어진 경로로 시작하는지 확인
   };
@@ -19,7 +20,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
 
   return (
     <div className={styles.projectHeader}>
-      <h1 className={styles.projectTitle}>프로젝트 이름</h1>
+      <h1 className={styles.projectTitle}>{projectInfo.title}</h1>
       <nav className={styles.projectNavbar}>
         <ul className={styles.navList}>
           <li><a href={`/project/${projectId}/info`} className={getLinkClass(`/project/${projectId}/info`)}>개요</a></li>
