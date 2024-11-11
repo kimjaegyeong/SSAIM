@@ -18,8 +18,8 @@ interface BaseProjectDTO {
   title: string;
   name: string;
   profileImage: string;
-  startDate: string | null | Date;
-  endDate: string | null | Date;
+  startDate: Date;
+  endDate: Date;
 }
 
 // ProjectCreateDTO에서 공통 속성 상속

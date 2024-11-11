@@ -8,12 +8,16 @@ import { editUserData } from '../apis/editUserData';
 import { getRegionLabel } from '@/utils/labelUtils';
 import Button from '@/components/button/Button';
 import { useNavigate } from 'react-router-dom';
+import ProfileImageModal from './profileImageModal/ProfileImageModal';
+import modalStyles from './profileImageModal/ProfileImageModal.module.css'
+import { useQueryClient } from '@tanstack/react-query';
+
 type MypageProps = {
   profileOwnerId: number;
 };
 const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   // 프로필 페이지 정보 및 userId
   const { userId } = useUserStore();
   const { data: userInfo } = useUserInfoData(profileOwnerId);
@@ -22,6 +26,8 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
   const [stacks, setStacks] = useState('');
   const [isEditingMessage, setIsEditingMessage] = useState(false);
   const [isEditingStack, setIsEditingStack] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
 
   const isProfileOwner = userId === profileOwnerId;
   const dummyData = [60, 80, 50, 70, 40, 90];
@@ -77,6 +83,36 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
     }
     setIsEditingStack(false);
   };
+  const handleProfileImageClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0]);
+    }
+  };
+
+  const saveProfileImage = async () => {
+    if (profileImage) {
+      try {
+   
+        await editUserData(userId, {}, profileImage);
+        console.log('Profile image updated');
+        setIsModalOpen(false); // 저장 후 모달 닫기
+        setProfileImage(null); 
+        queryClient.invalidateQueries({queryKey : ['userInfo', profileOwnerId]}); // 쿼리 무효화로 데이터 새로고침
+      } catch (error) {
+        console.error('Failed to update profile image:', error);
+      }
+    }
+  };
+
+  const handleViewProfileImage = () => {
+    if (userInfo?.userProfileImage) {
+      window.open(userInfo.userProfileImage, '_blank');
+    }
+  };
 
   return (
     <div className={styles.myPageContainer}>
@@ -91,7 +127,7 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
       {/* 본문 구역 */}
       <div className={styles.bodyContainer}>
         {/* 왼쪽 위 - 프로필 사진 및 리본 */}
-        <div className={styles.profileSection}>
+        <div className={styles.profileSection} onClick={handleProfileImageClick}>
           <div className={styles.profileImageContainer}>
             <img src={userInfo?.userProfileImage} alt="프로필 사진" className={styles.profileImage} />
             <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${
@@ -151,6 +187,43 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
           <HexagonChart data={dummyData} />
         </div>
       </div>
+      <ProfileImageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h2>프로필 사진</h2>
+        {profileImage ? 
+        <img
+        src={profileImage ? URL.createObjectURL(profileImage) : ""}
+        alt="프로필 사진"
+        className={modalStyles.modalProfileImage}
+        /> :
+        <img
+        src={userInfo?.userProfileImage || '/default-profile.png'}
+        alt="프로필 사진"
+        className={modalStyles.modalProfileImage}
+        />
+      }
+        <div className={modalStyles.buttonContainer}>
+          <button onClick={handleViewProfileImage} className={`${modalStyles.button} ${modalStyles.viewButton}`}>
+            프로필 사진 보기
+          </button>
+          <button
+            onClick={() => document.getElementById('profileImageInput')?.click()}
+            className={`${modalStyles.button} ${modalStyles.changeButton}`}
+          >
+            프로필 사진 변경
+          </button>
+          <input
+            type="file"
+            id="profileImageInput"
+            style={{ display: 'none' }}
+            accept="image/*"
+            onChange={handleProfileImageChange}
+          />
+          <button onClick={saveProfileImage} className={`${modalStyles.button} ${modalStyles.saveButton}`}>
+            저장
+          </button>
+        </div>
+      </ProfileImageModal>
+
     </div>
   );
 };
