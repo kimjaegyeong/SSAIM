@@ -37,8 +37,15 @@ export const positionMap: Record<string, string> = {
     3: 'Infra'
 };
 
+export const applicationStatusMap: Record<string, string> = {
+    '1': '수락',
+    '0': '대기',
+    '-1': '거절',
+};
+
 // 각 레이블을 ID로 변환하는 함수들
 export const getDomainLabel = (id: number) => domainMap[id] || 'Unknown';
 export const getRegionLabel = (id: number) => regionMap[id] || 'Unknown';
 export const getStatusLabel = (id: number) => statusMap[id] || 'Unknown';
 export const getPositionLabel = (id: number) => positionMap[id] || 'Unknown';
+export const getApplicationStatusLabel = (id: number) => applicationStatusMap[id] || 'Unknown';

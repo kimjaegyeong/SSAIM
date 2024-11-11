@@ -166,14 +166,17 @@
 
 .role > div {
     width: 15%;
+    min-width: 60px;
 }
 
 .role > span {
     width: 10%;
+    min-width: 30px;
 }
 
 .slider {
     width: 60%;
+    min-width: 100px;
 }
 
 .activeCategory {
