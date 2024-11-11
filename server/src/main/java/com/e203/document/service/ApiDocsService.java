@@ -59,9 +59,10 @@ public class ApiDocsService {
 	}
 
 	public ApiDocs saveApiDocs(String projectId) {
+		String defaultForm = "{\"category\": [],\"description\": [],\"url\": [],\"method\": [],\"frontOwner\": [],\"backOwner\": [],\"frontState\": [],\"backState\": [],\"priority\": [],\"requestHeader\": [],\"responseHeader\": [],\"requestBody\": [],\"responseBody\": []}";
 		ApiDocs apiDocs = ApiDocs.builder()
 			.projectId(projectId)
-			.content("")
+			.content(defaultForm)
 			.build();
 		return apiDocsRepository.save(apiDocs);
 	}
