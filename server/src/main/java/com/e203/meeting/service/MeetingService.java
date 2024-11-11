@@ -10,7 +10,7 @@ import com.e203.meeting.response.SttResponseDto;
 import com.e203.project.entity.Project;
 import com.e203.project.repository.ProjectRepository;
 
-import com.e203.weeklyremind.service.ChatAiService;
+import com.e203.global.utils.ChatAiService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

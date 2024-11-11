@@ -1,7 +1,5 @@
-package com.e203.weeklyremind.service;
+package com.e203.global.utils;
 
-import com.e203.weeklyremind.request.WeeklyRemindRequestDto;
-import com.e203.weeklyremind.response.WeeklyRemindResponseDto;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +28,9 @@ public class ChatAiService {
                 .user(message)
                 .call()
                 .content();
+    }
+
+    public String generateProposal() {
+        return null;
     }
 }
