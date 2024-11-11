@@ -8,9 +8,16 @@ export const editUserData = async (userId: number | null, userInfoUpdates: UserI
     console.log('userId is required');
     return;
   }
+  const formData = new FormData();
+  const userInfoBlob = new Blob([JSON.stringify(userInfoUpdates)], { type: 'application/json' });
+  formData.append('userInfo', userInfoBlob);
   try {
-    console.log(userInfoUpdates);
-    const response = await apiClient.patch(`/users/${userId}`, userInfoUpdates);
+    console.log(formData);
+    const response = await apiClient.patch(`/users/${userId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     console.log(response.data);
     return response.data;
   } catch (error) {

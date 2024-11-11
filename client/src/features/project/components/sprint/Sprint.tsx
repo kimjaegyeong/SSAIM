@@ -8,7 +8,8 @@ import { useProjectInfo } from '../../hooks/useProjectInfo';
 import { useParams } from 'react-router-dom';
 import calculateWeeks from '../../utils/calculateWeeks';
 import { dateToString } from '@/utils/dateToString';
-import {ProjectInfoMemberDTO} from '@features/project/types/ProjectDTO'
+import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
+
 const WeeklyProgress = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
@@ -46,7 +47,14 @@ const WeeklyProgress = () => {
     }
   };
 
-  const dayMap: Array<'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | '날짜미지정'> = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', '날짜미지정'];
+  const dayMap: Array<'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | '날짜미지정'> = [
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    '날짜미지정',
+  ];
   const dateMap: Record<'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | '날짜미지정', number | undefined> = useMemo(() => {
     if (!projectWeekList[currentWeek - 1])
       return {
@@ -104,7 +112,10 @@ const WeeklyProgress = () => {
         const dateObj = new Date(year, month, date);
         const daysOfWeek = ['일요일', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', '토'];
         const weekday = daysOfWeek[dateObj.getDay()];
-        day = weekday === 'Mon' || weekday === 'Tue' || weekday === 'Wed' || weekday === 'Thu' || weekday === 'Fri' ? weekday : '날짜미지정';
+        day =
+          weekday === 'Mon' || weekday === 'Tue' || weekday === 'Wed' || weekday === 'Thu' || weekday === 'Fri'
+            ? weekday
+            : '날짜미지정';
       }
 
       dayIssueMap[day]?.push(issue);
@@ -120,17 +131,17 @@ const WeeklyProgress = () => {
   return (
     <>
       <div className={styles.header}>
-      <div className={styles.teamProfiles}>
-  {projectMembers?.map((member:ProjectInfoMemberDTO) => (
-    <div
-      key={member.name}
-      className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
-      onClick={() => handleFilterMember(member.name)}
-    >
-      <img src={member.profileImage} alt={member.name} />
-    </div>
-  ))}
-</div>
+        <div className={styles.teamProfiles}>
+          {projectMembers?.map((member: ProjectInfoMemberDTO) => (
+            <div
+              key={member.name}
+              className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
+              onClick={() => handleFilterMember(member.name)}
+            >
+              <img src={member.profileImage} alt={member.name} />
+            </div>
+          ))}
+        </div>
         <button className={styles.arrowButton} onClick={handleDecreaseWeek}>
           &lt;
         </button>

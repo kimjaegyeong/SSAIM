@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { TaskType } from '../../../types/dashboard/TaskTypes';
 import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
-import { useDashboardStore } from '../../../stores/dashboardStore';
+import { useDashboardStore } from '../../../stores/useDashboardStore';
 import { TaskDTO } from '../../../types/dashboard/WeeklyDataDTO';
 
 interface TaskProps {
