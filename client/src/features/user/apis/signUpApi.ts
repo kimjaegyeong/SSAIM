@@ -1,13 +1,18 @@
 import apiClient from '../../../apis/apiClient';
 import { BaseUserDTO } from '@features/user/types/UserInfoDTO';
 
-export const signUp = async (signUpData: BaseUserDTO) => {
+export const signUp = async (signUpData: BaseUserDTO, userProfileImage = null) => {
   console.log(signUpData);
   try {
     const formData = new FormData();
     const signUpBlob = new Blob([JSON.stringify(signUpData)], { type: 'application/json' });
     formData.append('userInfo', signUpBlob);
-    const response = await apiClient.post('/users', signUpData, {
+
+    if (userProfileImage) {
+      formData.append('userProfileImage', userProfileImage);
+    }
+    console.log(formData.getAll)
+    const response = await apiClient.post('/users', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

@@ -1,0 +1,70 @@
+.sprintListContainer {
+  width: 100%;
+  padding: 20px;
+}
+
+/* Header 스타일 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.createSprintButton {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.createSprintButton:hover {
+  background-color: #45a049;
+}
+
+/* Table 스타일 */
+.sprintTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.sprintTable th,
+.sprintTable td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.sprintTable th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.sprintTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.sprintTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.active {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.closed {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.emptyMessage {
+  font-size: 1em;
+  color: #888;
+  text-align: center;
+  margin-top: 20px;
+}
