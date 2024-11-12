@@ -5,7 +5,8 @@ import { IssueDTO } from '../../../types/dashboard/WeeklyDataDTO';
 import { useSprintIssueQuery } from '@/features/project/hooks/useSprintIssueData';
 import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
 import { dateToString } from '@/utils/dateToString';
-
+import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
+import useUserStore from '@/stores/useUserStore';
 interface TodoListItemProps {
   task: IssueDTO;
 }
@@ -24,9 +25,12 @@ const TodoListItem: React.FC<TodoListItemProps> = ({ task }) => {
 };
 
 const TodoList: React.FC = () => {
+  const { userId } = useUserStore();
   const { projectId, projectWeekList } = useDashboardStore();
   const { data: weeklyData } = useDashboardData();
+  const {data : userInfo} = useUserInfoData(userId);
   const [latestWeekIdx, setLatestWeekIdx] = useState(0);
+  const userName = userInfo?.userName
   useEffect(() => {
     if (projectWeekList && projectWeekList.length > 0) {
       let flag = 0;
@@ -51,7 +55,7 @@ const TodoList: React.FC = () => {
     dateToString(projectWeekList[latestWeekIdx]?.endDate, '-')
   );
 
-  const todoList = sprintIssues?.filter((issue: IssueDTO) => issue.progress !== '완료');
+  const todoList = sprintIssues?.filter((issue: IssueDTO) => issue.progress !== '완료').filter((issue: IssueDTO) => issue.allocator === userName);
   if (!weeklyData || !weeklyData?.todoList) {
     return <div>할 일이 없습니다.</div>;
   }
@@ -61,8 +65,8 @@ const TodoList: React.FC = () => {
       <div className={styles.todoListHeader}>할 일</div>
       <div className={styles.todoListBody}>
         {todoList?.length > 0 &&
-          todoList.map((t: IssueDTO) => {
-            return <TodoListItem task={t} />;
+          todoList.map((t: IssueDTO, i:number) => {
+            return <TodoListItem task={t} key={i} />;
           })}
       </div>
     </div>

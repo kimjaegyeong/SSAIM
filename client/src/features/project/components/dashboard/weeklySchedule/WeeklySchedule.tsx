@@ -56,8 +56,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
   };
   const { data: gitlabData } = useGitlabData(
     projectId,
-    startDate ? (new Date(startDate).toISOString() as ISOStringFormat) : null,
-    endDate ? (new Date(endDate).toISOString() as ISOStringFormat) : null
+    startDate ? (new Date(year, month, day -3).toISOString() as ISOStringFormat) : null,
+    endDate ? (new Date(year, month, day + 1).toISOString() as ISOStringFormat) : null
   );
   console.log(gitlabData);
   // `sprintIssues` 데이터를 요일별로 분류하는 로직
