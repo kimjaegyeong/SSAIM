@@ -66,7 +66,8 @@
 }
 
 .content {
-    padding: 0px;
+    padding: 10px 0px;
+
 }
 
 .contentTitle {
@@ -104,4 +105,9 @@
     line-height: 1.5;
     color: #333;
     font-size: 14px;
+}
+
+
+.highlight {
+    background-color: #ade06a;
 }
