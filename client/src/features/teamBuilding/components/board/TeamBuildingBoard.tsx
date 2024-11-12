@@ -38,6 +38,9 @@ const TeamBuildingBoard: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { userId } = useUserStore();
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
     const openModal = () => {
         setIsModalOpen(true);
     };
@@ -46,18 +49,33 @@ const TeamBuildingBoard: React.FC = () => {
         setIsModalOpen(false);
     };
 
-    useEffect(() => {
+    const fetchData = (pageNum: number) => {
         setLoading(true);
-        getTeamBuildingList()
+        const params = {
+            title: searchQuery || undefined,
+            domain: selectedDomain || undefined,
+            campus: selectedRegion || undefined,
+            position: selectedPosition || undefined,
+            status: selectedState || undefined,
+            pageNum,
+        };
+
+        getTeamBuildingList(params)
             .then((response) => {
-                setData(response);
+                setData(response.data);
+                setCurrentPage(response.currentPage);
+                setTotalPages(response.totalPages);
                 setLoading(false);
             })
             .catch((err) => {
-                setError(err);
+                console.error(err);
+                setError(true);
                 setLoading(false);
             });
-        console.log(data);
+    };
+
+    useEffect(() => {
+        fetchData(1);
     }, []);
 
     // 필터링 상태 관리
@@ -141,40 +159,39 @@ const TeamBuildingBoard: React.FC = () => {
         } 
     };
 
+    // 상태 변경 후 데이터 요청
+    useEffect(() => {
+        fetchData(1); // 필터 상태가 변경되면 첫 페이지 데이터를 다시 요청
+    }, [selectedRegion, selectedDomain, selectedPosition, selectedState]);
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
     };
 
-    const handleSearch = () => {
-        const params: { [key: string]: any } = {};
-      
-        if (selectedRegion) {
-          params.campus = parseInt(selectedRegion);
+    const handleSearch = () => fetchData(1);
+
+    const handlePageChange = (page: number) => {
+        if (page > 0 && page <= totalPages) {
+            fetchData(page);
         }
-        if (selectedState) {
-          params.status = parseInt(selectedState);
+    };
+
+    // 페이지 번호 계산 함수
+    const getPageNumbers = () => {
+        const maxPagesToShow = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = startPage + maxPagesToShow - 1;
+
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
         }
-        if (selectedPosition) {
-          params.position = parseInt(selectedPosition);
+
+        const pages = [];
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
         }
-        if (selectedDomain) {
-          params.domain = parseInt(selectedDomain);
-        }
-        if (searchQuery.trim()) {
-          params.title = searchQuery;
-        }
-      
-        setLoading(true);
-        getTeamBuildingList(params)
-            .then((response) => {
-                setData(response);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error(err);
-                setError(true);
-                setLoading(false);
-            });
+        return pages;
     };
 
     return (
@@ -278,6 +295,29 @@ const TeamBuildingBoard: React.FC = () => {
                             검색 결과가 없습니다.
                         </div>
                     )}
+                </div>
+                <div className={styles.pagination}>
+                    <button
+                        disabled={currentPage === 1}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                        이전
+                    </button>
+                    {getPageNumbers().map((page) => (
+                        <button
+                            key={page}
+                            className={page === currentPage ? styles.activePage : ''}
+                            onClick={() => handlePageChange(page)}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                    <button
+                        disabled={currentPage >= totalPages}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                        다음
+                    </button>
                 </div>
             </div>
             {isModalOpen && <ApplicationsModal userId={userId} onClose={closeModal} />}

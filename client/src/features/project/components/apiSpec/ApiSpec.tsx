@@ -8,7 +8,7 @@ import ApiDetailModal from './apiDetailModal/ApiDetailModal';
 
 interface ApiSpecData {
   category: string[];
-  description: string[];
+  functionName: string[];
   url: string[];
   method: string[];
   frontOwner: string[];
@@ -16,6 +16,7 @@ interface ApiSpecData {
   frontState: string[];
   backState: string[];
   priority: string[];
+  description: string[];
   requestHeader: string[];
   responseHeader: string[];
   requestBody: string[];
@@ -30,7 +31,7 @@ interface ApiSpecTableProps {
 const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConnected }) => {
   const [data, setData] = useState<ApiSpecData>({
     category: [],
-    description: [],
+    functionName: [],
     url: [],
     method: [],
     frontOwner: [],
@@ -38,6 +39,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     frontState: [],
     backState: [],
     priority: [],
+    description: [],
     requestHeader: [],
     responseHeader: [],
     requestBody: [],
@@ -104,7 +106,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     const updatedData = {
       ...data,
       category: [...data.category, ''],
-      description: [...data.description, ''],
+      functionName: [...data.functionName, ''],
       url: [...data.url, ''],
       method: [...data.method, ''],
       frontOwner: [...data.frontOwner, ''],
@@ -112,6 +114,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       frontState: [...data.frontState, ''],
       backState: [...data.backState, ''],
       priority: [...data.priority, ''],
+      description: [...data.description, ''],
       requestHeader: [...data.requestHeader, ''],
       responseHeader: [...data.responseHeader, ''],
       requestBody: [...data.requestBody, ''],
@@ -132,7 +135,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   const handleDeleteRow = (index: number) => {
     const updatedData = {
       category: data.category.filter((_, i) => i !== index),
-      description: data.description.filter((_, i) => i !== index),
+      functionName: data.functionName.filter((_, i) => i !== index),
       url: data.url.filter((_, i) => i !== index),
       method: data.method.filter((_, i) => i !== index),
       frontOwner: data.frontOwner.filter((_, i) => i !== index),
@@ -140,6 +143,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       frontState: data.frontState.filter((_, i) => i !== index),
       backState: data.backState.filter((_, i) => i !== index),
       priority: data.priority.filter((_, i) => i !== index),
+      description: data.description.filter((_, i) => i !== index),
       requestHeader: data.requestHeader.filter((_, i) => i !== index),
       responseHeader: data.responseHeader.filter((_, i) => i !== index),
       requestBody: data.requestBody.filter((_, i) => i !== index),
@@ -178,7 +182,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
           {data.category.map((_, index) => (
             <React.Fragment key={index}>
               <tr onClick={() => openModal(index)}>
-                {(['category', 'description', 'url', 'method', 'frontOwner', 'backOwner', 'frontState', 'backState', 'priority'] as const).map((column) => (
+                {(['category', 'functionName', 'url', 'method', 'frontOwner', 'backOwner', 'frontState', 'backState', 'priority'] as const).map((column) => (
                   <td key={column}>
                     {data[column][index]}
                   </td>

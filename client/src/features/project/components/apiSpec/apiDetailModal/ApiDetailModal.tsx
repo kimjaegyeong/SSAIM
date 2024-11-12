@@ -32,6 +32,7 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
     feStatus: 'FE 개발상태',
     beStatus: 'BE 개발상태',
     priority: '우선순위',
+    description: '설명',
   };
 
   useEffect(() => {
@@ -88,13 +89,13 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
       >
         <input
           className={styles.descriptionTextarea}
-          value={data.description[rowIndex]}
+          value={data.functionName[rowIndex]}
           placeholder="API 이름을 입력하세요."
-          onChange={(e) => handleInputChange('description', e.target.value)}
+          onChange={(e) => handleInputChange('functionName', e.target.value)}
         />
         <div className={styles.keyValueList}>
           {Object.keys(data).map((key) =>
-            !['requestHeader', 'requestBody', 'responseHeader', 'responseBody', 'description'].includes(key) ? (
+            !['requestHeader', 'requestBody', 'responseHeader', 'responseBody', 'description', 'functionName'].includes(key) ? (
               <div key={key} className={styles.keyValueRow}>
                 <span className={styles.key}>{keyMappings[key] || key}</span>
                 {editingField === key ? (
@@ -120,9 +121,9 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
           )}
         </div>
         <div className={styles.bodyContainer}>
-          {['requestHeader', 'requestBody', 'responseHeader', 'responseBody'].map((key) => (
+          {['description', 'requestHeader', 'requestBody', 'responseHeader', 'responseBody'].map((key) => (
             <div key={key} className={styles.bodySection}>
-              <h3 className={styles.bodyTitle}>{key}</h3>
+              <h3 className={styles.bodyTitle}>{keyMappings[key] || key}</h3>
               <textarea
                 className={styles.bodyTextarea}
                 value={data[key][rowIndex]}

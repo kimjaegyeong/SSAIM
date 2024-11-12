@@ -95,21 +95,30 @@
 
 .pagination {
     display: flex;
+    gap: 8px;
     justify-content: center;
-    gap: 5px;
-    margin-top: 50px;
+    align-items: center;
+    margin-top: 16px;
 }
 
 .pagination button {
-    border: none;
-    background: none;
-    padding: 5px 10px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    background-color: white;
     cursor: pointer;
+    border-radius: 4px;
 }
 
-.pagination .active {
-    font-weight: bold;
-    color: #007bff;
+.pagination button:disabled {
+    cursor: default;
+    background-color: #f2f2f2;
+    border-color: #ddd;
+}
+
+.pagination button.activePage {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
 }
 
 .actionButtons {
