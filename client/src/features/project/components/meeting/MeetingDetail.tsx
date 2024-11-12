@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './MeetingDetail.module.css';
 import Button from '../../../../components/button/Button';
@@ -17,6 +17,8 @@ const MeetingDetail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
+  const [currentTime, setCurrentTime] = useState<number>(0); // 현재 재생 시간
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const getMeetingDetail = async () => {
@@ -111,6 +113,18 @@ const MeetingDetail = () => {
     closeModal();
   };
 
+  // 재생 시간 업데이트 함수
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime * 1000); // 초 단위 시간 * 1000을 밀리초로 변환
+    }
+  };
+
+  // 현재 재생 중인 segment인지 확인하는 함수
+  const isActiveSegment = (start: number, end: number) => {
+    return currentTime >= start && currentTime <= end;
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -133,14 +147,21 @@ const MeetingDetail = () => {
                   >
                     {segment.speaker.name}
                   </p>
-                  <p className={styles.comment}>{segment.text}</p>
+                  <p className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}>
+                    {segment.text}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
           <div className={styles.voicePlay}>
             {meetingData.meetingVoiceUrl ? (
-              <audio controls src={meetingData.meetingVoiceUrl}>
+              <audio
+                controls
+                src={meetingData.meetingVoiceUrl}
+                ref={audioRef}
+                onTimeUpdate={handleTimeUpdate} // 재생 시간이 변할 때마다 호출
+              >
                 Your browser does not support the audio element.
               </audio>
             ) : (
