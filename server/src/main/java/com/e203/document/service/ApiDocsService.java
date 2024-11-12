@@ -1,7 +1,11 @@
 package com.e203.document.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.e203.global.utils.ChatAiService;
+import com.e203.project.entity.Project;
+import com.e203.project.repository.ProjectRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
@@ -22,8 +26,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ApiDocsService {
+
 	private final MongoTemplate mongoTemplate;
+
 	private final ApiDocsRepository apiDocsRepository;
+
+	private final ProjectRepository projectRepository;
+
+	private final ChatAiService chatAiService;
+
+	private final FunctionDescriptionService functionDescriptionService;
 
 	public void createIndex() {
 		// Collation 설정
@@ -66,4 +78,16 @@ public class ApiDocsService {
 			.build();
 		return apiDocsRepository.save(apiDocs);
 	}
+
+	public String generateApiDocs(int projectId, int userId, String message) {
+		Optional<Project> project = projectRepository.findById(projectId);
+		if (project.isEmpty()) {
+			return "Not found";
+		} else if (project.get().getProjectMemberList().stream()
+				.noneMatch(member -> member.getUser().getUserId() == userId)) {
+			return "Not authorized";
+		}
+		return chatAiService.generateApiDocs(message, functionDescriptionService.getFuncDescContent(String.valueOf(projectId)));
+	}
+
 }
