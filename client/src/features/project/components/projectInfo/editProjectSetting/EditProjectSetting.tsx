@@ -31,6 +31,7 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [apiKey, setApiKey] = useState<string>('');
   const [externalProjectId, setExternalProjectId] = useState<string>('');
+  const [boardId, setBoardId] = useState<string>('');
   const { data: projectInfo } = useProjectInfo(projectId);
 
   const existingApiKey = type === 'jira' ? projectInfo?.jiraApi : projectInfo?.gitlabApi;
@@ -51,6 +52,7 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
         : { gitlabApi: apiKey, gitlabProjectId: externalProjectId };
     console.log(apiKeyPayload);
     await fetchApiKey(modalData.content, 'patch', apiKeyPayload, projectId);
+    setIsModalOpen(false);
   };
 
   const handleCancel = () => {
@@ -86,6 +88,15 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
             />
+            {type === 'jira' ? (
+              <input
+                type="text"
+                placeholder={`${modalData.content} Board Id`}
+                className={styles.input}
+                value={boardId}
+                onChange={(e) => setBoardId(e.target.value)}
+              />
+            ) : null}
           </div>
         </div>
         <div className={styles.modalFooter}>
@@ -102,7 +113,7 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
         onClose={() => {
           setIsModalOpen(false);
         }}
-        title="API Key 수정"
+        title="프로젝트 정보 수정"
         content="저장하시겠습니까?"
         onConfirm={handleSave}
         confirmContent="저장"
