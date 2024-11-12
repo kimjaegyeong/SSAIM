@@ -1,108 +1,203 @@
-import { useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './MeetingDetail.module.css';
 import Button from '../../../../components/button/Button';
+import SelectSpeakerModal from './SelectSpeakerModal';
+import { fectchMeetingDetail } from '../../apis/meeting/fectchMeetingDetail';
+import { createAISummary } from '../../apis/meeting/createAISummary';
+import { editSpeakers } from '../../apis/meeting/editSpeakers';
+import { MeetingDetailDTO, Speaker } from '../../types/meeting/MeetingDTO';
+import { formatMeetingTime, formatMeetingDuration } from '../../utils/meetingTime';
+import Loading from '@/components/loading/Loading';
 
-interface MeetingDetailProps {
-    newTitle: string;
-    minutes: number;
-  }
+const MeetingDetail = () => {
+  const { projectId, meetingId } = useParams<{ projectId: string, meetingId: string }>();
+  const [meetingData, setMeetingData] = useState<MeetingDetailDTO | null>(null);
+  const [summaryText, setSummaryText] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
+  const [currentTime, setCurrentTime] = useState<number>(0); // 현재 재생 시간
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-const MeetingDetail: React.FC<MeetingDetailProps> = ({ newTitle, minutes  }) => {
-  const location = useLocation();
-  const { title, date, duration } = location.state || {};
-
-  const todayDate = new Date().toLocaleString('ko-KR', {
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true
-  });
-
-  const summaryText = `1. 프로젝트 관리\n- 관리자/사용자 그룹 생성 및 그룹장 설정 기능 추가.\n
-- 팀장 권한으로 JIRA, Gitlab 연동 가능.\n
-- 스프린트 자동 생성 및 이슈 완료 알림 기능 포함.\n
-- API 및 기능 명세서 템플릿 제공 결정.\n
-2. 회고\n- 일일 회고 자동 작성 (회의록 기반), 주간 회고 자동 생성.\n
-- 주간 회고를 바탕으로 '우리가 함께 만드는 개발 이야기' 생성 기능 추가.`;
-
-  const meetingData = {
-    title: title || newTitle, // 기본 제목
-    date: date || todayDate, // 기본 날짜
-    duration: duration || `${minutes}분`, // 기본 지속 시간
-    participants: [
-      {
-        id: 1,
-        name: "여대기",
-        userImage:"profile.jpg",
-        comment: "프로젝트 관리 관련해서는 관리자 생성부터 시작해서 그룹 장 설정, 그룹 이름 설정 등 주요 기능들이 들어가야 해요. 특히 JIRA나 Gitlab 연동은 팀장이 관리할 수 있도록 해야 하고요. 스프린트 생성기 같은 것도 추가하면 좋을 것 같아요. 자동으로 기간이나 주간 계획에 따라 생성되도록 하죠."
-      },
-      {
-        id: 2,
-        name: "조성인",
-        userImage:"profile.jpg",
-        comment: "그럼 외부 API 연동은 팀장 권한으로 제한하고, 스프린트는 기간 설정, 스토리포인트, 주간 계획 정도 입력하면 자동으로 생성되게 하죠."
-      },
-      {
-        id: 3,
-        name: "조원빈",
-        userImage:"profile.jpg",
-        comment: "이슈 알림 기능도 깃랩 MR 메시지를 기반으로 해서 이슈 상태 전환에 맞춰 알림이 가도록 만들면 좋겠네요. 또 ERD 이미지 업로드는 이미지 파일로만 가능하게 하죠."
-      },
-      {
-        id: 4,
-        name: "박지용",
-        userImage:"profile.jpg",
-        comment: "API 명세서나 기능 명세서는 작성할 수 있는 템플릿을 제공하고, 이를 기반으로 가이드라인 제공하는 식으로 하겠습니다."
-      },
-      {
-        id: 5,
-        name: "강수연",
-        userImage:"profile.jpg",
-        comment: "회고 기능에서는 일일 회고, 주간 회고 자동 생성이 핵심일 것 같아요. 특히 일일 회고는 된 회의록이 있는 경우 자동 작성이 가능하도록 하고, 주간 회고는 일일 회고나 JIRA 데이터를 활용해서 만들어 봅시다."
+  useEffect(() => {
+    const getMeetingDetail = async () => {
+      if (projectId && meetingId) {
+        try {
+          const data = await fectchMeetingDetail(Number(projectId), Number(meetingId));
+          setMeetingData(data);
+        } catch (error) {
+          console.error('Failed to fetch meeting details:', error);
+        }
       }
-    ]
+    };
+
+    getMeetingDetail();
+  }, [projectId, meetingId]);
+
+  if (!meetingData) return null;
+  
+  // AI 요약 API 호출 함수
+  const handleAISummaryClick = async () => {
+    if (projectId && meetingId) {
+      setIsLoading(true); // 요청 시작 시 로딩 상태를 true로 설정
+      try {
+        const response = await createAISummary(Number(projectId), Number(meetingId));
+        setSummaryText(response.meetingSummary); // 응답의 요약 텍스트를 summaryText에 저장
+      } catch (error) {
+        console.error('Failed to create AI summary:', error);
+      } finally {
+        setIsLoading(false); // 요청이 완료되면 로딩 상태를 false로 설정
+      }
+    }
+  };
+
+  // 화자 수정 모달 열기
+  const handleEditSpeakerClick = (speaker: Speaker) => {
+    setSelectedSpeaker(speaker);
+    setIsModalOpen(true);
+  };
+
+  // 모달 닫기
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSpeaker(null);
+  };
+
+  // 화자 변경 API 호출 함수
+  const handleSelectSpeaker = async (member: Speaker) => {
+    if (!projectId || !meetingId || !selectedSpeaker) return;
+
+    const requestBody = [
+      {
+        label: selectedSpeaker.label,
+        name: member.name,
+      },
+    ];
+
+    try {
+      // editSpeakers API 호출
+      const updatedData = await editSpeakers(Number(projectId), Number(meetingId), requestBody);
+      console.log('Speaker updated:', updatedData);
+
+      // meetingData 상태 업데이트 (변경된 발화자 정보 적용)
+      setMeetingData((prevData) => {
+        if (!prevData) return null;
+        
+        // meetingData의 sttResponseDto 속성의 speakers와 segments에서 해당 발화자 정보를 업데이트
+        const updatedSegments = prevData.sttResponseDto.segments.map((segment) => 
+          segment.speaker.label === selectedSpeaker.label
+            ? { ...segment, speaker: { ...segment.speaker, name: member.name } }
+            : segment
+        );
+
+        const updatedSpeakers = prevData.sttResponseDto.speakers.map((speaker) =>
+          speaker.label === selectedSpeaker.label
+            ? { ...speaker, name: member.name }
+            : speaker
+        );
+
+        return {
+          ...prevData,
+          sttResponseDto: {
+            ...prevData.sttResponseDto,
+            segments: updatedSegments,
+            speakers: updatedSpeakers,
+          },
+        };
+      });
+    } catch (error) {
+      console.error('Failed to update speaker:', error);
+    }
+
+    closeModal();
+  };
+
+  // 재생 시간 업데이트 함수
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime * 1000); // 초 단위 시간 * 1000을 밀리초로 변환
+    }
+  };
+
+  // 현재 재생 중인 segment인지 확인하는 함수
+  const isActiveSegment = (start: number, end: number) => {
+    return currentTime >= start && currentTime <= end;
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.left}>
         <div className={styles.header}>
-          <h3 className={styles.title}>{meetingData.title}</h3>
+          <h3 className={styles.title}>{meetingData.meetingTitle}</h3>
           <div className={styles.meetingInfo}>
-            <span className={styles.date}>{meetingData.date}</span>
-            <span className={styles.duration}>{meetingData.duration}</span>
+            <span className={styles.date}>{formatMeetingTime(meetingData.meetingCreateTime)}</span>
+            <span className={styles.duration}>{formatMeetingDuration(meetingData.meetingVoiceTime)}</span>
           </div>
         </div>
         <div className={styles.content}>
           <div className={styles.participants}>
-            {meetingData.participants.map((participant) => (
-              <div key={participant.id} className={styles.participantBox}>
-                <img src={participant.userImage} alt="profile" />
+            {meetingData.sttResponseDto.segments.map((segment, index) => (
+              <div key={index} className={styles.participantBox}>
+                <img src="profile.jpg" alt="profile" />
                 <div className={styles.participantComment}>
-                  <p className={styles.participantName}>{participant.name}</p>
-                  <p className={styles.comment}>{participant.comment}</p>
+                  <p
+                    className={styles.participantName}
+                    onClick={() => handleEditSpeakerClick(segment.speaker)}
+                  >
+                    {segment.speaker.name}
+                  </p>
+                  <p className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}>
+                    {segment.text}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
-      </div>
-      <div className={styles.right}>
-        <Button size="large" colorType="green">
-          🤖 AI 요약 확인하기
-        </Button>
-        <div className={styles.summaryBox}>
-          <h3>요약 내용</h3>
-          <div className={styles.summaryText}>
-            {summaryText.split('\n').map((line, index) => (
-              <p key={index}>{line}</p>
-            ))}
+          <div className={styles.voicePlay}>
+            {meetingData.meetingVoiceUrl ? (
+              <audio
+                controls
+                src={meetingData.meetingVoiceUrl}
+                ref={audioRef}
+                onTimeUpdate={handleTimeUpdate} // 재생 시간이 변할 때마다 호출
+              >
+                Your browser does not support the audio element.
+              </audio>
+            ) : (
+              <p>음성 파일을 불러오는 중입니다.</p>
+            )}
           </div>
         </div>
       </div>
+      <div className={styles.right}>
+        <Button size="large" colorType="green" onClick={handleAISummaryClick}>
+          🤖 AI 요약 확인하기
+        </Button>
+        {isLoading ? (
+          <Loading />
+        ) : (
+          summaryText && (
+            <div className={styles.summaryBox}>
+              <h3>📑 요약 내용</h3>
+              <div className={styles.summaryText}>
+                {summaryText.split('\n').map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
+            </div>
+          )
+        )}
+      </div>
+      {selectedSpeaker && (
+        <SelectSpeakerModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          projectId={Number(projectId)}
+          onSelect={handleSelectSpeaker}
+          selectedSpeaker={selectedSpeaker} // selectedSpeaker가 null이 아니므로 오류 발생하지 않음
+        />
+      )}
     </div>
   );
 };
