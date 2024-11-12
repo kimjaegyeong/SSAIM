@@ -6,7 +6,6 @@ import config from '../config/config'; // BASE_URL을 가져오기 위해 config
 // Axios 인스턴스 생성
 const apiClient = axios.create({
   baseURL: config.BASE_URL, // 환경에 따라 다른 BASE_URL 적용
-  timeout: 5000, // 타임아웃을 5초로 설정 (필요에 따라 조정 가능)
 });
 
 // 요청 인터셉터 설정 (예: 토큰 추가)
