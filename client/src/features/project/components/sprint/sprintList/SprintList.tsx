@@ -1,8 +1,10 @@
 import { useSprintListData } from '@/features/project/hooks/useSprintListData';
 import styles from './SprintList.module.css';
-import React from 'react';
-import { SprintDTO } from '@/features/project/types/SprintDTO';
+import React, { useState } from 'react';
+import { SprintDTO, SprintCreateDTO } from '@/features/project/types/SprintDTO';
 import { useNavigate } from 'react-router-dom';
+import SprintCreateModal from './SprintCreateModal';
+
 interface SprintListProps {
   projectId: number;
 }
@@ -10,15 +12,27 @@ interface SprintListProps {
 const SprintList: React.FC<SprintListProps> = ({ projectId }) => {
   const { data: sprintList } = useSprintListData(projectId);
   const navigate = useNavigate();
-  const navigateToCreate = (sprintId:number) => () => {
+  const navigateToCreate = (sprintId: number) => () => {
     navigate(`/project/${projectId}/sprint/${sprintId}`);
-  }
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 모달 열기/닫기
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+  const handleCreateSprint = (data: SprintCreateDTO) => {
+    // 여기에 스프린트 생성 로직 추가 (예: API 호출)
+    console.log('New sprint created:', data);
+    closeModal();
+  };
+
   return (
     <div className={styles.sprintListContainer}>
       {/* Header Section */}
       <div className={styles.header}>
         <h2>스프린트 목록</h2>
-        <button className={styles.createSprintButton}>새 스프린트 생성</button>
+        <button className={styles.createSprintButton} onClick={openModal}>
+          새 스프린트 생성
+        </button>
       </div>
 
       {/* Body Section */}
@@ -50,6 +64,7 @@ const SprintList: React.FC<SprintListProps> = ({ projectId }) => {
       ) : (
         <p className={styles.emptyMessage}>스프린트가 없습니다. 새 스프린트를 생성해보세요!</p>
       )}
+      {isModalOpen && <SprintCreateModal onClose={closeModal} onCreate={handleCreateSprint} />}
     </div>
   );
 };
