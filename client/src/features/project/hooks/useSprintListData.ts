@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchSprintListData } from '../apis/fetchSprintListData';
+import { fetchSprintListData } from '../apis/sprint/fetchSprintListData';
 
 export const useSprintListData = (projectId: number) => {
   return useQuery({

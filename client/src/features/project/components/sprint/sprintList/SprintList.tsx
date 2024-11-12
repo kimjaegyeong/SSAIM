@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { SprintDTO, SprintCreateDTO } from '@/features/project/types/SprintDTO';
 import { useNavigate } from 'react-router-dom';
 import SprintCreateModal from './SprintCreateModal';
+import { useCreateSprint } from '@/features/project/hooks/useCreateSprint';
 
 interface SprintListProps {
   projectId: number;
@@ -11,6 +12,8 @@ interface SprintListProps {
 
 const SprintList: React.FC<SprintListProps> = ({ projectId }) => {
   const { data: sprintList } = useSprintListData(projectId);
+  const { mutate: createSprint } = useCreateSprint(projectId);
+
   const navigate = useNavigate();
   const navigateToCreate = (sprintId: number) => () => {
     navigate(`/project/${projectId}/sprint/${sprintId}`);
@@ -20,9 +23,15 @@ const SprintList: React.FC<SprintListProps> = ({ projectId }) => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const handleCreateSprint = (data: SprintCreateDTO) => {
-    // 여기에 스프린트 생성 로직 추가 (예: API 호출)
-    console.log('New sprint created:', data);
-    closeModal();
+    createSprint(data, {
+      onSuccess: () => {
+        console.log('New sprint created:', data);
+        closeModal();
+      },
+      onError: (error) => {
+        console.error('스프린트 생성 오류:', error);
+      },
+    });
   };
 
   return (
