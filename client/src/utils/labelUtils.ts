@@ -43,9 +43,16 @@ export const applicationStatusMap: Record<string, string> = {
     '-1': '거절',
 };
 
+export const apiStatusMap: Record<string, string> = {
+    0: '계획',
+    1: '진행중',
+    2: '완료',
+};
+
 // 각 레이블을 ID로 변환하는 함수들
 export const getDomainLabel = (id: number) => domainMap[id] || 'Unknown';
 export const getRegionLabel = (id: number) => regionMap[id] || 'Unknown';
 export const getStatusLabel = (id: number) => statusMap[id] || 'Unknown';
 export const getPositionLabel = (id: number) => positionMap[id] || 'Unknown';
 export const getApplicationStatusLabel = (id: number) => applicationStatusMap[id] || 'Unknown';
+export const getApiStatusLabel = (id: number) => apiStatusMap[id] || 'Unknown';
