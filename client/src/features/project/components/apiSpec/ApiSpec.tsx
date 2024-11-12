@@ -3,13 +3,15 @@ import styles from './ApiSpec.module.css';
 import { MdDelete } from "react-icons/md";
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { getApiSpec } from '@features/project/apis/webSocket/apiSpec';
+import { getApiSpec, getAutoApiSpec } from '@features/project/apis/webSocket/apiSpec';
 import ApiDetailModal from './apiDetailModal/ApiDetailModal';
+import CommonModal from '@components/modal/Modal';
+import Button from '@components/button/Button';
 
 interface ApiSpecData {
   category: string[];
   functionName: string[];
-  url: string[];
+  uri: string[];
   method: string[];
   frontOwner: string[];
   backOwner: string[];
@@ -32,7 +34,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   const [data, setData] = useState<ApiSpecData>({
     category: [],
     functionName: [],
-    url: [],
+    uri: [],
     method: [],
     frontOwner: [],
     backOwner: [],
@@ -49,6 +51,8 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   const stompClientRef = useRef<any>(null);
   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
+  const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
 
   const openModal = (rowIndex: number) => {
     setSelectedRowIndex(rowIndex);
@@ -107,7 +111,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       ...data,
       category: [...data.category, ''],
       functionName: [...data.functionName, ''],
-      url: [...data.url, ''],
+      uri: [...data.uri, ''],
       method: [...data.method, ''],
       frontOwner: [...data.frontOwner, ''],
       backOwner: [...data.backOwner, ''],
@@ -119,6 +123,20 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       responseHeader: [...data.responseHeader, ''],
       requestBody: [...data.requestBody, ''],
       responseBody: [...data.responseBody, ''],
+      // category: [''],
+      // functionName: [''],
+      // uri: [''],
+      // method: [''],
+      // frontOwner: [''],
+      // backOwner: [''],
+      // frontState: [''],
+      // backState: [''],
+      // priority: [''],
+      // description: [''],
+      // requestHeader: [''],
+      // responseHeader: [''],
+      // requestBody: [''],
+      // responseBody: [''],
     };
 
     setData(updatedData);
@@ -136,7 +154,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     const updatedData = {
       category: data.category.filter((_, i) => i !== index),
       functionName: data.functionName.filter((_, i) => i !== index),
-      url: data.url.filter((_, i) => i !== index),
+      uri: data.uri.filter((_, i) => i !== index),
       method: data.method.filter((_, i) => i !== index),
       frontOwner: data.frontOwner.filter((_, i) => i !== index),
       backOwner: data.backOwner.filter((_, i) => i !== index),
@@ -161,8 +179,109 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     }
   };
 
+  const handleModalTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setModalTextareaValue(e.target.value); // textarea 값 업데이트
+  };
+
+  const parseBacktickJson = (data: string) => {
+    // 백틱과 "```json" 태그 제거
+    const cleanedData = data.replace(/```json|```/g, "").trim();
+    
+    try {
+      // JSON 문자열을 객체로 변환
+      const parsedData = JSON.parse(cleanedData);
+      return parsedData;
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return null; // 파싱 실패 시 null 반환
+    }
+  };
+
+  const handleModalSubmit = async () => {
+    try {
+      const response = await getAutoApiSpec(projectId, modalTextareaValue); // 데이터를 가져옴
+      console.log('Fetched auto proposal data (raw):', response);
+  
+      let parsedData;
+  
+      // response가 문자열인지 확인
+      if (typeof response === 'string') {
+        console.log('Response is a string. Attempting to parse with parseBacktickJson.');
+        parsedData = parseBacktickJson(response); // 백틱 JSON 처리
+      } else if (typeof response === 'object') {
+        console.log('Response is an object. Using it directly.');
+        parsedData = response; // 객체 그대로 사용
+      } else {
+        console.error('Unexpected response type:', typeof response);
+        parsedData = null;
+      }
+  
+      // 파싱된 데이터를 상태에 반영
+      if (parsedData) {
+        parsedData.frontOwner = Array(parsedData.functionName.length).fill(''),
+        parsedData.backOwner = Array(parsedData.functionName.length).fill(''),
+        parsedData.frontState = Array(parsedData.functionName.length).fill(''),
+        parsedData.backState = Array(parsedData.functionName.length).fill(''),
+        parsedData.requestHeader = Array(parsedData.functionName.length).fill(''),
+        parsedData.responseHeader = Array(parsedData.functionName.length).fill(''),
+        parsedData.requestBody = Array(parsedData.functionName.length).fill(''),
+        parsedData.responseBody = Array(parsedData.functionName.length).fill(''),
+        setData(parsedData);
+  
+        // WebSocket을 통해 실시간 반영
+        if (stompClientRef.current && stompClientRef.current.connected) {
+          stompClientRef.current.send(
+            `/app/edit/api/v1/projects/${projectId}/api-docs`, // WebSocket 경로
+            {}, // 헤더
+            JSON.stringify(parsedData) // WebSocket으로 데이터 전송
+          );
+          console.log('WebSocket message sent:', parsedData);
+        } else {
+          console.warn('WebSocket is not connected. Cannot send message.');
+        }
+      } else {
+        console.error('Parsed data is null or undefined.');
+      }
+  
+      setIsModalOpen(false); // 모달 닫기
+    } catch (error) {
+      console.error('Error fetching auto proposal:', error);
+    }
+  };
+
+  const openAiModal = () => {
+    setModalTextareaValue('')
+    setIsAiModalOpen(true);
+  };
+
+  const closeAiModal = () => {
+    setIsAiModalOpen(false);
+  };
+
   return (
     <div className={styles.tableContainer} ref={tableRef}>
+      <div className={styles.aiButton}>
+        <Button size='custom' colorType='purple' onClick={openAiModal}>AI 자동생성</Button>
+      </div>
+      <CommonModal 
+        isOpen={isAiModalOpen}
+        onClose={closeAiModal}
+        title= '기능명세서 자동 생성'
+        content={
+          <textarea
+            className={styles.modalTextarea}
+            value={modalTextareaValue}
+            onChange={handleModalTextareaChange}
+          ></textarea>
+        }
+        footer={
+          <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
+            AI 자동생성
+          </Button>
+        }
+        width={800}
+        height={400}
+      />
       <table className={styles.table}>
         <thead>
           <tr>
@@ -182,7 +301,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
           {data.category.map((_, index) => (
             <React.Fragment key={index}>
               <tr onClick={() => openModal(index)}>
-                {(['category', 'functionName', 'url', 'method', 'frontOwner', 'backOwner', 'frontState', 'backState', 'priority'] as const).map((column) => (
+                {(['category', 'functionName', 'uri', 'method', 'frontOwner', 'backOwner', 'frontState', 'backState', 'priority'] as const).map((column) => (
                   <td key={column}>
                     {data[column][index]}
                   </td>
