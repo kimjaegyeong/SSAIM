@@ -15,15 +15,13 @@ const DashboardHeader: React.FC = () => {
   console.log(projectTitle);
   // 초기 상태 설정: projectId와 currentWeek 설정
   useEffect(() => {
-    if (projectListData && projectListData.length > 0) {
-      setProjectId(Number(projectListData[projectListData.length - 1].id));
-      setProjectWeek(
-        new Date(projectListData[projectListData.length - 1].startDate),
-        new Date(projectListData[projectListData.length - 1].endDate)
-      );
+    if (projectListData && projectListData.length > 0 && projectId === null) {
+      const lastProject = projectListData[projectListData.length - 1];
+      setProjectId(Number(lastProject.id));
+      setProjectWeek(new Date(lastProject.startDate), new Date(lastProject.endDate));
     }
-  }, [projectListData, setProjectId]);
-
+  }, [projectListData, projectId, setProjectId, setProjectWeek]);
+  
   useEffect(() => {
     if (projectWeekList && projectWeekList.length > 0) {
       let flag = 0;
@@ -41,7 +39,7 @@ const DashboardHeader: React.FC = () => {
         setCurrentWeek(projectWeekList.length - 1);
       }
     }
-  }, [projectWeekList, setCurrentWeek]);
+  }, [projectWeekList, currentWeek, setCurrentWeek]);
   const year = projectWeekList[currentWeek]?.endDate.getFullYear();
   const month = projectWeekList[currentWeek]?.endDate.getMonth() + 1;
   const day = projectWeekList[currentWeek]?.endDate.getDate();
