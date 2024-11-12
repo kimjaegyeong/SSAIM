@@ -1,7 +1,7 @@
 import apiClient from '../../../apis/apiClient';
 import { BaseUserDTO } from '@features/user/types/UserInfoDTO';
 
-export const signUp = async (signUpData: BaseUserDTO, userProfileImage = null) => {
+export const signUp = async (signUpData: BaseUserDTO, userProfileImage:File|null = null) => {
   console.log(signUpData);
   try {
     const formData = new FormData();
