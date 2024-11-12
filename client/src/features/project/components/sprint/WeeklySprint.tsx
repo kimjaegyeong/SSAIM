@@ -9,6 +9,7 @@ import calculateWeeks from '../../utils/calculateWeeks';
 import { dateToString } from '@/utils/dateToString';
 import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
 import { getInitialCurrentWeek } from '../../utils/getInitialCurrentWeek';
+import { IssueDTO } from '@features/project/types/dashboard/WeeklyDataDTO';
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
@@ -97,7 +98,7 @@ const WeeklySprint = () => {
   }, [projectWeekList, currentWeek]);
 
   const issuesByDay = useMemo(() => {
-    const dayIssueMap: Record<string, any[]> = {
+    const dayIssueMap: Record<string, IssueDTO[]> = {
       Mon: [],
       Tue: [],
       Wed: [],
@@ -106,8 +107,8 @@ const WeeklySprint = () => {
       날짜미지정: [],
     };
 
-    sprintIssues?.forEach((issue: any) => {
-      if (selectedMember && issue.allocater !== selectedMember) return;
+    sprintIssues?.forEach((issue: IssueDTO) => {
+      if (selectedMember && issue.allocator !== selectedMember) return;
 
       const match = issue.title.match(/(\d{6})/);
       let day = '날짜미지정';
@@ -176,7 +177,7 @@ const WeeklySprint = () => {
         <div className={styles.issueGrid}>
           {dayMap.map((day) => (
             <div key={day} className={styles.dayColumn}>
-              {issuesByDay[day]?.map((issue: any) => (
+              {issuesByDay[day]?.map((issue: IssueDTO) => (
                 <Issue
                   key={issue.issueKey}
                   title={issue.title}
