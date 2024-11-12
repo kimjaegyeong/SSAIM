@@ -1,5 +1,6 @@
 import styles from './DayMyRemind.module.css';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+import { ImPencil } from "react-icons/im";
 
 interface Message {
   message: string;
@@ -8,7 +9,6 @@ interface Message {
 interface DayMyRemindProps {
   messages: Message[];
 }
-
 
 
 const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages }) => {
@@ -37,49 +37,57 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages }) => {
     .filter((msg): msg is string => msg !== null);
 
   return (
-    <div className={styles.myReview}>
-      <div className={styles.keepSection}>
-        <div className={styles.sectionTitle}>
-          <h3 className={styles.h3}>Keep</h3>
+    <div className={styles.myReviewContainer}>
+      <div className={styles.myReview}>
+        <div className={styles.keepSection}>
+          <div className={styles.sectionTitle}>
+            <h3 className={styles.h3}>Keep</h3>
+          </div>
+          <div className={styles.reviewContainer}>
+            {keepMessages.length > 0 ? (
+              keepMessages.map((msg, index) => (
+                <p key={index} className={styles.p}>{msg}</p>
+              ))
+            ) : (
+              <p className={styles.p}>해당 날짜에 작성된 Keep 회고가 없습니다.</p>
+            )}
+          </div>
         </div>
-        <div className={styles.reviewContainer}>
-          {keepMessages.length > 0 ? (
-            keepMessages.map((msg, index) => (
-              <p key={index} className={styles.p}>{msg}</p>
-            ))
-          ) : (
-            <p className={styles.p}>해당 날짜에 작성된 Keep 회고가 없습니다.</p>
-          )}
+
+        <div className={styles.problemSection}>
+          <div className={styles.sectionTitle}>
+            <h3 className={styles.h3}>Problem</h3>
+          </div>
+          <div className={styles.reviewContainer}>
+            {problemMessages.length > 0 ? (
+              problemMessages.map((msg, index) => (
+                <p key={index} className={styles.p}>{msg}</p>
+              ))
+            ) : (
+              <p className={styles.p}>해당 날짜에 작성된 Problem 회고가 없습니다.</p>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.trySection}>
+          <div className={styles.sectionTitle}>
+            <h3 className={styles.h3}>Try</h3>
+          </div>
+          <div className={styles.reviewContainer}>
+            {tryMessages.length > 0 ? (
+              tryMessages.map((msg, index) => (
+                <p key={index} className={styles.p}>{msg}</p>
+              ))
+            ) : (
+              <p className={styles.p}>해당 날짜에 작성된 Try 회고가 없습니다.</p>
+            )}
+          </div>
         </div>
       </div>
-
-      <div className={styles.problemSection}>
-        <div className={styles.sectionTitle}>
-          <h3 className={styles.h3}>Problem</h3>
-        </div>
-        <div className={styles.reviewContainer}>
-          {problemMessages.length > 0 ? (
-            problemMessages.map((msg, index) => (
-              <p key={index} className={styles.p}>{msg}</p>
-            ))
-          ) : (
-            <p className={styles.p}>해당 날짜에 작성된 Problem 회고가 없습니다.</p>
-          )}
-        </div>
-      </div>
-
-      <div className={styles.trySection}>
-        <div className={styles.sectionTitle}>
-          <h3 className={styles.h3}>Try</h3>
-        </div>
-        <div className={styles.reviewContainer}>
-          {tryMessages.length > 0 ? (
-            tryMessages.map((msg, index) => (
-              <p key={index} className={styles.p}>{msg}</p>
-            ))
-          ) : (
-            <p className={styles.p}>해당 날짜에 작성된 Try 회고가 없습니다.</p>
-          )}
+      <div className={styles.editbox}>
+        <div className={styles.editButton} >
+          <ImPencil/>
+          <p className={styles.p}>수정하기</p>
         </div>
       </div>
     </div>
