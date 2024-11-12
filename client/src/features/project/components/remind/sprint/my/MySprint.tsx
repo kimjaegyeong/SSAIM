@@ -46,12 +46,14 @@ const MySprint: React.FC<MySprintProps> = ({ contents }) => {
           </div>
         </div>
       </div>
-      <div className={styles.editbox}>
-        <div className={styles.editButton} >
-          <FaArrowRotateRight />
-          <p className={styles.p}>다시 생성하기</p>
+      {contents.length > 0 && (
+        <div className={styles.editbox}>
+          <div className={styles.editButton}>
+            <FaArrowRotateRight />
+            <p className={styles.p}>다시 생성하기</p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

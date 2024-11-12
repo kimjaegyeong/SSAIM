@@ -84,12 +84,14 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages }) => {
           </div>
         </div>
       </div>
-      <div className={styles.editbox}>
-        <div className={styles.editButton} >
-          <ImPencil/>
-          <p className={styles.p}>수정하기</p>
+      {messages.length > 0 && (
+        <div className={styles.editbox}>
+          <div className={styles.editButton}>
+            <ImPencil />
+            <p className={styles.p}>수정하기</p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
