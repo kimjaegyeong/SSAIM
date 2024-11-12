@@ -168,7 +168,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
                       <div
                         className={styles.readOnly}
                       >
-                        {value || '비어 있음'}
+                        {value}
                       </div>
                     )}
                   </td>
