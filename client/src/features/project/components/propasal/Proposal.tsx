@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Proposal.module.css';
 import { sendMessage } from '@features/project/apis/webSocket/webSocketService';
-import { getProposal } from '@features/project/apis/webSocket/proposal';
+import { getProposal, getAutoProposal } from '@features/project/apis/webSocket/proposal';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import CommonModal from '@components/modal/Modal';
+import Button from '@components/button/Button';
 
 interface ProposalProps {
   projectId: string;
@@ -19,6 +21,8 @@ interface EditableData {
 }
 
 const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
   const [editableData, setEditableData] = useState<EditableData>({
     title: '',
     description: '',
@@ -129,9 +133,108 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
     }
   };
 
+  const handleModalTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setModalTextareaValue(e.target.value); // textarea 값 업데이트
+  };
+
+  const parseBacktickJson = (data: string) => {
+    // 백틱과 "```json" 태그 제거
+    const cleanedData = data.replace(/```json|```/g, "").trim();
+    
+    try {
+      // JSON 문자열을 객체로 변환
+      const parsedData = JSON.parse(cleanedData);
+      return parsedData;
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return null; // 파싱 실패 시 null 반환
+    }
+  };
+
+  const handleModalSubmit = async () => {
+    try {
+      const response = await getAutoProposal(projectId, modalTextareaValue); // 데이터를 가져옴
+      console.log('Fetched auto proposal data (raw):', response);
+  
+      let parsedData;
+  
+      // response가 문자열인지 확인
+      if (typeof response === 'string') {
+        console.log('Response is a string. Attempting to parse with parseBacktickJson.');
+        parsedData = parseBacktickJson(response); // 백틱 JSON 처리
+      } else if (typeof response === 'object') {
+        console.log('Response is an object. Using it directly.');
+        parsedData = response; // 객체 그대로 사용
+      } else {
+        console.error('Unexpected response type:', typeof response);
+        parsedData = null;
+      }
+  
+      // 파싱된 데이터를 상태에 반영
+      if (parsedData) {
+        setEditableData({
+          title: parsedData.title || '',
+          description: parsedData.description || '',
+          background: parsedData.background || '',
+          feature: parsedData.feature || '',
+          effect: parsedData.effect || '',
+        });
+  
+        // WebSocket을 통해 실시간 반영
+        if (stompClientRef.current && stompClientRef.current.connected) {
+          stompClientRef.current.send(
+            `/app/edit/api/v1/projects/${projectId}/proposal`, // WebSocket 경로
+            {}, // 헤더
+            JSON.stringify(parsedData) // WebSocket으로 데이터 전송
+          );
+          console.log('WebSocket message sent:', parsedData);
+        } else {
+          console.warn('WebSocket is not connected. Cannot send message.');
+        }
+      } else {
+        console.error('Parsed data is null or undefined.');
+      }
+  
+      setIsModalOpen(false); // 모달 닫기
+    } catch (error) {
+      console.error('Error fetching auto proposal:', error);
+    }
+  };
+  
+  const openModal = () => {
+    setModalTextareaValue('')
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className={styles.proposal}>
+      <div className={styles.aiButton}>
+        <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
+      </div>
       <h2 className={styles.sectionTitle}>프로젝트 정보</h2>
+      <CommonModal 
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title= '기획서 자동 생성'
+        content={
+          <textarea
+            className={styles.modalTextarea}
+            value={modalTextareaValue}
+            onChange={handleModalTextareaChange}
+          ></textarea>
+        }
+        footer={
+          <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
+            AI 자동생성
+          </Button>
+        }
+        width={800}
+        height={400}
+      />
       {isLoading ? (
         <p>Loading...</p>
       ) : (
@@ -143,7 +246,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
                 <tr key={field}>
                   <td className={styles.label}>
                     {field === 'title' && '서비스명'}
-                    {field === 'description' && '서비스 한줄 소개'}
+                    {field === 'description' && '서비스 소개'}
                     {field === 'background' && '기획 배경'}
                     {field === 'feature' && '주요기능'}
                     {field === 'effect' && '기대효과'}
@@ -165,7 +268,11 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
                         onKeyDown={(e) => handleKeyPress(e, field)}
                       ></textarea>
                     ) : (
-                      value
+                      <div
+                        className={styles.readOnly}
+                      >
+                        {value}
+                      </div>
                     )}
                   </td>
                 </tr>

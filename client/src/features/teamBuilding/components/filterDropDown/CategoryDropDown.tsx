@@ -54,8 +54,8 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
 
   // "전체" 카테고리를 추가한 카테고리 리스트 생성
   const categoriesWithAll = [
-    { label: '전체', value: '' },
     ...categories,
+    { label: '전체', value: '' },
   ];
 
   // 버튼에 적용할 클래스 결정

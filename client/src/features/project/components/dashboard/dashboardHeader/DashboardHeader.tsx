@@ -42,7 +42,11 @@ const DashboardHeader: React.FC = () => {
       }
     }
   }, [projectWeekList, setCurrentWeek]);
-
+  const year = projectWeekList[currentWeek]?.endDate.getFullYear();
+  const month = projectWeekList[currentWeek]?.endDate.getMonth() + 1;
+  const day = projectWeekList[currentWeek]?.endDate.getDate();
+  const dateMon = dateToString(new Date(year, month, day -3))
+  const dateSun = dateToString(new Date(year, month, day + 3))
   const handleProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedProjectId = Number(event.target.value);
     setProjectId(selectedProjectId);
@@ -94,8 +98,8 @@ const DashboardHeader: React.FC = () => {
           </select>
         </div>
         <div>
-          <span>{dateToString(projectWeekList[currentWeek]?.startDate)}</span> ~{' '}
-          <span>{dateToString(projectWeekList[currentWeek]?.endDate)}</span>
+          <span>{dateMon??dateMon}</span> ~{' '}
+          <span>{dateSun??dateSun}</span>
         </div>
       </div>
     </>
