@@ -45,10 +45,10 @@ const SelectSpeakerModal = ({ isOpen, onClose, projectId, onSelect, selectedSpea
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <button className={styles.closeButton} onClick={onClose}>
-          닫기
-        </button>
-        <h3>참석자 변경</h3>
+        <div className={styles.contentTitle}>
+          <h3 className={styles.h3}>참석자 변경</h3>
+          <div className={styles.closeButton} onClick={onClose}> x </div>
+        </div>
         <ul className={styles.teamList}>
           {teamMembers.map((member, index) => (
             <li
