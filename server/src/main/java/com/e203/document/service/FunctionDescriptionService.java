@@ -61,7 +61,7 @@ public class FunctionDescriptionService {
 	}
 
 	public FunctionDescription saveFuncDesc(String projectId) {
-		String defaultForm = "{\"domain\": [],\"featureName\": [],\"description\": [],\"type\": [],\"owner\": [],\"priority\": []}";
+		String defaultForm = "{\"domain\": [],\"featureName\": [],\"description\": [],\"owner\": [],\"priority\": []}";
 		FunctionDescription functionDescription = FunctionDescription.builder()
 			.projectId(projectId)
 			.content(defaultForm)
