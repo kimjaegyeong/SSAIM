@@ -6,6 +6,7 @@ import micWave from "../../../assets/meeting/micWave.json";
 import stopIcon from "../../../assets/meeting/stop.png";
 import { createMeeting } from '@/features/project/apis/meeting/createMeeting';
 import { MeetingPostDTO } from '@features/project/types/meeting/MeetingDTO';
+import Loading from '@/components/loading/Loading';
 
 const MeetingCreatePage = () => {
   const location = useLocation();
@@ -14,10 +15,8 @@ const MeetingCreatePage = () => {
   const [timer, setTimer] = useState({ minutes: 0, seconds: 0, milliseconds: 0 });
   const { meetingTitle, selectedParticipants } = location.state || {};
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [audioURL, setAudioURL] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(true);
-
-  // audioChunks를 useRef로 선언하여 최신 상태 유지
+  const [isLoading, setIsLoading] = useState(false);
   const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
@@ -49,11 +48,14 @@ const MeetingCreatePage = () => {
         audioChunksRef.current = [];
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const options = MediaRecorder.isTypeSupported('audio/wav') 
-          ? { mimeType: 'audio/wav' }
-          : { mimeType: 'audio/webm' }; // 기본값 설정
+        
+        // 비디오 트랙을 추가하여 mp4 형식을 지원
+        const audioContext = new AudioContext();
+        const destination = audioContext.createMediaStreamDestination();
+        const source = audioContext.createMediaStreamSource(stream);
+        source.connect(destination);
 
-        const recorder = new MediaRecorder(stream, options);
+        const recorder = new MediaRecorder(destination.stream, { mimeType: 'video/mp4' });
         setMediaRecorder(recorder);
 
         recorder.ondataavailable = (event) => {
@@ -63,13 +65,9 @@ const MeetingCreatePage = () => {
         };
 
         recorder.onstop = () => {
-          if (audioChunksRef.current.length > 0) {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            setAudioURL(audioUrl);
-            audioChunksRef.current = [];
-            uploadMeeting(audioBlob); // 녹음 종료 후 API 호출
-          }
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'video/mp4' });
+          audioChunksRef.current = [];
+          uploadMeeting(audioBlob); // 녹음 종료 후 API 호출
         };
 
         recorder.start();
@@ -106,8 +104,10 @@ const MeetingCreatePage = () => {
   const uploadMeeting = async (audioBlob: Blob) => {
     if (!projectId || !meetingTitle) return;
 
+    setIsLoading(true);
+
     // Blob을 File 객체로 변환
-    const audioFile = new File([audioBlob], `meeting_audio_${Date.now()}.wav`, { type: audioBlob.type });
+    const audioFile = new File([audioBlob], `meeting_audio_${Date.now()}.mp4`, { type: audioBlob.type });
     console.log("audioFile", audioFile)
 
     // MeetingPostDTO 객체 생성
@@ -122,13 +122,17 @@ const MeetingCreatePage = () => {
     try {
       const response = await createMeeting(parseInt(projectId), meetingPostDTO);
       console.log("Meeting created successfully:", response);
-
-      // API 호출 성공 후, 원하는 페이지로 이동
       navigate(`/project/${projectId}/meeting/${response.meetingId}`);
     } catch (error) {
       console.error("Error uploading meeting:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return <Loading />;  // Loading 요소 렌더링
+  }
 
   return (
     <div className={styles.container}>
@@ -143,12 +147,6 @@ const MeetingCreatePage = () => {
         onClick={handleStopClick}
         style={{ cursor: 'pointer' }}
       />
-      {audioURL && (
-        <div>
-          <h2>녹음된 파일 미리 듣기:</h2>
-          <audio controls src={audioURL}></audio>
-        </div>
-      )}
     </div>
   );
 };
