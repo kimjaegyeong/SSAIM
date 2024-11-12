@@ -213,7 +213,19 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   
       // 파싱된 데이터를 상태에 반영
       if (parsedData) {
-        parsedData.owner = Array(parsedData.functionName.length).fill(''),
+        const maxLength = Math.max(
+          ...Object.values(parsedData).map((value) => Array.isArray(value) ? value.length : 0)
+        );
+
+        Object.keys(parsedData).forEach((key) => {
+          if (Array.isArray(parsedData[key])) {
+            while (parsedData[key].length < maxLength) {
+              parsedData[key].push('');
+            }
+          }
+        });
+
+        parsedData.owner = Array(maxLength).fill(''),
         setData(parsedData);
   
         // WebSocket을 통해 실시간 반영

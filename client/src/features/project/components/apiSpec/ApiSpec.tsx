@@ -208,14 +208,26 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   
       // 파싱된 데이터를 상태에 반영
       if (parsedData) {
-        parsedData.frontOwner = Array(parsedData.functionName.length).fill(''),
-        parsedData.backOwner = Array(parsedData.functionName.length).fill(''),
-        parsedData.frontState = Array(parsedData.functionName.length).fill('0'),
-        parsedData.backState = Array(parsedData.functionName.length).fill('0'),
-        parsedData.requestHeader = Array(parsedData.functionName.length).fill(''),
-        parsedData.responseHeader = Array(parsedData.functionName.length).fill(''),
-        parsedData.requestBody = Array(parsedData.functionName.length).fill(''),
-        parsedData.responseBody = Array(parsedData.functionName.length).fill(''),
+        const maxLength = Math.max(
+          ...Object.values(parsedData).map((value) => Array.isArray(value) ? value.length : 0)
+        );
+
+        Object.keys(parsedData).forEach((key) => {
+          if (Array.isArray(parsedData[key])) {
+            while (parsedData[key].length < maxLength) {
+              parsedData[key].push('');
+            }
+          }
+        });
+
+        parsedData.frontOwner = Array(maxLength).fill(''),
+        parsedData.backOwner = Array(maxLength).fill(''),
+        parsedData.frontState = Array(maxLength).fill('0'),
+        parsedData.backState = Array(maxLength).fill('0'),
+        parsedData.requestHeader = Array(maxLength).fill(''),
+        parsedData.responseHeader = Array(maxLength).fill(''),
+        parsedData.requestBody = Array(maxLength).fill(''),
+        parsedData.responseBody = Array(maxLength).fill(''),
         setData(parsedData);
   
         // WebSocket을 통해 실시간 반영
