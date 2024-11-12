@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { WeeklyDataDTO } from '../types/dashboard/WeeklyDataDTO';
-import { useDashboardStore } from '../stores/dashboardStore';
+import { useDashboardStore } from '../stores/useDashboardStore';
 export const useDashboardData = () => {
   const { startDate } = useDashboardStore();
   return useQuery({

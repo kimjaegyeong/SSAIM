@@ -16,10 +16,10 @@
 
 .dateRange {
   display : flex;
-  flex-direction: row-reverse;
+  width : 100%;
+  /* border : 1px solid black; */
+  justify-content: space-between;
   font-size: 16px;
-  margin-left: auto;
-  padding-right: 40px;
 }
 
 .arrowButton {
@@ -32,4 +32,34 @@
 
 .arrowButton:hover {
   color: #555;
+}
+.projectSelect {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.projectSelect:hover {
+  background-color: #e6e6e6;
+}
+
+.projectSelect:focus {
+  border-color: #6a67ce;
+  box-shadow: 0 0 0 3px rgba(106, 103, 206, 0.3);
+}
+
+.projectSelect option {
+  font-size: 16px;
+  padding: 10px;
+  color: #333;
+  background-color: #ffffff;
 }

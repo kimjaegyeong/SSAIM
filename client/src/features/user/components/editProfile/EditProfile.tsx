@@ -36,7 +36,7 @@ const EditProfile: React.FC = () => {
         userProfileMessage: userInfo.userProfileMessage ?? undefined,
         userSkills: userInfo.userSkills ?? undefined,
         userRole: userInfo.userRole,
-        userProfileImage: userInfo.userProfileImage,
+        // userProfileImage: userInfo.userProfileImage,
       };
       setProfile(userInfoEdit);
     }
