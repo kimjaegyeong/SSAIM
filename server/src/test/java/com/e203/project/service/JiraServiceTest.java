@@ -94,4 +94,12 @@ public class JiraServiceTest {
 		List<SprintResponseDto> allSprints = jiraService.findAllSprints(1);
 		allSprints.stream().forEach(sprintResponseDto -> System.out.println(sprintResponseDto.getName()));
 	}
+
+	@Test
+	@DisplayName("Jira accountId 조회")
+	public void findAccountId(){
+		String jiraAccountId = jiraService.findJiraAccountId("dongji_11@naver.com",
+			"ATATT3xFfGF0FmQbtU31W9h6Tl4wzg7MqqksBkhj5RQbb5eCXKOInUXD203v-qi7wsyRPyC4MFMkZgsP4MGKWS-oeHfU-leEVy_3n-qqQnixt6mR0_euRJfQuClMPEK6o4xzYhwsnUVveTPAjEulPfRhOwAa7TiJfOITH31KZR-cVkD0nUOXqw0=9608D773");
+		System.out.println(jiraAccountId);
+	}
 }
