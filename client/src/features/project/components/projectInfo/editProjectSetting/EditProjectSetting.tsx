@@ -48,11 +48,11 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
   const handleSave = async () => {
     const apiKeyPayload =
       type === 'jira'
-        ? { jiraApi: apiKey, jiraProjectId: externalProjectId }
+        ? { jiraApi: apiKey, jiraProjectId: externalProjectId, jiraBoardId: boardId }
         : { gitlabApi: apiKey, gitlabProjectId: externalProjectId };
     console.log(apiKeyPayload);
     await fetchApiKey(modalData.content, 'patch', apiKeyPayload, projectId);
-    setIsModalOpen(false);
+    onClose();
   };
 
   const handleCancel = () => {

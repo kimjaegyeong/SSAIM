@@ -25,7 +25,8 @@ import NetworkErrorPage from '../pages/error/NetworkErrorPage';
 import NotFoundPage from '../pages/error/NotFoundPage';
 import SignUpPage from '@pages/account/signup/SignUpPage';
 import EditProfilePage from '@/pages/account/editProfile/EditProfilePage';
-import SprintCreatePage from '@/pages/project/SprintCreatePage';
+import SprintCreatePage from '@/pages/project/sprint/SprintCreatePage';
+import SprintListPage from '@/pages/project/sprint/SprintListPage';
 
 const AppRoutes = () => (
   <Routes>
@@ -41,7 +42,7 @@ const AppRoutes = () => (
       <Route path="/project/create" element={<ProjectCreatePage />}></Route>
       <Route path="/project/:projectId/info" element={<ProjectDetailPage />}></Route>
       <Route path="/project/:projectId/sprint" element={<ProjectSprintPage />}></Route>
-      <Route path="/project/:projectId/sprint/list" element={<ProjectSprintPage />}></Route>
+      <Route path="/project/:projectId/sprint/list" element={<SprintListPage />}></Route>
       <Route path="/project/:projectId/sprint/:sprintId" element={<SprintCreatePage />}></Route>
       <Route path="/project/:projectId/output" element={<ProjectOutputPage />}></Route>
       <Route path="/project/:projectId/meeting" element={<ProjectMeetingPage />}></Route>
