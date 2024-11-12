@@ -2,13 +2,13 @@ import styles from './Sprint.module.css';
 import Issue from './Issue';
 import Button from '../../../../components/button/Button';
 import { useState, useMemo } from 'react';
-import SprintCreateModal from './SprintCreateModal';
 import { useSprintIssueQuery } from '../../hooks/useSprintIssueData';
 import { useProjectInfo } from '../../hooks/useProjectInfo';
 import { useParams } from 'react-router-dom';
 import calculateWeeks from '../../utils/calculateWeeks';
 import { dateToString } from '@/utils/dateToString';
 import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
+import { useNavigate } from 'react-router-dom';
 
 const WeeklyProgress = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -21,6 +21,8 @@ const WeeklyProgress = () => {
   const [currentWeek, setCurrentWeek] = useState(0);
   const [selectedMember, setSelectedMember] = useState<string | null>(null); // 선택된 멤버 상태 추가
 
+  const navigate = useNavigate();
+
   useMemo(() => {
     setCurrentWeek(projectWeekList.length - 1);
   }, [projectWeekList.length]);
@@ -31,9 +33,13 @@ const WeeklyProgress = () => {
     dateToString(projectWeekList[currentWeek - 1]?.endDate, '-')
   );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleModalOpen = () => setIsModalOpen(true);
-  const handleModalClose = () => setIsModalOpen(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const handleModalOpen = () => setIsModalOpen(true);
+  // const handleModalClose = () => setIsModalOpen(false);
+
+  const navigateToSprintList = () => {
+    navigate(`list`);
+  };
 
   const handleIncreaseWeek = () => {
     if (currentWeek < projectWeekList.length - 1) {
@@ -155,7 +161,7 @@ const WeeklyProgress = () => {
         </button>
 
         <div className={styles.buttonPlaceholder}>
-          <Button children="스프린트 생성" colorType="blue" size="small" onClick={handleModalOpen}></Button>
+          <Button children="스프린트 생성" colorType="blue" size="small" onClick={navigateToSprintList}></Button>
         </div>
       </div>
       <div className={styles.weeklyProgressContainer}>
@@ -185,7 +191,6 @@ const WeeklyProgress = () => {
           ))}
         </div>
       </div>
-      {isModalOpen && <SprintCreateModal onClose={handleModalClose} />}
     </>
   );
 };

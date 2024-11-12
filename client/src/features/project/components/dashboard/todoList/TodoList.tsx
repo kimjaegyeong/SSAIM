@@ -66,7 +66,7 @@ const TodoList: React.FC = () => {
       <div className={styles.todoListBody}>
         {todoList?.length > 0 &&
           todoList.map((t: IssueDTO, i:number) => {
-            return <TodoListItem task={t} key={i} />;
+            return <TodoListItem task={t} key={i}/>;
           })}
       </div>
     </div>
