@@ -46,6 +46,8 @@ const MeetingCreatePage = () => {
 
     const startRecording = async () => {
       try {
+        audioChunksRef.current = [];
+
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const options = MediaRecorder.isTypeSupported('audio/wav') 
           ? { mimeType: 'audio/wav' }
@@ -105,7 +107,7 @@ const MeetingCreatePage = () => {
     if (!projectId || !meetingTitle) return;
 
     // Blob을 File 객체로 변환
-    const audioFile = new File([audioBlob], 'meeting_audio.wav', { type: audioBlob.type });
+    const audioFile = new File([audioBlob], `meeting_audio_${Date.now()}.wav`, { type: audioBlob.type });
     console.log("audioFile", audioFile)
 
     // MeetingPostDTO 객체 생성

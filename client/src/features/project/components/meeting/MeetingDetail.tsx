@@ -138,6 +138,15 @@ const MeetingDetail = () => {
               </div>
             ))}
           </div>
+          <div className={styles.voicePlay}>
+            {meetingData.meetingVoiceUrl ? (
+              <audio controls src={meetingData.meetingVoiceUrl}>
+                Your browser does not support the audio element.
+              </audio>
+            ) : (
+              <p>음성 파일을 불러오는 중입니다.</p>
+            )}
+          </div>
         </div>
       </div>
       <div className={styles.right}>
