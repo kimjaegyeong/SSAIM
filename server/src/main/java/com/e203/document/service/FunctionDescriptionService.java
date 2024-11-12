@@ -57,38 +57,12 @@ public class FunctionDescriptionService {
         return results.isEmpty() ? null : results.get(0); // 결과가 없으면 null 반환
     }
 
-    public String getFuncDescContent(String projectId) {
-        FunctionDescription funcDesc = getFuncDesc(projectId);
-        return funcDesc == null ? "" : funcDesc.getContent();
-    }
-
-    public FunctionDescription updateFuncDescContent(String projectId, String content) {
-        Query query = new Query(Criteria.where("projectId").is(projectId));
-
-        Update update = new Update().set("content", content);
-
-        UpdateResult documents = mongoTemplate.updateFirst(query, update, "FunctionDescription");
-
-        return getFuncDesc(projectId);
-    }
-
-    public FunctionDescription saveFuncDesc(String projectId) {
-        String defaultForm = "{\"domain\": [],\"featureName\": [],\"description\": [],\"type\": [],\"owner\": [],\"priority\": []}";
-        FunctionDescription functionDescription = FunctionDescription.builder()
-                .projectId(projectId)
-                .content(defaultForm)
-                .build();
-        return functionDescriptionRepository.save(functionDescription);
-    }
-
-    public String generateFunctionDescription(int projectId, int userId, String message) {
-        Optional<Project> project = projectRepository.findById(projectId);
-        if (project.isEmpty()) {
-            return "Not found";
-        } else if (project.get().getProjectMemberList().stream()
-                .noneMatch(member -> member.getUser().getUserId() == userId)) {
-            return "Not authorized";
-        }
-        return chatAiService.generateFunctionDescription(message, proposalService.getProposalContent(String.valueOf(projectId)));
-    }
+	public FunctionDescription saveFuncDesc(String projectId) {
+		String defaultForm = "{\"domain\": [],\"featureName\": [],\"description\": [],\"owner\": [],\"priority\": []}";
+		FunctionDescription functionDescription = FunctionDescription.builder()
+			.projectId(projectId)
+			.content(defaultForm)
+			.build();
+		return functionDescriptionRepository.save(functionDescription);
+	}
 }
