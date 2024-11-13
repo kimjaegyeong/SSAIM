@@ -28,7 +28,7 @@ const RemindIntroPage = () => {
   }, [data, isLoading, isError]);
 
   const handleCreateClick = () => {
-    navigate('/remind/create');
+    navigate('/remind/all');
   };
 
   const handleListClick = () => {
