@@ -12,7 +12,7 @@ export const useCreateIssueMutation = (projectId: number) => {
       queryClient.invalidateQueries({ queryKey: ['sprintList', projectId] });
     },
     onError: (error) => {
-      console.error('스프린트 생성 중 오류:', error);
+      console.error('스프린트 할당 중 오류:', error);
     },
   });
 };
