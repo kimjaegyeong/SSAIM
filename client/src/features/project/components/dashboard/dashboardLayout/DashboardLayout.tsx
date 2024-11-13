@@ -4,9 +4,8 @@ import DashboardHeader from '@features/project/components/dashboard/dashboardHea
 import ProgressChart from '@features/project/components/dashboard/progressChart/ProgressChart';
 import TodoList from '@features/project/components/dashboard/todoList/TodoList';
 // css Module
-import styles from './DashboardLayout.module.css'
+import styles from './DashboardLayout.module.css';
 // types
-
 
 const DashboardLayout = () => {
   return (
@@ -14,10 +13,10 @@ const DashboardLayout = () => {
       <DashboardHeader />
       <WeeklySchedule weeklyStartDate={new Date('2024-10-30')} />
       <div className={styles.dashboardBottom}>
-      <div className={styles.chartContainer}>
-      <ProgressChart />
-      </div>
-      <TodoList/>
+        <div className={styles.chartContainer}>
+          <ProgressChart />
+        </div>
+        <TodoList />
       </div>
     </div>
   );

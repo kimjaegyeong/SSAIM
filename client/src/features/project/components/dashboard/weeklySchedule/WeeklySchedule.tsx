@@ -81,7 +81,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
       console.log(mr);
     });
     filterdIssues?.forEach((issue: IssueDTO) => {
-      const match = issue.title.match(/(\d{6})/); // `title`에서 날짜 추출
+      const match = issue.summary.match(/(\d{6})/); // `title`에서 날짜 추출
       if (match) {
         const dateStr = match[0];
         const year = 2000 + parseInt(dateStr.slice(0, 2), 10);

@@ -28,7 +28,7 @@ interface DashboardState {
 
 // Zustand store 생성
 export const useDashboardStore = create<DashboardState>((set) => ({
-  projectId: 35,
+  projectId: -1,
   setProjectId: (id) => {
     set(() => ({ projectId: id }));
     console.log(id);
