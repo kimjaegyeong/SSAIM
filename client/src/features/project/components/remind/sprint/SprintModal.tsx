@@ -55,8 +55,10 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
     if (dailyReminds) {
       const groupByWeek = (reminds: DailyRemindGetDTO[]): SprintOption[] => {
         const weeks: Record<string, DailyRemindGetDTO[]> = {};
+
+        const filteredReminds = reminds.filter((remind) => remind.projectMemberId === pmId);
   
-        reminds.forEach((remind) => {
+        filteredReminds.forEach((remind) => {
           const date = new Date(remind.dailyRemindDate);
           const monday = getMonday(date); // 월요일을 기준으로 주 구하기
           const friday = getFriday(date); // 금요일을 기준으로 주 구하기
@@ -68,7 +70,6 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
   
         return Object.keys(weeks).map((weekKey, index) => {
           const weekData = weeks[weekKey];
-  
           const firstDate = new Date(weekData[0].dailyRemindDate);
           const monday = getMonday(firstDate);
           const friday = getFriday(firstDate);
@@ -82,10 +83,12 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
           };
         });
       };
-  
-      setSprintOptions(groupByWeek(dailyReminds));
+      const groupedOptions: SprintOption[] = groupByWeek(dailyReminds);
+      const sortedOptions: SprintOption[] = groupedOptions.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+
+      setSprintOptions(sortedOptions);
     }
-  }, [dailyReminds]);
+  }, [dailyReminds, pmId]);
 
   const handleSprintSelect = (sprintId: string) => {
     setSelectedSprint(sprintId);

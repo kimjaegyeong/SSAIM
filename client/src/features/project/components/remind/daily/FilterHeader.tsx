@@ -4,6 +4,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { IoSunny } from "react-icons/io5";
 import { MdOutlineViewWeek } from "react-icons/md";
 import Button from '../../../../../components/button/Button';
+import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
 
@@ -63,7 +64,7 @@ const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam
                 onMouseLeave={handleMouseLeave}
               >
                 <img 
-                  src={member.profileImage} 
+                  src={member.profileImage || DefaultProfile} 
                   className={`${styles.memberImage} ${selectedPmId === member.pmId ? styles.selected : ''}`} 
                 />
                 {hoveredMemberName === member.name && (
