@@ -1,12 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createSprint } from '@/features/project/apis/sprint/createSprint';
-import { SprintCreateDTO } from '@/features/project/types/SprintDTO';
-
-export const useCreateSprint = (projectId: number) => {
+import { assignIssueToSprint } from '../../apis/sprint/assignIssueToSprint';
+export const useCreateIssueMutation = (projectId: number, sprintId:number) => {
   const queryClient = useQueryClient();
 
-  return useMutation<string, Error, SprintCreateDTO>({
-    mutationFn: (sprintData: SprintCreateDTO) => createSprint(projectId, sprintData),
+  return useMutation<string, Error, string[]>({
+    mutationFn: (issueKeyList:string[]) => assignIssueToSprint(projectId,sprintId, issueKeyList),
     onSuccess: () => {
       // 스프린트가 성공적으로 생성되었을 때 스프린트 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ['sprintList', projectId] });

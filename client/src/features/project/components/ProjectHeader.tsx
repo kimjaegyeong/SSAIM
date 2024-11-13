@@ -20,7 +20,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
 
   return (
     <div className={styles.projectHeader}>
-      <h1 className={styles.projectTitle}>{projectInfo.title}</h1>
+      <h1 className={styles.projectTitle}>{projectInfo?.title}</h1>
       <nav className={styles.projectNavbar}>
         <ul className={styles.navList}>
           <li><a href={`/project/${projectId}/info`} className={getLinkClass(`/project/${projectId}/info`)}>개요</a></li>

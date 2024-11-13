@@ -3,7 +3,7 @@ import styles from './StatusSwitch.module.css';
 
 interface StatusSwitchProps {
   status:  "해야 할 일" | "진행 중" | "완료";
-  onChange: (status:  "해야 할 일" | "진행 중" | "완료") => void;
+  onChange: (status:  'todo'|'inProgress'|'done') => void;
 }
 
 const StatusSwitch: React.FC<StatusSwitchProps> = ({ status, onChange }) => {
@@ -11,19 +11,19 @@ const StatusSwitch: React.FC<StatusSwitchProps> = ({ status, onChange }) => {
     <div className={styles.switchContainer}>
       <button
         className={`${styles.switchButton} ${status === '해야 할 일' ? styles.active : ''}`}
-        onClick={() => onChange('해야 할 일')}
+        onClick={() => onChange('todo')}
       >
         할일
       </button>
       <button
         className={`${styles.switchButton} ${status === '진행 중' ? styles.active : ''}`}
-        onClick={() => onChange('진행 중')}
+        onClick={() => onChange('inProgress')}
       >
         진행
       </button>
       <button
         className={`${styles.switchButton} ${status === '완료' ? styles.active : ''}`}
-        onClick={() => onChange('완료')}
+        onClick={() => onChange('done')}
       >
         완료
       </button>

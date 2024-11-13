@@ -25,7 +25,7 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
     <div className={styles.projectItem} onClick={onClick}>
       <div className={styles.cardLeft}>
         {
-          projectInfo?.projectImage? 
+          projectInfo?.projectImage ? 
           <img src={projectInfo?.projectImage} className={styles.profileImage} alt="thumbnail" />
           :
           <img src={defaultTeamIcon} className={styles.profileImage} alt="thumbnail" />
