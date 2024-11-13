@@ -9,10 +9,13 @@ import { createAISummary } from '../../apis/meeting/createAISummary';
 import { editSpeakers } from '../../apis/meeting/editSpeakers';
 import { MeetingDetailDTO, Speaker } from '../../types/meeting/MeetingDTO';
 import { formatMeetingTime, formatMeetingDuration } from '../../utils/meetingTime';
+import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import Loading from '@/components/loading/Loading';
+import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 
 const MeetingDetail = () => {
   const { projectId, meetingId } = useParams<{ projectId: string, meetingId: string }>();
+  const { data: projectInfo } = useProjectInfo(Number(projectId));
   const [meetingData, setMeetingData] = useState<MeetingDetailDTO | null>(null);
   const [summaryText, setSummaryText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -20,8 +23,10 @@ const MeetingDetail = () => {
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
   const [currentTime, setCurrentTime] = useState<number>(0); // 현재 재생 시간
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
 
   useEffect(() => {
+    console.log('projectInfo: ', projectInfo)
     const getMeetingDetail = async () => {
       if (projectId && meetingId) {
         try {
@@ -138,9 +143,16 @@ const MeetingDetail = () => {
         </div>
         <div className={styles.content}>
           <div className={styles.participants}>
-            {meetingData.sttResponseDto.segments.map((segment, index) => (
+          {meetingData.sttResponseDto.segments.map((segment, index) => {
+            // segment.speaker.name과 일치하는 projectMembers 찾기
+            const matchingMember = projectInfo?.projectMembers.find(
+              (member) => member.name === segment.speaker.name
+            );
+            const profileImage = matchingMember ? matchingMember.profileImage : DefaultProfile; // 일치하면 해당 이미지, 아니면 기본 이미지 사용
+
+            return (
               <div key={index} className={styles.participantBox}>
-                <img src="profile.jpg" alt="profile" />
+                <img src={profileImage} alt="profile" />
                 <div className={styles.participantComment}>
                   <p
                     className={styles.participantName}
@@ -148,12 +160,15 @@ const MeetingDetail = () => {
                   >
                     {segment.speaker.name}
                   </p>
-                  <p className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}>
+                  <p
+                    className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}
+                  >
                     {segment.text}
                   </p>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
           <div className={styles.voicePlay}>
             {meetingData.meetingVoiceUrl ? (
