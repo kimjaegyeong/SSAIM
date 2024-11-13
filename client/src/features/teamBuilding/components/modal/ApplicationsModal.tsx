@@ -36,7 +36,7 @@ const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }
                 const response = await getApplications(userId); // API 호출
                 setApplications(response);
             } catch (error) {
-                console.error('Error fetching applications:', error);
+                console.error('Error fetching applications11234:', error);
                 setError(true);
             } finally {
                 setLoading(false);

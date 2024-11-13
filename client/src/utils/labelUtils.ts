@@ -38,9 +38,9 @@ export const positionMap: Record<string, string> = {
 };
 
 export const applicationStatusMap: Record<string, string> = {
-    '1': '수락',
-    '0': '대기',
-    '-1': '거절',
+    '1': '수락됨',
+    '0': '대기중',
+    '-1': '거절됨',
 };
 
 export const apiStatusMap: Record<string, string> = {
