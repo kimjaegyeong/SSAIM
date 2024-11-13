@@ -471,7 +471,18 @@ const TeamBuildingDetailPage = () => {
           </div>
           <div className={styles.memberList}>
             {selectedMembers.map((member) => (
-              <div key={member.userId} className={styles.memberItem}>
+              <div 
+                key={member.userId}
+                className={styles.memberItem}
+                onClick={() => {
+                  if (!editMembers) {
+                    navigate(`/profile/${member.userId}`);
+                  }
+                }}
+                style={{
+                  cursor: editMembers ? 'default' : 'pointer',
+                }}
+              >
                 <div className={styles.memberInfo}>
                   <img
                     src={
