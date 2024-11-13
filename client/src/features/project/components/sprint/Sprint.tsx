@@ -17,7 +17,7 @@ const WeeklyProgress = () => {
     new Date(projectInfo.startDate as Date),
     new Date(projectInfo.endDate as Date)
   );
-  const projectMembers = projectInfo?.projectMemberFindResponseDtoList;
+  const projectMembers = projectInfo?.projectMembers;
   const [currentWeek, setCurrentWeek] = useState(0);
   const [selectedMember, setSelectedMember] = useState<string | null>(null); // 선택된 멤버 상태 추가
 
