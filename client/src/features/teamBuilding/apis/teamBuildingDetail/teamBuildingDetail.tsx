@@ -7,8 +7,9 @@ export interface createCommentParams {
 }
 
 export interface editCommentParams {
-    position: number;
-    message: string;
+    position?: number;
+    status?: number;
+    message?: string;
 }
 
 export const getPostInfo = async(postId:number) => {
