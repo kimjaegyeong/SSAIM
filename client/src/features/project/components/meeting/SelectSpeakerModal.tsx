@@ -24,7 +24,7 @@ const SelectSpeakerModal = ({ isOpen, onClose, projectId, onSelect, selectedSpea
 
   useEffect(() => {
     if (projectInfo) {
-      setTeamMembers(projectInfo.projectMemberFindResponseDtoList || []);
+      setTeamMembers(projectInfo.projectMembers || []);
     }
   }, [projectInfo]);
 

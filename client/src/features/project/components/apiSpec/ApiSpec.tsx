@@ -7,6 +7,10 @@ import { getApiSpec, getAutoApiSpec } from '@features/project/apis/webSocket/api
 import ApiDetailModal from './apiDetailModal/ApiDetailModal';
 import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
+import Tag from '@/features/teamBuilding/components/tag/Tag';
+import { getApiStatusLabel } from '../../../../utils/labelUtils'
+import { MdOpenInNew } from "react-icons/md";
+import Spinner from '@/components/spinner/Spinner';
 
 interface ApiSpecData {
   category: string[];
@@ -53,6 +57,8 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
   const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
+  const [isEditing, setIsEditing] = useState<{ [rowIndex: number]: { [column: string]: boolean } }>({});
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   const openModal = (rowIndex: number) => {
     setSelectedRowIndex(rowIndex);
@@ -112,31 +118,17 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       category: [...data.category, ''],
       functionName: [...data.functionName, ''],
       uri: [...data.uri, ''],
-      method: [...data.method, ''],
+      method: [...data.method, 'GET'],
       frontOwner: [...data.frontOwner, ''],
       backOwner: [...data.backOwner, ''],
-      frontState: [...data.frontState, ''],
-      backState: [...data.backState, ''],
+      frontState: [...data.frontState, '0'],
+      backState: [...data.backState, '0'],
       priority: [...data.priority, ''],
       description: [...data.description, ''],
       requestHeader: [...data.requestHeader, ''],
       responseHeader: [...data.responseHeader, ''],
       requestBody: [...data.requestBody, ''],
       responseBody: [...data.responseBody, ''],
-      // category: [''],
-      // functionName: [''],
-      // uri: [''],
-      // method: [''],
-      // frontOwner: [''],
-      // backOwner: [''],
-      // frontState: [''],
-      // backState: [''],
-      // priority: [''],
-      // description: [''],
-      // requestHeader: [''],
-      // responseHeader: [''],
-      // requestBody: [''],
-      // responseBody: [''],
     };
 
     setData(updatedData);
@@ -199,6 +191,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
 
   const handleModalSubmit = async () => {
     try {
+      setIsGenerating(true);
       const response = await getAutoApiSpec(projectId, modalTextareaValue); // 데이터를 가져옴
       console.log('Fetched auto proposal data (raw):', response);
   
@@ -218,14 +211,26 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   
       // 파싱된 데이터를 상태에 반영
       if (parsedData) {
-        parsedData.frontOwner = Array(parsedData.functionName.length).fill(''),
-        parsedData.backOwner = Array(parsedData.functionName.length).fill(''),
-        parsedData.frontState = Array(parsedData.functionName.length).fill(''),
-        parsedData.backState = Array(parsedData.functionName.length).fill(''),
-        parsedData.requestHeader = Array(parsedData.functionName.length).fill(''),
-        parsedData.responseHeader = Array(parsedData.functionName.length).fill(''),
-        parsedData.requestBody = Array(parsedData.functionName.length).fill(''),
-        parsedData.responseBody = Array(parsedData.functionName.length).fill(''),
+        const maxLength = Math.max(
+          ...Object.values(parsedData).map((value) => Array.isArray(value) ? value.length : 0)
+        );
+
+        Object.keys(parsedData).forEach((key) => {
+          if (Array.isArray(parsedData[key])) {
+            while (parsedData[key].length < maxLength) {
+              parsedData[key].push('');
+            }
+          }
+        });
+
+        parsedData.frontOwner = Array(maxLength).fill(''),
+        parsedData.backOwner = Array(maxLength).fill(''),
+        parsedData.frontState = Array(maxLength).fill('0'),
+        parsedData.backState = Array(maxLength).fill('0'),
+        parsedData.requestHeader = Array(maxLength).fill(''),
+        parsedData.responseHeader = Array(maxLength).fill(''),
+        parsedData.requestBody = Array(maxLength).fill(''),
+        parsedData.responseBody = Array(maxLength).fill(''),
         setData(parsedData);
   
         // WebSocket을 통해 실시간 반영
@@ -246,6 +251,9 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       setIsModalOpen(false); // 모달 닫기
     } catch (error) {
       console.error('Error fetching auto proposal:', error);
+      alert('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+    } finally {
+      setIsGenerating(false); // 로딩 종료
     }
   };
 
@@ -258,6 +266,44 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     setIsAiModalOpen(false);
   };
 
+  const handleEditClick = (rowIndex: number, column: keyof ApiSpecData) => {
+    setIsEditing({ [rowIndex]: { [column]: true } });
+  };
+
+  const autoResize = (element: HTMLTextAreaElement) => {
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight}px`;
+  };
+
+  const handleInputChange = (column: keyof ApiSpecData, rowIndex: number, value: string) => {
+    const updatedColumn = [...data[column]];
+    updatedColumn[rowIndex] = value;
+  
+    const updatedData = { ...data, [column]: updatedColumn };
+    setData(updatedData);
+  
+    if (stompClientRef.current?.connected) {
+      stompClientRef.current.send(
+        `/app/edit/api/v1/projects/${projectId}/api-docs`,
+        {},
+        JSON.stringify(updatedData)
+      );
+    }
+  };
+
+  const handleBlur = () => {
+    setIsEditing({});
+  };
+
+  const handleKeyPress = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleBlur();
+    }
+  };
+
   return (
     <div className={styles.tableContainer} ref={tableRef}>
       <div className={styles.aiButton}>
@@ -268,11 +314,15 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
         onClose={closeAiModal}
         title= '기능명세서 자동 생성'
         content={
-          <textarea
-            className={styles.modalTextarea}
-            value={modalTextareaValue}
-            onChange={handleModalTextareaChange}
-          ></textarea>
+          isGenerating ? (
+            <Spinner />
+          ) : (
+            <textarea
+              className={styles.modalTextarea}
+              value={modalTextareaValue}
+              onChange={handleModalTextareaChange}
+            ></textarea>
+          )
         }
         footer={
           <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
@@ -285,6 +335,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       <table className={styles.table}>
         <thead>
           <tr>
+            <th className={styles.actionColumn}></th> {/* 빈 열 추가 */}
             <th>분류</th>
             <th>API 이름</th>
             <th>URI</th>
@@ -300,25 +351,108 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
         <tbody>
           {data.category.map((_, index) => (
             <React.Fragment key={index}>
-              <tr onClick={() => openModal(index)}>
+              <tr>
+                <td className={styles.actionCell}>
+                  <MdOpenInNew
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openModal(index);
+                    }}
+                    className={styles.actionButton}
+                  />
+                </td>
                 {(['category', 'functionName', 'uri', 'method', 'frontOwner', 'backOwner', 'frontState', 'backState', 'priority'] as const).map((column) => (
-                  <td key={column}>
-                    {data[column][index]}
+                  <td
+                    key={column}
+                    onClick={() => handleEditClick(index, column)} // <td> 클릭 시 편집 모드 진입
+                    className={styles.tableCell}
+                  >
+                    {column === 'frontState' || column === 'backState' ? (
+                      <>
+                        {/* 기존 Tag 표시 */}
+                        <div className={styles.tagWrapper}>
+                          <Tag text={getApiStatusLabel(parseInt(data[column][index]))} />
+                        </div>
+
+                        {/* 수정 모드: 선택 가능한 태그 목록 */}
+                        {isEditing[index]?.[column] && (
+                          <div
+                            className={styles.tagOptions}
+                            onClick={(e) => e.stopPropagation()} // 클릭 이벤트 버블링 방지
+                          >
+                            {[0, 1, 2].map((value) => (
+                              <div
+                                key={value}
+                                onClick={() => {
+                                  handleInputChange(column, index, value.toString());
+                                  handleBlur(); // 선택 후 편집 종료
+                                }}
+                                className={styles.tagOptionWrapper}
+                              >
+                                <Tag text={getApiStatusLabel(value)} />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : column === 'method' ? ( 
+                      <>
+                        {/* 기존 Tag 표시 */}
+                        <div className={styles.tagWrapper}>
+                          <Tag text={data[column][index]} />
+                        </div>
+
+                        {/* 수정 모드: 선택 가능한 태그 목록 */}
+                        {isEditing[index]?.[column] && (
+                          <div
+                            className={styles.tagOptions}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((value) => (
+                              <div
+                                key={value}
+                                onClick={() => {
+                                  handleInputChange(column, index, value);
+                                  handleBlur(); // 선택 후 편집 종료
+                                }}
+                                className={styles.tagOptionWrapper}
+                              >
+                                <Tag text={value} />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : isEditing[index]?.[column] ? (
+                      // 편집 모드: 텍스트 에디터
+                      <textarea
+                        value={data[column][index]}
+                        onChange={(e) => handleInputChange(column, index, e.target.value)}
+                        onKeyDown={(e) => handleKeyPress(e)}
+                        onBlur={() => handleBlur()}
+                        autoFocus
+                        ref={(el) => el && autoResize(el)}
+                        className={styles.editTextarea}
+                      />
+                    ) : (
+                      // 보기 모드: 일반 텍스트
+                      data[column][index]
+                    )}
                   </td>
                 ))}
                 <td>
-                <MdDelete
-                  onClick={(e) => {
-                    e.stopPropagation(); // 이벤트 버블링 방지
-                    handleDeleteRow(index);
-                  }}
-                />
+                  <MdDelete
+                    onClick={(e) => {
+                      e.stopPropagation(); // 이벤트 버블링 방지
+                      handleDeleteRow(index);
+                    }}
+                  />
                 </td>
               </tr>
             </React.Fragment>
           ))}
           <tr className={styles.addRow} onClick={addNewRow}>
-            <td colSpan={10}>+ Add New Row</td>
+            <td colSpan={11} className={styles.addRowTd}>+ Add New Row</td> {/* colspan을 11로 조정 */}
           </tr>
         </tbody>
       </table>

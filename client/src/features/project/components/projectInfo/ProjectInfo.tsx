@@ -28,8 +28,8 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
     <div className={styles.projectInfoContainer}>
       <div className={styles.leftSection}>
         <div className={styles.projectDetails}>
-          {projectInfo?.profileImage ? (
-            <img src={projectInfo.profileImage} alt="프로젝트 프로필" className={styles.projectImage} />
+          {projectInfo?.projectImage ? (
+            <img src={projectInfo.projectImage} alt="프로젝트 프로필" className={styles.projectImage} />
           ) : (
             <img src={defaultTeamIcon} alt="프로젝트 프로필" className={styles.projectImage} />
           )}
@@ -90,7 +90,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
       <div className={styles.rightSection}>
         <h3>팀원 정보</h3>
         <div className={styles.teamMembers}>
-          {projectInfo.projectMemberFindResponseDtoList?.map((member: ProjectInfoMemberDTO) => (
+          {projectInfo.projectMembers?.map((member: ProjectInfoMemberDTO) => (
             <div key={member.userId} className={styles.teamMember}>
               {member.role === 1 ? <img src={leaderCrown} alt="leaderCrown" className={styles.leaderCrown} /> : null}
               <img src={member.profileImage} alt={member.name} className={styles.memberImage} />

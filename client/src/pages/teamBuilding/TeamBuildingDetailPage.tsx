@@ -127,6 +127,7 @@ const TeamBuildingDetailPage = () => {
       })
       .catch((err) => {
         console.error(err);
+        alert('댓글 작성 중 오류가 발생했습니다. 지원은 전체 한번만 가능합니다.');
       }); 
   };
 
@@ -332,6 +333,20 @@ const TeamBuildingDetailPage = () => {
     navigate(`/project/create`);
   };
 
+  const handleTeamAccept = async (recruitingMemberId: number) => {
+    const params = {status: 1}
+  
+    try {
+      await editComment(data.postId, recruitingMemberId, params);
+      alert('멤버가 승인되었습니다.');
+      
+      window.location.reload();
+    } catch (error) {
+      console.error('멤버 승인 중 오류가 발생했습니다:', error);
+      alert('멤버 승인이 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -419,6 +434,7 @@ const TeamBuildingDetailPage = () => {
                       <div className={styles.modal}>
                         {isAuthor ? (
                           <button 
+                            onClick={() => handleTeamAccept(candidate.recruitingMemberId)}
                             className={styles.modalButton}
                           >
                             수락
@@ -443,15 +459,40 @@ const TeamBuildingDetailPage = () => {
         <div className={styles.teamSection}>
           <div className={styles.teamSectionHeader}>
             <span>모집 현황</span>
-            {isAuthor &&
+            {isAuthor ? (
               <button className={styles.editMemberButton} onClick={handleEditToggle}>
                 {editMembers ? 'Done' : 'Edit'}
               </button>
-            }
+            ) : (
+              data.recruitingMembers.some((member) => member.userId === userId) && ( // 팀에 속한 사용자만 버튼 표시
+                <button 
+                  className={styles.editMemberButton} 
+                  onClick={() => {
+                    const member = data.recruitingMembers.find((member) => member.userId === userId);
+                    if (member) {
+                      handleDeleteComment(postId, member.recruitingMemberId);
+                    }
+                  }}
+                >
+                  Leave
+                </button>
+              )
+            )}
           </div>
           <div className={styles.memberList}>
             {selectedMembers.map((member) => (
-              <div key={member.userId} className={styles.memberItem}>
+              <div 
+                key={member.userId}
+                className={styles.memberItem}
+                onClick={() => {
+                  if (!editMembers) {
+                    navigate(`/profile/${member.userId}`);
+                  }
+                }}
+                style={{
+                  cursor: editMembers ? 'default' : 'pointer',
+                }}
+              >
                 <div className={styles.memberInfo}>
                   <img
                     src={

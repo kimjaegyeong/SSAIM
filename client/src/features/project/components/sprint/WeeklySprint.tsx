@@ -19,9 +19,7 @@ const WeeklySprint = () => {
     new Date(projectInfo.startDate as Date),
     new Date(projectInfo.endDate as Date)
   );
-  const projectMembers = projectInfo?.projectMemberFindResponseDtoList;
-
-  // 초기 currentWeek 설정
+  const projectMembers = projectInfo?.projectMembers;
   const [currentWeek, setCurrentWeek] = useState(0);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
   const navigate = useNavigate();

@@ -45,8 +45,8 @@ const DailyContainer = () => {
   });
 
   useEffect(() => {
-    if (projectInfo && projectInfo.projectMemberFindResponseDtoList && userId) {
-      const projectMember = projectInfo.projectMemberFindResponseDtoList.find(
+    if (projectInfo && projectInfo.projectMembers && userId) {
+      const projectMember = projectInfo.projectMembers.find(
         (member: ProjectMember) => member.userId === userId
       );
       if (projectMember) {
