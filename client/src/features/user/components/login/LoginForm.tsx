@@ -24,12 +24,11 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className={styles.loginContainer}>
-      <div className={styles.header}>
-        <h1>Login</h1>
-      </div>
-      {error && <div className={styles.errorMessage}>{error}</div>} {/* 오류 메시지 표시 */}
       <form onSubmit={handleSubmit} className={styles.loginForm}>
-        <div className={styles.inputGroup}>
+        <div className={styles.header}>
+          <h1>Login</h1>
+        </div>
+        <div className={styles.inputGroup}> 
           <label htmlFor="email" className={styles.label}>
             이메일
           </label>
@@ -57,6 +56,7 @@ const LoginForm: React.FC = () => {
             placeholder="Password"
           />
         </div>
+        {error && <div className={styles.errorMessage}>{error}</div>} {/* 오류 메시지 표시 */}
         <button type="submit" className={styles.loginButton}>
           로그인
         </button>

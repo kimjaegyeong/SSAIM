@@ -7,7 +7,7 @@ import Button from '../../components/button/Button';
 import TagSelector from '../../features/teamBuilding/components/tagSelector/TagSelector';
 import useUserStore from '@/stores/useUserStore';
 import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
-import { formatDateTime } from '../../utils/formatDateTime';
+import { formatDateTime, formatDate } from '../../utils/formatDateTime';
 import DefaultProfile from '../../assets/profile/DefaultProfile.png'
 import { getPostInfo, deletePost, createComment, editComment, deleteComment } from '../../features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail'
 import { PiCrownSimpleFill } from "react-icons/pi";
@@ -333,8 +333,8 @@ const TeamBuildingDetailPage = () => {
     navigate(`/project/create`);
   };
 
-  const handleTeamAccept = async (recruitingMemberId: number) => {
-    const params = {status: 1}
+  const handleTeamAccept = async (recruitingMemberId: number, status: number) => {
+    const params = {status: status}
   
     try {
       await editComment(data.postId, recruitingMemberId, params);
@@ -352,6 +352,7 @@ const TeamBuildingDetailPage = () => {
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>{data.postTitle}</h1>
         <div className={styles.timeSection}>
+          <p>프로젝트 기간 : {formatDate(data.startDate)} ~ {formatDate(data.endDate)}</p>
           <p>작성일 : {formatDateTime(data.createdDate)}</p>
           <p>수정일 : {formatDateTime(data.updatedDate)}</p>
         </div>
@@ -436,21 +437,36 @@ const TeamBuildingDetailPage = () => {
                     {activeCommentId === index && !isCommentEditing && (
                       <div className={styles.modal}>
                         {isAuthor ? (
-                          <button 
-                            onClick={() => handleTeamAccept(candidate.recruitingMemberId)}
-                            className={styles.modalButton}
-                          >
-                            수락
-                          </button>
+                          <>
+                            <button 
+                              onClick={() => handleTeamAccept(candidate.recruitingMemberId, 1)}
+                              className={styles.modalButton}
+                            >
+                              수락
+                            </button>
+                            <button
+                              className={styles.modalButton}
+                              onClick={() => handleTeamAccept(candidate.recruitingMemberId, -1)}
+                            >
+                              거절
+                            </button>
+                          </>
                         ) : (
-                          <button
-                            onClick={() => handleEditComment(candidate.message ? candidate.message : '')}
-                            className={styles.modalButton}
-                          >
-                            수정
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleEditComment(candidate.message ? candidate.message : '')}
+                              className={styles.modalButton}
+                            >
+                              수정
+                            </button>
+                            <button
+                              className={styles.modalButton}
+                              onClick={() => {handleDeleteComment(postId, candidate.recruitingMemberId )}}
+                            >
+                              삭제
+                            </button>
+                          </>
                         )}
-                        <button className={styles.modalButton} onClick={() => {handleDeleteComment(postId, candidate.recruitingMemberId )}}>삭제</button>
                       </div>
                     )}
                   </div>
@@ -477,7 +493,7 @@ const TeamBuildingDetailPage = () => {
                     }
                   }}
                 >
-                  Leave
+                  <Tag text='나가기'/>
                 </button>
               )
             )}
