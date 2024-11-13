@@ -26,7 +26,7 @@
     margin-top: 20px;
     padding: 15px;
     width: auto;
-    max-height: 45vh; /* 최대 높이 설정 */
+    max-height: 50vh; /* 최대 높이 설정 */
     border: 1px solid rgba(25, 136, 97, 0.5);
     border-radius: 10px;
     font-size: 14px;
@@ -37,6 +37,7 @@
 .summaryText {
     max-height: 100%;
     overflow-y: auto; 
+    line-height: 1.6;
 }
 
 /* WebKit 기반 브라우저의 스크롤바 숨김 */
@@ -110,4 +111,11 @@
 
 .highlight {
     background-color: #ade06a;
+}
+
+.h3 {
+    font-size: 18px;
+    margin: 0;
+    text-align: start;
+
 }

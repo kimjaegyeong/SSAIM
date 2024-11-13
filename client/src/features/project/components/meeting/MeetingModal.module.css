@@ -128,3 +128,10 @@
 .participantLabel:hover {
     opacity: 0.8;
 }
+
+.participantName {
+    text-align: center;
+    margin-top: 8px;  /* 이미지와 이름 사이에 간격을 추가 */
+    font-size: 14px;  /* 폰트 크기 조정 */
+    font-weight: bold;  /* 폰트 두께 조정 */
+}
