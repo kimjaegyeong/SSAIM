@@ -10,14 +10,14 @@ import { editDailyRemind } from '@features/project/apis/remind/editDailyRemind';
 import { DailyRemindPostDTO, DailyRemindPutDTO  } from '@features/project/types/remind/DailyRemindDTO';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 
+
 const DayMyCreate = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { pmId } = usePmIdStore();
-  console.log(pmId)
 
   const location = useLocation();
-  const { myfilteredMessages } = location.state || {};
+  const { myfilteredMessages, formattedSelectedDate } = location.state || {};
 
   const [keepText, setKeepText] = useState("");
   const [problemText, setProblemText] = useState("");
@@ -54,6 +54,32 @@ const DayMyCreate = () => {
     return msg.substring(startIndex + prefix.length, endIndex).trim();
   };
 
+
+  useEffect(() => {
+    if (formattedSelectedDate) {
+      const initialDate = new Date(formattedSelectedDate);
+      setCurrentDate(initialDate);
+      console.log(initialDate);
+      console.log("myfilteredMessages:",myfilteredMessages)
+
+      const initialMessage = myfilteredMessages?.find((message: DailyRemindMessage) => {
+        const messageDate = new Date(message.dailyRemindDate);
+        return messageDate.toLocaleDateString("ko-KR") === initialDate.toLocaleDateString("ko-KR");
+      });
+
+      if (initialMessage) {
+        setKeepText(extractSectionMessage(initialMessage.message, '🟢 Keep:', '🟠 Problem:') || "");
+        setProblemText(extractSectionMessage(initialMessage.message, '🟠 Problem:', '🔵 Try:') || "");
+        setTryText(extractSectionMessage(initialMessage.message, '🔵 Try:') || "");
+      } else {
+        setKeepText("");
+        setProblemText("");
+        setTryText("");
+      }
+    }
+  }, [formattedSelectedDate, myfilteredMessages]);
+  
+
   // currentDate와 일치하는 메시지를 찾아 keep, problem, try 텍스트로 설정
   useEffect(() => {
     const todayMessage = myfilteredMessages?.find((message: DailyRemindMessage) => {
@@ -75,7 +101,7 @@ const DayMyCreate = () => {
       setProblemText("");
       setTryText("");
     }
-  }, [currentDate, myfilteredMessages]);
+  }, [currentDate, myfilteredMessages, formattedSelectedDate]);
 
   // dailyRemindDate와 selectedDate가 일치하는 메시지 찾기
   const matchingMessage = myfilteredMessages?.find(
@@ -148,7 +174,9 @@ const DayMyCreate = () => {
           <div className={styles.dateTitle}>
             <FaRegClock style={{ strokeWidth: 4, color: "#007bff" }} />
             {formattedCurrentDate}
-            <ImPencil style={{ color: "black", cursor: 'pointer' }} onClick={handlePencilClick} />
+            {!formattedSelectedDate && (
+              <ImPencil style={{ color: "black", cursor: 'pointer' }} onClick={handlePencilClick} />
+            )}
             {isCalendarOpen && (
               <div className={styles.calendarContainer}>
                 <CreateCalendar selectedDate={currentDate} onDateChange={handleDateChange} />

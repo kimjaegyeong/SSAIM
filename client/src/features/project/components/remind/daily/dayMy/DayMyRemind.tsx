@@ -1,3 +1,4 @@
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from './DayMyRemind.module.css';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { ImPencil } from "react-icons/im";
@@ -8,10 +9,13 @@ interface Message {
 
 interface DayMyRemindProps {
   messages: Message[];
+  formattedSelectedDate: string|Date|number;
 }
 
 
-const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages }) => {
+const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDate }) => {
+  const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
   const { pmId } = usePmIdStore();
   console.log(pmId);
 
@@ -35,6 +39,17 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages }) => {
   const tryMessages = messages
     .map((msg) => extractSectionMessage(msg.message, '🔵 Try:'))
     .filter((msg): msg is string => msg !== null);
+
+  const handleEditClick = () => {
+    navigate(`/project/${projectId}/remind/create`,
+      {
+        state: { 
+          myfilteredMessages:messages,
+          formattedSelectedDate
+         },
+      }
+    ); 
+  };
 
   return (
     <div className={styles.myReviewContainer}>
@@ -86,7 +101,7 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages }) => {
       </div>
       {messages.length > 0 && (
         <div className={styles.editbox}>
-          <div className={styles.editButton}>
+          <div className={styles.editButton} onClick={handleEditClick}>
             <ImPencil />
             <p className={styles.p}>수정하기</p>
           </div>
