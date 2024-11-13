@@ -1,15 +1,15 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import styles from './RemindDetailPage.module.css';
+import styles from './RemindAllPage.module.css';
 import remindBG from '../../assets/remind/remindBG.png';
+import useUserStore from '@/stores/useUserStore';
+import { useDevelopStory } from '@/features/remind/hooks/useDevelopStory';
 import { DevelopStoryDTO } from '@features/remind/types/DevelopStoryDTO';
 
 interface CoverProps {
   project: DevelopStoryDTO;
 }
 
-// 표지 컴포넌트
 const Cover = React.forwardRef<HTMLDivElement, CoverProps>(
   ({ project }, ref) => (
     <div className={styles.cover} ref={ref}>
@@ -21,17 +21,10 @@ const Cover = React.forwardRef<HTMLDivElement, CoverProps>(
   )
 );
 
-// 이미지 페이지 props 타입 정의
 interface ImagePageProps {
   image: string;
 }
 
-// 회고 페이지 props 타입 정의
-interface ReportPageProps {
-  report: string;
-}
-
-// 이미지 페이지 컴포넌트
 const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
   ({ image }, ref) => (
     <div className={styles.page} ref={ref}>
@@ -42,7 +35,10 @@ const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
   )
 );
 
-// 회고 내용 페이지 컴포넌트
+interface ReportPageProps {
+  report: string;
+}
+
 const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
   ({ report }, ref) => (
     <div className={styles.page} ref={ref}>
@@ -53,7 +49,6 @@ const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
   )
 );
 
-// 긴 내용을 페이지별로 분할하는 함수
 const splitContentToPages = (content: string, maxLength: number) => {
   const pages: string[] = [];
   for (let i = 0; i < content.length; i += maxLength) {
@@ -62,9 +57,15 @@ const splitContentToPages = (content: string, maxLength: number) => {
   return pages;
 };
 
-const RemindDetailPage: React.FC = () => {
-  const location = useLocation();
-  const project = location.state as DevelopStoryDTO;
+const RemindAllPage: React.FC = () => {
+  const { userId } = useUserStore();
+  const { data } = useDevelopStory({ userId: userId ?? 0 });
+
+  useEffect(() => {
+    if (data) {
+      console.log('Develop story data:', data);
+    }
+  }, [data]);
 
   return (
     <div className={styles.mainContainer}>
@@ -89,25 +90,25 @@ const RemindDetailPage: React.FC = () => {
           startZIndex={0}
           autoSize={false}
           mobileScrollSupport={true}
-          onFlip={(e) => console.log('Flipped to page: ', e.data)}
           clickEventForward={true}
           useMouseEvents={true}
           swipeDistance={0}
           showPageCorners={true}
           disableFlipByClick={false}
         >
-          <Cover project={project}/>
-          {project.weeklyRemind.flatMap((data, index) => {
-            const imagePage = <ImagePage key={`image-${index}`} image={data.imageUrl} />;
-            const reportPages = splitContentToPages(data.content, 700).map((pageContent, pageIndex) => (
-              <ReportPage key={`report-${index}-${pageIndex}`} report={pageContent} />
-            ));
-            return [imagePage, ...reportPages];
-          })}
+          {data?.flatMap((project) => [
+            <Cover key={`cover-${project.projectId}`} project={project} />,
+            ...project.weeklyRemind.flatMap((remind, index) => [
+              remind.imageUrl && <ImagePage key={`image-${project.projectId}-${index}`} image={remind.imageUrl} />,
+              ...splitContentToPages(remind.content, 750).map((pageContent, pageIndex) => (
+                <ReportPage key={`report-${project.projectId}-${index}-${pageIndex}`} report={pageContent} />
+              ))
+            ]).filter(Boolean)
+          ])}
         </HTMLFlipBook>
       </div>
     </div>
   );
 };
 
-export default RemindDetailPage;
+export default RemindAllPage;

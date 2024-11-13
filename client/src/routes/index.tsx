@@ -12,9 +12,9 @@ import ProjectRemindCreatePage from '../pages/project/ProjectRemindCreatePage';
 import MainLayout from '../components/mainLayout/MainLayout';
 import TeamBuildingListPage from '../pages/teamBuilding/TeamBuildingListPage';
 import RemindIntroPage from '../pages/remind/RemindIntroPage';
-import RemindCreatePage from '../pages/remind/RemindCreatePage';
 import RemindListPage from '../pages/remind/RemindListPage';
 import RemindDetailPage from '../pages/remind/RemindDetailPage';
+import RemindAllPage from '../pages/remind/RemindAllPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage';
 import TeamBuildingEditPage from '../pages/teamBuilding/TeamBuildingEditPage';
@@ -57,9 +57,9 @@ const AppRoutes = () => (
       <Route path="/team-building/edit/:postId" element={<TeamBuildingEditPage />}></Route>
       {/* 회고 */}
       <Route path="/remind" element={<RemindIntroPage />}></Route>
-      <Route path="/remind/create" element={<RemindCreatePage />}></Route>
       <Route path="/remind/list" element={<RemindListPage />}></Route>
       <Route path="/remind/:remindId" element={<RemindDetailPage />}></Route>
+      <Route path="/remind/all" element={<RemindAllPage />}></Route>
       {/* 마이페이지 */}
       <Route path="/profile/edit" element={<EditProfilePage />}></Route>
       <Route path="/profile/:profileOwnerId" element={<MyPage />}></Route>
