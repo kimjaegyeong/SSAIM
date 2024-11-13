@@ -61,7 +61,6 @@ const LoginForm: React.FC = () => {
           로그인
         </button>
       </form>
-      <div className={styles.findpw}>비밀번호 찾기</div>
     </div>
   );
 };

@@ -25,6 +25,7 @@ import NetworkErrorPage from '../pages/error/NetworkErrorPage';
 import NotFoundPage from '../pages/error/NotFoundPage';
 import SignUpPage from '@pages/account/signup/SignUpPage';
 import EditProfilePage from '@/pages/account/editProfile/EditProfilePage';
+import ProtectedRoute from '@/components/protectedRoute/ProtectedRoute';
 
 const AppRoutes = () => (
   <Routes>
@@ -33,7 +34,11 @@ const AppRoutes = () => (
     {/* error */}
     <Route path="/network" element={<NetworkErrorPage />}></Route>
     <Route path="/notfound" element={<NotFoundPage />}></Route>
-    <Route element={<MainLayout />}>
+    <Route element={
+        <ProtectedRoute>
+          <MainLayout />
+        </ProtectedRoute>
+    }>
       <Route path="/" element={<MainPage />} />
       {/* 프로젝트 */}
       <Route path="/project" element={<ProjectListPage />}></Route>
