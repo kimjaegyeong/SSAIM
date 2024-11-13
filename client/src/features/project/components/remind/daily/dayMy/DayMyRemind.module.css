@@ -1,8 +1,23 @@
+.myReviewContainer {
+    padding: 0px 20px;
+}
+
 .myReview {
     display: flex;
     gap: 20px;
     height: 67vh;
-    padding: 0px 20px;
+}
+
+.editbox {
+    margin: 10px 0px;
+    display: flex;
+    justify-content: end;
+}
+
+.editButton {
+    display: flex;
+    gap: 5px;
+    cursor: pointer;
 }
 
 .keepSection {
@@ -58,4 +73,5 @@
 .p {
     margin: 0px;
     font-size: 15px;
+    line-height: 1.6;
 }

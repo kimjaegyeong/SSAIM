@@ -1,11 +1,11 @@
 import apiClient from '@/apis/apiClient';
 import config from '@/config/config';
-import { SprintRemindPostDTO } from '@features/project/types/remind/SprintRemndDTO';
+import { SprintRemindRequestDTO } from '@features/project/types/remind/SprintRemndDTO';
 
-export const createSprintRemind = async (projectId: number, sprintRemindpostData: SprintRemindPostDTO) => {
+export const createSprintRemind = async (projectId: number, sprintRemindRequestDTO: SprintRemindRequestDTO) => {
   try {
-    console.log(sprintRemindpostData);
-    const response = await apiClient.post(`${config.BASE_URL}/projects/${projectId}/weekly-remind`, sprintRemindpostData,
+    console.log(sprintRemindRequestDTO);
+    const response = await apiClient.post(`${config.BASE_URL}/projects/${projectId}/weekly-remind`, sprintRemindRequestDTO,
         {
             timeout: 30000, // Timeout increased to 10 seconds
         }

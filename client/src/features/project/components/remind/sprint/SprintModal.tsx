@@ -5,9 +5,9 @@ import { useDailyRemind } from '@features/project/hooks/remind/useDailyRemind';
 import { DailyRemindGetDTO } from '@features/project/types/remind/DailyRemindDTO';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { createSprintRemind } from '@features/project/apis/remind/createSprintRemind';
-import Loading from '@/components/loading/Loading';
 import { useSprintRemind } from '@/features/project/hooks/remind/useSprintRemind';
 import { dateToWeek } from '@/utils/dateToWeek';
+import Loading from '@/components/loading/Loading';
 
 interface SprintModalProps {
   isOpen: boolean;
@@ -42,22 +42,23 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
   const { pmId } = usePmIdStore();
   const [selectedSprint, setSelectedSprint] = useState<string | null>(null);
   const [sprintOptions, setSprintOptions] = useState<SprintOption[]>([]);
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(false); 
 
-  // useDailyRemind 호출
   const { data: dailyReminds } = useDailyRemind({ projectId });
+  const { data: sprintReminds, refetch } = useSprintRemind({ projectId });
 
-  // useSprintRemind 훅에서 refetch를 가져옴
-  const { refetch } = useSprintRemind({
-    projectId,
-  });
+  const MyfilteredContents = sprintReminds?.filter((item) =>
+    item.projectMemberId === pmId
+  ) || [];
 
   useEffect(() => {
     if (dailyReminds) {
       const groupByWeek = (reminds: DailyRemindGetDTO[]): SprintOption[] => {
         const weeks: Record<string, DailyRemindGetDTO[]> = {};
+
+        const filteredReminds = reminds.filter((remind) => remind.projectMemberId === pmId);
   
-        reminds.forEach((remind) => {
+        filteredReminds.forEach((remind) => {
           const date = new Date(remind.dailyRemindDate);
           const monday = getMonday(date); // 월요일을 기준으로 주 구하기
           const friday = getFriday(date); // 금요일을 기준으로 주 구하기
@@ -69,7 +70,6 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
   
         return Object.keys(weeks).map((weekKey, index) => {
           const weekData = weeks[weekKey];
-  
           const firstDate = new Date(weekData[0].dailyRemindDate);
           const monday = getMonday(firstDate);
           const friday = getFriday(firstDate);
@@ -83,10 +83,12 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
           };
         });
       };
-  
-      setSprintOptions(groupByWeek(dailyReminds));
+      const groupedOptions: SprintOption[] = groupByWeek(dailyReminds);
+      const sortedOptions: SprintOption[] = groupedOptions.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+
+      setSprintOptions(sortedOptions);
     }
-  }, [dailyReminds]);
+  }, [dailyReminds, pmId]);
 
   const handleSprintSelect = (sprintId: string) => {
     setSelectedSprint(sprintId);
@@ -119,6 +121,11 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
     }
   };
 
+  const isOptionDisabled = (startDate: string) => {
+    return MyfilteredContents.some((content) => content.startDate === startDate);
+  };
+
+
   if (!isOpen) return null;
 
   return (
@@ -138,6 +145,7 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
                     type="checkbox"
                     checked={selectedSprint === sprint.id}
                     onChange={() => handleSprintSelect(sprint.id)}
+                    disabled={isOptionDisabled(sprint.startDate)}
                   />
                   <div className={styles.sprintInfo}>
                     <div className={styles.sprintLabel}>{sprint.label}</div>
