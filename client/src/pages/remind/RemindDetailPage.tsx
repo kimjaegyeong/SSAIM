@@ -98,7 +98,7 @@ const RemindDetailPage: React.FC = () => {
         >
           <Cover project={project}/>
           {project.weeklyRemind.flatMap((data, index) => {
-            const imagePage = <ImagePage key={`image-${index}`} image={''} />;
+            const imagePage = <ImagePage key={`image-${index}`} image={data.imageUrl} />;
             const reportPages = splitContentToPages(data.content, 700).map((pageContent, pageIndex) => (
               <ReportPage key={`report-${index}-${pageIndex}`} report={pageContent} />
             ));
