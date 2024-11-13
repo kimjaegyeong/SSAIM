@@ -58,13 +58,21 @@ const SprintList: React.FC<SprintListProps> = ({ projectId }) => {
           </thead>
           <tbody>
             {sprintList.map((sprint: SprintDTO) => (
-              <tr key={sprint.sprintId} onClick={navigateToCreate(sprint.sprintId)}>
-                <td>{sprint.sprintId}</td>
+              <tr key={sprint.id} onClick={navigateToCreate(sprint.id)}>
+                <td>{sprint.id}</td>
                 <td>{sprint.name}</td>
                 <td>{new Date(sprint.startDate).toLocaleDateString()}</td>
                 <td>{new Date(sprint.endDate).toLocaleDateString()}</td>
-                <td className={sprint.state === 'active' ? styles.active : styles.closed}>
-                  {sprint.state === 'active' ? '진행 중' : '완료됨'}
+                <td
+                  className={
+                    sprint.state === 'active'
+                      ? styles.active
+                      : sprint.state === 'closed'
+                      ? styles.closed
+                      : styles.future
+                  }
+                >
+                  {sprint.state === 'active' ? '진행 중' : sprint.state === 'closed' ? '완료됨' : '예정됨'}
                 </td>
               </tr>
             ))}
