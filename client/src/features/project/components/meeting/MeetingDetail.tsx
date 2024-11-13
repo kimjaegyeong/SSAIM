@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import styles from './MeetingDetail.module.css';
 import Button from '../../../../components/button/Button';
 import SelectSpeakerModal from './SelectSpeakerModal';
@@ -179,11 +180,9 @@ const MeetingDetail = () => {
         ) : (
           summaryText && (
             <div className={styles.summaryBox}>
-              <h3>📑 요약 내용</h3>
+              <h3 className={styles.h3}>📑 요약 내용</h3>
               <div className={styles.summaryText}>
-                {summaryText.split('\n').map((line, index) => (
-                  <p key={index}>{line}</p>
-                ))}
+              <ReactMarkdown>{summaryText}</ReactMarkdown>
               </div>
             </div>
           )
