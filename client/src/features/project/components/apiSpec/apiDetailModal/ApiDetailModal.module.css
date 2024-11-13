@@ -119,3 +119,8 @@
     box-sizing: border-box;
 }
   
+.statusSelection {
+    display: flex;
+    padding: 0 5px;
+    gap: 10px;
+}
