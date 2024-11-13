@@ -11,6 +11,8 @@ import EditProjectSetting from './editProjectSetting/EditProjectSetting';
 import { TiDocumentText } from 'react-icons/ti';
 import jiraIcon from '@/assets/jira.svg';
 import gitlabIcon from '@/assets/gitlab.svg';
+import defaultTeamIcon from '@/assets/project/defaultTeamIcon.png';
+
 interface ProjectInfoProps {
   projectId: number;
 }
@@ -26,7 +28,11 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
     <div className={styles.projectInfoContainer}>
       <div className={styles.leftSection}>
         <div className={styles.projectDetails}>
-          <img src={projectInfo?.projectImage ? projectInfo?.projectImage : ""} alt="프로젝트 프로필" className={styles.projectImage} />
+          {projectInfo?.projectImage ? (
+            <img src={projectInfo.projectImage} alt="프로젝트 프로필" className={styles.projectImage} />
+          ) : (
+            <img src={defaultTeamIcon} alt="프로젝트 프로필" className={styles.projectImage} />
+          )}
           <div className={styles.projectText}>
             <h2>{projectInfo.name}</h2>
             <p>
