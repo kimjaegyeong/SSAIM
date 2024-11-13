@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './MeetingModal.module.css';
 import Button from '../../../../components/button/Button'
+import DefaultProfile from '@/assets/profile/DefaultProfile.png';
+import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 
 interface MeetingModalProps {
   isOpen: boolean;
@@ -18,18 +20,24 @@ interface Participant {
 const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
     const { projectId } = useParams<{ projectId: string }>();
+    const { data: projectInfo } = useProjectInfo(Number(projectId));
+    console.log("projectInfo",projectInfo);
     
     // 회의 제목을 위한 state 추가
     const [meetingTitle, setMeetingTitle] = useState<string>('');
+    const [participants, setParticipants] = useState<Participant[]>([]);
 
-    const [participants, setParticipants] = useState<Participant[]>([
-      { id: 1, name: "여대기", imageUrl: "/profile1.jpg", selected: false },
-      { id: 2, name: "조성인", imageUrl: "/profile2.jpg", selected: false },
-      { id: 3, name: "조원빈", imageUrl: "/profile3.jpg", selected: false },
-      { id: 4, name: "박지용", imageUrl: "/profile4.jpg", selected: false },
-      { id: 5, name: "강수연", imageUrl: "/profile5.jpg", selected: false },
-      { id: 6, name: "김재경", imageUrl: "/profile6.jpg", selected: false }
-    ]);
+    useEffect(() => {
+      if (projectInfo && projectInfo.projectMembers) {
+        const mappedParticipants = projectInfo.projectMembers.map(member => ({
+          id: member.pmId, // pmId를 id로 사용
+          name: member.name,
+          imageUrl: member.profileImage || DefaultProfile, // profileImage가 없을 경우 DefaultProfile 사용
+          selected: false
+        }));
+        setParticipants(mappedParticipants);
+      }
+    }, [projectInfo]);
 
     const areAllSelected = participants.every(participant => participant.selected);
 
