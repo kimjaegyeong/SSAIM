@@ -22,17 +22,21 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
   const [isEditJiraModalOpen, setIsEditJiraModalOpen] = useState(false);
   const [isEditGitlabModalOpen, setIsEditGitlabModalOpen] = useState(false);
   const { data: projectInfo } = useProjectInfo(projectId);
+  const chartsData = [
+    { label: 'Backend', progress: projectInfo?.progressBack || 0 },
+    { label: 'Frontend', progress: projectInfo?.progressFront || 0 },
+  ];
   console.log(projectId);
   console.log(projectInfo);
   return (
     <div className={styles.projectInfoContainer}>
       <div className={styles.leftSection}>
         <div className={styles.projectDetails}>
-          {projectInfo?.projectImage ? (
-            <img src={projectInfo.projectImage} alt="프로젝트 프로필" className={styles.projectImage} />
-          ) : (
-            <img src={defaultTeamIcon} alt="프로젝트 프로필" className={styles.projectImage} />
-          )}
+          <img
+            src={projectInfo?.projectImage || defaultTeamIcon}
+            alt="프로젝트 프로필"
+            className={styles.projectImage}
+          />
           <div className={styles.projectText}>
             <h2>{projectInfo?.name}</h2>
             <p>
@@ -82,7 +86,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
 
           {/* 컴포넌트가 들어갈 오른쪽 영역 */}
           <div className={styles.componentArea}>
-            <ProgressChart />
+            <ProgressChart chartsData={chartsData} />
           </div>
         </div>
       </div>
