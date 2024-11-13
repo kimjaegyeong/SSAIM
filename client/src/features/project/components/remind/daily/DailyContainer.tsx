@@ -118,7 +118,7 @@ const DailyContainer = () => {
           onMemberClick={handleMemberClick}
         />
         <div className={styles.remindContent}>
-          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={dayMyfilteredMessages} />}
+          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={dayMyfilteredMessages} formattedSelectedDate={formattedSelectedDate}/>}
           {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind messages={dayTeamFilteredMessages}/>}
           {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind messages={myfilteredMessages} selectedWeekDate={selecteWeekdDate}/>}
           {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind messages={dailyRemindData|| []} selectedWeekDate={selecteWeekdDate} selectedMemberId={selectedMemberId}/>}
