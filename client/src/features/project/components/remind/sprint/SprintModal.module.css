@@ -13,7 +13,7 @@
   
 .modalContent {
     width: auto;
-    height: 50vh;
+    height: auto;
     background: white;
     padding: 30px;
     border-radius: 10px;
@@ -68,6 +68,7 @@
 .sprintInfo {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .sprintLabel {

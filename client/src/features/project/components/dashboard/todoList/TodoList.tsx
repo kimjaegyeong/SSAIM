@@ -17,7 +17,7 @@ const TodoListItem: React.FC<TodoListItemProps> = ({ task }) => {
     <div className={styles.todoListItem}>
       <div>
         <span className={styles.taskEpic}>{task.epicCode}</span>
-        <span className={styles.taskTitle}>{task.title}</span>
+        <span className={styles.taskTitle}>{task.summary}</span>
       </div>
       <span className={styles.taskPriority}>{task.storyPoint}</span>
     </div>
@@ -64,9 +64,9 @@ const TodoList: React.FC = () => {
     <div className={styles.todoList}>
       <div className={styles.todoListHeader}>할 일</div>
       <div className={styles.todoListBody}>
-        {todoList?.length > 0 &&
+        {todoList && todoList?.length > 0 &&
           todoList.map((t: IssueDTO, i:number) => {
-            return <TodoListItem task={t} key={i} />;
+            return <TodoListItem task={t} key={i}/>;
           })}
       </div>
     </div>

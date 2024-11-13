@@ -3,6 +3,7 @@ export interface WeeklyRemind {
     content: string;
     startDate: string;
     endDate: string;
+    imageUrl: string;
   }
   
 export interface DevelopStoryDTO {

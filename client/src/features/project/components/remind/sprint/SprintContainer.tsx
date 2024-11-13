@@ -78,7 +78,7 @@ const SprintContainer = () => {
           formattedDate={formattedDate}
         />
         <div className={styles.remindContent}>
-          {myTeam === '나의 회고' && <MySprint contents={MyfilteredContents} />}
+          {myTeam === '나의 회고' && <MySprint contents={MyfilteredContents} selectedDateInfo={selectedDateInfo}/>}
           {myTeam === '팀원 회고' && <TeamSprint contents={TeamfilteredContents} />}
         </div>
       </div>

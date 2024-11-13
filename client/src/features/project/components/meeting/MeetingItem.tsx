@@ -1,11 +1,12 @@
 import React from 'react';
 import styles from './MeetingItem.module.css';
-import { Meeting } from '../../types/meeting/Meeting';
+import { MeetingItemDTO } from '../../types/meeting/MeetingDTO';
 import meetingIcon from '../../../../assets/meeting/meetingIcon.png'
+import {formatMeetingTime, formatMeetingDuration} from '../../utils/meetingTime';
 
 interface MeetingItemProps {
-  meeting: Meeting;
-  onClick?: (meeting: Meeting) => void;
+  meeting: MeetingItemDTO;
+  onClick?: (meeting: MeetingItemDTO) => void;
 }
 
 const MeetingItem: React.FC<MeetingItemProps> = ({ meeting, onClick }) => {
@@ -20,14 +21,14 @@ const MeetingItem: React.FC<MeetingItemProps> = ({ meeting, onClick }) => {
       <img src={meetingIcon} alt="Meeting Icon" className={styles.meetingIcon}/>
       <div className={styles.meetingContent}>
         <div className={styles.meetingHeader}>
-          <h3>{meeting.title}</h3>
-          <div className={styles.meetingDescription}>{meeting.description}</div>
+          <h3 className={styles.h3}>{meeting.meetingTitle}</h3>
+          <div className={styles.meetingDescription}>{meeting.meetingFirstVoiceText}</div>
         </div>
         <div className={styles.meetingTime}>
-          {meeting.date} 
+          {formatMeetingTime(meeting.meetingCreateTime)} 
         </div>
         <div className={styles.meetingMeta}>
-          {meeting.duration}
+          {formatMeetingDuration(meeting.meetingVoiceTime)}
         </div>
       </div>
     </div>

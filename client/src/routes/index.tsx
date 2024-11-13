@@ -12,9 +12,9 @@ import ProjectRemindCreatePage from '../pages/project/ProjectRemindCreatePage';
 import MainLayout from '../components/mainLayout/MainLayout';
 import TeamBuildingListPage from '../pages/teamBuilding/TeamBuildingListPage';
 import RemindIntroPage from '../pages/remind/RemindIntroPage';
-import RemindCreatePage from '../pages/remind/RemindCreatePage';
 import RemindListPage from '../pages/remind/RemindListPage';
 import RemindDetailPage from '../pages/remind/RemindDetailPage';
+import RemindAllPage from '../pages/remind/RemindAllPage';
 import TeamBuildingCreatePage from '../pages/teamBuilding/TeamBuildingCreatePage';
 import TeamBuildingDetailPage from '../pages/teamBuilding/TeamBuildingDetailPage';
 import TeamBuildingEditPage from '../pages/teamBuilding/TeamBuildingEditPage';
@@ -26,6 +26,8 @@ import NotFoundPage from '../pages/error/NotFoundPage';
 import SignUpPage from '@pages/account/signup/SignUpPage';
 import EditProfilePage from '@/pages/account/editProfile/EditProfilePage';
 import ProtectedRoute from '@/components/protectedRoute/ProtectedRoute';
+import SprintCreatePage from '@/pages/project/sprint/SprintCreatePage';
+import SprintListPage from '@/pages/project/sprint/SprintListPage';
 
 const AppRoutes = () => (
   <Routes>
@@ -45,6 +47,8 @@ const AppRoutes = () => (
       <Route path="/project/create" element={<ProjectCreatePage />}></Route>
       <Route path="/project/:projectId/info" element={<ProjectDetailPage />}></Route>
       <Route path="/project/:projectId/sprint" element={<ProjectSprintPage />}></Route>
+      <Route path="/project/:projectId/sprint/list" element={<SprintListPage />}></Route>
+      <Route path="/project/:projectId/sprint/:sprintId" element={<SprintCreatePage />}></Route>
       <Route path="/project/:projectId/output" element={<ProjectOutputPage />}></Route>
       <Route path="/project/:projectId/meeting" element={<ProjectMeetingPage />}></Route>
       <Route path="/project/:projectId/meeting/create" element={<MeetingCreatePage />}></Route>
@@ -58,9 +62,9 @@ const AppRoutes = () => (
       <Route path="/team-building/edit/:postId" element={<TeamBuildingEditPage />}></Route>
       {/* 회고 */}
       <Route path="/remind" element={<RemindIntroPage />}></Route>
-      <Route path="/remind/create" element={<RemindCreatePage />}></Route>
       <Route path="/remind/list" element={<RemindListPage />}></Route>
       <Route path="/remind/:remindId" element={<RemindDetailPage />}></Route>
+      <Route path="/remind/all" element={<RemindAllPage />}></Route>
       {/* 마이페이지 */}
       <Route path="/profile/edit" element={<EditProfilePage />}></Route>
       <Route path="/profile/:profileOwnerId" element={<MyPage />}></Route>

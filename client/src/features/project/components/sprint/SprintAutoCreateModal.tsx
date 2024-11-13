@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './SprintCreateModal.module.css';
+import styles from './SprintAutoCreateModal.module.css';
 
 interface SprintCreateModalProps {
   onClose: () => void;

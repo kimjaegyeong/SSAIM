@@ -35,15 +35,21 @@
     margin: 8px;
   }
   
-  .meetingHeader h3 {
+  .h3 {
     font-size: 18px;
     margin: 0;
+    text-align: start;
   }
 
   .meetingDescription {
     color: #666;
     font-size: 13px;
     margin-top: 10px;
+    width: 400px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
   }
   
   .meetingMeta {
