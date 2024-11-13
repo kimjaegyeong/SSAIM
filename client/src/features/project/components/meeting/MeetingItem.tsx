@@ -21,7 +21,7 @@ const MeetingItem: React.FC<MeetingItemProps> = ({ meeting, onClick }) => {
       <img src={meetingIcon} alt="Meeting Icon" className={styles.meetingIcon}/>
       <div className={styles.meetingContent}>
         <div className={styles.meetingHeader}>
-          <h3>{meeting.meetingTitle}</h3>
+          <h3 className={styles.h3}>{meeting.meetingTitle}</h3>
           <div className={styles.meetingDescription}>{meeting.meetingFirstVoiceText}</div>
         </div>
         <div className={styles.meetingTime}>
