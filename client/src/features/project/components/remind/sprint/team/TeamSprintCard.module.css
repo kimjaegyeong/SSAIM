@@ -49,6 +49,7 @@
 .reviewText {
     font-size: 13px;
     white-space: pre-wrap;
+    line-height: 1.6;
     
 }
 
