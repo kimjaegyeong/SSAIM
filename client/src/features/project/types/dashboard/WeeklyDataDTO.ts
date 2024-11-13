@@ -28,7 +28,7 @@ export interface IssueDTO{
   epicCode: string;
   storyPoint: number;
   issueKey: string;
-  issueType : string;
+  issueType : "작업"|"스토리";
   description : string;
 }
 export interface GitlabDTO extends TaskDTO {

@@ -34,9 +34,9 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
             <img src={defaultTeamIcon} alt="프로젝트 프로필" className={styles.projectImage} />
           )}
           <div className={styles.projectText}>
-            <h2>{projectInfo.name}</h2>
+            <h2>{projectInfo?.name}</h2>
             <p>
-              프로젝트 기간: {dateToString(projectInfo.startDate)} ~ {dateToString(projectInfo.endDate)}
+              프로젝트 기간: {dateToString(projectInfo?.startDate)} ~ {dateToString(projectInfo?.endDate)}
             </p>
             <div className={styles.dates}>
               {/* <span>프로젝트 생성일: {projectInfo.createdAt}</span>
@@ -90,7 +90,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
       <div className={styles.rightSection}>
         <h3>팀원 정보</h3>
         <div className={styles.teamMembers}>
-          {projectInfo.projectMembers?.map((member: ProjectInfoMemberDTO) => (
+          {projectInfo?.projectMembers?.map((member: ProjectInfoMemberDTO) => (
             <div key={member.userId} className={styles.teamMember}>
               {member.role === 1 ? <img src={leaderCrown} alt="leaderCrown" className={styles.leaderCrown} /> : null}
               <img src={member.profileImage} alt={member.name} className={styles.memberImage} />

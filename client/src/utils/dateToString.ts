@@ -1,4 +1,4 @@
-export const dateToString = (date : Date|string|null, parser='.') => {
+export const dateToString = (date : Date|string|null|undefined, parser='.') => {
   if(!date){
     return null;
   }
