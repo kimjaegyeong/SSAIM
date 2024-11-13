@@ -1,4 +1,5 @@
  const calculateWeeks = (start: Date, end: Date): Array<{ startDate: Date; endDate: Date }> => {
+  console.log(start, end)
   const weeks = [];
   const currentStart = new Date(start);
 
@@ -24,7 +25,7 @@
 
     currentStart.setDate(currentStart.getDate() + 7); // 다음 주 금요일로 이동
   }
-
+  console.log(weeks)
   return weeks;
 };
 export default calculateWeeks

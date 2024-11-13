@@ -14,10 +14,11 @@ import { useEpicListData } from '../../hooks/sprint/useEpicListData';
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
+  console.log(projectInfo)
   const {data : epicList } = useEpicListData(Number(projectId));
   const projectWeekList = calculateWeeks(
-    new Date(projectInfo.startDate as Date),
-    new Date(projectInfo.endDate as Date)
+    new Date(projectInfo?.startDate as Date),
+    new Date(projectInfo?.endDate as Date)
   );
   const projectMembers = projectInfo?.projectMembers;
   const [currentWeek, setCurrentWeek] = useState(-1);
@@ -26,9 +27,11 @@ const WeeklySprint = () => {
   // projectWeekList가 처음 로드될 때만 currentWeek를 설정하도록 조건 추가
   useEffect(() => {
     if (currentWeek === -1 && projectWeekList.length > 0) {
+      console.log(projectWeekList)
+      console.log(getInitialCurrentWeek(projectWeekList))
       setCurrentWeek(getInitialCurrentWeek(projectWeekList));
     }
-  }, [projectWeekList]);
+  }, [projectWeekList, currentWeek, setCurrentWeek]);
 
   // 이하 코드 유지
   const { data: sprintIssues } = useSprintIssueQuery(
