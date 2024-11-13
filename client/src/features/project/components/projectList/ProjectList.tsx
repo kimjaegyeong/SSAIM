@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import EmptyProjectList from './EmptyProjectList';
 import useUserStore from '@/stores/useUserStore';
 import useTeamStore from '@/features/project/stores/useTeamStore';
+import defaultTeamIcon from '@/assets/project/defaultTeamIcon.png'
+
 
 interface ProjectListItemProps {
   projectInfo: ProjectDTO;
@@ -22,7 +24,12 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick 
   return (
     <div className={styles.projectItem} onClick={onClick}>
       <div className={styles.cardLeft}>
-        <img src={projectInfo?.profileImage} className={styles.profileImage} alt="thumbnail" />
+        {
+          projectInfo?.profileImage? 
+          <img src={projectInfo?.profileImage} className={styles.profileImage} alt="thumbnail" />
+          :
+          <img src={defaultTeamIcon} className={styles.profileImage} alt="thumbnail" />
+        }
       </div>
       <div className={styles.cardRight}>
         <h2>{projectInfo.title}</h2>

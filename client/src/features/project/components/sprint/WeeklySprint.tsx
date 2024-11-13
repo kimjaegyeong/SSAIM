@@ -10,9 +10,11 @@ import { dateToString } from '@/utils/dateToString';
 import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
 import { getInitialCurrentWeek } from '../../utils/getInitialCurrentWeek';
 import { IssueDTO } from '@features/project/types/dashboard/WeeklyDataDTO';
+import { useEpicListData } from '../../hooks/sprint/useEpicListData';
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
+  const {data : epicList } = useEpicListData(Number(projectId));
   const projectWeekList = calculateWeeks(
     new Date(projectInfo.startDate as Date),
     new Date(projectInfo.endDate as Date)
@@ -37,6 +39,14 @@ const WeeklySprint = () => {
     dateToString(projectWeekList[currentWeek]?.endDate, '-')
   );
 
+  const epicCodeMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    epicList?.forEach((epic) => {
+      map[epic.key] = epic.summary;
+    });
+    return map;
+  }, [epicList]);
+  
   const navigateToSprintList = () => {
     navigate(`list`);
   };
@@ -96,7 +106,7 @@ const WeeklySprint = () => {
       날짜미지정: undefined,
     };
   }, [projectWeekList, currentWeek]);
-
+  
   const issuesByDay = useMemo(() => {
     const dayIssueMap: Record<string, IssueDTO[]> = {
       Mon: [],
@@ -110,7 +120,7 @@ const WeeklySprint = () => {
     sprintIssues?.forEach((issue: IssueDTO) => {
       if (selectedMember && issue.allocator !== selectedMember) return;
 
-      const match = issue.title.match(/(\d{6})/);
+      const match = issue?.summary.match(/(\d{6})/);
       let day = '날짜미지정';
 
       if (match) {
@@ -126,7 +136,7 @@ const WeeklySprint = () => {
 
       dayIssueMap[day]?.push(issue);
     });
-
+    console.log(dayIssueMap)
     return dayIssueMap;
   }, [sprintIssues, selectedMember]);
 
@@ -179,12 +189,8 @@ const WeeklySprint = () => {
             <div key={day} className={styles.dayColumn}>
               {issuesByDay[day]?.map((issue: IssueDTO) => (
                 <Issue
-                  key={issue.issueKey}
-                  title={issue.title}
-                  status={issue.progress}
-                  epicCode={issue.epicCode}
-                  storyPoint={issue.storyPoint}
-                  issueKey={issue.issueKey}
+                issue={issue}
+                epicSummary={epicCodeMap[issue.epicCode]}
                 />
               ))}
             </div>

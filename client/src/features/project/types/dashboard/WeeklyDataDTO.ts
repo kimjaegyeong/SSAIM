@@ -21,13 +21,15 @@ export interface WeeklyDataDTO {
   dailyData: DayDataDTO[];
   todoList : JiraDTO[];
 }
-export interface IssueDTO extends TaskDTO {
+export interface IssueDTO{
   allocator: string;
-  title: string;
+  summary: string;
   progress: '해야 할 일' | '진행 중' | '완료';
   epicCode: string;
   storyPoint: number;
   issueKey: string;
+  issueType : string;
+  description : string;
 }
 export interface GitlabDTO extends TaskDTO {
   mergeDate : Date;
