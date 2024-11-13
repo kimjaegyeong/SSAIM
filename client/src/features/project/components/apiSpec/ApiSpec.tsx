@@ -10,6 +10,7 @@ import Button from '@components/button/Button';
 import Tag from '@/features/teamBuilding/components/tag/Tag';
 import { getApiStatusLabel } from '../../../../utils/labelUtils'
 import { MdOpenInNew } from "react-icons/md";
+import Spinner from '@/components/spinner/Spinner';
 
 interface ApiSpecData {
   category: string[];
@@ -57,6 +58,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
   const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState<{ [rowIndex: number]: { [column: string]: boolean } }>({});
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
   const openModal = (rowIndex: number) => {
     setSelectedRowIndex(rowIndex);
@@ -189,6 +191,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
 
   const handleModalSubmit = async () => {
     try {
+      setIsGenerating(true);
       const response = await getAutoApiSpec(projectId, modalTextareaValue); // 데이터를 가져옴
       console.log('Fetched auto proposal data (raw):', response);
   
@@ -248,6 +251,9 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       setIsModalOpen(false); // 모달 닫기
     } catch (error) {
       console.error('Error fetching auto proposal:', error);
+      alert('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+    } finally {
+      setIsGenerating(false); // 로딩 종료
     }
   };
 
@@ -308,11 +314,15 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
         onClose={closeAiModal}
         title= '기능명세서 자동 생성'
         content={
-          <textarea
-            className={styles.modalTextarea}
-            value={modalTextareaValue}
-            onChange={handleModalTextareaChange}
-          ></textarea>
+          isGenerating ? (
+            <Spinner />
+          ) : (
+            <textarea
+              className={styles.modalTextarea}
+              value={modalTextareaValue}
+              onChange={handleModalTextareaChange}
+            ></textarea>
+          )
         }
         footer={
           <Button size='custom' colorType='blue' onClick={handleModalSubmit}>

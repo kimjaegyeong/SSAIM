@@ -6,6 +6,7 @@ import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
+import Spinner from '@/components/spinner/Spinner';
 
 interface ProposalProps {
   projectId: string;
@@ -22,6 +23,7 @@ interface EditableData {
 
 const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
   const [editableData, setEditableData] = useState<EditableData>({
     title: '',
@@ -153,6 +155,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
 
   const handleModalSubmit = async () => {
     try {
+      setIsGenerating(true);
       const response = await getAutoProposal(projectId, modalTextareaValue); // 데이터를 가져옴
       console.log('Fetched auto proposal data (raw):', response);
   
@@ -198,6 +201,9 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
       setIsModalOpen(false); // 모달 닫기
     } catch (error) {
       console.error('Error fetching auto proposal:', error);
+      alert('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+    } finally {
+      setIsGenerating(false); // 로딩 종료
     }
   };
   
@@ -221,11 +227,15 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
         onClose={closeModal}
         title= '기획서 자동 생성'
         content={
-          <textarea
-            className={styles.modalTextarea}
-            value={modalTextareaValue}
-            onChange={handleModalTextareaChange}
-          ></textarea>
+          isGenerating ? (
+            <Spinner />
+          ) : (
+            <textarea
+              className={styles.modalTextarea}
+              value={modalTextareaValue}
+              onChange={handleModalTextareaChange}
+            ></textarea>
+          )
         }
         footer={
           <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
