@@ -6,6 +6,7 @@ import SockJS from 'sockjs-client';
 import { getFeatureSpec, getAutoFeatureSpec } from '@features/project/apis/webSocket/featureSpec';
 import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
+import Spinner from '@/components/spinner/Spinner';
 
 interface FeatureSpecData {
   category: string[];
@@ -32,6 +33,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   });
 
   const [isEditing, setIsEditing] = useState<{ [index: number]: { [field: string]: boolean } }>({});
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const stompClientRef = useRef<any>(null);
 
   useEffect(() => {
@@ -194,6 +196,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
 
   const handleModalSubmit = async () => {
     try {
+      setIsGenerating(true);
       const response = await getAutoFeatureSpec(projectId, modalTextareaValue); // 데이터를 가져옴
       console.log('Fetched auto proposal data (raw):', response);
   
@@ -246,6 +249,9 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       setIsModalOpen(false); // 모달 닫기
     } catch (error) {
       console.error('Error fetching auto proposal:', error);
+      alert('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -268,11 +274,15 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
         onClose={closeModal}
         title= '기능명세서 자동 생성'
         content={
-          <textarea
-            className={styles.modalTextarea}
-            value={modalTextareaValue}
-            onChange={handleModalTextareaChange}
-          ></textarea>
+          isGenerating ? (
+            <Spinner />
+          ) : (
+            <textarea
+              className={styles.modalTextarea}
+              value={modalTextareaValue}
+              onChange={handleModalTextareaChange}
+            ></textarea>
+          )
         }
         footer={
           <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
