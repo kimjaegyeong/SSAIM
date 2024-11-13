@@ -113,6 +113,11 @@ const DayMyCreate = () => {
   );
 
   const handleButtonClick = async () => {
+    if (!keepText || !problemText || !tryText) {
+      alert("모든 항목을 입력해주세요.");
+      return;  // 요청을 중단
+    }
+    
     if (!projectId) {
       console.error("Project ID is missing");
       return;

@@ -139,6 +139,7 @@
     height: 30vh;
     overflow-y: auto;
     white-space: pre-wrap;
+    line-height: 1.6;
 }
 
 .remindText::-webkit-scrollbar {

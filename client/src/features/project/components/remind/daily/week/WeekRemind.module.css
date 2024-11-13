@@ -80,6 +80,7 @@
     height: 57vh;
     overflow-y: auto;
     white-space: pre-wrap;
+    line-height: 1.6;
 }
 
 .reviewText::-webkit-scrollbar {
