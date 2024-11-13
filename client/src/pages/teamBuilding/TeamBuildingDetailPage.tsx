@@ -127,6 +127,7 @@ const TeamBuildingDetailPage = () => {
       })
       .catch((err) => {
         console.error(err);
+        alert('댓글 작성 중 오류가 발생했습니다. 지원은 전체 한번만 가능합니다.');
       }); 
   };
 
@@ -459,15 +460,24 @@ const TeamBuildingDetailPage = () => {
           <div className={styles.teamSectionHeader}>
             <span>모집 현황</span>
             {isAuthor ? (
-                <button className={styles.editMemberButton} onClick={handleEditToggle}>
-                  {editMembers ? 'Done' : 'Edit'}
-                </button>
-              ) : (
-                <button className={styles.editMemberButton} onClick={handleEditToggle}>
-                  {editMembers ? '팀 나가기' : 'Edit'}
+              <button className={styles.editMemberButton} onClick={handleEditToggle}>
+                {editMembers ? 'Done' : 'Edit'}
+              </button>
+            ) : (
+              data.recruitingMembers.some((member) => member.userId === userId) && ( // 팀에 속한 사용자만 버튼 표시
+                <button 
+                  className={styles.editMemberButton} 
+                  onClick={() => {
+                    const member = data.recruitingMembers.find((member) => member.userId === userId);
+                    if (member) {
+                      handleDeleteComment(postId, member.recruitingMemberId);
+                    }
+                  }}
+                >
+                  Leave
                 </button>
               )
-            }
+            )}
           </div>
           <div className={styles.memberList}>
             {selectedMembers.map((member) => (
