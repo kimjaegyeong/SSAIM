@@ -84,7 +84,7 @@ const TeamBuildingDetailPage = () => {
     setSelectedTag(tag);
   };
 
-  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
 
@@ -360,13 +360,13 @@ const TeamBuildingDetailPage = () => {
         <div className={styles.postSection}>
           <div className={styles.postHeader}>
             <div className={styles.categorySection}>
-                <Tag text={getDomainLabel(data.firstDomain)} />
-                {data.secondDomain && <Tag text={getDomainLabel(data.secondDomain)} />}
+                <Tag text={getDomainLabel(data.firstDomain)} disablePointerCursor={true}/>
+                {data.secondDomain && <Tag text={getDomainLabel(data.secondDomain)} disablePointerCursor={true}/>}
             </div>
             <div className={styles.positionSection}>
-              <Tag text={'FE'} /> {data.memberFrontend}
-              <Tag text={'BE'} /> {data.memberBackend}
-              <Tag text={'Infra'} /> {data.memberInfra}
+              <Tag text={'FE'} disablePointerCursor={true}/> {data.memberFrontend}
+              <Tag text={'BE'} disablePointerCursor={true}/> {data.memberBackend}
+              <Tag text={'Infra'} disablePointerCursor={true}/> {data.memberInfra}
             </div>
           </div>
           <div className={styles.postContent}>{data.postContent}</div>
@@ -379,11 +379,13 @@ const TeamBuildingDetailPage = () => {
           ) : (
             <div className={styles.commentForm}>
               <TagSelector onTagChange={handleTagChange} />
-              <input
+              <textarea
                 className={styles.commentInput}
                 value={message}
                 onChange={handleMessageChange}
                 placeholder="지원 메시지를 입력하세요"
+                rows={4}
+                cols={50}
               />
               <button onClick={handleSubmitComment} className={styles.submitButton}>지원하기</button>
             </div>
@@ -399,17 +401,18 @@ const TeamBuildingDetailPage = () => {
                 )}
                 <div className={styles.commentContent}>
                   {isCommentEditing && activeCommentId === index ? (
-                    <input
-                      type="text"
+                    <textarea
                       value={editedCommentContent}
                       onChange={(e) => setEditedCommentContent(e.target.value)}
                       className={styles.editInput}
+                      rows={4} // 원하는 줄 수
+                      cols={50} // 원하는 열 수
                     />
                   ) : (
-                    candidate.message
+                    <span style={{whiteSpace: 'pre-wrap'}}>{candidate.message}</span>
                   )}
                 </div>
-                <div className={styles.commentAuthor}>
+                <div className={styles.commentAuthor} onClick={() => navigate(`/profile/${candidate.userId}`)}>
                   <img
                     src={candidate.profileImage ? candidate.profileImage : DefaultProfile}
                     alt={candidate.userName}
