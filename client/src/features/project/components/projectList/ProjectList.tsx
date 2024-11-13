@@ -16,13 +16,13 @@ interface ProjectListItemProps {
 
 const ProjectListItem: React.FC<ProjectListItemProps> = ({ projectInfo, onClick }) => {
   console.log(projectInfo);
-  const teamLeader = projectInfo?.projectMemberFindResponseDtoList?.find((e) => e.role === 1);
-  const teamMemberNames = projectInfo?.projectMemberFindResponseDtoList?.filter((e) => e.role === 0).map((e) => e.name);
+  const teamLeader = projectInfo?.projectMembers?.find((e) => e.role === 1);
+  const teamMemberNames = projectInfo?.projectMembers?.filter((e) => e.role === 0).map((e) => e.name);
 
   return (
     <div className={styles.projectItem} onClick={onClick}>
       <div className={styles.cardLeft}>
-        <img src={projectInfo?.profileImage} className={styles.profileImage} alt="thumbnail" />
+        <img src={projectInfo?.projectImage ?projectInfo?.projectImage:""} className={styles.profileImage} alt="thumbnail" />
       </div>
       <div className={styles.cardRight}>
         <h2>{projectInfo.title}</h2>

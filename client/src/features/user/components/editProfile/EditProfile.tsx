@@ -121,8 +121,8 @@ const EditProfile: React.FC = () => {
         <label>
           성별:
           <select name="userGender" value={profile.userGender} onChange={handleChange} className={styles.input}>
-            <option value={0}>남성</option>
-            <option value={1}>여성</option>
+            <option value={0}>여성</option>
+            <option value={1}>남성</option>
           </select>
         </label>
         <label>

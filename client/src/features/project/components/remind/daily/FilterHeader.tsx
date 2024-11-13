@@ -26,8 +26,8 @@ const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam
 
   // 기본 pmId 설정
   useEffect(() => {
-    if (projectInfo?.projectMemberFindResponseDtoList?.length && selectedPmId === null) {
-      const firstPmId = Math.min(...projectInfo.projectMemberFindResponseDtoList.map((member:ProjectInfoMemberDTO) => member.pmId));
+    if (projectInfo?.projectMembers?.length && selectedPmId === null) {
+      const firstPmId = Math.min(...projectInfo.projectMembers.map((member:ProjectInfoMemberDTO) => member.pmId));
       setSelectedPmId(firstPmId);
       onMemberClick(firstPmId);
     }
@@ -54,7 +54,7 @@ const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam
         {formattedDate}
         {dayWeek === '1주일' && myTeam === '팀원 회고' && (
           <div className={styles.members}>
-            {projectInfo?.projectMemberFindResponseDtoList?.map((member: ProjectInfoMemberDTO) => (
+            {projectInfo?.projectMembers?.map((member: ProjectInfoMemberDTO) => (
               <div
                 key={member.pmId}
                 className={styles.teamMember}

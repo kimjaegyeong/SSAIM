@@ -17,7 +17,6 @@ export interface ProjectInfoMemberDTO {
 interface BaseProjectDTO {
   title: string;
   name: string;
-  profileImage: string;
   startDate: Date;
   endDate: Date;
 }
@@ -32,8 +31,12 @@ export interface ProjectDTO extends BaseProjectDTO {
   id : number;
   progressFront: number;
   progressBack: number;
+  projectImage: string|null;
   // teamMembers 배열이 항상 null이 아닌 경우 타입에서 | null 제거 가능
-  projectMemberFindResponseDtoList: ProjectInfoMemberDTO[]|null;
-  jiraApi : string;
-  gitlabApi : string;
+  projectMembers: ProjectInfoMemberDTO[]|[];
+  jiraApi : string|null;
+  gitlabApi : string|null;
+  jiraBoardId : string|null;
+  jiraId : string|null;
+  gitlabId : string|null;
 }

@@ -3,11 +3,13 @@ import styles from './FeatureSpec.module.css';
 import { MdDelete } from "react-icons/md";
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { getFeatureSpec } from '@features/project/apis/webSocket/featureSpec';
+import { getFeatureSpec, getAutoFeatureSpec } from '@features/project/apis/webSocket/featureSpec';
+import CommonModal from '@components/modal/Modal';
+import Button from '@components/button/Button';
 
 interface FeatureSpecData {
-  domain: string[];
-  featureName: string[];
+  category: string[];
+  functionName: string[];
   description: string[];
   owner: string[];
   priority: string[];
@@ -19,9 +21,11 @@ interface FeatureSpecTableProps {
 }
 
 const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSocketConnected }) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
   const [data, setData] = useState<FeatureSpecData>({
-    domain: [],
-    featureName: [],
+    category: [],
+    functionName: [],
     description: [],
     owner: [],
     priority: [],
@@ -75,8 +79,8 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   const addNewRow = () => {
     // 열(column) 기반 데이터에 새로운 행 추가
     const updatedData = {
-      domain: [...data.domain, ''],
-      featureName: [...data.featureName, ''],
+      category: [...data.category, ''],
+      functionName: [...data.functionName, ''],
       description: [...data.description, ''],
       owner: [...data.owner, ''],
       priority: [...data.priority, ''],
@@ -97,8 +101,8 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   const handleDeleteRow = (index: number) => {
     // 각 컬럼 배열에서 특정 인덱스의 값 제거
     const updatedData = {
-      domain: data.domain.filter((_, i) => i !== index),
-      featureName: data.featureName.filter((_, i) => i !== index),
+      category: data.category.filter((_, i) => i !== index),
+      functionName: data.functionName.filter((_, i) => i !== index),
       description: data.description.filter((_, i) => i !== index),
       owner: data.owner.filter((_, i) => i !== index),
       priority: data.priority.filter((_, i) => i !== index),
@@ -169,9 +173,115 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       autoResize(textarea as HTMLTextAreaElement);
     });
   }, [data]);
+  
+  const handleModalTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setModalTextareaValue(e.target.value); // textarea 값 업데이트
+  };
+
+  const parseBacktickJson = (data: string) => {
+    // 백틱과 "```json" 태그 제거
+    const cleanedData = data.replace(/```json|```/g, "").trim();
+    
+    try {
+      // JSON 문자열을 객체로 변환
+      const parsedData = JSON.parse(cleanedData);
+      return parsedData;
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return null; // 파싱 실패 시 null 반환
+    }
+  };
+
+  const handleModalSubmit = async () => {
+    try {
+      const response = await getAutoFeatureSpec(projectId, modalTextareaValue); // 데이터를 가져옴
+      console.log('Fetched auto proposal data (raw):', response);
+  
+      let parsedData;
+  
+      // response가 문자열인지 확인
+      if (typeof response === 'string') {
+        console.log('Response is a string. Attempting to parse with parseBacktickJson.');
+        parsedData = parseBacktickJson(response); // 백틱 JSON 처리
+      } else if (typeof response === 'object') {
+        console.log('Response is an object. Using it directly.');
+        parsedData = response; // 객체 그대로 사용
+      } else {
+        console.error('Unexpected response type:', typeof response);
+        parsedData = null;
+      }
+  
+      // 파싱된 데이터를 상태에 반영
+      if (parsedData) {
+        const maxLength = Math.max(
+          ...Object.values(parsedData).map((value) => Array.isArray(value) ? value.length : 0)
+        );
+
+        Object.keys(parsedData).forEach((key) => {
+          if (Array.isArray(parsedData[key])) {
+            while (parsedData[key].length < maxLength) {
+              parsedData[key].push('');
+            }
+          }
+        });
+
+        parsedData.owner = Array(maxLength).fill(''),
+        setData(parsedData);
+  
+        // WebSocket을 통해 실시간 반영
+        if (stompClientRef.current && stompClientRef.current.connected) {
+          stompClientRef.current.send(
+            `/app/edit/api/v1/projects/${projectId}/function-description`, // WebSocket 경로
+            {}, // 헤더
+            JSON.stringify(parsedData) // WebSocket으로 데이터 전송
+          );
+          console.log('WebSocket message sent:', parsedData);
+        } else {
+          console.warn('WebSocket is not connected. Cannot send message.');
+        }
+      } else {
+        console.error('Parsed data is null or undefined.');
+      }
+  
+      setIsModalOpen(false); // 모달 닫기
+    } catch (error) {
+      console.error('Error fetching auto proposal:', error);
+    }
+  };
+
+  const openModal = () => {
+    setModalTextareaValue('')
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className={styles.tableContainer}>
+      <div className={styles.aiButton}>
+        <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
+      </div>
+      <CommonModal 
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title= '기능명세서 자동 생성'
+        content={
+          <textarea
+            className={styles.modalTextarea}
+            value={modalTextareaValue}
+            onChange={handleModalTextareaChange}
+          ></textarea>
+        }
+        footer={
+          <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
+            AI 자동생성
+          </Button>
+        }
+        width={800}
+        height={400}
+      />
       <table className={styles.table}>
         <thead>
           <tr>
@@ -184,9 +294,9 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
           </tr>
         </thead>
         <tbody>
-          {data.domain.map((_, index) => (
+          {data.category.map((_, index) => (
             <tr key={index}>
-              {(['domain', 'featureName', 'description', 'owner', 'priority'] as const).map((column) => (
+              {(['category', 'functionName', 'description', 'owner', 'priority'] as const).map((column) => (
                 <td
                   key={column}
                   onClick={() => handleEditClick(index, column)}
