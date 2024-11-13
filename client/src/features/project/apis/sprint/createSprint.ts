@@ -1,11 +1,11 @@
 import apiClient from '@/apis/apiClient';
-import { SprintCreateDTO, SprintDTO } from '@features/project/types/SprintDTO';
+import { SprintCreateDTO } from '@features/project/types/SprintDTO';
 
-export const createSprint = (projectId: number, sprintData: SprintCreateDTO): Promise<any> => {
+export const createSprint = (projectId: number, sprintData: SprintCreateDTO): Promise<string> => {
   return apiClient.post(`/projects/${projectId}/sprint`, sprintData)
     .then(response => {
       console.log(response.data);
-      return response.data as SprintDTO;
+      return response.data;
     })
     .catch(error => {
       console.error(error);
