@@ -5,9 +5,7 @@ import React from 'react';
 const LoginPage:React.FC = () => {
   return (
     <div className={styles.mainLayout}>
-      <div className={styles.loginContainer}>
-        <LoginForm/>
-      </div>
+      <LoginForm/>
     </div>
   );
 };

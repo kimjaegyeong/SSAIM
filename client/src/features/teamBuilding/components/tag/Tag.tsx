@@ -52,6 +52,7 @@ const Tag: React.FC<TagProps> = ({
         PUT: { backgroundColor: '#1460BE', fontColor: '#FFFFFF' },
         PATCH: { backgroundColor: '#805BAB', fontColor: '#FFFFFF' },
         DELETE: { backgroundColor: '#972C23', fontColor: '#FFFFFF' },
+        나가기: { backgroundColor: '#FF0000', fontColor: '#FFFFFF' },
     };
 
     // 해당 텍스트에 맞는 색상 가져오기

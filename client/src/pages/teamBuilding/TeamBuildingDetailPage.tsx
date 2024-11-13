@@ -7,7 +7,7 @@ import Button from '../../components/button/Button';
 import TagSelector from '../../features/teamBuilding/components/tagSelector/TagSelector';
 import useUserStore from '@/stores/useUserStore';
 import { getDomainLabel, getPositionLabel } from '../../utils/labelUtils';
-import { formatDateTime } from '../../utils/formatDateTime';
+import { formatDateTime, formatDate } from '../../utils/formatDateTime';
 import DefaultProfile from '../../assets/profile/DefaultProfile.png'
 import { getPostInfo, deletePost, createComment, editComment, deleteComment } from '../../features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail'
 import { PiCrownSimpleFill } from "react-icons/pi";
@@ -84,7 +84,7 @@ const TeamBuildingDetailPage = () => {
     setSelectedTag(tag);
   };
 
-  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
 
@@ -333,8 +333,8 @@ const TeamBuildingDetailPage = () => {
     navigate(`/project/create`);
   };
 
-  const handleTeamAccept = async (recruitingMemberId: number) => {
-    const params = {status: 1}
+  const handleTeamAccept = async (recruitingMemberId: number, status: number) => {
+    const params = {status: status}
   
     try {
       await editComment(data.postId, recruitingMemberId, params);
@@ -352,6 +352,7 @@ const TeamBuildingDetailPage = () => {
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>{data.postTitle}</h1>
         <div className={styles.timeSection}>
+          <p>프로젝트 기간 : {formatDate(data.startDate)} ~ {formatDate(data.endDate)}</p>
           <p>작성일 : {formatDateTime(data.createdDate)}</p>
           <p>수정일 : {formatDateTime(data.updatedDate)}</p>
         </div>
@@ -360,13 +361,13 @@ const TeamBuildingDetailPage = () => {
         <div className={styles.postSection}>
           <div className={styles.postHeader}>
             <div className={styles.categorySection}>
-                <Tag text={getDomainLabel(data.firstDomain)} />
-                {data.secondDomain && <Tag text={getDomainLabel(data.secondDomain)} />}
+                <Tag text={getDomainLabel(data.firstDomain)} disablePointerCursor={true}/>
+                {data.secondDomain && <Tag text={getDomainLabel(data.secondDomain)} disablePointerCursor={true}/>}
             </div>
             <div className={styles.positionSection}>
-              <Tag text={'FE'} /> {data.memberFrontend}
-              <Tag text={'BE'} /> {data.memberBackend}
-              <Tag text={'Infra'} /> {data.memberInfra}
+              <Tag text={'FE'} disablePointerCursor={true}/> {data.memberFrontend}
+              <Tag text={'BE'} disablePointerCursor={true}/> {data.memberBackend}
+              <Tag text={'Infra'} disablePointerCursor={true}/> {data.memberInfra}
             </div>
           </div>
           <div className={styles.postContent}>{data.postContent}</div>
@@ -379,11 +380,13 @@ const TeamBuildingDetailPage = () => {
           ) : (
             <div className={styles.commentForm}>
               <TagSelector onTagChange={handleTagChange} />
-              <input
+              <textarea
                 className={styles.commentInput}
                 value={message}
                 onChange={handleMessageChange}
                 placeholder="지원 메시지를 입력하세요"
+                rows={4}
+                cols={50}
               />
               <button onClick={handleSubmitComment} className={styles.submitButton}>지원하기</button>
             </div>
@@ -399,17 +402,18 @@ const TeamBuildingDetailPage = () => {
                 )}
                 <div className={styles.commentContent}>
                   {isCommentEditing && activeCommentId === index ? (
-                    <input
-                      type="text"
+                    <textarea
                       value={editedCommentContent}
                       onChange={(e) => setEditedCommentContent(e.target.value)}
                       className={styles.editInput}
+                      rows={4} // 원하는 줄 수
+                      cols={50} // 원하는 열 수
                     />
                   ) : (
-                    candidate.message
+                    <span style={{whiteSpace: 'pre-wrap'}}>{candidate.message}</span>
                   )}
                 </div>
-                <div className={styles.commentAuthor}>
+                <div className={styles.commentAuthor} onClick={() => navigate(`/profile/${candidate.userId}`)}>
                   <img
                     src={candidate.profileImage ? candidate.profileImage : DefaultProfile}
                     alt={candidate.userName}
@@ -433,21 +437,36 @@ const TeamBuildingDetailPage = () => {
                     {activeCommentId === index && !isCommentEditing && (
                       <div className={styles.modal}>
                         {isAuthor ? (
-                          <button 
-                            onClick={() => handleTeamAccept(candidate.recruitingMemberId)}
-                            className={styles.modalButton}
-                          >
-                            수락
-                          </button>
+                          <>
+                            <button 
+                              onClick={() => handleTeamAccept(candidate.recruitingMemberId, 1)}
+                              className={styles.modalButton}
+                            >
+                              수락
+                            </button>
+                            <button
+                              className={styles.modalButton}
+                              onClick={() => handleTeamAccept(candidate.recruitingMemberId, -1)}
+                            >
+                              거절
+                            </button>
+                          </>
                         ) : (
-                          <button
-                            onClick={() => handleEditComment(candidate.message ? candidate.message : '')}
-                            className={styles.modalButton}
-                          >
-                            수정
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleEditComment(candidate.message ? candidate.message : '')}
+                              className={styles.modalButton}
+                            >
+                              수정
+                            </button>
+                            <button
+                              className={styles.modalButton}
+                              onClick={() => {handleDeleteComment(postId, candidate.recruitingMemberId )}}
+                            >
+                              삭제
+                            </button>
+                          </>
                         )}
-                        <button className={styles.modalButton} onClick={() => {handleDeleteComment(postId, candidate.recruitingMemberId )}}>삭제</button>
                       </div>
                     )}
                   </div>
@@ -474,7 +493,7 @@ const TeamBuildingDetailPage = () => {
                     }
                   }}
                 >
-                  Leave
+                  <Tag text='나가기'/>
                 </button>
               )
             )}
