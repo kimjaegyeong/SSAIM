@@ -69,6 +69,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
         { id: 14, categoryId: 2, name: "핀테크" },
         { id: 15, categoryId: 3, name: "자유주제" },
         { id: 16, categoryId: 3, name: "기업연계" },
+        { id: 17, categoryId: 3, name: "오픈소스" },
     ];
 
     const campus = [
