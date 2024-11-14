@@ -169,7 +169,7 @@ const MeetingDetail = () => {
 
             return (
               <div key={index} className={styles.participantBox}>
-                <img src={profileImage} alt="profile" />
+                <img src={profileImage} alt={DefaultProfile} />
                 <div className={styles.participantComment}>
                   <p
                     className={styles.participantName}
