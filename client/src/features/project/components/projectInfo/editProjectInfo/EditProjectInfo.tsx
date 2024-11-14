@@ -8,6 +8,7 @@ import { useEditProjectInfoMutation } from '@/features/project/hooks/useEditProj
 import defaultTeamIcon from '@/assets/project/defaultTeamIcon.png';
 import useTeamStore from '@/features/project/stores/useTeamStore';
 import { useParams } from 'react-router-dom';
+import useUserStore from '@/stores/useUserStore';
 
 interface EditProjectInfoModalProps {
   projectInfo: ProjectDTO;
@@ -22,8 +23,9 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
   const [teamName, setTeamName] = useState(projectInfo.name);
   const { resetStore, setLeaderId, addMember, members, leaderId } = useTeamStore();
   const { projectId } = useParams();
+  const { userId } = useUserStore();
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null); // 이미지 파일 상태 추가
-  const editProjectInfoMutation = useEditProjectInfoMutation(Number(projectId));
+  const editProjectInfoMutation = useEditProjectInfoMutation(Number(projectId), userId);
 
   useEffect(() => {
     resetStore();
