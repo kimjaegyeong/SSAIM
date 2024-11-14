@@ -33,7 +33,7 @@ const TeamCreation: React.FC = () => {
     const [inputValue, setInputValue] = useState<string>("0");
     const totalPositions = recruitment.FE + recruitment.BE + recruitment.Infra;
     const [selectedMyPosition, setSelectedMyPosition] = useState<number | null>(null);
-
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     useEffect(() => {
         setRecruitment({ FE: 0, BE: 0, Infra: 0 });
@@ -124,45 +124,74 @@ const TeamCreation: React.FC = () => {
     };
 
     const handleSubmit = async () => {
+        if (isSubmitting) return; // 이미 요청 중이면 중단
+        setIsSubmitting(true);
+
         // 유효성 검사
         if (!title.trim()) {
             alert("제목을 입력해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (!content.trim()) {
             alert("내용을 입력해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (!startDate || !endDate) {
             alert("프로젝트 기간을 설정해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (!selectedRegion) {
             alert("캠퍼스를 선택해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (selectedDomains.length === 0) {
             alert("최소 하나의 도메인을 선택해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (N === 0) {
             alert("모집 인원은 최소 1명 이상이어야 합니다.");
+            setIsSubmitting(false);
             return;
         }
 
         if (selectedMyPosition === null) {
             alert("내 포지션을 선택해주세요.");
+            setIsSubmitting(false);
             return;
         }
 
         const totalMembers = recruitment.Infra + recruitment.BE + recruitment.FE;
         if (N !== totalMembers) {
             alert(`총 모집 인원(${N})과 세부 모집 인원의 합(${totalMembers})이 일치하지 않습니다.`);
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (selectedMyPosition === 1 && recruitment.FE === 0) {
+            alert("내 포지션이 Frontend인 경우, Frontend 모집 인원은 0일 수 없습니다.");
+            setIsSubmitting(false);
+            return;
+        }
+    
+        if (selectedMyPosition === 2 && recruitment.BE === 0) {
+            alert("내 포지션이 Backend인 경우, Backend 모집 인원은 0일 수 없습니다.");
+            setIsSubmitting(false);
+            return;
+        }
+    
+        if (selectedMyPosition === 3 && recruitment.Infra === 0) {
+            alert("내 포지션이 Infra인 경우, Infra 모집 인원은 0일 수 없습니다.");
+            setIsSubmitting(false);
             return;
         }
 
@@ -187,10 +216,12 @@ const TeamCreation: React.FC = () => {
         
         try {
             await createRecruiting(formData); // 서버에 요청을 보냅니다.
+            setIsSubmitting(false);
             navigate('/team-building'); // 성공 시 페이지 이동
         } catch (error) {
             console.error(error); // 에러를 콘솔에 출력합니다.
             alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+            setIsSubmitting(false);
         }
     };
 
