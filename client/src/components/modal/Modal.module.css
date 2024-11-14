@@ -52,8 +52,25 @@
   justify-content: center;
   gap: 10px;
 }
-  
-  /* 모달 페이드 인 애니메이션 */
+
+/* 닫기 버튼 */
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  color: #ff0000; /* hover 시 빨간색 */
+}
+
+/* 모달 페이드 인 애니메이션 */
 @keyframes fadeIn {
   from {
     opacity: 0;
