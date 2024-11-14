@@ -51,7 +51,9 @@ textarea {
 }
 
 .readOnly {
+    display: flex;
     min-height: 100px;
+    align-items: center;
 }
 
 .modalTextarea {

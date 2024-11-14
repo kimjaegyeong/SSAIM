@@ -10,7 +10,7 @@ import Button from '@components/button/Button';
 import Tag from '@/features/teamBuilding/components/tag/Tag';
 import { getApiStatusLabel } from '../../../../utils/labelUtils'
 import { MdOpenInNew } from "react-icons/md";
-import Spinner from '@/components/spinner/Spinner';
+import Loading from '@/components/loading/Loading';
 
 interface ApiSpecData {
   category: string[];
@@ -314,15 +314,14 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
         onClose={closeAiModal}
         title= '기능명세서 자동 생성'
         content={
-          isGenerating ? (
-            <Spinner />
-          ) : (
+          <>
+            {isGenerating && <Loading />}
             <textarea
               className={styles.modalTextarea}
               value={modalTextareaValue}
               onChange={handleModalTextareaChange}
             ></textarea>
-          )
+          </>
         }
         footer={
           <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
