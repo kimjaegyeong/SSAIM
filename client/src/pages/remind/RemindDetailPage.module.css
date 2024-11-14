@@ -146,3 +146,12 @@
     box-sizing: border-box;
     overflow: hidden;
 }
+
+.pageNumber {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
