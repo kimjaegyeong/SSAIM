@@ -81,11 +81,6 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({ selectedDate, onDateChange 
           }
           return '';
         }}
-        // 현재 날짜에 스타일을 추가
-        tileContent={({ date }) => {
-          const isToday = moment().isSame(date, 'day');
-          return isToday ? <span className={styles.todayMarker} /> : null;
-        }}
       />
     </div>
   );
