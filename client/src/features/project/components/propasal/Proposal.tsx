@@ -6,7 +6,7 @@ import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
-import Spinner from '@/components/spinner/Spinner';
+import Loading from '@/components/loading/Loading';
 
 interface ProposalProps {
   projectId: string;
@@ -227,15 +227,14 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
         onClose={closeModal}
         title= '기획서 자동 생성'
         content={
-          isGenerating ? (
-            <Spinner />
-          ) : (
+          <>
+            {isGenerating && <Loading />}
             <textarea
               className={styles.modalTextarea}
               value={modalTextareaValue}
               onChange={handleModalTextareaChange}
             ></textarea>
-          )
+          </>
         }
         footer={
           <Button size='custom' colorType='blue' onClick={handleModalSubmit}>
