@@ -9,6 +9,7 @@
     transform-origin: center; 
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     z-index: 1; 
+    
 }
 
 
@@ -30,6 +31,7 @@
 .reviewTitle {
     display: flex;
     flex-direction: columns;
+    margin-bottom: 5px;
 
 }
 
@@ -50,6 +52,17 @@
     font-size: 13px;
     white-space: pre-wrap;
     line-height: 1.6;
-    
+    max-height: 35vh; /* 텍스트가 넘칠 때를 대비해 최대 높이 설정 */
+    overflow-y: hidden; /* 기본 상태에서는 스크롤 숨김 */
+    transition: overflow-y 0.3s ease;
 }
+
+.TeamSprintCard:hover .reviewText {
+    overflow-y: auto; /* hover 시 스크롤 표시 */
+}
+
+.reviewText::-webkit-scrollbar {
+    display: none; /* 스크롤바 너비 */
+}
+
 

@@ -1,7 +1,8 @@
 .teamReview {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    height: 71vh;
+    column-gap: 20px; /* 가로 방향 간격 */
+    row-gap: 20px; /* 세로 방향 간격을 줄임 */
+    /* height: 71vh; */
     padding: 0px 20px;
 }
