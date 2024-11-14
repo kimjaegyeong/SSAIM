@@ -96,9 +96,17 @@
 }
 
 .participantName {
+    display: inline-block;
     font-weight: bold;
     margin-top: 0px;
     margin-bottom: 5px;
+    transition: color 0.2s ease, font-size 0.2s ease;
+}
+
+.participantName:hover {
+    color: #198861; /* 글자 색상 변경 */
+    font-size: 17px; /* 글자 크기 증가 */
+    cursor: pointer;
 }
 
 .comment {
