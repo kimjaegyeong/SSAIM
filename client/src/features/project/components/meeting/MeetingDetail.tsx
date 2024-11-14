@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import styles from './MeetingDetail.module.css';
 import Button from '../../../../components/button/Button';
 import SelectSpeakerModal from './SelectSpeakerModal';
+import { ImPencil } from "react-icons/im";
 import { fectchMeetingDetail } from '../../apis/meeting/fectchMeetingDetail';
 import { createAISummary } from '../../apis/meeting/createAISummary';
 import { editSpeakers } from '../../apis/meeting/editSpeakers';
@@ -25,12 +26,16 @@ const MeetingDetail = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const segmentRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState<string>('');
+
   useEffect(() => {
     const getMeetingDetail = async () => {
       if (projectId && meetingId) {
         try {
           const data = await fectchMeetingDetail(Number(projectId), Number(meetingId));
           setMeetingData(data);
+          setEditedTitle(data.meetingTitle);
         } catch (error) {
           console.error('Failed to fetch meeting details:', error);
         }
@@ -38,6 +43,19 @@ const MeetingDetail = () => {
     };
     getMeetingDetail();
   }, [projectId, meetingId]);
+
+  // 편집 모드 활성화 함수
+  const enableEditing = () => {
+    setIsEditing(true);
+  };
+
+  // 완료 버튼 클릭 시 제목 저장 및 편집 모드 종료
+  const handleTitleSave = () => {
+    setMeetingData((prevData) => prevData ? { ...prevData, meetingTitle: editedTitle } : prevData);
+    setIsEditing(false);
+  };
+
+
 
   const handleAISummaryClick = async () => {
     if (projectId && meetingId) {
@@ -131,20 +149,41 @@ const MeetingDetail = () => {
       <div className={styles.left}>
         <div className={styles.stickyBox}>
           <div className={styles.header}>
-            <h3 className={styles.title}>{meetingData?.meetingTitle || "회의 제목 불러오는 중"}</h3>
-            <div className={styles.meetingInfo}>
-              <span className={styles.date}>
-                {meetingData ? formatMeetingTime(meetingData.meetingCreateTime) : "날짜 불러오는 중"}
-              </span>
-              <span className={styles.duration}>
-                {meetingData?.meetingVoiceTime === -1
-                  ? "알 수 없음"
-                  : meetingData
-                  ? formatMeetingDuration(meetingData.meetingVoiceTime)
-                  : ""}
-              </span>
+            <div className={styles.headerLeft}>
+              {/* 제목 수정 가능 */}
+              {isEditing ? (
+                <div className={styles.titleEditContainer}>
+                  <input
+                    type="text"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                    className={styles.titleInput}
+                  />
+                  <button onClick={handleTitleSave} className={styles.saveButton}>완료</button>
+                </div>
+              ) : (
+                <h3 className={styles.title}>{meetingData?.meetingTitle || "회의 제목 불러오는 중"}</h3>
+              )}
+              {!isEditing && (
+                <ImPencil onClick={enableEditing} style={{ color: "black", cursor: 'pointer' }} />
+              )}
+              {/* 회의 날짜 및 소요 시간 */}
+              <div className={styles.meetingInfo}>
+                <span className={styles.date}>
+                  {meetingData ? formatMeetingTime(meetingData.meetingCreateTime) : "날짜 불러오는 중"}
+                </span>
+                <span className={styles.duration}>
+                  {meetingData?.meetingVoiceTime === -1
+                    ? "알 수 없음"
+                    : meetingData
+                    ? formatMeetingDuration(meetingData.meetingVoiceTime)
+                    : ""}
+                </span>
+              </div>
             </div>
+            <button className={styles.deleteButton}> 삭제 </button>
           </div>
+          {/* 음성 파일 컨트롤러 */}
           <div className={styles.voicePlay}>
             {meetingData?.meetingVoiceUrl ? (
               <audio controls src={meetingData.meetingVoiceUrl} ref={audioRef} onTimeUpdate={handleTimeUpdate}>
@@ -168,9 +207,11 @@ const MeetingDetail = () => {
                 <div key={index} className={styles.participantBox}>
                   <img src={profileImage} alt={DefaultProfile} />
                   <div className={styles.participantComment}>
+                    {/* 화자 수정 가능 */}
                     <p className={styles.participantName} onClick={() => handleEditSpeakerClick(segment.speaker)}>
                       {segment.speaker.name}
                     </p>
+                    {/* 음성 텍스트 싱크 추적 가능 */}
                     <p
                       ref={(el) => (segmentRefs.current[index] = el)}
                       className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}
