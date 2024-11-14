@@ -141,6 +141,20 @@ const MeetingDetail = () => {
             <span className={styles.duration}>{formatMeetingDuration(meetingData.meetingVoiceTime)}</span>
           </div>
         </div>
+        <div className={styles.voicePlay}>
+            {meetingData.meetingVoiceUrl ? (
+              <audio
+                controls
+                src={meetingData.meetingVoiceUrl}
+                ref={audioRef}
+                onTimeUpdate={handleTimeUpdate} // 재생 시간이 변할 때마다 호출
+              >
+                Your browser does not support the audio element.
+              </audio>
+            ) : (
+              <p>음성 파일을 불러오는 중입니다.</p>
+            )}
+        </div>
         <div className={styles.content}>
           <div className={styles.participants}>
           {meetingData.sttResponseDto.segments.map((segment, index) => {
@@ -170,20 +184,7 @@ const MeetingDetail = () => {
             );
           })}
           </div>
-          <div className={styles.voicePlay}>
-            {meetingData.meetingVoiceUrl ? (
-              <audio
-                controls
-                src={meetingData.meetingVoiceUrl}
-                ref={audioRef}
-                onTimeUpdate={handleTimeUpdate} // 재생 시간이 변할 때마다 호출
-              >
-                Your browser does not support the audio element.
-              </audio>
-            ) : (
-              <p>음성 파일을 불러오는 중입니다.</p>
-            )}
-          </div>
+          
         </div>
       </div>
       <div className={styles.right}>

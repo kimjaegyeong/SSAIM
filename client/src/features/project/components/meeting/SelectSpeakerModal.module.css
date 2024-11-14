@@ -36,7 +36,7 @@
 .teamList {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 20px 0px;
 }
 
 .teamMember {
@@ -62,11 +62,15 @@
 }
 
 .changeButton {
-  background: #4CAF50;
+  background: #198861;
   color: white;
   border: none;
   padding: 10px;
   cursor: pointer;
   width: 100%;
-  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.changeButton:hover {
+  background-color: #156a4f; 
 }
