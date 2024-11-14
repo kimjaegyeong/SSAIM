@@ -14,9 +14,12 @@ export interface RecruitingFormData {
     secondDomain?: number;
     campus: number;
     memberTotal: number;
-    memberInfra: number;
-    memberBackend: number;
-    memberFrontend: number;
+    infraLimit: number;
+    infraCurrent: number;
+    backendLimit: number;
+    backendCurrent: number;
+    frontLimit: number;
+    frontCurrent: number;
     recruitingMembers: Array<{
         userId: number;
         position: number;

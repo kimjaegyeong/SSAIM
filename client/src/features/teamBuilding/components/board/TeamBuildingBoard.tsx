@@ -25,9 +25,12 @@ type TeamBuildingData = {
     memberTotal: number;
     authorProfileImageUrl: string;
     authorName: string;
-    memberInfra: number;
-    memberBackend: number;
-    memberFrontend: number;
+    infraLimit: number;
+    infraCurrent: number;
+    backendLimit: number;
+    backendCurrent: number;
+    frontLimit: number;
+    frontCurrent: number;
 };
 
 const TeamBuildingBoard: React.FC = () => {
@@ -272,9 +275,9 @@ const TeamBuildingBoard: React.FC = () => {
                                         <span>{item.recruitedTotal}/{item.memberTotal}</span>
                                     </div>
                                     <div className={styles.position}>
-                                        {item.memberFrontend > 0 && <Tag text={'FE'} />}
-                                        {item.memberBackend > 0 && <Tag text={'BE'} />}
-                                        {item.memberInfra > 0 && <Tag text={'Infra'} />}
+                                        {(item.frontLimit - item.frontCurrent) > 0 && <Tag text={'FE'} />}
+                                        {(item.backendLimit - item.backendCurrent) > 0 && <Tag text={'BE'} />}
+                                        {(item.infraLimit - item.infraCurrent) > 0 && <Tag text={'Infra'} />}
                                     </div>
                                     <div className={styles.profile}>
                                         <img
