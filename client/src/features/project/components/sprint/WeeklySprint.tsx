@@ -11,6 +11,7 @@ import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
 import { getInitialCurrentWeek } from '../../utils/getInitialCurrentWeek';
 import { IssueDTO } from '@features/project/types/dashboard/WeeklyDataDTO';
 import { useEpicListData } from '../../hooks/sprint/useEpicListData';
+import DefaultProfile from '@/assets/profile/DefaultProfile.png'
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
@@ -155,7 +156,8 @@ const WeeklySprint = () => {
               className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
               onClick={() => handleFilterMember(member.name)}
             >
-              <img src={member.profileImage} alt={member.name} />
+              <img src={member.profileImage?.length>0 ? member.profileImage : DefaultProfile} alt={member.name} className={styles.profilePicture} />
+              <span className={styles.profileLabel}>{member.name}</span>
             </div>
           ))}
         </div>
