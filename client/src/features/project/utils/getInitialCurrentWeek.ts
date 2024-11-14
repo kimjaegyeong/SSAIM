@@ -1,11 +1,14 @@
 export const getInitialCurrentWeek = (weekList: any[]) => {
   if (weekList.length === 0) return 0;
-  console.log(weekList)
+  console.log(weekList);
   const today = new Date();
   for (let i = 0; i < weekList.length; i++) {
     const { startDate, endDate } = weekList[i];
-    if (new Date(startDate) <= today && today <= new Date(endDate)) {
-      console.log(startDate, endDate, i)
+    const year = endDate.getFullYear();
+    const month = endDate.getMonth();
+    const day = endDate.getDate();
+    if (new Date(year, month, day - 3) <= today && today <= new Date(year, month, day + 3)) {
+      console.log(startDate, endDate, i);
       return i; // 현재 날짜에 포함된 주차를 반환
     }
   }
