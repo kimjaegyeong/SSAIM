@@ -6,7 +6,7 @@ import SockJS from 'sockjs-client';
 import { getFeatureSpec, getAutoFeatureSpec } from '@features/project/apis/webSocket/featureSpec';
 import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
-import Spinner from '@/components/spinner/Spinner';
+import Loading from '@/components/loading/Loading';
 
 interface FeatureSpecData {
   category: string[];
@@ -274,15 +274,14 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
         onClose={closeModal}
         title= '기능명세서 자동 생성'
         content={
-          isGenerating ? (
-            <Spinner />
-          ) : (
+          <>
+            {isGenerating && <Loading />}
             <textarea
               className={styles.modalTextarea}
               value={modalTextareaValue}
               onChange={handleModalTextareaChange}
             ></textarea>
-          )
+          </>
         }
         footer={
           <Button size='custom' colorType='blue' onClick={handleModalSubmit}>

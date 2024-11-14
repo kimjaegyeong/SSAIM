@@ -11,7 +11,22 @@ export const getErd = async(projectId:string) => {
     }
 }
 
-export const setErd = async(projectId:string, formData:FormData) => {
+export const postErd = async(projectId:string, formData:FormData) => {
+    try{
+        const response = await apiClient.post(`/projects/${projectId}/ERD`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        console.log(response.data);
+        return response.data;
+    } catch (error){
+        console.log(error);
+        throw error;
+    }
+}
+
+export const patchErd = async(projectId:string, formData:FormData) => {
     try{
         const response = await apiClient.patch(`/projects/${projectId}/ERD`, formData, {
             headers: {
@@ -25,4 +40,3 @@ export const setErd = async(projectId:string, formData:FormData) => {
         throw error;
     }
 }
-  

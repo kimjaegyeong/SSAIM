@@ -395,7 +395,11 @@ const TeamBuildingDetailPage = () => {
                 {isCommentEditing && activeCommentId === index ? (
                   <TagSelector onTagChange={handleTagChange} initialTag={candidate.position}/>
                 ):(
-                  <Tag text={getPositionLabel(candidate.position)} disablePointerCursor={true}/>
+                  (candidate.status !== -1) ? (
+                    <Tag text={getPositionLabel(candidate.position)} disablePointerCursor={true}/>
+                  ) : (
+                    <Tag text="거절됨" disablePointerCursor={true}/>
+                  )
                 )}
                 <div className={styles.commentContent}>
                   {isCommentEditing && activeCommentId === index ? (
@@ -434,28 +438,41 @@ const TeamBuildingDetailPage = () => {
                     {activeCommentId === index && !isCommentEditing && (
                       <div className={styles.modal}>
                         {isAuthor ? (
-                          <>
-                            <button 
-                              onClick={() => handleTeamAccept(candidate.recruitingMemberId, 1)}
-                              className={styles.modalButton}
-                            >
-                              수락
-                            </button>
-                            <button
-                              className={styles.modalButton}
-                              onClick={() => handleTeamAccept(candidate.recruitingMemberId, -1)}
-                            >
-                              거절
-                            </button>
-                          </>
+                          (candidate.status !== -1) ? (
+                            <>
+                              <button 
+                                onClick={() => handleTeamAccept(candidate.recruitingMemberId, 1)}
+                                className={styles.modalButton}
+                              >
+                                수락
+                              </button>
+                              <button
+                                className={styles.modalButton}
+                                onClick={() => handleTeamAccept(candidate.recruitingMemberId, -1)}
+                              >
+                                거절
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className={styles.modalButton}
+                                onClick={() => handleTeamAccept(candidate.recruitingMemberId, 0)}
+                              >
+                                거절 취소
+                              </button>
+                            </>
+                          )
                         ) : (
                           <>
-                            <button
-                              onClick={() => handleEditComment(candidate.message ? candidate.message : '')}
-                              className={styles.modalButton}
-                            >
-                              수정
-                            </button>
+                            {(candidate.status !== -1) &&
+                              <button
+                                onClick={() => handleEditComment(candidate.message ? candidate.message : '')}
+                                className={styles.modalButton}
+                              >
+                                수정
+                              </button>
+                            }
                             <button
                               className={styles.modalButton}
                               onClick={() => {handleDeleteComment(postId, candidate.recruitingMemberId )}}
