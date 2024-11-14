@@ -294,23 +294,24 @@ const TeamBuildingDetailPage = () => {
 
   const handleSubmit = async () => {
     const formData = {
-        title: data.postTitle,
-        content: data.postContent,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        firstDomain: data.firstDomain,
-        secondDomain: data.secondDomain,
-        campus: data.campus,
-        memberTotal: data.memberTotal,
-        memberInfra: data.infraLimit,
-        memberBackend: data.backendLimit,
-        memberFrontend: data.frontLimit,
-        recruitingMembers: data.recruitingMembers.map((member) => ({
-            userId: member.userId,
-            position: member.position,
-            delete: selectedMembers.find((m) => m.userId === member.userId)?.delete ? 1 : 0,
-        })),
+      title: data.postTitle,
+      content: data.postContent,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      firstDomain: data.firstDomain,
+      secondDomain: data.secondDomain,
+      campus: data.campus,
+      memberTotal: data.memberTotal,
+      memberInfra: data.infraLimit,
+      memberBackend: data.backendLimit,
+      memberFrontend: data.frontLimit,
+      recruitingMembers: selectedMembers.map((member) => ({
+          userId: member.userId,
+          position: member.position,
+          delete: member.delete ? 1 : 0,
+      })),
     };
+    
     editRecruiting(data.postId, formData)
       .then((response) => {
           console.log(response);
@@ -345,6 +346,19 @@ const TeamBuildingDetailPage = () => {
     } catch (error) {
       alert('처리에 실패했습니다. 다시 시도해주세요.');
     }
+  };
+
+  const toggleMemberPosition = (memberId: number) => {
+    setSelectedMembers((prevSelected) =>
+      prevSelected.map((member) =>
+        member.userId === memberId
+          ? {
+                ...member,
+                position: (member.position % 3) + 1,
+            }
+          : member
+      )
+    );
   };
 
   return (
@@ -550,7 +564,14 @@ const TeamBuildingDetailPage = () => {
                     />
                   )}
                 </div>
-                <Tag text={getPositionLabel(member.position)} />
+                <Tag
+                  text={getPositionLabel(member.position)}
+                  onClick={() => {
+                      if (editMembers) {
+                          toggleMemberPosition(member.userId);
+                      }
+                  }}
+                />
               </div>
             ))}
           </div>

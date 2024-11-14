@@ -12,6 +12,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { getDomainLabel, getRegionLabel, getStatusLabel } from "../../../../utils/labelUtils";
 import DefaultProfile from "../../../../assets/profile/DefaultProfile.png"
 import ApplicationsModal from "../modal/ApplicationsModal";
+import { GrPowerReset } from "react-icons/gr";
 
 type TeamBuildingData = {
     postId: number;
@@ -235,6 +236,16 @@ const TeamBuildingBoard: React.FC = () => {
                             isOpen={openDropdown === '상태'}
                             onToggle={() => handleDropdownToggle('상태')}
                             placeholder="상태" 
+                        />
+                        <GrPowerReset 
+                            className={styles.resetButton}
+                            onClick={() => {
+                                    setSelectedRegion('');
+                                    setSelectedDomain('');
+                                    setSelectedPosition('');
+                                    setSelectedState('');
+                                }
+                            }
                         />
                     </div>
                     <div className={styles.searchActions}>
