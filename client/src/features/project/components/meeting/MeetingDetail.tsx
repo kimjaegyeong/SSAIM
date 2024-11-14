@@ -138,7 +138,9 @@ const MeetingDetail = () => {
           <h3 className={styles.title}>{meetingData.meetingTitle}</h3>
           <div className={styles.meetingInfo}>
             <span className={styles.date}>{formatMeetingTime(meetingData.meetingCreateTime)}</span>
-            <span className={styles.duration}>{formatMeetingDuration(meetingData.meetingVoiceTime)}</span>
+            <span className={styles.duration}>
+              {meetingData.meetingVoiceTime === -1 ? "알 수 없음" : formatMeetingDuration(meetingData.meetingVoiceTime)}
+            </span>
           </div>
         </div>
         <div className={styles.voicePlay}>
