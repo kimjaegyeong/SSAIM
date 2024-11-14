@@ -19,7 +19,7 @@ const Cover = React.forwardRef<HTMLDivElement, CoverProps>(
         <h1 className={styles.projectName}>{project.projectName}</h1>
         <p className={styles.projectDate}>{project.projectStartDate} ~ {project.projectEndDate}</p>
       </div>
-      <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
+      <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
   )
 );
@@ -35,7 +35,7 @@ const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
       <div className={styles.imagePageContent}>
         <img src={image} alt="Weekly review" className={styles.weeklyImage} />
       </div>
-      <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
+      <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
   )
 );
@@ -70,10 +70,13 @@ const RemindAllPage: React.FC = () => {
   const { data } = useDevelopStory({ userId: userId ?? 0 });
 
   useEffect(() => {
-    if (data) {
-      console.log('Develop story data:', data);
-    }
-  }, [data]);
+    // 페이지에 들어오면 스크롤을 숨김
+    document.body.style.overflow = 'hidden';
+    return () => {
+      // 페이지를 떠나면 스크롤을 복원
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
 
   let currentPageIndex = 0; 
 
@@ -88,7 +91,7 @@ const RemindAllPage: React.FC = () => {
         <img src={remindBG} alt="remindBG" className={styles.remindBG} />
         <HTMLFlipBook
           width={600}
-          height={700}
+          height={650}
           size="fixed"
           minWidth={500}
           maxWidth={1000}
@@ -96,26 +99,26 @@ const RemindAllPage: React.FC = () => {
           maxHeight={800}
           maxShadowOpacity={0.5}
           className={styles.book}
-          showCover={true}
+          showCover={false}
           drawShadow={true}
           startPage={0}
           flippingTime={1000}
-          style={{ margin: '0 auto' }}
+          style={{ margin: '0 auto', overflow: 'visible' }}
           usePortrait={false}
           startZIndex={0}
           autoSize={false}
-          mobileScrollSupport={true}
-          clickEventForward={true}
+          mobileScrollSupport={false}
           useMouseEvents={true}
-          swipeDistance={0}
-          showPageCorners={true}
           disableFlipByClick={false}
+          swipeDistance={0}
+          clickEventForward={true}
+          showPageCorners={true}
         >
           {data?.flatMap((project) => [
             <Cover key={`cover-${project.projectId}`} project={project} pageIndex={currentPageIndex++}/>,
             ...project.weeklyRemind.flatMap((remind, index) => [
               remind.imageUrl && <ImagePage key={`image-${project.projectId}-${currentPageIndex}`} image={remind.imageUrl} pageIndex={currentPageIndex++}/>,
-              ...splitContentToPages(remind.content, 750).map((pageContent) => (
+              ...splitContentToPages(remind.content, 600).map((pageContent) => (
                 <ReportPage key={`report-${project.projectId}-${index}-${currentPageIndex}`} report={pageContent} pageIndex={currentPageIndex++}/>
               ))
             ]).filter(Boolean)
