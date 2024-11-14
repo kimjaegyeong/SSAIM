@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate  } from 'react-router-dom';
 import HTMLFlipBook from 'react-pageflip';
 import styles from './RemindDetailPage.module.css';
 import remindBG from '../../assets/remind/remindBG.png';
@@ -64,10 +64,16 @@ const splitContentToPages = (content: string, maxLength: number) => {
 
 const RemindDetailPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const project = location.state as DevelopStoryDTO;
 
   return (
     <div className={styles.mainContainer}>
+      <div className={styles.buttonBox}>
+        <button className={styles.backButton} onClick={() => navigate('/remind/list')}>
+          목록으로
+        </button>
+      </div>
       <div className={styles.bookWrapper}>
         <img src={remindBG} alt="remindBG" className={styles.remindBG} />
         <HTMLFlipBook

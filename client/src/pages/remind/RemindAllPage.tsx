@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate  } from 'react-router-dom';
 import HTMLFlipBook from 'react-pageflip';
 import styles from './RemindAllPage.module.css';
 import remindBG from '../../assets/remind/remindBG.png';
@@ -58,6 +59,7 @@ const splitContentToPages = (content: string, maxLength: number) => {
 };
 
 const RemindAllPage: React.FC = () => {
+  const navigate = useNavigate();
   const { userId } = useUserStore();
   const { data } = useDevelopStory({ userId: userId ?? 0 });
 
@@ -69,6 +71,11 @@ const RemindAllPage: React.FC = () => {
 
   return (
     <div className={styles.mainContainer}>
+      <div className={styles.buttonBox}>
+        <button className={styles.backButton} onClick={() => navigate('/remind')}>
+          뒤로가기
+        </button>
+      </div>
       <div className={styles.bookWrapper}>
         <img src={remindBG} alt="remindBG" className={styles.remindBG} />
         <HTMLFlipBook
