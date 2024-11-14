@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import styles from './MeetingDetail.module.css';
 import Button from '../../../../components/button/Button';
 import SelectSpeakerModal from './SelectSpeakerModal';
+import { ImPencil } from "react-icons/im";
 import { fectchMeetingDetail } from '../../apis/meeting/fectchMeetingDetail';
 import { createAISummary } from '../../apis/meeting/createAISummary';
 import { editSpeakers } from '../../apis/meeting/editSpeakers';
@@ -21,56 +22,65 @@ const MeetingDetail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
-  const [currentTime, setCurrentTime] = useState<number>(0); // 현재 재생 시간
+  const [currentTime, setCurrentTime] = useState<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+  const segmentRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState<string>('');
 
   useEffect(() => {
-    console.log('projectInfo: ', projectInfo)
     const getMeetingDetail = async () => {
       if (projectId && meetingId) {
         try {
           const data = await fectchMeetingDetail(Number(projectId), Number(meetingId));
           setMeetingData(data);
+          setEditedTitle(data.meetingTitle);
         } catch (error) {
           console.error('Failed to fetch meeting details:', error);
         }
       }
     };
-
     getMeetingDetail();
   }, [projectId, meetingId]);
 
-  if (!meetingData) return null;
-  
-  // AI 요약 API 호출 함수
+  // 편집 모드 활성화 함수
+  const enableEditing = () => {
+    setIsEditing(true);
+  };
+
+  // 완료 버튼 클릭 시 제목 저장 및 편집 모드 종료
+  const handleTitleSave = () => {
+    setMeetingData((prevData) => prevData ? { ...prevData, meetingTitle: editedTitle } : prevData);
+    setIsEditing(false);
+  };
+
+
+
   const handleAISummaryClick = async () => {
     if (projectId && meetingId) {
-      setIsLoading(true); // 요청 시작 시 로딩 상태를 true로 설정
+      setIsLoading(true);
       try {
         const response = await createAISummary(Number(projectId), Number(meetingId));
-        setSummaryText(response.meetingSummary); // 응답의 요약 텍스트를 summaryText에 저장
+        setSummaryText(response.meetingSummary);
       } catch (error) {
         console.error('Failed to create AI summary:', error);
       } finally {
-        setIsLoading(false); // 요청이 완료되면 로딩 상태를 false로 설정
+        setIsLoading(false);
       }
     }
   };
 
-  // 화자 수정 모달 열기
   const handleEditSpeakerClick = (speaker: Speaker) => {
     setSelectedSpeaker(speaker);
     setIsModalOpen(true);
   };
 
-  // 모달 닫기
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedSpeaker(null);
   };
 
-  // 화자 변경 API 호출 함수
   const handleSelectSpeaker = async (member: Speaker) => {
     if (!projectId || !meetingId || !selectedSpeaker) return;
 
@@ -82,25 +92,20 @@ const MeetingDetail = () => {
     ];
 
     try {
-      // editSpeakers API 호출
       const updatedData = await editSpeakers(Number(projectId), Number(meetingId), requestBody);
       console.log('Speaker updated:', updatedData);
 
-      // meetingData 상태 업데이트 (변경된 발화자 정보 적용)
       setMeetingData((prevData) => {
         if (!prevData) return null;
-        
-        // meetingData의 sttResponseDto 속성의 speakers와 segments에서 해당 발화자 정보를 업데이트
-        const updatedSegments = prevData.sttResponseDto.segments.map((segment) => 
+
+        const updatedSegments = prevData.sttResponseDto.segments.map((segment) =>
           segment.speaker.label === selectedSpeaker.label
             ? { ...segment, speaker: { ...segment.speaker, name: member.name } }
             : segment
         );
 
         const updatedSpeakers = prevData.sttResponseDto.speakers.map((speaker) =>
-          speaker.label === selectedSpeaker.label
-            ? { ...speaker, name: member.name }
-            : speaker
+          speaker.label === selectedSpeaker.label ? { ...speaker, name: member.name } : speaker
         );
 
         return {
@@ -119,73 +124,105 @@ const MeetingDetail = () => {
     closeModal();
   };
 
-  // 재생 시간 업데이트 함수
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime * 1000); // 초 단위 시간 * 1000을 밀리초로 변환
+      setCurrentTime(audioRef.current.currentTime * 1000);
     }
   };
 
-  // 현재 재생 중인 segment인지 확인하는 함수
   const isActiveSegment = (start: number, end: number) => {
     return currentTime >= start && currentTime <= end;
   };
 
+  useEffect(() => {
+    const activeIndex = meetingData?.sttResponseDto.segments.findIndex((segment) =>
+      isActiveSegment(segment.start, segment.end)
+    );
+
+    if (activeIndex !== undefined && activeIndex !== -1 && segmentRefs.current[activeIndex]) {
+      segmentRefs.current[activeIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [currentTime, meetingData]);
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>{meetingData.meetingTitle}</h3>
-          <div className={styles.meetingInfo}>
-            <span className={styles.date}>{formatMeetingTime(meetingData.meetingCreateTime)}</span>
-            <span className={styles.duration}>{formatMeetingDuration(meetingData.meetingVoiceTime)}</span>
+        <div className={styles.stickyBox}>
+          <div className={styles.header}>
+            <div className={styles.headerLeft}>
+              {/* 제목 수정 가능 */}
+              {isEditing ? (
+                <div className={styles.titleEditContainer}>
+                  <input
+                    type="text"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                    className={styles.titleInput}
+                  />
+                  <button onClick={handleTitleSave} className={styles.saveButton}>완료</button>
+                </div>
+              ) : (
+                <h3 className={styles.title}>{meetingData?.meetingTitle || "회의 제목 불러오는 중"}</h3>
+              )}
+              {!isEditing && (
+                <ImPencil onClick={enableEditing} style={{ color: "black", cursor: 'pointer' }} />
+              )}
+              {/* 회의 날짜 및 소요 시간 */}
+              <div className={styles.meetingInfo}>
+                <span className={styles.date}>
+                  {meetingData ? formatMeetingTime(meetingData.meetingCreateTime) : "날짜 불러오는 중"}
+                </span>
+                <span className={styles.duration}>
+                  {meetingData?.meetingVoiceTime === -1
+                    ? "알 수 없음"
+                    : meetingData
+                    ? formatMeetingDuration(meetingData.meetingVoiceTime)
+                    : ""}
+                </span>
+              </div>
+            </div>
+            <button className={styles.deleteButton}> 삭제 </button>
           </div>
-        </div>
-        <div className={styles.voicePlay}>
-            {meetingData.meetingVoiceUrl ? (
-              <audio
-                controls
-                src={meetingData.meetingVoiceUrl}
-                ref={audioRef}
-                onTimeUpdate={handleTimeUpdate} // 재생 시간이 변할 때마다 호출
-              >
+          {/* 음성 파일 컨트롤러 */}
+          <div className={styles.voicePlay}>
+            {meetingData?.meetingVoiceUrl ? (
+              <audio controls src={meetingData.meetingVoiceUrl} ref={audioRef} onTimeUpdate={handleTimeUpdate}>
                 Your browser does not support the audio element.
               </audio>
             ) : (
               <p>음성 파일을 불러오는 중입니다.</p>
             )}
+          </div>
         </div>
+        
         <div className={styles.content}>
           <div className={styles.participants}>
-          {meetingData.sttResponseDto.segments.map((segment, index) => {
-            // segment.speaker.name과 일치하는 projectMembers 찾기
-            const matchingMember = projectInfo?.projectMembers.find(
-              (member) => member.name === segment.speaker.name
-            );
+            {meetingData?.sttResponseDto.segments.map((segment, index) => {
+              const matchingMember = projectInfo?.projectMembers.find(
+                (member) => member.name === segment.speaker.name
+              );
+              const profileImage = matchingMember?.profileImage || DefaultProfile;
 
-            const profileImage = matchingMember?.profileImage || DefaultProfile; 
-
-            return (
-              <div key={index} className={styles.participantBox}>
-                <img src={profileImage} alt="profile" />
-                <div className={styles.participantComment}>
-                  <p
-                    className={styles.participantName}
-                    onClick={() => handleEditSpeakerClick(segment.speaker)}
-                  >
-                    {segment.speaker.name}
-                  </p>
-                  <p
-                    className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}
-                  >
-                    {segment.text}
-                  </p>
+              return (
+                <div key={index} className={styles.participantBox}>
+                  <img src={profileImage} alt={DefaultProfile} />
+                  <div className={styles.participantComment}>
+                    {/* 화자 수정 가능 */}
+                    <p className={styles.participantName} onClick={() => handleEditSpeakerClick(segment.speaker)}>
+                      {segment.speaker.name}
+                    </p>
+                    {/* 음성 텍스트 싱크 추적 가능 */}
+                    <p
+                      ref={(el) => (segmentRefs.current[index] = el)}
+                      className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}
+                    >
+                      {segment.text}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
-          
         </div>
       </div>
       <div className={styles.right}>
@@ -199,7 +236,7 @@ const MeetingDetail = () => {
             <div className={styles.summaryBox}>
               <h3 className={styles.h3}>📑 요약 내용</h3>
               <div className={styles.summaryText}>
-              <ReactMarkdown>{summaryText}</ReactMarkdown>
+                <ReactMarkdown>{summaryText}</ReactMarkdown>
               </div>
             </div>
           )
@@ -211,7 +248,7 @@ const MeetingDetail = () => {
           onClose={closeModal}
           projectId={Number(projectId)}
           onSelect={handleSelectSpeaker}
-          selectedSpeaker={selectedSpeaker} // selectedSpeaker가 null이 아니므로 오류 발생하지 않음
+          selectedSpeaker={selectedSpeaker}
         />
       )}
     </div>
