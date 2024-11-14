@@ -47,9 +47,12 @@ export type TeamBuildingData = {
     memberTotal: number;
     authorProfileImageUrl: string;
     authorName: string;
-    memberInfra: number;
-    memberBackend: number;
-    memberFrontend: number;
+    infraLimit: number;
+    infraCurrent: number;
+    backendLimit: number;
+    backendCurrent: number;
+    frontLimit: number;
+    frontCurrent: number;
     recruitingMembers: TeamBuildingMember[];
     recruitingCandidates: TeamBuildingCandidate[];
 };

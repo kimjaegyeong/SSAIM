@@ -35,9 +35,12 @@ const initialData: TeamBuildingData = {
   memberTotal: 0,
   authorProfileImageUrl: '',
   authorName: '',
-  memberInfra: 0,
-  memberBackend: 0,
-  memberFrontend: 0,
+  infraLimit: 0,
+  infraCurrent: 0,
+  backendLimit: 0,
+  backendCurrent: 0,
+  frontLimit: 0,
+  frontCurrent: 0,
   recruitingMembers: [],
   recruitingCandidates: []
 };
@@ -222,10 +225,10 @@ const TeamBuildingDetailPage = () => {
 
     const otherTotal =
         role === 'FE'
-            ? data.memberBackend + data.memberInfra
+            ? data.backendLimit + data.infraLimit
             : role === 'BE'
-            ? data.memberFrontend + data.memberInfra
-            : data.memberFrontend + data.memberBackend;
+            ? data.frontLimit + data.infraLimit
+            : data.frontLimit + data.backendLimit;
 
     const maxAllowed = data.memberTotal - otherTotal;
 
@@ -255,7 +258,7 @@ const TeamBuildingDetailPage = () => {
   const handleEditToggle = () => {
     if (editMembers) {
       // Done 버튼 검증
-      const totalMembers = data.memberFrontend + data.memberBackend + data.memberInfra;
+      const totalMembers = data.frontLimit + data.backendLimit + data.infraLimit;
 
       // 모집 인원 합이 총 인원을 초과하거나 부족한 경우
       if (totalMembers !== data.memberTotal) {
@@ -299,9 +302,9 @@ const TeamBuildingDetailPage = () => {
         secondDomain: data.secondDomain,
         campus: data.campus,
         memberTotal: data.memberTotal,
-        memberInfra: data.memberInfra,
-        memberBackend: data.memberBackend,
-        memberFrontend: data.memberFrontend,
+        memberInfra: data.infraLimit,
+        memberBackend: data.backendLimit,
+        memberFrontend: data.frontLimit,
         recruitingMembers: data.recruitingMembers.map((member) => ({
             userId: member.userId,
             position: member.position,
@@ -362,9 +365,9 @@ const TeamBuildingDetailPage = () => {
                 {data.secondDomain && <Tag text={getDomainLabel(data.secondDomain)} disablePointerCursor={true}/>}
             </div>
             <div className={styles.positionSection}>
-              <Tag text={'FE'} disablePointerCursor={true}/> {data.memberFrontend}
-              <Tag text={'BE'} disablePointerCursor={true}/> {data.memberBackend}
-              <Tag text={'Infra'} disablePointerCursor={true}/> {data.memberInfra}
+              <Tag text={'FE'} disablePointerCursor={true}/> {data.frontCurrent} / {data.frontLimit}
+              <Tag text={'BE'} disablePointerCursor={true}/> {data.backendCurrent} / {data.backendLimit}
+              <Tag text={'Infra'} disablePointerCursor={true}/> {data.infraCurrent} / {data.infraLimit}
             </div>
           </div>
           <div className={styles.postContent}>{data.postContent}</div>
@@ -554,9 +557,9 @@ const TeamBuildingDetailPage = () => {
           {editMembers && (
             <RecruitmentSelector
               recruitment={{
-                  FE: data.memberFrontend,
-                  BE: data.memberBackend,
-                  Infra: data.memberInfra,
+                  FE: data.frontLimit,
+                  BE: data.backendLimit,
+                  Infra: data.infraLimit,
               }}
               N={data.memberTotal}
               inputValue={data.memberTotal.toString()}
