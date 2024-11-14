@@ -162,7 +162,8 @@ const MeetingDetail = () => {
             const matchingMember = projectInfo?.projectMembers.find(
               (member) => member.name === segment.speaker.name
             );
-            const profileImage = matchingMember ? matchingMember.profileImage : DefaultProfile; // 일치하면 해당 이미지, 아니면 기본 이미지 사용
+
+            const profileImage = matchingMember?.profileImage || DefaultProfile; 
 
             return (
               <div key={index} className={styles.participantBox}>
