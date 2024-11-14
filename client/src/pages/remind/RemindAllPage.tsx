@@ -9,43 +9,49 @@ import { DevelopStoryDTO } from '@features/remind/types/DevelopStoryDTO';
 
 interface CoverProps {
   project: DevelopStoryDTO;
+  pageIndex: number;
 }
 
 const Cover = React.forwardRef<HTMLDivElement, CoverProps>(
-  ({ project }, ref) => (
+  ({ project, pageIndex  }, ref) => (
     <div className={styles.cover} ref={ref}>
       <div className={styles.coverContent}>
         <h1 className={styles.projectName}>{project.projectName}</h1>
         <p className={styles.projectDate}>{project.projectStartDate} ~ {project.projectEndDate}</p>
       </div>
+      <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
     </div>
   )
 );
 
 interface ImagePageProps {
   image: string;
+  pageIndex: number;
 }
 
 const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
-  ({ image }, ref) => (
+  ({ image, pageIndex  }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.imagePageContent}>
         <img src={image} alt="Weekly review" className={styles.weeklyImage} />
       </div>
+      <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
     </div>
   )
 );
 
 interface ReportPageProps {
   report: string;
+  pageIndex: number;
 }
 
 const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
-  ({ report }, ref) => (
+  ({ report, pageIndex }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.reportPageContent}>
         {report}
       </div>
+      <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
     </div>
   )
 );
@@ -68,6 +74,8 @@ const RemindAllPage: React.FC = () => {
       console.log('Develop story data:', data);
     }
   }, [data]);
+
+  let currentPageIndex = 0; 
 
   return (
     <div className={styles.mainContainer}>
@@ -104,11 +112,11 @@ const RemindAllPage: React.FC = () => {
           disableFlipByClick={false}
         >
           {data?.flatMap((project) => [
-            <Cover key={`cover-${project.projectId}`} project={project} />,
+            <Cover key={`cover-${project.projectId}`} project={project} pageIndex={currentPageIndex++}/>,
             ...project.weeklyRemind.flatMap((remind, index) => [
-              remind.imageUrl && <ImagePage key={`image-${project.projectId}-${index}`} image={remind.imageUrl} />,
-              ...splitContentToPages(remind.content, 750).map((pageContent, pageIndex) => (
-                <ReportPage key={`report-${project.projectId}-${index}-${pageIndex}`} report={pageContent} />
+              remind.imageUrl && <ImagePage key={`image-${project.projectId}-${currentPageIndex}`} image={remind.imageUrl} pageIndex={currentPageIndex++}/>,
+              ...splitContentToPages(remind.content, 750).map((pageContent) => (
+                <ReportPage key={`report-${project.projectId}-${index}-${currentPageIndex}`} report={pageContent} pageIndex={currentPageIndex++}/>
               ))
             ]).filter(Boolean)
           ])}
