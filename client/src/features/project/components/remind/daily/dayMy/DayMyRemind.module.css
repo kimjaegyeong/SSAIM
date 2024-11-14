@@ -20,6 +20,10 @@
     cursor: pointer;
 }
 
+.editText {
+    margin: 0px;
+}
+
 .keepSection {
     flex: 1;
     background-color: rgba(79, 157, 234, 0.1);
