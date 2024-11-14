@@ -45,6 +45,10 @@
     cursor: pointer;
 }
 
+.boardItem:hover {
+    background-color: #f9f9f9;
+}
+
 .region {
     width: 5%;
     min-width: 70px;

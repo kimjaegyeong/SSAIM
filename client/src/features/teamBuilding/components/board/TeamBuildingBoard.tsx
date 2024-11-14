@@ -242,6 +242,11 @@ const TeamBuildingBoard: React.FC = () => {
                                 placeholder="검색" 
                                 value={searchQuery}
                                 onChange={handleInputChange}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                        handleSearch();
+                                    }
+                                }}
                             />
                         </div>
                         <div className={styles.actionButtons}>
