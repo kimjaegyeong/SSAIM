@@ -16,7 +16,7 @@
 .modalContainer {
   background-color: white;
   border-radius: 8px;
-  padding: 20px;
+  padding: 40px;
   width: 600px;
   max-width: 90%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -46,7 +46,9 @@
   border-radius: 8px;
   font-size: 14px;
 }
-
+.image{
+  max-width:100%;
+}
 .infoSection {
   width: 50%;
   padding: 0 10px;

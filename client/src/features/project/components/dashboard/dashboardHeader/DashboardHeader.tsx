@@ -18,10 +18,13 @@ const DashboardHeader: React.FC = () => {
     if (projectListData && projectListData.length > 0 && projectId === -1) {
       const lastProject = projectListData[projectListData.length - 1];
       setProjectId(Number(lastProject.id));
-      setProjectWeek(new Date(lastProject.startDate), new Date(lastProject.endDate));
+      const { startDate, endDate } = lastProject;
+      if (startDate && endDate) {
+        setProjectWeek(new Date(startDate), new Date(endDate));
+      }
     }
   }, [projectListData, projectId, setProjectId, setProjectWeek]);
-  
+
   useEffect(() => {
     if (projectWeekList && projectWeekList.length > 0) {
       let flag = 0;
@@ -43,8 +46,8 @@ const DashboardHeader: React.FC = () => {
   const year = projectWeekList[currentWeek]?.endDate.getFullYear();
   const month = projectWeekList[currentWeek]?.endDate.getMonth() + 1;
   const day = projectWeekList[currentWeek]?.endDate.getDate();
-  const dateMon = dateToString(new Date(year, month, day -3))
-  const dateSun = dateToString(new Date(year, month, day + 3))
+  const dateMon = dateToString(new Date(year, month, day - 3));
+  const dateSun = dateToString(new Date(year, month, day + 3));
   const handleProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedProjectId = Number(event.target.value);
     setProjectId(selectedProjectId);
@@ -60,14 +63,14 @@ const DashboardHeader: React.FC = () => {
   const handleIncreaseWeek = () => {
     if (currentWeek < projectWeekList.length - 1) {
       setCurrentWeek(currentWeek + 1);
-      console.log('increase', currentWeek)
+      console.log('increase', currentWeek);
     }
   };
 
   const handleDecreaseWeek = () => {
     if (currentWeek > 0) {
       setCurrentWeek(currentWeek - 1);
-      console.log('decrease', currentWeek)
+      console.log('decrease', currentWeek);
     }
   };
 
@@ -98,8 +101,7 @@ const DashboardHeader: React.FC = () => {
           </select>
         </div>
         <div>
-          <span>{dateMon??dateMon}</span> ~{' '}
-          <span>{dateSun??dateSun}</span>
+          <span>{dateMon ?? dateMon}</span> ~ <span>{dateSun ?? dateSun}</span>
         </div>
       </div>
     </>

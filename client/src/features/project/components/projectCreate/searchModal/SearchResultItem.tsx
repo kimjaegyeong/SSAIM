@@ -9,13 +9,17 @@ interface SearchResultItemProps {
 
 const SearchResultItem: React.FC<SearchResultItemProps> = ({ member }) => {
   const { members, addMember } = useTeamStore();
-  console.log(member)
+  console.log(member);
   const isMemberInTeam = members.find((e) => {
-    console.log(e)
+    console.log(e);
     return e.userId === member.userId;
   });
   const handleAddMember = () => {
-    addMember(member);
+    if (isMemberInTeam) {
+      return;
+    } else {
+      addMember(member);
+    }
   };
   const buttonClass = classNames(styles.button, {
     [styles.buttonDisabled]: isMemberInTeam,
