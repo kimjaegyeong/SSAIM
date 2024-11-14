@@ -94,7 +94,7 @@ const MySprint: React.FC<MySprintProps> = ({ contents, selectedDateInfo }) => {
         <div className={styles.editbox}>
           <div className={styles.editButton} onClick={handleEditClick}>
             <FaArrowRotateRight />
-            <p className={styles.p}>다시 생성하기</p>
+            <p className={styles.editText}>다시 생성하기</p>
           </div>
         </div>
       )}

@@ -9,6 +9,7 @@
     transform-origin: center; 
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     z-index: 1; 
+    
 }
 
 
@@ -30,6 +31,7 @@
 .reviewTitle {
     display: flex;
     flex-direction: columns;
+    margin-bottom: 5px;
 
 }
 
