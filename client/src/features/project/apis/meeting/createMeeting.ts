@@ -13,6 +13,9 @@ export const createMeeting = async (projectId: number, meetingPostDTO: MeetingPo
     const response = await apiClient.post(
       `${config.BASE_URL}/projects/${projectId}/meetings`,
       formData,
+      {
+        timeout: 100000, // Timeout increased to 100 seconds
+    }
     );
 
     console.log("Response Data:", response.data);
