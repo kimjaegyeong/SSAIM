@@ -172,6 +172,16 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
         console.error('Unexpected response type:', typeof response);
         parsedData = null;
       }
+
+      console.log('parsedData : ', parsedData)
+
+      Object.keys(parsedData).forEach((key) => {
+        if (typeof parsedData[key] === 'object') {
+          parsedData[key] = Object.entries(parsedData[key])
+            .map(([subKey, subValue]) => `${subKey}: ${subValue}`)
+            .join('\n');
+        }
+      });
   
       // 파싱된 데이터를 상태에 반영
       if (parsedData) {
