@@ -64,7 +64,11 @@
   padding: 0 1
   0px;
 }
-
+.profilePictureContainer{
+  display : flex;
+  align-items: center;
+  flex-direction : column;
+}
 
 .profilePicture {
   background-color: #ccc;
@@ -72,7 +76,9 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
+  margin-bottom : 5px;
 }
+
 .profileLabel{
   font-size :10px;
 }

@@ -153,7 +153,7 @@ const WeeklySprint = () => {
           {projectMembers?.map((member: ProjectInfoMemberDTO) => (
             <div
               key={member.name}
-              className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
+              className={`${styles.profilePictureContainer} ${selectedMember === member.name ? styles.activeProfile : ''}`}
               onClick={() => handleFilterMember(member.name)}
             >
               <img src={member.profileImage?.length>0 ? member.profileImage : DefaultProfile} alt={member.name} className={styles.profilePicture} />
