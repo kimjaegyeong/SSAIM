@@ -15,7 +15,8 @@ export const domainMap: Record<string, string> = {
     13: '메타버스',
     14: '핀테크',
     15: '자유주제',
-    16: '기업연계'
+    16: '기업연계',
+    17: '오픈소스'
 };
 
 export const regionMap: Record<string, string> = {

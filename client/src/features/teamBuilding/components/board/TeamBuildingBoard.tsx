@@ -128,6 +128,7 @@ const TeamBuildingBoard: React.FC = () => {
             options: [
                 { value: '15', label: '자유주제' },
                 { value: '16', label: '기업연계' },
+                { value: '17', label: '오픈소스' },
             ],
         },
     ];
