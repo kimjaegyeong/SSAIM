@@ -5,6 +5,7 @@ import Button from '../../../../components/button/Button'
 import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 
+
 interface MeetingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -92,6 +93,7 @@ const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onClose }) => {
                     value={meetingTitle}
                     onChange={handleTitleChange}
                     placeholder="회의 제목을 입력하세요"
+                    className={styles.inputTitleInput}
                   />
               </div>
               <div className={styles.inputParticipants}>
@@ -119,11 +121,12 @@ const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onClose }) => {
                                   htmlFor={`participant-${participant.id}`}
                                   className={styles.participantLabel}
                               >
-                              <img 
-                                  src={participant.imageUrl} 
-                                  alt={participant.name}
-                                  className={styles.participantImage}
-                              />
+                                <img 
+                                    src={participant.imageUrl} 
+                                    alt={participant.name}
+                                    className={styles.participantImage}
+                                />
+                                <span className={styles.participantName}>{participant.name}</span> 
                               </label>
                           </div>
                       ))}
