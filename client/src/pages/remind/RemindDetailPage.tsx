@@ -3,6 +3,7 @@ import { useLocation, useNavigate  } from 'react-router-dom';
 import HTMLFlipBook from 'react-pageflip';
 import styles from './RemindDetailPage.module.css';
 import remindBG from '../../assets/remind/remindBG.png';
+import ImageSample from '@/assets/remind/ImageSample.png'
 import { DevelopStoryDTO } from '@features/remind/types/DevelopStoryDTO';
 
 interface CoverProps {
@@ -40,7 +41,7 @@ const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
   ({ image, pageIndex }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.imagePageContent}>
-        <img src={image} alt="Weekly review" className={styles.weeklyImage} />
+        <img src={image} alt={ImageSample} className={styles.weeklyImage} />
       </div>
       <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
