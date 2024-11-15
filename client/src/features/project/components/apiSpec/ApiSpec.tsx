@@ -11,6 +11,7 @@ import Tag from '@/features/teamBuilding/components/tag/Tag';
 import { getApiStatusLabel } from '../../../../utils/labelUtils'
 import { MdOpenInNew } from "react-icons/md";
 import Loading from '@/components/loading/Loading';
+import { showToast } from '@/utils/toastUtils';
 
 interface ApiSpecData {
   category: string[];
@@ -251,7 +252,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       setIsModalOpen(false); // 모달 닫기
     } catch (error) {
       console.error('Error fetching auto proposal:', error);
-      alert('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+      showToast.error('자동 생성에 실패했습니다. 다시 시도해 주세요.')
     } finally {
       setIsGenerating(false); // 로딩 종료
     }

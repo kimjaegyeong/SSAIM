@@ -9,6 +9,7 @@ import { createDailyRemind }from '@features/project/apis/remind/createDailyRemin
 import { editDailyRemind } from '@features/project/apis/remind/editDailyRemind';
 import { DailyRemindPostDTO, DailyRemindPutDTO  } from '@features/project/types/remind/DailyRemindDTO';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+import { showToast } from '@/utils/toastUtils';
 
 
 const DayMyCreate = () => {
@@ -114,8 +115,8 @@ const DayMyCreate = () => {
 
   const handleButtonClick = async () => {
     if (!keepText || !problemText || !tryText) {
-      alert("모든 항목을 입력해주세요.");
-      return;  // 요청을 중단
+      showToast.warn("모든 항목을 입력해주세요.");
+      return;
     }
     
     if (!projectId) {

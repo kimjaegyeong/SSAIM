@@ -7,6 +7,7 @@ import SockJS from 'sockjs-client';
 import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
 import Loading from '@/components/loading/Loading';
+import { showToast } from '@/utils/toastUtils';
 
 interface ProposalProps {
   projectId: string;
@@ -211,7 +212,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
       setIsModalOpen(false); // 모달 닫기
     } catch (error) {
       console.error('Error fetching auto proposal:', error);
-      alert('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+      showToast.error('자동 생성에 실패했습니다. 다시 시도해 주세요.')
     } finally {
       setIsGenerating(false); // 로딩 종료
     }

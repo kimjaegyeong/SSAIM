@@ -12,6 +12,7 @@ import DomainSelector from "./domainSelector/DomainSelector";
 import RecruitmentSelector from "./recruitmentSelector/RecruitmentSelector";
 import { getPositionLabel } from "../../../../utils/labelUtils";
 import Tag from "../tag/Tag";
+import { showToast } from '@/utils/toastUtils';
 
 interface Recruitment {
     FE: number;
@@ -93,7 +94,7 @@ const TeamCreation: React.FC = () => {
             selectedCategories.length > 0 &&
             !selectedCategories.includes(domainCategory)
         ) {
-            alert("다른 대분류의 도메인은 선택할 수 없습니다.");
+            showToast.warn("다른 대분류의 도메인은 선택할 수 없습니다.");
             return;
         }
     
@@ -102,7 +103,7 @@ const TeamCreation: React.FC = () => {
         } else if (selectedDomains.length < 2) {
             setSelectedDomains([...selectedDomains, domainId]);
         } else {
-            alert("최대 2개의 도메인만 선택할 수 있습니다.");
+            showToast.warn("최대 2개의 도메인만 선택할 수 있습니다.");
         }
     };
 
@@ -130,68 +131,68 @@ const TeamCreation: React.FC = () => {
 
         // 유효성 검사
         if (!title.trim()) {
-            alert("제목을 입력해주세요.");
+            showToast.warn("제목을 입력해주세요.");
             setIsSubmitting(false);
             return;
         }
       
         if (!content.trim()) {
-            alert("내용을 입력해주세요.");
+            showToast.warn("내용을 입력해주세요.");
             setIsSubmitting(false);
             return;
         }
       
         if (!startDate || !endDate) {
-            alert("프로젝트 기간을 설정해주세요.");
+            showToast.warn("프로젝트 기간을 설정해주세요.");
             setIsSubmitting(false);
             return;
         }
       
         if (!selectedRegion) {
-            alert("캠퍼스를 선택해주세요.");
+            showToast.warn("캠퍼스를 선택해주세요.");
             setIsSubmitting(false);
             return;
         }
       
         if (selectedDomains.length === 0) {
-            alert("최소 하나의 도메인을 선택해주세요.");
+            showToast.warn("최소 하나의 도메인을 선택해주세요.");
             setIsSubmitting(false);
             return;
         }
       
         if (N === 0) {
-            alert("모집 인원은 최소 1명 이상이어야 합니다.");
+            showToast.warn("모집 인원은 최소 1명 이상이어야 합니다.");
             setIsSubmitting(false);
             return;
         }
 
         if (selectedMyPosition === null) {
-            alert("내 포지션을 선택해주세요.");
+            showToast.warn("내 포지션을 선택해주세요.");
             setIsSubmitting(false);
             return;
         }
 
         const totalMembers = recruitment.Infra + recruitment.BE + recruitment.FE;
         if (N !== totalMembers) {
-            alert(`총 모집 인원(${N})과 세부 모집 인원의 합(${totalMembers})이 일치하지 않습니다.`);
+            showToast.warn(`총 모집 인원(${N})과 세부 모집 인원의 합(${totalMembers})이 일치하지 않습니다.`);
             setIsSubmitting(false);
             return;
         }
 
         if (selectedMyPosition === 1 && recruitment.FE === 0) {
-            alert("내 포지션이 Frontend인 경우, Frontend 모집 인원은 0일 수 없습니다.");
+            showToast.warn("내 포지션이 Frontend인 경우, Frontend 모집 인원은 0일 수 없습니다.");
             setIsSubmitting(false);
             return;
         }
     
         if (selectedMyPosition === 2 && recruitment.BE === 0) {
-            alert("내 포지션이 Backend인 경우, Backend 모집 인원은 0일 수 없습니다.");
+            showToast.warn("내 포지션이 Backend인 경우, Backend 모집 인원은 0일 수 없습니다.");
             setIsSubmitting(false);
             return;
         }
     
         if (selectedMyPosition === 3 && recruitment.Infra === 0) {
-            alert("내 포지션이 Infra인 경우, Infra 모집 인원은 0일 수 없습니다.");
+            showToast.warn("내 포지션이 Infra인 경우, Infra 모집 인원은 0일 수 없습니다.");
             setIsSubmitting(false);
             return;
         }
@@ -221,7 +222,7 @@ const TeamCreation: React.FC = () => {
             navigate('/team-building'); // 성공 시 페이지 이동
         } catch (error) {
             console.error(error); // 에러를 콘솔에 출력합니다.
-            alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+            showToast.error("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
             setIsSubmitting(false);
         }
     };
