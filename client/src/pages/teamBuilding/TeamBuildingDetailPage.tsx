@@ -58,7 +58,7 @@ const TeamBuildingDetailPage = () => {
   const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
   const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
-  const { addMember, setLeaderId, resetStore } = useTeamStore();
+  const { addMember, setLeaderId, resetStore, setPostId, setStartDate, setEndDate } = useTeamStore();
   
   const navigate = useNavigate();
 
@@ -187,7 +187,7 @@ const TeamBuildingDetailPage = () => {
           .then(() => {
             window.location.reload();
           })
-          .catch((err) => {
+          .catch(() => {
             Swal.fire(
               '오류 발생!',
               '댓글을 삭제하는 도중 문제가 발생했습니다.',
@@ -379,6 +379,9 @@ const TeamBuildingDetailPage = () => {
         userProfileImage: member.profileImage || "/default-profile.png",
       })
     });
+    setPostId(data.postId)
+    setStartDate(data.startDate)
+    setEndDate(data.endDate)
     setLeaderId(data.authorId)
     navigate(`/project/create`);
   };

@@ -1,5 +1,5 @@
 import styles from './ProjectCreate.module.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Button from '../../../../components/button/Button';
@@ -8,22 +8,32 @@ import { ProjectCreateDTO } from '@features/project/types/ProjectDTO';
 import { createProject } from '@features/project/apis/createProject';
 import { useNavigate } from 'react-router-dom';
 import { transformToProjectMember } from '@features/project/utils/transformers';
+import { deletePost } from '@/features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail';
 import useTeamStore from '../../stores/useTeamStore';
+import { showToast } from '@/utils/toastUtils';
 
 const ProjectCreate = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { members, leaderId, postId, startDate, endDate, setStartDate, setEndDate } = useTeamStore();
   
   const [projectData, setProjectData] = useState<ProjectCreateDTO>({
     title: '',
     name: '',
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: startDate ? new Date(startDate) : new Date(),
+    endDate: endDate ? new Date(endDate) : new Date(),
     teamMembers: [],
   });
   const [projectImage, setProjectImage] = useState<File | null>(null);
   const [projectImagePreview, setProjectImagePreview] = useState<string | null>(null); // 미리보기 URL 상태 추가
-  const { members, leaderId } = useTeamStore();
+  
+  useEffect(() => {
+    setProjectData((prevData) => ({
+      ...prevData,
+      startDate: startDate ? new Date(startDate) : new Date(),
+      endDate: endDate ? new Date(endDate) : new Date(),
+    }));
+  }, [startDate, endDate]);
 
   const handleImageClick = () => {
     if (fileInputRef.current) {
@@ -48,13 +58,31 @@ const ProjectCreate = () => {
   };
 
   const handleDateChange = (date: Date | null, field: 'startDate' | 'endDate') => {
-    setProjectData((prevData) => ({
-      ...prevData,
-      [field]: date ? date.toISOString() : null,
-    }));
+    const formattedDate = date ? date.toISOString() : ''; // 빈 문자열로 대체
+    if (field === 'startDate') {
+      setStartDate(formattedDate); // 항상 string 전달
+    } else if (field === 'endDate') {
+      setEndDate(formattedDate); // 항상 string 전달
+    }
   };
 
   const handleSubmit = async () => {
+    if (!projectData.title || !projectData.title.trim()) {
+      showToast.warn('프로젝트 명을 입력하세요.');
+      return;
+    }
+    if (!projectData.name || !projectData.name.trim()) {
+      showToast.warn('팀명을 입력하세요.');
+      return;
+    }
+    if (!Array.isArray(members) || !members.length) {
+      showToast.warn('팀원을 추가해주세요.');
+      return;
+    }
+    if (!members.find((member) => member.userId === leaderId)) {
+      showToast.warn('팀장을 선택해주세요.');
+      return;
+    }
     try {
       const transformedTeamMembers = members.map(transformToProjectMember);
       transformedTeamMembers.forEach((e, i) => {
@@ -68,7 +96,12 @@ const ProjectCreate = () => {
         teamMembers: transformedTeamMembers,
       };
 
-      await createProject(updatedProjectData, projectImage);
+      await createProject(updatedProjectData, projectImage)
+        .then(() => {
+          if (postId) {
+            deletePost(postId);
+          }
+        });
       navigate('/project');
     } catch (error) {
       console.log(error);
