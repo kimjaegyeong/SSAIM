@@ -25,7 +25,7 @@ const TeamSprint: React.FC<TeamSprintProps> = ({ contents }) => {
             key={index}  // 각 카드에 고유한 키를 부여
             userName={content.username}
             userImage={content.userImage}
-            reviewText={`🟢 Keep: ${keep}\n🟠 Problem: ${problem}\n🔵 Try: ${trySection}`}
+            reviewText={`🟢 Keep: \n${keep}\n🟠 Problem: \n${problem}\n🔵 Try: \n${trySection}`}
           />
         );
       })}
