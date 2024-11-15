@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate  } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import styles from './MeetingDetail.module.css';
 import Button from '../../../../components/button/Button';
@@ -8,6 +8,7 @@ import { ImPencil } from "react-icons/im";
 import { fectchMeetingDetail } from '../../apis/meeting/fectchMeetingDetail';
 import { createAISummary } from '../../apis/meeting/createAISummary';
 import { editSpeakers } from '../../apis/meeting/editSpeakers';
+import { deleteMeeting } from '../../apis/meeting/deleteMeeting';
 import { MeetingDetailDTO, Speaker } from '../../types/meeting/MeetingDTO';
 import { formatMeetingTime, formatMeetingDuration } from '../../utils/meetingTime';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
@@ -15,6 +16,7 @@ import Loading from '@/components/loading/Loading';
 import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 
 const MeetingDetail = () => {
+  const navigate = useNavigate();
   const { projectId, meetingId } = useParams<{ projectId: string, meetingId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
   const [meetingData, setMeetingData] = useState<MeetingDetailDTO | null>(null);
@@ -29,6 +31,7 @@ const MeetingDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState<string>('');
 
+  // fectchMeetingDetail API 호출
   useEffect(() => {
     const getMeetingDetail = async () => {
       if (projectId && meetingId) {
@@ -56,7 +59,7 @@ const MeetingDetail = () => {
   };
 
 
-
+  // AI 요약 생성 API 호출
   const handleAISummaryClick = async () => {
     if (projectId && meetingId) {
       setIsLoading(true);
@@ -71,16 +74,19 @@ const MeetingDetail = () => {
     }
   };
 
+  // 화자 변경 모달 열기
   const handleEditSpeakerClick = (speaker: Speaker) => {
     setSelectedSpeaker(speaker);
     setIsModalOpen(true);
   };
 
+  // 화자 변경 모달 닫기
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedSpeaker(null);
   };
 
+  // 화자 변경 API 호출
   const handleSelectSpeaker = async (member: Speaker) => {
     if (!projectId || !meetingId || !selectedSpeaker) return;
 
@@ -124,16 +130,19 @@ const MeetingDetail = () => {
     closeModal();
   };
 
+  // 음성 시간 처리
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime * 1000);
     }
   };
 
+  // 자동 스크롤 처리할 문장 명시
   const isActiveSegment = (start: number, end: number) => {
     return currentTime >= start && currentTime <= end;
   };
 
+  // 자동 스크롤 처리
   useEffect(() => {
     const activeIndex = meetingData?.sttResponseDto.segments.findIndex((segment) =>
       isActiveSegment(segment.start, segment.end)
@@ -143,6 +152,21 @@ const MeetingDetail = () => {
       segmentRefs.current[activeIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [currentTime, meetingData]);
+
+  // deleteMeeting을 호출하는 함수
+  const handleDeleteMeeting = async () => {
+    if (projectId && meetingId) {
+      try {
+        await deleteMeeting(Number(projectId), Number(meetingId));
+        alert('회의가 성공적으로 삭제되었습니다.');
+        navigate(`/project/${projectId}/meeting`); // 삭제 후 회의 목록 페이지로 이동
+      } catch (error) {
+        console.error('Failed to delete meeting:', error);
+        alert('회의 삭제에 실패했습니다.');
+      }
+    }
+  };
+
 
   return (
     <div className={styles.container}>
@@ -181,7 +205,7 @@ const MeetingDetail = () => {
                 </span>
               </div>
             </div>
-            <button className={styles.deleteButton}> 삭제 </button>
+            <button className={styles.deleteButton} onClick={handleDeleteMeeting} > 삭제 </button>
           </div>
           {/* 음성 파일 컨트롤러 */}
           <div className={styles.voicePlay}>
