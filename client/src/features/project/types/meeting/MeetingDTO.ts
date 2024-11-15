@@ -62,3 +62,8 @@ export interface Speaker {
   export interface SpeakersPutDTO {
     speakers: Speaker[];
   }
+
+  export interface MeetingTitlePutDTO {
+    meetingTitle: string;
+    projectId: number;
+  }

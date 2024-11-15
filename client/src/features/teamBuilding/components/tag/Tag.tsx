@@ -27,6 +27,7 @@ const Tag: React.FC<TagProps> = ({
         Infra: { backgroundColor: '#FFF0D8', fontColor: '#FFA308' },
         자유주제: { backgroundColor: '#17C585', fontColor: '#FFFFFF' },
         기업연계: { backgroundColor: '#913BF6', fontColor: '#FFFFFF' },
+        오픈소스: { backgroundColor: '#E81E97', fontColor: '#FFFFFF' },
         AI영상: { backgroundColor: '#433878', fontColor: '#FFFFFF' },
         AI음성: { backgroundColor: '#891CB4', fontColor: '#FFFFFF' },
         분산: { backgroundColor: '#1DA10B', fontColor: '#FFFFFF' },

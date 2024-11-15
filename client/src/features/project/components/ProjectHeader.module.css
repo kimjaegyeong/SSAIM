@@ -11,6 +11,10 @@
     margin-bottom: 10px;
 }
 
+.projectTitle:hover {
+    cursor: pointer;
+}
+
 .projectNavbar {
     display: flex;
     width: 100%;
@@ -29,14 +33,21 @@
     font-size: 16px;
     color: #333;
     font-weight: 500;
+    margin: 0px;
 }
 
 .navLink:hover {
     color: #007bff;
+    cursor: pointer;
 }
 
 .activeLink {
     color: #007bff; /* 활성화된 링크 색상 */
     font-weight: bold; /* 강조할 경우 굵게 설정 */
+    margin: 0px;
+}
+
+.activeLink:hover {
+    cursor: pointer;
 }
   

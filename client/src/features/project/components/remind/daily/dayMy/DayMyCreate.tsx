@@ -9,6 +9,7 @@ import { createDailyRemind }from '@features/project/apis/remind/createDailyRemin
 import { editDailyRemind } from '@features/project/apis/remind/editDailyRemind';
 import { DailyRemindPostDTO, DailyRemindPutDTO  } from '@features/project/types/remind/DailyRemindDTO';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+import { showToast } from '@/utils/toastUtils';
 
 
 const DayMyCreate = () => {
@@ -114,8 +115,8 @@ const DayMyCreate = () => {
 
   const handleButtonClick = async () => {
     if (!keepText || !problemText || !tryText) {
-      alert("모든 항목을 입력해주세요.");
-      return;  // 요청을 중단
+      showToast.warn("모든 항목을 입력해주세요.");
+      return;
     }
     
     if (!projectId) {
@@ -187,6 +188,10 @@ const DayMyCreate = () => {
                 <CreateCalendar selectedDate={currentDate} onDateChange={handleDateChange} />
               </div>
             )}
+
+            {!formattedSelectedDate && (
+              <p className={styles.descriptionTitle}>작성할 회고의 날짜를 변경할 수 있습니다.</p>
+            )}
           </div>
           <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
         </div>
@@ -233,7 +238,8 @@ const DayMyCreate = () => {
         </div>
       </div>
       <div className={styles.right}>
-        <p className={styles.description}>조회할 날짜를 선택해주세요</p>
+        <p className={styles.description}>
+          이전에 작성했던 회고를 {'\n'}조회할 날짜를 선택해주세요</p>
         <CreateCalendar selectedDate={selectedDate} onDateChange={setSelectedDate}/>
         <div className={styles.remindBox}>
             <div className={styles.dateSubTitle}>

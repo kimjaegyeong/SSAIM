@@ -8,6 +8,7 @@ import RegionSelector from "../createTeam/regionSelector/RegionSelector";
 import TitleInput from "../createTeam/titleInput/TitleInput";
 import ContentInput from "../createTeam/contentInput/ContentInput";
 import DomainSelector from "../createTeam/domainSelector/DomainSelector";
+import { showToast } from "@/utils/toastUtils";
 
 interface Recruitment {
     FE: number;
@@ -32,6 +33,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
     const [startDate, setStartDate] = useState<string>(initialData?.startDate || "");
     const [endDate, setEndDate] = useState<string>(initialData?.endDate || "");
     const [N, setN] = useState<number>(initialData?.memberTotal || 0);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,6 +70,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
         { id: 14, categoryId: 2, name: "핀테크" },
         { id: 15, categoryId: 3, name: "자유주제" },
         { id: 16, categoryId: 3, name: "기업연계" },
+        { id: 17, categoryId: 3, name: "오픈소스" },
     ];
 
     const campus = [
@@ -96,7 +99,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
             selectedCategories.length > 0 &&
             !selectedCategories.includes(domainCategory)
         ) {
-            alert("다른 대분류의 도메인은 선택할 수 없습니다.");
+            showToast.warn("다른 대분류의 도메인은 선택할 수 없습니다.");
             return;
         }
     
@@ -105,7 +108,7 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
         } else if (selectedDomains.length < 2) {
             setSelectedDomains([...selectedDomains, domainId]);
         } else {
-            alert("최대 2개의 도메인만 선택할 수 있습니다.");
+            showToast.warn("최대 2개의 도메인만 선택할 수 있습니다.");
         }
     };
 
@@ -116,29 +119,37 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
     };
 
     const handleSubmit = async () => {
+        if (isSubmitting) return; // 이미 요청 중이면 중단
+        setIsSubmitting(true);
+
         // 유효성 검사
         if (!title.trim()) {
-            alert("제목을 입력해주세요.");
+            showToast.warn("제목을 입력해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (!content.trim()) {
-            alert("내용을 입력해주세요.");
+            showToast.warn("내용을 입력해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (!startDate || !endDate) {
-            alert("프로젝트 기간을 설정해주세요.");
+            showToast.warn("프로젝트 기간을 설정해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (!selectedRegion) {
-            alert("캠퍼스를 선택해주세요.");
+            showToast.warn("캠퍼스를 선택해주세요.");
+            setIsSubmitting(false);
             return;
         }
       
         if (selectedDomains.length === 0) {
-            alert("최소 하나의 도메인을 선택해주세요.");
+            showToast.warn("최소 하나의 도메인을 선택해주세요.");
+            setIsSubmitting(false);
             return;
         }
 
@@ -167,9 +178,11 @@ const TeamCreation: React.FC<EditTeamProps>= ({ initialData }) => {
         try {
             await editRecruiting(initialData.postId, formData); // 서버에 요청을 보냅니다.
             navigate(`/team-building/detail/${initialData.postId}`); // 성공 시 페이지 이동
+            setIsSubmitting(false);
         } catch (error) {
             console.error(error); // 에러를 콘솔에 출력합니다.
-            alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+            showToast.error("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+            setIsSubmitting(false);
         }
     };
 

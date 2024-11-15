@@ -16,6 +16,8 @@ import RecruitmentSelector from '@/features/teamBuilding/components/createTeam/r
 import { editRecruiting } from '@/features/teamBuilding/apis/editTeam/editRecruiting';
 import { Recruitment, TeamBuildingData, TeamBuildingMember, MemberDeleteStatus } from '@/features/teamBuilding/types/teamBuildingDetail/TeamBuildingDetailTypes';
 import useTeamStore from '@/features/project/stores/useTeamStore';
+import { showToast } from '@/utils/toastUtils';
+import Swal from 'sweetalert2';
 
 const initialData: TeamBuildingData = {
   postId: 0,
@@ -56,7 +58,7 @@ const TeamBuildingDetailPage = () => {
   const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
   const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
-  const { addMember, setLeaderId, resetStore } = useTeamStore();
+  const { addMember, setLeaderId, resetStore, setPostId, setStartDate, setEndDate } = useTeamStore();
   
   const navigate = useNavigate();
 
@@ -88,7 +90,10 @@ const TeamBuildingDetailPage = () => {
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
+    const inputValue = e.target.value;
+    if (inputValue.length <= 250) {
+      setMessage(e.target.value);
+    }
   };
 
   const filteredCandidates = isAuthor 
@@ -111,7 +116,7 @@ const TeamBuildingDetailPage = () => {
     }
 
     if (!message.trim()) {
-      alert('댓글을 입력해주세요.');
+      showToast.warn('댓글을 입력해주세요.');
       return;
     }
 
@@ -130,7 +135,7 @@ const TeamBuildingDetailPage = () => {
       })
       .catch((err) => {
         console.error(err);
-        alert('댓글 작성 중 오류가 발생했습니다. 지원은 전체 한번만 가능합니다.');
+        showToast.error('댓글 작성 중 오류가 발생했습니다. 지원은 전체 한번만 가능합니다.');
       }); 
   };
 
@@ -141,14 +146,14 @@ const TeamBuildingDetailPage = () => {
 
   const handleSaveComment = async () => {
     if (activeCommentId === null || !editedCommentContent.trim()) {
-        alert("내용을 입력해주세요.");
+        showToast.warn("내용을 입력해주세요.");
         return;
     }
 
     const editedCandidate = filteredCandidates[activeCommentId];
 
     if (!editedCandidate) {
-        alert("수정할 댓글을 찾을 수 없습니다.");
+        showToast.warn("수정할 댓글을 찾을 수 없습니다.");
         return;
     }
 
@@ -159,28 +164,45 @@ const TeamBuildingDetailPage = () => {
 
     try {
         await editComment(data.postId, editedCandidate.recruitingMemberId, params);
-        alert("댓글이 성공적으로 수정되었습니다.");
+        showToast.success("댓글이 성공적으로 수정되었습니다.");
         window.location.reload(); // 수정 후 페이지 새로고침
     } catch (error) {
-        console.error("댓글 수정 중 오류가 발생했습니다:", error);
-        alert("댓글 수정 중 문제가 발생했습니다. 다시 시도해주세요.");
+        showToast.error("댓글 수정 중 문제가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
   const handleDeleteComment = (postId:string, commentId: number) => {
-    deleteComment(parseInt(postId), commentId)
-      .then((response) => {
-        console.log(response);
-        window.location.reload();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      text: '이 작업은 되돌릴 수 없습니다.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteComment(parseInt(postId), commentId)
+          .then(() => {
+            window.location.reload();
+          })
+          .catch(() => {
+            Swal.fire(
+              '오류 발생!',
+              '댓글을 삭제하는 도중 문제가 발생했습니다.',
+              'error'
+            );
+          });
+      } else {
+        console.log("User canceled the deletion.");
+      }
+    });
   };
 
   const handleNChange = (n: number) => {
     if (data.recruitedTotal > n) {
-        alert(
+        showToast.warn(
             `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${n})을 초과할 수 없습니다.`
         );
         return;
@@ -245,14 +267,38 @@ const TeamBuildingDetailPage = () => {
   };
 
   const handleDeletePost = () => {
-    deletePost(parseInt(postId))
-      .then(() => {
-        alert('게시글이 삭제되었습니다.');
-        navigate('/team-building');
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      text: '이 작업은 되돌릴 수 없습니다.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deletePost(parseInt(postId))
+          .then(() => {
+            Swal.fire(
+              '삭제 완료!',
+              '게시글이 삭제되었습니다.',
+              'success'
+            );
+            navigate('/team-building');
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire(
+              '오류 발생!',
+              '게시글을 삭제하는 도중 문제가 발생했습니다.',
+              'error'
+            );
+          });
+      } else {
+        console.log("User canceled the deletion.");
+      }
+    });
   };
 
   const handleEditToggle = () => {
@@ -262,7 +308,7 @@ const TeamBuildingDetailPage = () => {
 
       // 모집 인원 합이 총 인원을 초과하거나 부족한 경우
       if (totalMembers !== data.memberTotal) {
-          alert(
+          showToast.warn(
               `총 모집 인원(${data.memberTotal})과 세부 포지션 합(${totalMembers})이 일치하지 않습니다.`
           );
           return;
@@ -270,7 +316,7 @@ const TeamBuildingDetailPage = () => {
 
       // 모집된 멤버 수가 총 모집 인원을 초과하는 경우
       if (data.recruitedTotal > data.memberTotal) {
-          alert(
+          showToast.warn(
               `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${data.memberTotal})을 초과할 수 없습니다.`
           );
           return;
@@ -294,23 +340,24 @@ const TeamBuildingDetailPage = () => {
 
   const handleSubmit = async () => {
     const formData = {
-        title: data.postTitle,
-        content: data.postContent,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        firstDomain: data.firstDomain,
-        secondDomain: data.secondDomain,
-        campus: data.campus,
-        memberTotal: data.memberTotal,
-        memberInfra: data.infraLimit,
-        memberBackend: data.backendLimit,
-        memberFrontend: data.frontLimit,
-        recruitingMembers: data.recruitingMembers.map((member) => ({
-            userId: member.userId,
-            position: member.position,
-            delete: selectedMembers.find((m) => m.userId === member.userId)?.delete ? 1 : 0,
-        })),
+      title: data.postTitle,
+      content: data.postContent,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      firstDomain: data.firstDomain,
+      secondDomain: data.secondDomain,
+      campus: data.campus,
+      memberTotal: data.memberTotal,
+      memberInfra: data.infraLimit,
+      memberBackend: data.backendLimit,
+      memberFrontend: data.frontLimit,
+      recruitingMembers: selectedMembers.map((member) => ({
+          userId: member.userId,
+          position: member.position,
+          delete: member.delete ? 1 : 0,
+      })),
     };
+    
     editRecruiting(data.postId, formData)
       .then((response) => {
           console.log(response);
@@ -318,7 +365,7 @@ const TeamBuildingDetailPage = () => {
       })
       .catch((err) => {
           console.error(err);
-          alert("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
+          showToast.error("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
       });
   };
 
@@ -332,6 +379,9 @@ const TeamBuildingDetailPage = () => {
         userProfileImage: member.profileImage || "/default-profile.png",
       })
     });
+    setPostId(data.postId)
+    setStartDate(data.startDate)
+    setEndDate(data.endDate)
     setLeaderId(data.authorId)
     navigate(`/project/create`);
   };
@@ -343,8 +393,21 @@ const TeamBuildingDetailPage = () => {
       await editComment(data.postId, recruitingMemberId, params);  
       window.location.reload();
     } catch (error) {
-      alert('처리에 실패했습니다. 다시 시도해주세요.');
+      showToast.error('처리에 실패했습니다. 다시 시도해주세요.');
     }
+  };
+
+  const toggleMemberPosition = (memberId: number) => {
+    setSelectedMembers((prevSelected) =>
+      prevSelected.map((member) =>
+        member.userId === memberId
+          ? {
+                ...member,
+                position: (member.position % 3) + 1,
+            }
+          : member
+      )
+    );
   };
 
   return (
@@ -387,6 +450,7 @@ const TeamBuildingDetailPage = () => {
                 placeholder="지원 메시지를 입력하세요"
                 rows={4}
                 cols={50}
+                maxLength={250}
               />
               <button onClick={handleSubmitComment} className={styles.submitButton}>지원하기</button>
             </div>
@@ -408,8 +472,14 @@ const TeamBuildingDetailPage = () => {
                   {isCommentEditing && activeCommentId === index ? (
                     <textarea
                       value={editedCommentContent}
-                      onChange={(e) => setEditedCommentContent(e.target.value)}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        if (inputValue.length <= 250) {
+                          setEditedCommentContent(inputValue); // 최대 250자까지만 상태 업데이트
+                        }
+                      }}
                       className={styles.editInput}
+                      maxLength={250}
                       rows={4} // 원하는 줄 수
                       cols={50} // 원하는 열 수
                     />
@@ -550,7 +620,14 @@ const TeamBuildingDetailPage = () => {
                     />
                   )}
                 </div>
-                <Tag text={getPositionLabel(member.position)} />
+                <Tag
+                  text={getPositionLabel(member.position)}
+                  onClick={() => {
+                      if (editMembers) {
+                          toggleMemberPosition(member.userId);
+                      }
+                  }}
+                />
               </div>
             ))}
           </div>

@@ -23,3 +23,24 @@ button {
   font-weight: normal;
   font-style: normal;
 }
+
+::-webkit-scrollbar {
+  width: 10px; /* 세로 스크롤바 너비 */
+  height: 10px; /* 가로 스크롤바 높이 */
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* 스크롤바 트랙(배경) 색상 */
+  border-radius: 5px; /* 둥근 모서리 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* 슬라이더 색상 */
+  border-radius: 5px; /* 둥근 모서리 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* 슬라이더에 마우스 올렸을 때 색상 */
+}
+
+
