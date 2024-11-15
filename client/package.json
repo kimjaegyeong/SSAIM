@@ -31,6 +31,7 @@
     "react-router-dom": "^6.28.0",
     "react-toastify": "^10.0.6",
     "sockjs-client": "^1.6.1",
+    "sweetalert2": "^11.14.5",
     "yjs": "^13.6.20",
     "zustand": "^5.0.1"
   },
