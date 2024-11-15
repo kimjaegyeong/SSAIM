@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate  } from 'react-router-dom';
 import styles from './ProjectHeader.module.css';
 import { useProjectInfo } from '../hooks/useProjectInfo';
 
@@ -9,7 +9,9 @@ interface ProjectHeaderProps {
 
 const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const {data : projectInfo} = useProjectInfo(Number(projectId));
+
   const isActiveLink = (path: string) => {
     return location.pathname.startsWith(path); // 경로가 주어진 경로로 시작하는지 확인
   };
@@ -18,16 +20,56 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
     return isActiveLink(path) ? styles.activeLink : styles.navLink;
   };
 
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
+
   return (
     <div className={styles.projectHeader}>
       <h1 className={styles.projectTitle}>{projectInfo?.title}</h1>
       <nav className={styles.projectNavbar}>
         <ul className={styles.navList}>
-          <li><a href={`/project/${projectId}/info`} className={getLinkClass(`/project/${projectId}/info`)}>개요</a></li>
-          <li><a href={`/project/${projectId}/sprint`} className={getLinkClass(`/project/${projectId}/sprint`)}>주간 진행상황</a></li>
-          <li><a href={`/project/${projectId}/output`} className={getLinkClass(`/project/${projectId}/output`)}>산출물</a></li>
-          <li><a href={`/project/${projectId}/meeting`} className={getLinkClass(`/project/${projectId}/meeting`)}>회의록</a></li>
-          <li><a href={`/project/${projectId}/remind`} className={getLinkClass(`/project/${projectId}/remind`)}>회고</a></li>
+          <li>
+            <p
+              className={getLinkClass(`/project/${projectId}/info`)}
+              onClick={() => handleNavigation(`/project/${projectId}/info`)}
+            >
+              개요
+            </p>
+          </li>
+          <li>
+            <p
+              className={getLinkClass(`/project/${projectId}/sprint`)}
+              onClick={() => handleNavigation(`/project/${projectId}/sprint`)}
+            >
+              스프린트 관리
+            </p>
+          </li>
+          <li>
+            <p
+              className={getLinkClass(`/project/${projectId}/output`)}
+              onClick={() => handleNavigation(`/project/${projectId}/output`)}
+            >
+              산출물
+            </p>
+          </li>
+          <li>
+            <p
+              className={getLinkClass(`/project/${projectId}/meeting`)}
+              onClick={() => handleNavigation(`/project/${projectId}/meeting`)}
+            >
+              회의록
+            </p>
+          </li>
+          <li>
+            <p
+              className={getLinkClass(`/project/${projectId}/remind`)}
+              onClick={() => handleNavigation(`/project/${projectId}/remind`)}
+            >
+              회고
+            </p>
+          </li>
         </ul>
       </nav>
     </div>
