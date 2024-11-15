@@ -31,6 +31,7 @@ export interface IssueDTO{
   issueType : "작업"|"스토리";
   description : string;
 }
+
 export interface GitlabDTO extends TaskDTO {
   mergeDate : Date;
 

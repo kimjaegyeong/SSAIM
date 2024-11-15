@@ -1,27 +1,32 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './IssueCreateForm.module.css';
-import { useParams } from 'react-router-dom';
 import { useEpicListData } from '@/features/project/hooks/sprint/useEpicListData';
-import { useCreateIssueMutation } from '@/features/project/hooks/sprint/useCreateIssueMutation';
 import { IssueCreateDTO } from '@/features/project/types/sprint/IssueCreateDTO';
-const IssueCreateForm: React.FC = () => {
+import { useParams } from 'react-router-dom';
+import { useSprintIssueStore } from '@/features/project/stores/useSprintIssueStore ';
+interface IssueCreateFormProps {
+  weekdays: string[]; // 선택 가능한 날짜 목록
+  onAddIssue: (day: Date, issue: IssueCreateDTO) => void; // 이슈 추가 콜백 함수
+}
+
+const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
   const { projectId } = useParams();
-  // sprintId 도 받아와야함!
-  // issue 생성 후에 sprintId 에 넣어줘야함
-  // const { data: sprint } = useSprintQuery(Number(projectId), Number(sprintId));
   const { data: epicList } = useEpicListData(Number(projectId));
-  const {mutate : createIssue} = useCreateIssueMutation(Number(projectId));
-  const [issueType, setIssueType] = useState<'Story'|'Task'>('Task');
-  const [selectedEpic, setSelectedEpic] = useState<string|null>('');
+  const {addIssue}= useSprintIssueStore()
+  const [issueType, setIssueType] = useState<'Story' | 'Task'>('Task');
+  const [selectedEpic, setSelectedEpic] = useState<string | null>('');
   const [description, setDescription] = useState('');
   const [summary, setSummary] = useState('');
   const [storyPoint, setStoryPoint] = useState(0);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null); // 선택된 날짜 상태
 
   const [isIssueTypeOpen, setIsIssueTypeOpen] = useState(false);
   const [isEpicOpen, setIsEpicOpen] = useState(false);
+  const [isDateOpen, setIsDateOpen] = useState(false); // 날짜 드롭다운 상태
 
   const issueTypeRef = useRef<HTMLDivElement>(null);
   const epicRef = useRef<HTMLDivElement>(null);
+  const dateRef = useRef<HTMLDivElement>(null);
 
   // 외부 클릭 감지하여 드롭다운 닫기
   useEffect(() => {
@@ -32,6 +37,9 @@ const IssueCreateForm: React.FC = () => {
       if (epicRef.current && !epicRef.current.contains(event.target as Node)) {
         setIsEpicOpen(false);
       }
+      if (dateRef.current && !dateRef.current.contains(event.target as Node)) {
+        setIsDateOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -41,26 +49,33 @@ const IssueCreateForm: React.FC = () => {
   }, []);
 
   const handleSaveIssue = () => {
+    if (!selectedDay) {
+      alert('날짜를 선택해 주세요.');
+      return;
+    }
     const data: IssueCreateDTO = {
       issueType,
       summary,
       description,
       storyPoint,
       assignee: null,
-      ...(selectedEpic && { epicKey: selectedEpic }) // selectedEpic이 있을 때만 epicKey 추가
+      ...(selectedEpic && { epicKey: selectedEpic }), // selectedEpic이 있을 때만 epicKey 추가
     };
-    
-    createIssue(data, {
-      onSuccess: () => {
-        console.log('New Issue created:', data);
-        // 여기에 toast 알림 추가
-      },
-      onError: (error) => {
-        console.error('이슈 생성 오류:', error);
-        // 여기에 오류 toast 알림 추가
-      },
-    });
+
+    // 선택된 날짜와 함께 이슈 추가
+    addIssue(new Date(selectedDay), data);
+    console.log('Temporary Issue added to store:', data);
+    // 필드 초기화
+    setIssueType('Task');
+    setSelectedEpic('');
+    setDescription('');
+    setSummary('');
+    setStoryPoint(0);
+    setSelectedDay(null);
+
+    // 여기에 필요시 toast 알림 추가
   };
+
   return (
     <>
       <h3>이슈 추가</h3>
@@ -126,6 +141,32 @@ const IssueCreateForm: React.FC = () => {
           </div>
         </div>
 
+        {/* 날짜 선택 */}
+        <div ref={dateRef}>
+          <label className={styles.label}>날짜</label>
+          <div className={styles.customDropdown}>
+            <button onClick={() => setIsDateOpen(!isDateOpen)} className={styles.dropdownButton}>
+              {selectedDay || '날짜 선택'}
+            </button>
+            {isDateOpen && (
+              <ul className={styles.dropdownMenu}>
+                {weekdays?.map((day) => (
+                  <li
+                    key={day}
+                    onClick={() => {
+                      setSelectedDay(day);
+                      setIsDateOpen(false);
+                    }}
+                    className={styles.dropdownItem}
+                  >
+                    {day}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
         {/* 나머지 필드들 */}
         <div>
           <label className={styles.label}>제목</label>
@@ -152,7 +193,7 @@ const IssueCreateForm: React.FC = () => {
         </div>
 
         <button onClick={handleSaveIssue} className={styles.button}>
-          저장
+          추가
         </button>
       </div>
     </>

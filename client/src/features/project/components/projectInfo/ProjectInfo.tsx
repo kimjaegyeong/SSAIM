@@ -94,13 +94,21 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
       <div className={styles.rightSection}>
         <h3>팀원 정보</h3>
         <div className={styles.teamMembers}>
-          {projectInfo?.projectMembers?.map((member: ProjectInfoMemberDTO) => (
-            <div key={member.userId} className={styles.teamMember}>
-              {member.role === 1 ? <img src={leaderCrown} alt="leaderCrown" className={styles.leaderCrown} /> : null}
-              <img src={member.profileImage} alt={member.name} className={styles.memberImage} />
-              <span>{member.name}</span>
-            </div>
-          ))}
+          {projectInfo?.projectMembers
+            ?.sort((member) => -member.role)
+            .map((member: ProjectInfoMemberDTO) => {
+              console.log(member.name, member.role);
+              return (
+                <div key={member.userId} className={styles.teamMember}>
+                  {member.role === 1 ? (
+                    <img src={leaderCrown} alt="leaderCrown" className={styles.leaderCrown} />
+                  ) : null}
+                  <img src={member.profileImage} alt={member.name} className={styles.memberImage} />
+                  <span>{member.name}</span>
+                  {member.role === 1 ? <span className={styles.leaderBadge}>팀장</span> : null}
+                </div>
+              );
+            })}
         </div>
       </div>
       {isEditModalOpen && projectInfo && (

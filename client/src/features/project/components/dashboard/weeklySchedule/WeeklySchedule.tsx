@@ -45,10 +45,22 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
     dateToString(startDate, '-'),
     dateToString(endDate, '-')
   );
+  const getStartOfDayISOString = (date: Date): string => {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0); // 자정으로 설정
+    return startOfDay.toISOString();
+  };
+
+  const getEndOfDayISOString = (date: Date): string => {
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999); // 하루의 마지막 시간으로 설정
+    return endOfDay.toISOString();
+  };
+
   const { data: gitlabData } = useGitlabData(
     projectId,
-    startDate ? (new Date(year, month, day - 3).toISOString() as ISOStringFormat) : null,
-    endDate ? (new Date(year, month, day + 1).toISOString() as ISOStringFormat) : null
+    startDate ? (getStartOfDayISOString(new Date(year, month, day - 3)) as ISOStringFormat) : null,
+    endDate ? (getEndOfDayISOString(new Date(year, month, day + 4)) as ISOStringFormat) : null
   );
 
   const userName = userInfo?.userName;
@@ -92,7 +104,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
     gitlabData?.forEach((mr: GitlabDTO) => {
       const mergeDate = new Date(mr.mergeDate);
       const dayOfWeek = mergeDate.getDay(); // 요일 인덱스 계산 (0=일요일, 1=월요일, ...)
-      const weekDay = weekDays[dayOfWeek - 1] || '날짜미지정';
+      const weekDay = weekDays[(dayOfWeek+6)%7] || '날짜미지정';
+      console.log(mr.mergeDate,dayOfWeek,weekDay, mr.title)
       dataByDay[weekDay as DayOfWeek]?.gitlab.push(mr);
     });
     //filteredIssue 순회하며 날짜에 해당하는 jira[] 에 넣기
@@ -106,7 +119,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
         const dateObj = new Date(year, month, date);
 
         const dayOfWeek = dateObj.getDay(); // 요일 인덱스 계산 (0=일요일, 1=월요일, ...)
-        const weekDay = weekDays[dayOfWeek - 1] || '날짜미지정';
+        const weekDay = weekDays[dayOfWeek] || '날짜미지정';
 
         dataByDay[weekDay as DayOfWeek].jira.push(issue);
       } else {
@@ -116,9 +129,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
     // meetingList 순회하며 날짜에 해당하는 meeting[] 에 넣기
     meetingList?.forEach((meeting) => {
       const meetingDay = new Date(meeting.meetingCreateTime).getDay();
-      const weekDay = weekDays[meetingDay - 1];
+      const weekDay = weekDays[meetingDay];
       dataByDay[weekDay as DayOfWeek]?.meeting.push(meeting);
-
     });
 
     return dataByDay;

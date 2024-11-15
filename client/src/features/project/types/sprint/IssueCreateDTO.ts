@@ -1,8 +1,9 @@
 export interface IssueCreateDTO {
+  id? : string;
   summary: string;
   description: string;
   issueType: 'Story' | 'Task';
   storyPoint: number;
-  epicKey?: string | null;
+  epic?: string | null;
   assignee?: string | null;
 }
