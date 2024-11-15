@@ -187,6 +187,9 @@ const DayMyCreate = () => {
                 <CreateCalendar selectedDate={currentDate} onDateChange={handleDateChange} />
               </div>
             )}
+            <p className={styles.descriptionTitle}>
+              작성할 회고의 날짜를 변경할 수 있습니다.
+            </p>
           </div>
           <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
         </div>
@@ -233,7 +236,8 @@ const DayMyCreate = () => {
         </div>
       </div>
       <div className={styles.right}>
-        <p className={styles.description}>조회할 날짜를 선택해주세요</p>
+        <p className={styles.description}>
+          이전에 작성했던 회고를 {'\n'}조회할 날짜를 선택해주세요</p>
         <CreateCalendar selectedDate={selectedDate} onDateChange={setSelectedDate}/>
         <div className={styles.remindBox}>
             <div className={styles.dateSubTitle}>

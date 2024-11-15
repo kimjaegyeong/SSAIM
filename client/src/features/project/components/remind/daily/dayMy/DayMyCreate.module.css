@@ -38,6 +38,13 @@
     font-size: 18px;
 }
 
+.descriptionTitle {  
+    color: #808080;
+    font-size: 14px;
+    font-weight: lighter;
+    white-space: pre-wrap;
+}
+
 /* 회고 작성란 */
 .myReview {
     display: flex;
@@ -111,7 +118,10 @@
 /* 오른쪽 섹션 */
 .description {  
     color: #808080;
-    margin-top: 20px;
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
 }
 
 .remindBox {
