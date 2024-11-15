@@ -32,7 +32,8 @@
   border-radius: 4px;
   font-size: 14px;
   flex: 1 1 100%; /* 화면을 가득 채우면서 줄어들 수 있게 설정 */
-  min-width: 350px;
+  min-width: 300px;
+  max-width : 300px;
 }
 
 .button {
@@ -56,7 +57,7 @@
 .customDropdown {
   position: relative;
   display: inline-block;
-  width: 120px; /* 부모 버튼의 너비 */
+  width: 100px; /* 부모 버튼의 너비 */
 }
 
 .dropdownButton {

@@ -1,6 +1,7 @@
 // src/feature/project/api/fetchWeeklyData.ts
 import apiClient from '@/apis/apiClient';
 
+// 이슈데이터 날짜로 조회하는 함수
 export const fetchSprintIssueData = async (projectId: number, startDate: string, endDate: string) => {
   console.log('fetch sprint issue data');
   try {

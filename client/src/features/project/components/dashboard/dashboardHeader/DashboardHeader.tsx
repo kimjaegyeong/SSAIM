@@ -44,7 +44,7 @@ const DashboardHeader: React.FC = () => {
     }
   }, [projectWeekList, setCurrentWeek]);
   const year = projectWeekList[currentWeek]?.endDate.getFullYear();
-  const month = projectWeekList[currentWeek]?.endDate.getMonth() + 1;
+  const month = projectWeekList[currentWeek]?.endDate.getMonth();
   const day = projectWeekList[currentWeek]?.endDate.getDate();
   const dateMon = dateToString(new Date(year, month, day - 3));
   const dateSun = dateToString(new Date(year, month, day + 3));
