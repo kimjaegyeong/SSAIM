@@ -187,9 +187,10 @@ const DayMyCreate = () => {
                 <CreateCalendar selectedDate={currentDate} onDateChange={handleDateChange} />
               </div>
             )}
-            <p className={styles.descriptionTitle}>
-              작성할 회고의 날짜를 변경할 수 있습니다.
-            </p>
+
+            {!formattedSelectedDate && (
+              <p className={styles.descriptionTitle}>작성할 회고의 날짜를 변경할 수 있습니다.</p>
+            )}
           </div>
           <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
         </div>
