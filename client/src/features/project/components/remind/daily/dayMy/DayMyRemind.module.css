@@ -12,6 +12,7 @@
     margin: 10px 0px;
     display: flex;
     justify-content: end;
+    gap: 30px;
 }
 
 .editButton {
@@ -20,7 +21,13 @@
     cursor: pointer;
 }
 
-.editText {
+.deleteButton {
+    display: flex;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.Text {
     margin: 0px;
 }
 

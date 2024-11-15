@@ -43,6 +43,7 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
   const [selectedSprint, setSelectedSprint] = useState<string | null>(null);
   const [sprintOptions, setSprintOptions] = useState<SprintOption[]>([]);
   const [isLoading, setIsLoading] = useState(false); 
+  
 
   const { data: dailyReminds } = useDailyRemind({ projectId });
   const { data: sprintReminds, refetch } = useSprintRemind({ projectId });
@@ -137,6 +138,7 @@ const SprintModal: React.FC<SprintModalProps> = ({ isOpen, onClose, projectId })
         <h2 className={styles.h2}>주간 회고 생성</h2>
         <p className={styles.p}>프로젝트명</p>
         <div className={styles.selectBox}>
+          <p className={styles.description}>이미 생성한 주차는 선택할 수 없습니다. ‘다시 생성하기’를 이용해 주세요.</p>
           <div className={styles.sprintOptions}>
             {sprintOptions.map((sprint) => (
               <label key={sprint.id} className={styles.sprintOption}>
