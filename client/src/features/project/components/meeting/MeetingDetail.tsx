@@ -7,11 +7,13 @@ import SelectSpeakerModal from './SelectSpeakerModal';
 import { ImPencil } from "react-icons/im";
 import { fectchMeetingDetail } from '../../apis/meeting/fectchMeetingDetail';
 import { createAISummary } from '../../apis/meeting/createAISummary';
+import { editMeetingTitle } from '../../apis/meeting/editMeetingTitle';
 import { editSpeakers } from '../../apis/meeting/editSpeakers';
 import { deleteMeeting } from '../../apis/meeting/deleteMeeting';
-import { MeetingDetailDTO, Speaker } from '../../types/meeting/MeetingDTO';
+import { Speaker, MeetingTitlePutDTO } from '../../types/meeting/MeetingDTO';
 import { formatMeetingTime, formatMeetingDuration } from '../../utils/meetingTime';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
+import { useMeeting } from '@features/project/hooks/meeting/useMeeting';
 import Loading from '@/components/loading/Loading';
 import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 
@@ -19,7 +21,6 @@ const MeetingDetail = () => {
   const navigate = useNavigate();
   const { projectId, meetingId } = useParams<{ projectId: string, meetingId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
-  const [meetingData, setMeetingData] = useState<MeetingDetailDTO | null>(null);
   const [summaryText, setSummaryText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,13 +32,25 @@ const MeetingDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState<string>('');
 
+  // useMeeting 훅 호출하여 refetch 가져오기
+  const { data: meetingData, refetch } = useMeeting({
+    projectId: Number(projectId),
+    meetingId: Number(meetingId),
+  });
+
+  // meetingData 변경 시 제목 설정
+  useEffect(() => {
+    if (meetingData) {
+      setEditedTitle(meetingData.meetingTitle);
+    }
+  }, [meetingData]);
+
   // fectchMeetingDetail API 호출
   useEffect(() => {
     const getMeetingDetail = async () => {
       if (projectId && meetingId) {
         try {
           const data = await fectchMeetingDetail(Number(projectId), Number(meetingId));
-          setMeetingData(data);
           setEditedTitle(data.meetingTitle);
         } catch (error) {
           console.error('Failed to fetch meeting details:', error);
@@ -53,9 +66,22 @@ const MeetingDetail = () => {
   };
 
   // 완료 버튼 클릭 시 제목 저장 및 편집 모드 종료
-  const handleTitleSave = () => {
-    setMeetingData((prevData) => prevData ? { ...prevData, meetingTitle: editedTitle } : prevData);
-    setIsEditing(false);
+  const handleTitleSave = async () => {
+    if (!projectId || !meetingId) return;
+
+    const meetingTitlePutDTO: MeetingTitlePutDTO = {
+      meetingTitle: editedTitle,
+      projectId: Number(projectId),
+    };
+
+    try {
+      await editMeetingTitle(Number(projectId), Number(meetingId), meetingTitlePutDTO);
+      setIsEditing(false);
+      refetch();
+    } catch (error) {
+      console.error('Failed to edit meeting title:', error);
+      alert('회의 제목 수정에 실패했습니다.');
+    }
   };
 
 
@@ -98,37 +124,17 @@ const MeetingDetail = () => {
     ];
 
     try {
-      const updatedData = await editSpeakers(Number(projectId), Number(meetingId), requestBody);
-      console.log('Speaker updated:', updatedData);
-
-      setMeetingData((prevData) => {
-        if (!prevData) return null;
-
-        const updatedSegments = prevData.sttResponseDto.segments.map((segment) =>
-          segment.speaker.label === selectedSpeaker.label
-            ? { ...segment, speaker: { ...segment.speaker, name: member.name } }
-            : segment
-        );
-
-        const updatedSpeakers = prevData.sttResponseDto.speakers.map((speaker) =>
-          speaker.label === selectedSpeaker.label ? { ...speaker, name: member.name } : speaker
-        );
-
-        return {
-          ...prevData,
-          sttResponseDto: {
-            ...prevData.sttResponseDto,
-            segments: updatedSegments,
-            speakers: updatedSpeakers,
-          },
-        };
-      });
+      // 화자 정보 업데이트 API 호출
+      await editSpeakers(Number(projectId), Number(meetingId), requestBody);
+      console.log('Speaker updated successfully.');
+      refetch();
     } catch (error) {
       console.error('Failed to update speaker:', error);
     }
 
     closeModal();
   };
+
 
   // 음성 시간 처리
   const handleTimeUpdate = () => {
@@ -158,7 +164,6 @@ const MeetingDetail = () => {
     if (projectId && meetingId) {
       try {
         await deleteMeeting(Number(projectId), Number(meetingId));
-        alert('회의가 성공적으로 삭제되었습니다.');
         navigate(`/project/${projectId}/meeting`); // 삭제 후 회의 목록 페이지로 이동
       } catch (error) {
         console.error('Failed to delete meeting:', error);
