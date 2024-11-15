@@ -17,6 +17,7 @@ import { editRecruiting } from '@/features/teamBuilding/apis/editTeam/editRecrui
 import { Recruitment, TeamBuildingData, TeamBuildingMember, MemberDeleteStatus } from '@/features/teamBuilding/types/teamBuildingDetail/TeamBuildingDetailTypes';
 import useTeamStore from '@/features/project/stores/useTeamStore';
 import { showToast } from '@/utils/toastUtils';
+import Swal from 'sweetalert2';
 
 const initialData: TeamBuildingData = {
   postId: 0,
@@ -57,7 +58,7 @@ const TeamBuildingDetailPage = () => {
   const [selectedMembers, setSelectedMembers] = useState<MemberDeleteStatus[]>([]);
   const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
-  const { addMember, setLeaderId, resetStore } = useTeamStore();
+  const { addMember, setLeaderId, resetStore, setPostId, setStartDate, setEndDate } = useTeamStore();
   
   const navigate = useNavigate();
 
@@ -171,20 +172,32 @@ const TeamBuildingDetailPage = () => {
   };
 
   const handleDeleteComment = (postId:string, commentId: number) => {
-    const userConfirmed = window.confirm("정말로 삭제하시겠습니까?");
-    
-    if (userConfirmed) {
-      deleteComment(parseInt(postId), commentId)
-        .then((response) => {
-          console.log(response);
-          window.location.reload();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    } else {
-      console.log("User canceled the deletion.");
-    }
+    Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      text: '이 작업은 되돌릴 수 없습니다.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteComment(parseInt(postId), commentId)
+          .then(() => {
+            window.location.reload();
+          })
+          .catch(() => {
+            Swal.fire(
+              '오류 발생!',
+              '댓글을 삭제하는 도중 문제가 발생했습니다.',
+              'error'
+            );
+          });
+      } else {
+        console.log("User canceled the deletion.");
+      }
+    });
   };
 
   const handleNChange = (n: number) => {
@@ -254,20 +267,38 @@ const TeamBuildingDetailPage = () => {
   };
 
   const handleDeletePost = () => {
-    const userConfirmed = window.confirm("정말로 삭제하시겠습니까?");
-
-    if (userConfirmed) {
-      deletePost(parseInt(postId))
-        .then(() => {
-          showToast.success('게시글이 삭제되었습니다.');
-          navigate('/team-building');
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    } else {
-      console.log("User canceled the deletion.");
-    }
+    Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      text: '이 작업은 되돌릴 수 없습니다.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deletePost(parseInt(postId))
+          .then(() => {
+            Swal.fire(
+              '삭제 완료!',
+              '게시글이 삭제되었습니다.',
+              'success'
+            );
+            navigate('/team-building');
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire(
+              '오류 발생!',
+              '게시글을 삭제하는 도중 문제가 발생했습니다.',
+              'error'
+            );
+          });
+      } else {
+        console.log("User canceled the deletion.");
+      }
+    });
   };
 
   const handleEditToggle = () => {
@@ -348,6 +379,9 @@ const TeamBuildingDetailPage = () => {
         userProfileImage: member.profileImage || "/default-profile.png",
       })
     });
+    setPostId(data.postId)
+    setStartDate(data.startDate)
+    setEndDate(data.endDate)
     setLeaderId(data.authorId)
     navigate(`/project/create`);
   };
