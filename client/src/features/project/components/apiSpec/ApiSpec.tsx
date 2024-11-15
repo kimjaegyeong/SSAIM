@@ -171,10 +171,15 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       );
     }
   };
+  
+  const maxCharCount = 200;
 
   const handleModalTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setModalTextareaValue(e.target.value); // textarea 값 업데이트
+    if (e.target.value.length <= maxCharCount) {
+      setModalTextareaValue(e.target.value);
+    }
   };
+
 
   const parseBacktickJson = (data: string) => {
     // 백틱과 "```json" 태그 제거
@@ -326,6 +331,9 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
               value={modalTextareaValue}
               onChange={handleModalTextareaChange}
             ></textarea>
+            <div className={styles.charCounter}>
+              {modalTextareaValue.length} / {maxCharCount}
+            </div>
           </>
         }
         footer={

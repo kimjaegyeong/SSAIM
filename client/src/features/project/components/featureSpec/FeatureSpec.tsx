@@ -177,8 +177,12 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     });
   }, [data]);
   
+  const maxCharCount = 200;
+
   const handleModalTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setModalTextareaValue(e.target.value); // textarea 값 업데이트
+    if (e.target.value.length <= maxCharCount) {
+      setModalTextareaValue(e.target.value);
+    }
   };
 
   const parseBacktickJson = (data: string) => {
@@ -286,6 +290,9 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
               value={modalTextareaValue}
               onChange={handleModalTextareaChange}
             ></textarea>
+            <div className={styles.charCounter}>
+              {modalTextareaValue.length} / {maxCharCount}
+            </div>
           </>
         }
         footer={

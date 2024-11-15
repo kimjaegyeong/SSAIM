@@ -104,7 +104,7 @@ textarea {
 
 .modalTextarea {
     width: 100%;
-    height: 250px;
+    height: 220px;
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 16px;
@@ -157,4 +157,11 @@ textarea {
 
 .addRowTd {
     height: 50px;
+}
+
+.charCounter {
+    margin-top: 5px;
+    font-size: 12px;
+    color: gray;
+    text-align: right;
 }

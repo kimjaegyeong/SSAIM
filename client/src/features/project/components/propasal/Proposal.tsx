@@ -136,8 +136,12 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
     }
   };
 
+  const maxCharCount = 200;
+
   const handleModalTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setModalTextareaValue(e.target.value); // textarea 값 업데이트
+    if (e.target.value.length <= maxCharCount) {
+      setModalTextareaValue(e.target.value);
+    }
   };
 
   const parseBacktickJson = (data: string) => {
@@ -247,6 +251,9 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
               value={modalTextareaValue}
               onChange={handleModalTextareaChange}
             ></textarea>
+            <div className={styles.charCounter}>
+              {modalTextareaValue.length} / {maxCharCount}
+            </div>
           </>
         }
         footer={
