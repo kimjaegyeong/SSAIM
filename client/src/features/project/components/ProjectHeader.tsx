@@ -27,7 +27,13 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
 
   return (
     <div className={styles.projectHeader}>
-      <h1 className={styles.projectTitle}>{projectInfo?.title}</h1>
+      <h1
+        className={styles.projectTitle}
+        onClick={() => handleNavigation(`/project/${projectId}/info`)}
+        style={{ cursor: 'pointer' }} // 클릭 가능하도록 스타일 추가
+      >
+        {projectInfo?.title}
+      </h1>
       <nav className={styles.projectNavbar}>
         <ul className={styles.navList}>
           <li>
