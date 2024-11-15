@@ -11,6 +11,7 @@ import Tag from '@/features/teamBuilding/components/tag/Tag';
 import { getApiStatusLabel } from '../../../../utils/labelUtils'
 import { MdOpenInNew } from "react-icons/md";
 import Loading from '@/components/loading/Loading';
+import { showToast } from '@/utils/toastUtils';
 
 interface ApiSpecData {
   category: string[];
@@ -185,15 +186,20 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       return parsedData;
     } catch (error) {
       console.error("Error parsing JSON:", error);
-      return null; // 파싱 실패 시 null 반환
+      return data; // 파싱 실패 시 null 반환
     }
   };
 
   const handleModalSubmit = async () => {
     try {
       setIsGenerating(true);
-      const response = await getAutoApiSpec(projectId, modalTextareaValue); // 데이터를 가져옴
-      console.log('Fetched auto proposal data (raw):', response);
+      let response;
+      try {
+        response = await getAutoApiSpec(projectId, modalTextareaValue);
+      } catch (fetchError) {
+        showToast.error('자동 생성에 실패했습니다. 다시 시도해 주세요.');
+        return;
+      }
   
       let parsedData;
   
@@ -248,10 +254,9 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
         console.error('Parsed data is null or undefined.');
       }
   
-      setIsModalOpen(false); // 모달 닫기
+      setIsAiModalOpen(false); // 모달 닫기
     } catch (error) {
-      console.error('Error fetching auto proposal:', error);
-      alert('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+      showToast.error('AI가 요청을 이해하지 못했습니다. 요청을 확인해주세요.')
     } finally {
       setIsGenerating(false); // 로딩 종료
     }
@@ -330,6 +335,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
         }
         width={800}
         height={400}
+        isOutsideClick={false}
       />
       <table className={styles.table}>
         <thead>

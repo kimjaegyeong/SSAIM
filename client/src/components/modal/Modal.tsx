@@ -9,6 +9,7 @@ interface ModalProps {
   footer?: ReactNode;
   width?: number;
   height?: number;
+  isOutsideClick?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -19,11 +20,12 @@ const Modal: React.FC<ModalProps> = ({
   footer,
   width = 300,
   height = 200,
+  isOutsideClick = true,
 }) => {
   if (!isOpen) return null;
 
   return (
-    <div className={styles.modalBackground} onClick={onClose}>
+    <div className={styles.modalBackground} onClick={isOutsideClick ? onClose : undefined}>
       <div
         className={styles.modalContainer}
         style={{ width: `${width}px`, height: `${height}px` }}
