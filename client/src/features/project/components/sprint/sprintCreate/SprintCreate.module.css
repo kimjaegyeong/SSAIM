@@ -1,6 +1,5 @@
 /* 전체 컨테이너 */
 .container {
-  padding: 20px;
   max-width: 90%;
   margin: 0 auto;
 }
@@ -9,7 +8,6 @@
 .title {
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -38,3 +36,39 @@
   margin-bottom: 5px;
 }
 
+.weeklyProgressContainer {
+  padding: 20px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  overflow-x: scroll;
+}
+.contentheader {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+.issueGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  justify-content: center ;
+  /* 가로 세로 중앙 정렬 */
+  min-height : 500px;
+}
+.dayColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 250px;
+  max-width: 300px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items : center;
+}
