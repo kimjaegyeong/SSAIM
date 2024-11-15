@@ -274,7 +274,12 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
                   <td
                     className={styles.content}
                     onClick={() => !isEditing[field] && toggleEdit(field)}
-                    style={{ whiteSpace: 'pre-wrap' }}
+                    style={{ 
+                      whiteSpace: 'pre-wrap',
+                      overflowWrap: 'break-word',
+                      wordWrap: 'break-word',
+                      wordBreak: 'break-word',
+                    }}
                   >
                     {isEditing[field] ? (
                       <textarea

@@ -310,7 +310,12 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                 <td
                   key={column}
                   onClick={() => handleEditClick(index, column)}
-                  style={{ whiteSpace: 'pre-wrap' }}
+                  style={{ 
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'break-word',
+                    wordWrap: 'break-word',
+                    wordBreak: 'break-word',
+                  }}
                 >
                   {isEditing[index]?.[column] ? (
                     <textarea
