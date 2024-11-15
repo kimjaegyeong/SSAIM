@@ -89,7 +89,10 @@ const TeamBuildingDetailPage = () => {
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
+    const inputValue = e.target.value;
+    if (inputValue.length <= 250) {
+      setMessage(e.target.value);
+    }
   };
 
   const filteredCandidates = isAuthor 
@@ -413,6 +416,7 @@ const TeamBuildingDetailPage = () => {
                 placeholder="지원 메시지를 입력하세요"
                 rows={4}
                 cols={50}
+                maxLength={250}
               />
               <button onClick={handleSubmitComment} className={styles.submitButton}>지원하기</button>
             </div>
@@ -434,8 +438,14 @@ const TeamBuildingDetailPage = () => {
                   {isCommentEditing && activeCommentId === index ? (
                     <textarea
                       value={editedCommentContent}
-                      onChange={(e) => setEditedCommentContent(e.target.value)}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        if (inputValue.length <= 250) {
+                          setEditedCommentContent(inputValue); // 최대 250자까지만 상태 업데이트
+                        }
+                      }}
                       className={styles.editInput}
+                      maxLength={250}
                       rows={4} // 원하는 줄 수
                       cols={50} // 원하는 열 수
                     />
