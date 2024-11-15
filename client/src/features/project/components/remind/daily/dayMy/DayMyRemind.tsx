@@ -1,10 +1,14 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './DayMyRemind.module.css';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
+import { useDailyRemind } from '@/features/project/hooks/remind/useDailyRemind';
+import { deleteDailyRemind } from '@/features/project/apis/remind/deleteDailyRemind';
 import { ImPencil } from "react-icons/im";
+import { RiDeleteBinFill } from "react-icons/ri";
 
 interface Message {
   message: string;
+  dailyRemindId: number;
 }
 
 interface DayMyRemindProps {
@@ -17,7 +21,11 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { pmId } = usePmIdStore();
-  console.log(pmId);
+
+  const { refetch } = useDailyRemind({
+    projectId: Number(projectId),
+    projectMemberId: Number(pmId),
+  });
 
   // 각 섹션에 맞는 메시지를 추출하는 함수
   const extractSectionMessage = (msg: string, prefix: string, nextPrefix?: string) => {
@@ -49,6 +57,26 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
          },
       }
     ); 
+  };
+
+  const handleDeleteClick = async () => {
+    if (!projectId || !pmId) {
+      console.error("프로젝트 ID나 PM ID가 없습니다.");
+      return;
+    }
+
+    try {
+      // 삭제 API 호출
+      const dailyRemindId = messages[0].dailyRemindId; // 첫 번째 메시지의 ID를 가져옴
+      await deleteDailyRemind(Number(projectId), dailyRemindId);
+
+      await refetch();
+      alert('회고가 성공적으로 삭제되었습니다.');
+
+    } catch (error) {
+      console.error('삭제 중 오류 발생:', error);
+      alert('회고 삭제에 실패했습니다.');
+    }
   };
 
   return (
@@ -103,7 +131,11 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
         <div className={styles.editbox}>
           <div className={styles.editButton} onClick={handleEditClick}>
             <ImPencil />
-            <p className={styles.editText}>수정하기</p>
+            <p className={styles.Text}>수정하기</p>
+          </div>
+          <div className={styles.deleteButton} onClick={handleDeleteClick}>
+            <RiDeleteBinFill />
+            <p className={styles.Text}>삭제하기</p>
           </div>
         </div>
       )}

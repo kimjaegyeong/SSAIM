@@ -63,6 +63,7 @@ const FilterHeader: React.FC<FilterHeaderProps> = ({ dayWeek, setDayWeek, myTeam
                 onMouseEnter={() => handleMouseEnter(member.name)}
                 onMouseLeave={handleMouseLeave}
               >
+                
                 <img 
                   src={member.profileImage || DefaultProfile} 
                   className={`${styles.memberImage} ${selectedPmId === member.pmId ? styles.selected : ''}`} 

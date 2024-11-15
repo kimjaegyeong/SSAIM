@@ -6,6 +6,7 @@ import { editSprintRemind } from '@/features/project/apis/remind/editSprintRemin
 import { SprintRemindRequestDTO } from '@/features/project/types/remind/SprintRemndDTO';
 import { useSprintRemind } from '@/features/project/hooks/remind/useSprintRemind';
 import { FaArrowRotateRight } from "react-icons/fa6";
+import { RiDeleteBinFill } from "react-icons/ri";
 import Loading from '@/components/loading/Loading';
 
 interface Content {
@@ -94,7 +95,11 @@ const MySprint: React.FC<MySprintProps> = ({ contents, selectedDateInfo }) => {
         <div className={styles.editbox}>
           <div className={styles.editButton} onClick={handleEditClick}>
             <FaArrowRotateRight />
-            <p className={styles.editText}>다시 생성하기</p>
+            <p className={styles.Text}>다시 생성하기</p>
+          </div>
+          <div className={styles.deleteButton} >
+            <RiDeleteBinFill />
+            <p className={styles.Text}>삭제하기</p>
           </div>
         </div>
       )}

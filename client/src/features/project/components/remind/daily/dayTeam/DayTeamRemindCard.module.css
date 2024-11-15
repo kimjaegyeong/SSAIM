@@ -29,6 +29,7 @@
 .reviewTitle {
     display: flex;
     flex-direction: columns;
+    margin-bottom: 5px;
 
 }
 
