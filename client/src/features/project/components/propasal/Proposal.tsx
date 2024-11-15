@@ -157,17 +157,20 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
   const handleModalSubmit = async () => {
     try {
       setIsGenerating(true);
-      const response = await getAutoProposal(projectId, modalTextareaValue); // 데이터를 가져옴
-      console.log('Fetched auto proposal data (raw):', response);
+      let response;
+      try {
+        response = await getAutoProposal(projectId, modalTextareaValue);
+      } catch (fetchError) {
+        showToast.error('자동 생성에 실패했습니다. 다시 시도해 주세요.');
+        return;
+      }
   
       let parsedData;
-  
+      
       // response가 문자열인지 확인
       if (typeof response === 'string') {
-        console.log('Response is a string. Attempting to parse with parseBacktickJson.');
         parsedData = parseBacktickJson(response); // 백틱 JSON 처리
       } else if (typeof response === 'object') {
-        console.log('Response is an object. Using it directly.');
         parsedData = response; // 객체 그대로 사용
       } else {
         console.error('Unexpected response type:', typeof response);
@@ -211,8 +214,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
   
       setIsModalOpen(false); // 모달 닫기
     } catch (error) {
-      console.error('Error fetching auto proposal:', error);
-      showToast.error('자동 생성에 실패했습니다. 다시 시도해 주세요.')
+      showToast.error('AI가 요청을 이해하지 못했습니다. 요청을 확인해주세요.')
     } finally {
       setIsGenerating(false); // 로딩 종료
     }
@@ -254,6 +256,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
         }
         width={800}
         height={400}
+        isOutsideClick={false}
       />
       {isLoading ? (
         <p>Loading...</p>
