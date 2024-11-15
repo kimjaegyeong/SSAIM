@@ -9,7 +9,7 @@ import { getRegionLabel } from '@/utils/labelUtils';
 import Button from '@/components/button/Button';
 import { useNavigate } from 'react-router-dom';
 import ProfileImageModal from './profileImageModal/ProfileImageModal';
-import modalStyles from './profileImageModal/ProfileImageModal.module.css'
+import modalStyles from './profileImageModal/ProfileImageModal.module.css';
 import { useQueryClient } from '@tanstack/react-query';
 
 type MypageProps = {
@@ -89,19 +89,24 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
 
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setProfileImage(e.target.files[0]);
+      const file = e.target.files[0];
+      const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+      if (!allowedExtensions.exec(file.name)) {
+        alert('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
+        return;
+      }
+      setProfileImage(file);
     }
   };
 
   const saveProfileImage = async () => {
     if (profileImage) {
       try {
-   
         await editUserData(userId, {}, profileImage);
         console.log('Profile image updated');
         setIsModalOpen(false); // 저장 후 모달 닫기
-        setProfileImage(null); 
-        queryClient.invalidateQueries({queryKey : ['userInfo', profileOwnerId]}); // 쿼리 무효화로 데이터 새로고침
+        setProfileImage(null);
+        queryClient.invalidateQueries({ queryKey: ['userInfo', profileOwnerId] }); // 쿼리 무효화로 데이터 새로고침
       } catch (error) {
         console.error('Failed to update profile image:', error);
       }
@@ -119,9 +124,16 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
       {/* 헤더 */}
       <header className={styles.header}>
         <h1>{userInfo?.userName} 님의 프로필 페이지</h1>
-        {isProfileOwner ? <Button size="xsmall" colorType="green" children="개인정보수정" onClick={() => {
-          navigate('/profile/edit');
-        }}></Button> : null}
+        {isProfileOwner ? (
+          <Button
+            size="xsmall"
+            colorType="green"
+            children="개인정보수정"
+            onClick={() => {
+              navigate('/profile/edit');
+            }}
+          ></Button>
+        ) : null}
       </header>
 
       {/* 본문 구역 */}
@@ -189,18 +201,19 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
       </div>
       <ProfileImageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <h2>프로필 사진</h2>
-        {profileImage ? 
-        <img
-        src={profileImage ? URL.createObjectURL(profileImage) : ""}
-        alt="프로필 사진"
-        className={modalStyles.modalProfileImage}
-        /> :
-        <img
-        src={userInfo?.userProfileImage || '/default-profile.png'}
-        alt="프로필 사진"
-        className={modalStyles.modalProfileImage}
-        />
-      }
+        {profileImage ? (
+          <img
+            src={profileImage ? URL.createObjectURL(profileImage) : ''}
+            alt="프로필 사진"
+            className={modalStyles.modalProfileImage}
+          />
+        ) : (
+          <img
+            src={userInfo?.userProfileImage || '/default-profile.png'}
+            alt="프로필 사진"
+            className={modalStyles.modalProfileImage}
+          />
+        )}
         <div className={modalStyles.buttonContainer}>
           <button onClick={handleViewProfileImage} className={`${modalStyles.button} ${modalStyles.viewButton}`}>
             프로필 사진 보기
@@ -223,7 +236,6 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
           </button>
         </div>
       </ProfileImageModal>
-
     </div>
   );
 };

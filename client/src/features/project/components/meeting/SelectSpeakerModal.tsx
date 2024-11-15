@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import styles from './SelectSpeakerModal.module.css';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
+import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 
 interface TeamMember {
   name: string;
@@ -56,11 +57,12 @@ const SelectSpeakerModal = ({ isOpen, onClose, projectId, onSelect, selectedSpea
               className={`${styles.teamMember} ${selectedMember.name === member.name ? styles.selected : ''}`} // 수정 부분
               onClick={() => handleSelectMember(member)}
             >
-              <img src={member.profileImage || 'default-profile.jpg'} alt={member.name} className={styles.profileImage} />
+              <img src={member.profileImage || DefaultProfile} alt={member.name} className={styles.profileImage} />
               <span>{member.name}</span>
             </li>
           ))}
         </ul>
+
         <button onClick={handleChangeClick} className={styles.changeButton}>
           변경
         </button>

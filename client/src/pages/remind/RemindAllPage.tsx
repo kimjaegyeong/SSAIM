@@ -1,50 +1,58 @@
 import React, { useEffect } from 'react';
+import { useNavigate  } from 'react-router-dom';
 import HTMLFlipBook from 'react-pageflip';
 import styles from './RemindAllPage.module.css';
 import remindBG from '../../assets/remind/remindBG.png';
+import ImageSample from '@/assets/remind/ImageSample.png'
 import useUserStore from '@/stores/useUserStore';
 import { useDevelopStory } from '@/features/remind/hooks/useDevelopStory';
 import { DevelopStoryDTO } from '@features/remind/types/DevelopStoryDTO';
 
 interface CoverProps {
   project: DevelopStoryDTO;
+  pageIndex: number;
 }
 
 const Cover = React.forwardRef<HTMLDivElement, CoverProps>(
-  ({ project }, ref) => (
+  ({ project, pageIndex  }, ref) => (
     <div className={styles.cover} ref={ref}>
       <div className={styles.coverContent}>
         <h1 className={styles.projectName}>{project.projectName}</h1>
         <p className={styles.projectDate}>{project.projectStartDate} ~ {project.projectEndDate}</p>
       </div>
+      <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
   )
 );
 
 interface ImagePageProps {
   image: string;
+  pageIndex: number;
 }
 
 const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
-  ({ image }, ref) => (
+  ({ image, pageIndex  }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.imagePageContent}>
-        <img src={image} alt="Weekly review" className={styles.weeklyImage} />
+        <img src={image} alt={ImageSample} className={styles.weeklyImage} />
       </div>
+      <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
   )
 );
 
 interface ReportPageProps {
   report: string;
+  pageIndex: number;
 }
 
 const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
-  ({ report }, ref) => (
+  ({ report, pageIndex }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.reportPageContent}>
         {report}
       </div>
+      <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
     </div>
   )
 );
@@ -58,22 +66,33 @@ const splitContentToPages = (content: string, maxLength: number) => {
 };
 
 const RemindAllPage: React.FC = () => {
+  const navigate = useNavigate();
   const { userId } = useUserStore();
   const { data } = useDevelopStory({ userId: userId ?? 0 });
 
   useEffect(() => {
-    if (data) {
-      console.log('Develop story data:', data);
-    }
-  }, [data]);
+    // 페이지에 들어오면 스크롤을 숨김
+    document.body.style.overflow = 'hidden';
+    return () => {
+      // 페이지를 떠나면 스크롤을 복원
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
+  let currentPageIndex = 0; 
 
   return (
     <div className={styles.mainContainer}>
+      <div className={styles.buttonBox}>
+        <button className={styles.backButton} onClick={() => navigate('/remind')}>
+          뒤로가기
+        </button>
+      </div>
       <div className={styles.bookWrapper}>
         <img src={remindBG} alt="remindBG" className={styles.remindBG} />
         <HTMLFlipBook
           width={600}
-          height={700}
+          height={650}
           size="fixed"
           minWidth={500}
           maxWidth={1000}
@@ -81,27 +100,27 @@ const RemindAllPage: React.FC = () => {
           maxHeight={800}
           maxShadowOpacity={0.5}
           className={styles.book}
-          showCover={true}
+          showCover={false}
           drawShadow={true}
           startPage={0}
           flippingTime={1000}
-          style={{ margin: '0 auto' }}
+          style={{ margin: '0 auto', overflow: 'visible' }}
           usePortrait={false}
           startZIndex={0}
           autoSize={false}
-          mobileScrollSupport={true}
-          clickEventForward={true}
+          mobileScrollSupport={false}
           useMouseEvents={true}
-          swipeDistance={0}
-          showPageCorners={true}
           disableFlipByClick={false}
+          swipeDistance={0}
+          clickEventForward={true}
+          showPageCorners={true}
         >
           {data?.flatMap((project) => [
-            <Cover key={`cover-${project.projectId}`} project={project} />,
+            <Cover key={`cover-${project.projectId}`} project={project} pageIndex={currentPageIndex++}/>,
             ...project.weeklyRemind.flatMap((remind, index) => [
-              remind.imageUrl && <ImagePage key={`image-${project.projectId}-${index}`} image={remind.imageUrl} />,
-              ...splitContentToPages(remind.content, 750).map((pageContent, pageIndex) => (
-                <ReportPage key={`report-${project.projectId}-${index}-${pageIndex}`} report={pageContent} />
+              remind.imageUrl && <ImagePage key={`image-${project.projectId}-${currentPageIndex}`} image={remind.imageUrl} pageIndex={currentPageIndex++}/>,
+              ...splitContentToPages(remind.content, 600).map((pageContent) => (
+                <ReportPage key={`report-${project.projectId}-${index}-${currentPageIndex}`} report={pageContent} pageIndex={currentPageIndex++}/>
               ))
             ]).filter(Boolean)
           ])}

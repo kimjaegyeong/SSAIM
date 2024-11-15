@@ -28,7 +28,7 @@ const MeetingItem: React.FC<MeetingItemProps> = ({ meeting, onClick }) => {
           {formatMeetingTime(meeting.meetingCreateTime)} 
         </div>
         <div className={styles.meetingMeta}>
-          {formatMeetingDuration(meeting.meetingVoiceTime)}
+          {meeting.meetingVoiceTime === -1 ? "알 수 없음" : formatMeetingDuration(meeting.meetingVoiceTime)}
         </div>
       </div>
     </div>

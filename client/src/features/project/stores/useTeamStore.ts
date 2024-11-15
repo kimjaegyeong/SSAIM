@@ -8,7 +8,7 @@ interface TeamStore {
   isModalOpen: boolean;
   openModal: () => void;
   closeModal: () => void;
-  leaderId: number | null;
+  leaderId: number;
   setLeaderId: (leaderId: number) => void;
   startDate: string | null;
   endDate: string | null;
@@ -17,15 +17,16 @@ interface TeamStore {
   setEndDate: (date: string) => void;
   setPostId: (id: number) => void;
   resetStore: () => void; // 스토어 초기화 함수 추가
+  setMembers: (members: TeamMemberDTO[]) => void;
 }
 
 const initialState = {
   members: [],
   isModalOpen: false,
-  leaderId: null,
   startDate: null, // 초기 상태 추가
   endDate: null,   // 초기 상태 추가
   postId: null,    // 초기 상태 추가
+  leaderId: -1,
 };
 
 const useTeamStore = create<TeamStore>((set) => ({
@@ -64,7 +65,10 @@ const useTeamStore = create<TeamStore>((set) => ({
       ...state,
       postId: id,
     })),
-  resetStore: () => set({ ...initialState }),
+  resetStore: () => set({ ...initialState }), // 초기 상태로 재설정
+  setMembers: (members) => {
+    set({ members });
+  },
 }));
 
 export default useTeamStore;

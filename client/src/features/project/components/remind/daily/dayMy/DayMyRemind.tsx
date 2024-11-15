@@ -103,7 +103,7 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
         <div className={styles.editbox}>
           <div className={styles.editButton} onClick={handleEditClick}>
             <ImPencil />
-            <p className={styles.p}>수정하기</p>
+            <p className={styles.editText}>수정하기</p>
           </div>
         </div>
       )}

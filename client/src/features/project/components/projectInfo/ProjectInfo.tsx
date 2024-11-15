@@ -103,7 +103,9 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
           ))}
         </div>
       </div>
-      {isEditModalOpen && <EditProjectInfoModal onClose={() => setIsEditModalOpen(false)} />}
+      {isEditModalOpen && projectInfo && (
+        <EditProjectInfoModal projectInfo={projectInfo} onClose={() => setIsEditModalOpen(false)} />
+      )}
       {isEditJiraModalOpen && (
         <EditProjectSetting projectId={projectId} type={'jira'} onClose={() => setIsEditJiraModalOpen(false)} />
       )}
