@@ -8,6 +8,7 @@ import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
 import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
+import { getProposal } from '../../apis/webSocket/proposal';
 
 interface FeatureSpecData {
   category: string[];
@@ -264,7 +265,28 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     }
   };
 
-  const openModal = () => {
+  const openModal = async() => {
+    try {
+      const response = await getProposal(projectId);
+
+      const requiredFields = ['title', 'description', 'background', 'feature', 'effect'];
+
+      const allFieldsFilled = requiredFields.every(field =>
+        response[field] &&
+        response[field].toString().trim() !== '' &&
+        !(typeof response[field] === 'object' && Object.keys(response[field]).length === 0) // 비어있는 객체가 아님
+      );
+
+      if (!allFieldsFilled) {
+        showToast.error('기획서를 먼저 완성해주세요.');
+        return;
+      }
+    } catch (error) {
+      console.error('API 호출 실패:', error);
+      showToast.error('기획서 정보를 불러오는 데 실패했습니다. 다시 시도해 주세요.');
+      return;
+    }
+
     setModalTextareaValue('')
     setIsModalOpen(true);
   };
@@ -278,10 +300,11 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       <div className={styles.aiButton}>
         <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
       </div>
+      <h2 className={styles.sectionTitle}>기능 명세서</h2>
       <CommonModal 
         isOpen={isModalOpen}
         onClose={closeModal}
-        title= '기능명세서 자동 생성'
+        title= '기능 명세서 자동 생성'
         content={
           <>
             {isGenerating && <Loading />}
@@ -312,7 +335,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
             <th>내용</th>
             <th>담당자</th>
             <th>우선순위</th>
-            <th>삭제</th>
+            <th className={styles.actionColumn}></th>
           </tr>
         </thead>
         <tbody>

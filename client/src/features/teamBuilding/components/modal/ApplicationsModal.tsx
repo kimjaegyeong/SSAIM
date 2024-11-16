@@ -22,32 +22,23 @@ interface ApplicationsModalProps {
 
 const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }) => {
     const [applications, setApplications] = useState<ApplicationData[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchApplications = async () => {
             try {
                 if (userId === null) {
-                    setLoading(false);
                     return;
                 }
                 const response = await getApplications(userId); // API 호출
                 setApplications(response);
             } catch (error) {
                 console.error('Error fetching applications11234:', error);
-                setError(true);
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchApplications();
     }, [userId]);
-
-    if (loading) return <div className={styles.loading}>Loading...</div>;
-    if (error) return <div className={styles.error}>데이터를 가져오는 중 오류가 발생했습니다.</div>;
 
     return (
         <div className={styles.modalOverlay}>
@@ -66,7 +57,10 @@ const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }
                             <div
                                 key={index}
                                 className={styles.applicationRow}
-                                onClick={() => navigate(`/team-building/detail/${application.recruitingId}`)}
+                                onClick={() => {
+                                    onClose();
+                                    navigate(`/team-building/detail/${application.recruitingId}`)
+                                }}
                             >
                                 <span className={styles.title}>{application.recruitingTitle}</span>
                                 <div className={styles.tags}>

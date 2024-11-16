@@ -12,6 +12,8 @@ import { getApiStatusLabel } from '../../../../utils/labelUtils'
 import { MdOpenInNew } from "react-icons/md";
 import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
+import { getProposal } from '../../apis/webSocket/proposal';
+import { getFeatureSpec } from '../../apis/webSocket/featureSpec';
 
 interface ApiSpecData {
   category: string[];
@@ -267,7 +269,48 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     }
   };
 
-  const openAiModal = () => {
+  const openAiModal = async() => {
+    try {
+      const response = await getProposal(projectId);
+
+      const requiredFields = ['title', 'description', 'background', 'feature', 'effect'];
+
+      const allFieldsFilled = requiredFields.every(field =>
+        response[field] &&
+        response[field].toString().trim() !== '' &&
+        !(typeof response[field] === 'object' && Object.keys(response[field]).length === 0) // 비어있는 객체가 아님
+      );
+
+      if (!allFieldsFilled) {
+        showToast.error('기획서를 먼저 완성해주세요.');
+        return;
+      }
+    } catch (error) {
+      console.error('API 호출 실패:', error);
+      showToast.error('데이터를 불러오는 데 실패했습니다. 다시 시도해 주세요.');
+      return;
+    }
+
+    try {
+      const response = await getFeatureSpec(projectId);
+
+      const requiredFields = ['category', 'functionName', 'description'];
+
+      const invalidFields = requiredFields.filter(field =>
+        !Array.isArray(response[field]) ||
+        !response[field].some((value: any) => typeof value === 'string' && value.trim() !== '')
+      );
+    
+      if (invalidFields.length > 0) {
+        showToast.error('기능 명세서를 먼저 완성해주세요.');
+        return;
+      }
+    } catch (error) {
+      console.error('API 호출 실패:', error);
+      showToast.error('데이터를 불러오는 데 실패했습니다. 다시 시도해 주세요.');
+      return;
+    }
+    
     setModalTextareaValue('')
     setIsAiModalOpen(true);
   };
@@ -319,10 +362,11 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       <div className={styles.aiButton}>
         <Button size='custom' colorType='purple' onClick={openAiModal}>AI 자동생성</Button>
       </div>
+      <h2 className={styles.sectionTitle}>API 명세서</h2>
       <CommonModal 
         isOpen={isAiModalOpen}
         onClose={closeAiModal}
-        title= '기능명세서 자동 생성'
+        title= ' API 명세서 자동 생성'
         content={
           <>
             {isGenerating && <Loading />}
@@ -348,7 +392,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       <table className={styles.table}>
         <thead>
           <tr>
-            <th className={styles.actionColumn}></th> {/* 빈 열 추가 */}
+            <th className={styles.actionColumn}></th>
             <th>분류</th>
             <th>API 이름</th>
             <th>URI</th>
@@ -358,7 +402,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
             <th>FE 상태</th>
             <th>BE 상태</th>
             <th>우선순위</th>
-            <th>삭제</th>
+            <th className={styles.actionColumn}></th>
           </tr>
         </thead>
         <tbody>
