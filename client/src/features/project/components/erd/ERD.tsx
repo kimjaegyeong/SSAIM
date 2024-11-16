@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./ERD.module.css";
 import { getErd, postErd, patchErd } from "../../apis/webSocket/erd";
+import { showToast } from "@/utils/toastUtils";
 
 interface ERDProps {
   projectId: string;
@@ -10,6 +11,7 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null); // 이미지 상태
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const defaultImageUrl = "https://via.placeholder.com/300"; // 기본 이미지 경로
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
 
   const fetchErd = async () => {
@@ -29,14 +31,50 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
     fetchErd();
   }, [projectId]);
 
+  const validateFileSignature = async (file: File): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+  
+      reader.onload = (e) => {
+        const buffer = new Uint8Array(e.target?.result as ArrayBuffer);
+        const signature = buffer.slice(0, 8).join(" ");
+  
+        const isJPEG = signature.startsWith("255 216");
+        const isPNG = signature.startsWith("137 80 78 71 13 10 26 10");
+  
+        resolve(isJPEG || isPNG);
+      };
+  
+      reader.onerror = () => reject(new Error("파일을 읽는 도중 오류가 발생했습니다."));
+      reader.readAsArrayBuffer(file.slice(0, 8));
+    });
+  };
+
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      const allowedTypes = ["image/jpeg", "image/png"];
+      const maxFileSize = 100 * 1024 * 1024;
+      const isValidImage = await validateFileSignature(file);
+
+      if (file.size > maxFileSize) {
+        showToast.error("파일 크기가 100MB를 초과할 수 없습니다.");
+        return;
+      }
+  
+      if (!allowedTypes.includes(file.type)) {
+        showToast.error("허용된 파일 형식은 JPG 및 PNG입니다.");
+        return;
+      }
+
+      if (!isValidImage) {
+        showToast.error("읽을 수 없는 파일입니다.");
+        return;
+      }
+  
       const formData = new FormData();
-
-      // 파일 객체를 그대로 FormData에 추가
       formData.append("ErdImage", file);
-
+  
       try {
         if (imageUrl === null) {
           // 이미지가 null일 경우 POST 요청
@@ -69,6 +107,14 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
     }
   };
 
+  const handleImageClick = () => {
+    setIsModalOpen(true); // 모달 열기
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false); // 모달 닫기
+  };
+
   return (
     <div className={styles.erd}>
       <button onClick={handleEditClick} className={styles.editButton}>
@@ -82,10 +128,17 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
         onChange={handleImageUpload}
       />
       <img
-        src={imageUrl || defaultImageUrl} // 이미지 상태가 null이면 기본 이미지를 표시
+        src={imageUrl || defaultImageUrl}
         alt="ERD Image"
         className={styles.erdImage}
+        onClick={handleImageClick}
       />
+      {isModalOpen && (
+        <div className={styles.modal} onClick={handleModalClose}>
+          <span className={styles.modalClose}>&times;</span>
+          <img src={imageUrl || defaultImageUrl} alt="ERD Enlarged" />
+        </div>
+      )}
     </div>
   );
 };

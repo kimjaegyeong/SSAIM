@@ -65,6 +65,7 @@ const TeamBuildingDetailPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRefs = useRef<(HTMLDivElement | null)[]>([]);
   const navigate = useNavigate();
+  const editRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleEditPost = () => {
     navigate(`/team-building/edit/${postId}`, { state: { data } });
@@ -84,7 +85,7 @@ const TeamBuildingDetailPage = () => {
         if (userId) {
           getApplications(userId)
           .then((response) => {
-            const isRecruited = response.find((application: any) => application.status === 1)
+            const isRecruited = response.find((application: any) => application.status >= 0)
             setIsRecruited(isRecruited);
           })
           .catch((err) => {
@@ -99,6 +100,9 @@ const TeamBuildingDetailPage = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // 수정 모드일 경우, 외부 클릭 처리를 하지 않음
+      if (isCommentEditing) return;
+  
       const clickedOutside = !modalRefs.current.some(
         (ref) => ref && ref.contains(event.target as Node)
       );
@@ -108,12 +112,20 @@ const TeamBuildingDetailPage = () => {
       }
     };
   
+    // 이벤트 리스너 등록
     document.addEventListener("mousedown", handleClickOutside);
   
+    // 클린업 함수로 이벤트 리스너 제거
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isCommentEditing, modalRefs]);
+
+  useEffect(() => {
+    if (editRef.current) {
+      autoResize(editRef.current);
+    }
+  }, [editedCommentContent]);
 
   const isAuthor = userId === data.authorId;
 
@@ -171,6 +183,11 @@ const TeamBuildingDetailPage = () => {
       }); 
   };
 
+  const autoResize = (element: HTMLTextAreaElement) => {
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight}px`;
+  };
+
   const handleEditComment = (commentContent:string) => {
     setIsCommentEditing(true);
     setEditedCommentContent(commentContent);
@@ -196,7 +213,6 @@ const TeamBuildingDetailPage = () => {
 
     try {
         await editComment(data.postId, editedCandidate.recruitingMemberId, params);
-        showToast.success("댓글이 성공적으로 수정되었습니다.");
         window.location.reload(); // 수정 후 페이지 새로고침
     } catch (error) {
         showToast.error("댓글 수정 중 문제가 발생했습니다. 다시 시도해주세요.");
@@ -475,7 +491,7 @@ const TeamBuildingDetailPage = () => {
           ) :  isRecruited ? (
             <div className={styles.commentForm}>
               <div className={styles.applicationText}>
-                <p>이미 팀에 참여 중입니다.</p>
+                <p>이미 팀에 가입 되었거나 신청 중입니다.</p>
                 <p>
                   <button onClick={() => setIsModalOpen(true)} className={styles.applicationButton}>
                     신청현황
@@ -488,15 +504,21 @@ const TeamBuildingDetailPage = () => {
           ) : (
             <div className={styles.commentForm}>
               <TagSelector onTagChange={handleTagChange} />
-              <textarea
-                className={styles.commentInput}
-                value={message}
-                onChange={handleMessageChange}
-                placeholder="지원 메시지를 입력하세요"
-                rows={4}
-                cols={50}
-                maxLength={250}
-              />
+              <div className={styles.commentInputWrapper}>
+                <textarea
+                  className={styles.commentInput}
+                  value={message}
+                  onChange={handleMessageChange}
+                  onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
+                  placeholder="지원 메시지를 입력하세요"
+                  rows={2}
+                  cols={50}
+                  maxLength={250}
+                />
+                <div className={styles.commentCharacterCount}>
+                  {message.length}/250
+                </div>
+              </div>
               <button onClick={handleSubmitComment} className={styles.submitButton}>지원하기</button>
             </div>
           )}
@@ -515,19 +537,26 @@ const TeamBuildingDetailPage = () => {
                 )}
                 <div className={styles.commentContent}>
                   {isCommentEditing && activeCommentId === index ? (
-                    <textarea
-                      value={editedCommentContent}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        if (inputValue.length <= 250) {
-                          setEditedCommentContent(inputValue); // 최대 250자까지만 상태 업데이트
-                        }
-                      }}
-                      className={styles.editInput}
-                      maxLength={250}
-                      rows={4} // 원하는 줄 수
-                      cols={50} // 원하는 열 수
-                    />
+                    <div className={styles.commentEditWrapper}>
+                      <textarea
+                        ref={editRef}
+                        value={editedCommentContent}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          if (inputValue.length <= 250) {
+                            setEditedCommentContent(inputValue); // 최대 250자까지만 상태 업데이트
+                          }
+                        }}
+                        onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
+                        className={styles.editInput}
+                        maxLength={250}
+                        rows={2} // 원하는 줄 수
+                        cols={50} // 원하는 열 수
+                      />
+                      <div className={styles.commentCharacterCount}>
+                        {message.length}/250
+                      </div>
+                    </div>
                   ) : (
                     <span style={{whiteSpace: 'pre-wrap'}}>{candidate.message}</span>
                   )}

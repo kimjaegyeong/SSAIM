@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './ApplicationsModal.module.css';
 import Tag from '../tag/Tag';
 import { getDomainLabel, getPositionLabel, getApplicationStatusLabel } from '../../../../utils/labelUtils';
-import { getApplications } from '@features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
+import { getApplications, getMyPost } from '@features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
 import { useNavigate } from 'react-router-dom';
 
 interface ApplicationData {
@@ -33,10 +33,12 @@ const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }
                 const response = await getApplications(userId); // API 호출
                 setApplications(response);
             } catch (error) {
-                console.error('Error fetching applications11234:', error);
+                console.error('Error fetching applications:', error);
             }
         };
-
+        if (userId) {
+            getMyPost(userId)
+        }
         fetchApplications();
     }, [userId]);
 
