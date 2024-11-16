@@ -10,17 +10,18 @@
 }
 
 .meeting {
-  background-color: #ebf2ff; /* 회의록 연한 파란색 */
-  color: #6c63ff;
+  background-color:#b9eddb; /* 회의록 연한 초록색 */
+  color: #198861;
 }
 
 .task {
-  height: 50px;
+  font-size : 0.9rem;
+  height: 40px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 500;
   transition: transform 0.2s, box-shadow 0.2s; /* 애니메이션 효과 */
+  border : 0.1px solid #ddd;
+
 }
 
 .task:hover {
@@ -45,7 +46,7 @@
 }
 
 .meeting-title {
-  background-color: #6c63ff; /* 회의록 보라색 */
+  background-color:#1dab79; /* 회의록 초록 */
 }
 
 .taskTitle:hover {

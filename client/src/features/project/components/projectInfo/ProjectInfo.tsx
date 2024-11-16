@@ -12,6 +12,7 @@ import { TiDocumentText } from 'react-icons/ti';
 import jiraIcon from '@/assets/jira.svg';
 import gitlabIcon from '@/assets/gitlab.svg';
 import defaultTeamIcon from '@/assets/project/defaultTeamIcon.png';
+import useUserStore from '@/stores/useUserStore';
 import { useNavigate } from 'react-router-dom';
 
 interface ProjectInfoProps {
@@ -19,6 +20,7 @@ interface ProjectInfoProps {
 }
 
 const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
+  const { userId } = useUserStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isEditJiraModalOpen, setIsEditJiraModalOpen] = useState(false);
   const [isEditGitlabModalOpen, setIsEditGitlabModalOpen] = useState(false);
@@ -27,6 +29,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
     { label: 'Backend', progress: projectInfo?.progressBack || 0 },
     { label: 'Frontend', progress: projectInfo?.progressFront || 0 },
   ];
+  const isTeamLeader = projectInfo?.projectMembers.find((member) => member.userId === userId)?.role === 1;
   const navigate = useNavigate();
   console.log(projectId);
   console.log(projectInfo);
@@ -49,32 +52,34 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
               <span>최근 수정일: {projectInfo.modifiedAt}</span> */}
             </div>
           </div>
-          <div className={styles.modifyButtons}>
-            <span
-              className={styles.modify}
-              onClick={() => {
-                setIsEditModalOpen(true);
-              }}
-            >
-              <TiDocumentText />
-            </span>
-            <span
-              className={styles.modify}
-              onClick={() => {
-                setIsEditJiraModalOpen(true);
-              }}
-            >
-              <img src={jiraIcon} alt="" className={styles.icons} />
-            </span>
-            <span
-              className={styles.modify}
-              onClick={() => {
-                setIsEditGitlabModalOpen(true);
-              }}
-            >
-              <img src={gitlabIcon} alt="" className={styles.icons} />
-            </span>
-          </div>
+          {isTeamLeader ? (
+            <div className={styles.modifyButtons}>
+              <span
+                className={styles.modify}
+                onClick={() => {
+                  setIsEditModalOpen(true);
+                }}
+              >
+                <TiDocumentText className={styles.icons}/>
+              </span>
+              <span
+                className={styles.modify}
+                onClick={() => {
+                  setIsEditJiraModalOpen(true);
+                }}
+              >
+                <img src={jiraIcon} alt="" className={styles.icons} />
+              </span>
+              <span
+                className={styles.modify}
+                onClick={() => {
+                  setIsEditGitlabModalOpen(true);
+                }}
+              >
+                <img src={gitlabIcon} alt="" className={styles.icons} />
+              </span>
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.leftLowerSection}>
