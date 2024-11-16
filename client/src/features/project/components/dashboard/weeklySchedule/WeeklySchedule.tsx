@@ -136,8 +136,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
       const meetingDate = meetingDateObj.getDate();
       const meetingDay = meetingDateObj.getDay();
       const weekDay = weekDays[(meetingDay + 6) % 7];
-      console.log(meeting, weekDay);
-      console.log(meetingDate, weekMap[weekDay]?.date?.getDate());
+      //console.log(meeting, weekDay);
+      //console.log(meetingDate, weekMap[weekDay]?.date?.getDate());
       if (weekMap[weekDay]?.date?.getDate() === meetingDate) {
         dataByDay[weekDay as DayOfWeek]?.meeting.push(meeting);
       }
