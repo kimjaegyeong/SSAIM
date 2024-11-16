@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './TeamBuildingPage.module.css'
 import Tag from '../../features/teamBuilding/components/tag/Tag'
@@ -63,7 +63,7 @@ const TeamBuildingDetailPage = () => {
   const { addMember, setLeaderId, resetStore, setPostId, setStartDate, setEndDate } = useTeamStore();
   const [isRecruited, setIsRecruited] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const modalRefs = useRef<(HTMLDivElement | null)[]>([]);
   const navigate = useNavigate();
 
   const handleEditPost = () => {
@@ -95,6 +95,24 @@ const TeamBuildingDetailPage = () => {
       .catch((err) => {
           console.error(err);
       });
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const clickedOutside = !modalRefs.current.some(
+        (ref) => ref && ref.contains(event.target as Node)
+      );
+  
+      if (clickedOutside) {
+        setActiveCommentId(null); // 외부 클릭 시 모달 닫기
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const isAuthor = userId === data.authorId;
@@ -457,10 +475,14 @@ const TeamBuildingDetailPage = () => {
           ) :  isRecruited ? (
             <div className={styles.commentForm}>
               <div className={styles.applicationText}>
-                <p>가입 신청은 전체 한번만 가능합니다.</p>
-                <p>신청현황에서 확인해 주세요.</p>
+                <p>이미 팀에 참여 중입니다.</p>
+                <p>
+                  <button onClick={() => setIsModalOpen(true)} className={styles.applicationButton}>
+                    신청현황
+                  </button> 
+                  에서 확인해 주세요.
+                </p>
               </div>
-              <button onClick={() => setIsModalOpen(true)} className={styles.applicationButton}>신청현황</button>
               {isModalOpen && <ApplicationsModal userId={userId} onClose={() => setIsModalOpen(false)} />} 
             </div>
           ) : (
@@ -528,11 +550,21 @@ const TeamBuildingDetailPage = () => {
                 ) : (
                   <div className={styles.moreButtonWrapper}>
                     <AiOutlineMore
-                      onClick={() => toggleModal(index)}
+                      onClick={(event) => {
+                        event.stopPropagation(); // 이벤트 버블링 방지
+                        toggleModal(index);
+                      }}
                       className={styles.moreButton}
                     />
                     {activeCommentId === index && !isCommentEditing && (
-                      <div className={styles.modal}>
+                      <div
+                        className={styles.modal}
+                        ref={(ref) => {
+                          if (ref) {
+                            modalRefs.current[index] = ref; // 각 모달 요소를 참조 배열에 저장
+                          }
+                        }}
+                      >
                         {isAuthor ? (
                           (candidate.status !== -1) ? (
                             <>
