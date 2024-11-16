@@ -7,9 +7,12 @@ interface UserState {
   isLogin: boolean;
   token: string | null;
   userId: number | null;
+  userName : string | null;
+  userProfileImage: string | null;
   role: string | null;
   login: (token: string, userId: number, role: string) => void;
   logout: () => void;
+  setUserInfo : (name, profileImage) => void;
 }
 
 // persist 미들웨어 적용
@@ -20,6 +23,8 @@ const useUserStore = create<UserState>()(
       token: null,
       userId: null,
       role: null,
+      userName : null,
+      userProfileImage: null,
 
       // 로그인 함수: 토큰과 사용자 정보를 업데이트하고 isLogin 상태를 true로 설정
       login: (token, userId, role) => {
@@ -41,6 +46,10 @@ const useUserStore = create<UserState>()(
           role: null,
         });
       },
+      setUserInfo: (userName, userProfileImage) => {
+        set({ userName, userProfileImage });
+        console.log('User information updated', 'name : ', userName, 'profileImage : ', userProfileImage);
+      }
     }),
     {
       name: 'user-storage', // localStorage의 키 이름 설정
