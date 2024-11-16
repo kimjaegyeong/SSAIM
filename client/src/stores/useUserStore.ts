@@ -12,7 +12,7 @@ interface UserState {
   role: string | null;
   login: (token: string, userId: number, role: string) => void;
   logout: () => void;
-  setUserInfo : (name, profileImage) => void;
+  setUserInfo : (name:string, profileImage:string) => void;
 }
 
 // persist 미들웨어 적용

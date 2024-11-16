@@ -21,7 +21,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
     await refetch(); // 검색 버튼 클릭 시에만 요청을 보냄
     setIsSearchEnabled(false); // 검색 후 다시 비활성화
   };
-  const handleEnterKeyDown =  (event) => {
+  const handleEnterKeyDown =  (event : React.KeyboardEvent<HTMLInputElement>) => {
     if(event.key === 'Enter') {
       console.log('enter key pressed', tempQuery)
       handleSearch();
