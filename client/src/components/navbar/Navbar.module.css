@@ -1,9 +1,9 @@
 /* Sidebar 전체 컨테이너 */
 .sidebarContainer {
   padding-top: 3%;
-  background-color: black;
+  background-color: #3C90E2;
   position: fixed;
-  color: #6DCEF5;
+  color: #ddd;
   top: 0;
   bottom: 0;
   left: 0;
