@@ -123,7 +123,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
         const dateObj = new Date(year, month, date);
 
         const dayOfWeek = dateObj.getDay(); // 요일 인덱스 계산 (0=일요일, 1=월요일, ...)
-        const weekDay = weekDays[dayOfWeek] || '날짜미지정';
+        const weekDay = weekDays[(dayOfWeek + 6) % 7] || '날짜미지정';
 
         dataByDay[weekDay as DayOfWeek].jira.push(issue);
       } else {
@@ -132,9 +132,15 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
     });
     // meetingList 순회하며 날짜에 해당하는 meeting[] 에 넣기
     meetingList?.forEach((meeting) => {
-      const meetingDay = new Date(meeting.meetingCreateTime).getDay();
-      const weekDay = weekDays[meetingDay];
-      dataByDay[weekDay as DayOfWeek]?.meeting.push(meeting);
+      const meetingDateObj = new Date(meeting.meetingCreateTime);
+      const meetingDate = meetingDateObj.getDate();
+      const meetingDay = meetingDateObj.getDay();
+      const weekDay = weekDays[(meetingDay + 6) % 7];
+      console.log(meeting, weekDay);
+      console.log(meetingDate, weekMap[weekDay]?.date?.getDate());
+      if (weekMap[weekDay]?.date?.getDate() === meetingDate) {
+        dataByDay[weekDay as DayOfWeek]?.meeting.push(meeting);
+      }
     });
 
     return dataByDay;
