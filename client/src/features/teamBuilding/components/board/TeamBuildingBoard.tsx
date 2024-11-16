@@ -9,7 +9,7 @@ import { AiOutlineProfile } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 import { IoSearchOutline } from "react-icons/io5";
-import { getDomainLabel, getRegionLabel, getStatusLabel } from "../../../../utils/labelUtils";
+import { getDomainLabel, getRegionLabel } from "../../../../utils/labelUtils";
 import DefaultProfile from "../../../../assets/profile/DefaultProfile.png"
 import ApplicationsModal from "../modal/ApplicationsModal";
 import { GrPowerReset } from "react-icons/gr";
@@ -133,12 +133,6 @@ const TeamBuildingBoard: React.FC = () => {
         },
     ];
     
-    const stateOptions = [
-        { value: '1', label: '모집' },
-        { value: '0', label: '마감' },
-        { value: '', label: '전체' },
-    ];
-    
     const positionOptions = [
         { value: '1', label: 'FE' },
         { value: '2', label: 'BE' },
@@ -230,14 +224,6 @@ const TeamBuildingBoard: React.FC = () => {
                             onToggle={() => handleDropdownToggle('직무')}
                             placeholder="직무" 
                         />
-                        <DropDown 
-                            options={stateOptions} 
-                            selectedOption={selectedState === '' ? null : stateOptions.find(option => option.value === selectedState) || null} 
-                            onSelect={(option) => handleSelect('state', option)} 
-                            isOpen={openDropdown === '상태'}
-                            onToggle={() => handleDropdownToggle('상태')}
-                            placeholder="상태" 
-                        />
                         <GrPowerReset 
                             className={styles.resetButton}
                             onClick={() => {
@@ -283,7 +269,7 @@ const TeamBuildingBoard: React.FC = () => {
                                         { item.secondDomain && <Tag text={getDomainLabel(item.secondDomain)} />}
                                     </div>
                                     <div className={styles.state}>
-                                        <Tag text={getStatusLabel(item.status)} />
+                                        {/* <Tag text={getStatusLabel(item.status)} /> */}
                                         <span>{item.recruitedTotal}/{item.memberTotal}</span>
                                     </div>
                                     <div className={styles.position}>

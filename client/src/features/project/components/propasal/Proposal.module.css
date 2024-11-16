@@ -44,7 +44,7 @@
 }
   
 textarea {
-    font-family: Arial, sans-serif;
+    font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
     font-size: 16px;
     font-weight: normal;
     line-height: 1.5;
@@ -63,7 +63,7 @@ textarea {
     border-radius: 8px;
     padding: 16px;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: 'NEXON Lv1 Gothic OTF', sans-serif;
     font-size: 16px;
     line-height: 1.5;
     resize: none;
