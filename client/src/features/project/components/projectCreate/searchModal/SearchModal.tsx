@@ -21,7 +21,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
     await refetch(); // 검색 버튼 클릭 시에만 요청을 보냄
     setIsSearchEnabled(false); // 검색 후 다시 비활성화
   };
-
+  const handleEnterKeyDown =  (event) => {
+    if(event.key === 'Enter') {
+      console.log('enter key pressed', tempQuery)
+      handleSearch();
+    }
+  }
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
@@ -46,6 +51,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
             type="text"
             value={tempQuery}
             onChange={(e) => setTempQuery(e.target.value)}
+            onKeyDown={handleEnterKeyDown}
             placeholder="검색어 입력"
             className={styles.searchInput}
           />
