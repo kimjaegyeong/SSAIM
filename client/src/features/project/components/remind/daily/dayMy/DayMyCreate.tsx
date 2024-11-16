@@ -128,7 +128,7 @@ const DayMyCreate = () => {
       return;
     }
 
-    const dailyRemindContents = `🟢 Keep: ${keepText}\n🟠 Problem: ${problemText}\n🔵 Try: ${tryText}`;
+    const dailyRemindContents = `🟢 Keep: \n${keepText}\n🟠 Problem: \n${problemText}\n🔵 Try: \n${tryText}`;
     const dailyRemindDate = currentDate.toLocaleDateString("ko-KR", {
       year: 'numeric',
       month: '2-digit',
