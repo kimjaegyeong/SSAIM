@@ -28,9 +28,9 @@ const TodoList: React.FC = () => {
   const { userId } = useUserStore();
   const { projectId, projectWeekList } = useDashboardStore();
   const { data: weeklyData } = useDashboardData();
-  const {data : userInfo} = useUserInfoData(userId);
+  const { data: userInfo } = useUserInfoData(userId);
   const [latestWeekIdx, setLatestWeekIdx] = useState(0);
-  const userName = userInfo?.userName
+  const userName = userInfo?.userName;
   useEffect(() => {
     if (projectWeekList && projectWeekList.length > 0) {
       let flag = 0;
@@ -55,7 +55,9 @@ const TodoList: React.FC = () => {
     dateToString(projectWeekList[latestWeekIdx]?.endDate, '-')
   );
 
-  const todoList = sprintIssues?.filter((issue: IssueDTO) => issue.progress !== '완료').filter((issue: IssueDTO) => issue.allocator === userName);
+  const todoList = sprintIssues
+    ?.filter((issue: IssueDTO) => issue.progress !== '완료')
+    .filter((issue: IssueDTO) => issue.allocator === userName);
   if (!weeklyData || !weeklyData?.todoList) {
     return <div>할 일이 없습니다.</div>;
   }
@@ -64,10 +66,12 @@ const TodoList: React.FC = () => {
     <div className={styles.todoList}>
       <div className={styles.todoListHeader}>할 일</div>
       <div className={styles.todoListBody}>
-        {todoList && todoList?.length > 0 &&
-          todoList.map((t: IssueDTO, i:number) => {
-            return <TodoListItem task={t} key={i}/>;
+        {todoList &&
+          todoList?.length > 0 &&
+          todoList.map((t: IssueDTO, i: number) => {
+            return <TodoListItem task={t} key={i} />;
           })}
+        {todoList?.length === 0 && <div className={styles.noData}>할일이 없습니다</div>}
       </div>
     </div>
   );

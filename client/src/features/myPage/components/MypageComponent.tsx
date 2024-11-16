@@ -84,7 +84,9 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
     setIsEditingStack(false);
   };
   const handleProfileImageClick = () => {
-    setIsModalOpen(true);
+    if (profileOwnerId === userId) {
+      setIsModalOpen(true);
+    }
   };
 
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
