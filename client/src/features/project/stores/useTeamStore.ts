@@ -24,8 +24,8 @@ const initialState = {
   members: [],
   isModalOpen: false,
   startDate: null, // 초기 상태 추가
-  endDate: null,   // 초기 상태 추가
-  postId: null,    // 초기 상태 추가
+  endDate: null, // 초기 상태 추가
+  postId: null, // 초기 상태 추가
   leaderId: -1,
 };
 
@@ -33,10 +33,14 @@ const useTeamStore = create<TeamStore>((set) => ({
   ...initialState,
   addMember: (member) =>
     set((state) => {
-      if (state.members.length < 10) {
+      // 이미 존재하는 멤버인지 확인
+      const isDuplicate = state.members.some((m) => m.userId === member.userId);
+
+      if (!isDuplicate && state.members.length < 10) {
         return { members: [...state.members, member] };
       }
-      return state;
+
+      return state; // 중복 멤버는 추가하지 않음
     }),
   removeMember: (id) =>
     set((state) => ({

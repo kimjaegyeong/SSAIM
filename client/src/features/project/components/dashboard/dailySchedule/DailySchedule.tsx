@@ -23,6 +23,9 @@ const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData, gitl
         {jiraData?.length > 0 && <Task taskType="jira" day={day} tasks={jiraData} />}
         {gitlabData?.length > 0 && <Task taskType="gitlab" day={day} tasks={gitlabData} />}
         {meetingData?.length > 0 && <Task taskType="meeting" day={day} tasks={meetingData} />}
+        {jiraData.length === 0 && gitlabData.length === 0 && meetingData.length === 0 && (
+          <div className={styles.noData}>작업이 없습니다.</div>
+        )}
       </div>
     </div>
   );

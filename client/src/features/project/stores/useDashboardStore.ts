@@ -65,14 +65,14 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   },
 
   taskStatus: {
-    Monday: { jira: false, gitlab: false, meeting: false },
-    Tuesday: { jira: false, gitlab: false, meeting: false },
-    Wednesday: { jira: false, gitlab: false, meeting: false },
-    Thursday: { jira: false, gitlab: false, meeting: false },
-    Friday: { jira: false, gitlab: false, meeting: false },
-    Saturday: { jira: false, gitlab: false, meeting: false },
-    Sunday: { jira: false, gitlab: false, meeting: false },
-  },
+    Monday: { jira: true, gitlab: true, meeting: true },
+    Tuesday: { jira: true, gitlab: true, meeting: true },
+    Wednesday: { jira: true, gitlab: true, meeting: true },
+    Thursday: { jira: true, gitlab: true, meeting: true },
+    Friday: { jira: true, gitlab: true, meeting: true },
+    Saturday: { jira: true, gitlab: true, meeting: true },
+    Sunday: { jira: true, gitlab: true, meeting: true },
+},
   toggleTask: (day, taskType) =>
     set((state) => ({
       taskStatus: {
@@ -88,14 +88,14 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   resetTaskStatus: () => {
     set(() => ({
       taskStatus: {
-        Monday: { jira: false, gitlab: false, meeting: false },
-        Tuesday: { jira: false, gitlab: false, meeting: false },
-        Wednesday: { jira: false, gitlab: false, meeting: false },
-        Thursday: { jira: false, gitlab: false, meeting: false },
-        Friday: { jira: false, gitlab: false, meeting: false },
-        Saturday: { jira: false, gitlab: false, meeting: false },
-        Sunday: { jira: false, gitlab: false, meeting: false },
-      },
+        Monday: { jira: true, gitlab: true, meeting: true },
+        Tuesday: { jira: true, gitlab: true, meeting: true },
+        Wednesday: { jira: true, gitlab: true, meeting: true },
+        Thursday: { jira: true, gitlab: true, meeting: true },
+        Friday: { jira: true, gitlab: true, meeting: true },
+        Saturday: { jira: true, gitlab: true, meeting: true },
+        Sunday: { jira: true, gitlab: true, meeting: true },
+          },
     }));
   },
 }));

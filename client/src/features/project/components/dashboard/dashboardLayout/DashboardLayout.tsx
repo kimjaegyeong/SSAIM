@@ -14,18 +14,18 @@ const DashboardLayout = () => {
   const { userId } = useUserStore();
   const { projectId } = useDashboardStore();
   const { data: projectListData } = useProjectListData(userId);
-  const projectInfo = projectListData?.find(p=>p.id === projectId)
+  const projectInfo = projectListData?.find((p) => p.id === projectId);
   const chartsData = [
     { label: 'Backend', progress: projectInfo?.progressBack || 0 },
     { label: 'Frontend', progress: projectInfo?.progressFront || 0 },
-  ]
+  ];
   return (
     <div className={styles.layout}>
       <DashboardHeader />
       <WeeklySchedule weeklyStartDate={new Date('2024-10-30')} />
       <div className={styles.dashboardBottom}>
         <div className={styles.chartContainer}>
-          <ProgressChart chartsData={chartsData}/>
+          <ProgressChart chartsData={chartsData} />
         </div>
         <TodoList />
       </div>

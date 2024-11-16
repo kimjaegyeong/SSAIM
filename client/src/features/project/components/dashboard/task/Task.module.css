@@ -16,12 +16,11 @@
 
 .task {
   font-size : 0.9rem;
-  height: 40px;
+  min-height : 40px;
   display: flex;
   align-items: center;
-  transition: transform 0.2s, box-shadow 0.2s; /* 애니메이션 효과 */
+  transition: transform 0.5s, box-shadow 0.2s; /* 애니메이션 효과 */
   border : 0.1px solid #ddd;
-
 }
 
 .task:hover {
