@@ -209,6 +209,13 @@
     color: white;
 }
 
+.applicationButton {
+    height: 80%;
+    min-width: 120px;
+    background-color: #949494;
+    color: white;
+}
+
 .buttonSection {
     display: flex;
     height: 50px;
@@ -258,4 +265,8 @@
 
 .memberList {
     margin-bottom: 30px;
+}
+
+.applicationText {
+    margin-left: 25%;
 }

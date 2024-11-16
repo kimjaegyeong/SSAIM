@@ -18,6 +18,8 @@ import { Recruitment, TeamBuildingData, TeamBuildingMember, MemberDeleteStatus }
 import useTeamStore from '@/features/project/stores/useTeamStore';
 import { showToast } from '@/utils/toastUtils';
 import Swal from 'sweetalert2';
+import { getApplications } from '@/features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
+import ApplicationsModal from '@/features/teamBuilding/components/modal/ApplicationsModal';
 
 const initialData: TeamBuildingData = {
   postId: 0,
@@ -59,6 +61,8 @@ const TeamBuildingDetailPage = () => {
   const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
   const { addMember, setLeaderId, resetStore, setPostId, setStartDate, setEndDate } = useTeamStore();
+  const [isRecruited, setIsRecruited] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const navigate = useNavigate();
 
@@ -69,14 +73,24 @@ const TeamBuildingDetailPage = () => {
   useEffect(() => {
     getPostInfo(parseInt(postId))
       .then((response) => {
-          setData(response);
-          setSelectedMembers(
-            response.recruitingMembers.map((member: TeamBuildingMember) => ({
-              userId: member.userId,
-              position: member.position,
-              delete: false,
-            }))
-          );
+        setData(response);
+        setSelectedMembers(
+          response.recruitingMembers.map((member: TeamBuildingMember) => ({
+            userId: member.userId,
+            position: member.position,
+            delete: false,
+          }))
+        );
+        if (userId) {
+          getApplications(userId)
+          .then((response) => {
+            const isRecruited = response.find((application: any) => application.status === 1)
+            setIsRecruited(isRecruited);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        }
       })
       .catch((err) => {
           console.error(err);
@@ -439,6 +453,15 @@ const TeamBuildingDetailPage = () => {
               <button className={`${styles.authorButton} ${styles.startButton}`} onClick={teamBuildingComplete}>팀 구성 완료</button>
               <button className={`${styles.authorButton} ${styles.editButton}`} onClick={handleEditPost}>게시글 수정</button>
               <button className={`${styles.authorButton} ${styles.deleteButton}`} onClick={handleDeletePost}>게시글 삭제</button>
+            </div>
+          ) :  isRecruited ? (
+            <div className={styles.commentForm}>
+              <div className={styles.applicationText}>
+                <p>가입 신청은 전체 한번만 가능합니다.</p>
+                <p>신청현황에서 확인해 주세요.</p>
+              </div>
+              <button onClick={() => setIsModalOpen(true)} className={styles.applicationButton}>신청현황</button>
+              {isModalOpen && <ApplicationsModal userId={userId} onClose={() => setIsModalOpen(false)} />} 
             </div>
           ) : (
             <div className={styles.commentForm}>
