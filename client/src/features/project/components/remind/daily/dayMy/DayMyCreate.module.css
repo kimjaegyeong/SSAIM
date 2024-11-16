@@ -105,7 +105,7 @@
 
 .textarea {
     width: 93%;
-    height: 52vh; /* Adjust height as needed */
+    height: 52vh; 
     padding: 10px;
     font-size: 16px;
     background-color: transparent;
@@ -113,7 +113,12 @@
     resize: none;
     outline: none;
     white-space: pre-wrap;
-  }
+    overflow-y: auto; 
+}
+
+.textarea::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge에서 스크롤바 숨기기 */
+}
 
 /* 오른쪽 섹션 */
 .description {  

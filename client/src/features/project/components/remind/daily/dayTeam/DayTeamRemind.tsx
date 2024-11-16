@@ -54,7 +54,7 @@ const DayTeamRemind: React.FC<DayTeamRemindProps> = ({ messages }) => {
               );
             })
           ) : (
-            <p>해당 날짜에 작성된 Keep 회고가 없습니다.</p>
+            <p className={styles.p}>해당 날짜에 작성된 Keep 회고가 없습니다.</p>
           )}
         </div>
       </div>
@@ -78,7 +78,7 @@ const DayTeamRemind: React.FC<DayTeamRemindProps> = ({ messages }) => {
               );
             })
           ) : (
-            <p>해당 날짜에 작성된 Problem 회고가 없습니다.</p>
+            <p className={styles.p}>해당 날짜에 작성된 Problem 회고가 없습니다.</p>
           )}
         </div>
       </div>
@@ -102,7 +102,7 @@ const DayTeamRemind: React.FC<DayTeamRemindProps> = ({ messages }) => {
               );
             })
           ) : (
-            <p>해당 날짜에 작성된 Try 회고가 없습니다.</p>
+            <p className={styles.p}>해당 날짜에 작성된 Try 회고가 없습니다.</p>
           )}
         </div>
       </div>

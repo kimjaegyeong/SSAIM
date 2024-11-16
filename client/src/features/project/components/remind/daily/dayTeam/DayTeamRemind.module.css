@@ -12,13 +12,21 @@
     padding: 10px;
     background-color: #F5F5F5;
     border-radius: 8px;
+    overflow-y: hidden;
 }
+
+.keepSection::-webkit-scrollbar,
+.problemSection::-webkit-scrollbar,
+.trySection::-webkit-scrollbar {
+    display: none; /* 스크롤바 숨김 (Chrome, Safari, Edge) */
+}
+
 .sectionTitle{
     display: flex;
     align-items: center;
     height: 5vh;
     gap:10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .sectionTitleStart {
@@ -51,4 +59,11 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     position: relative;
+}
+
+.p {
+    margin: 0px;
+    font-size: 15px;
+    line-height: 1.6;
+    width: 20vw;
 }

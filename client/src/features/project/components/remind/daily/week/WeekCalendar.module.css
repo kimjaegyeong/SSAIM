@@ -28,15 +28,3 @@
     background-color: #007bff !important; /* 선택된 월요일 스타일 */
     color: white !important;
 }
-
-.todayMarker {
-    display: block;
-    width: 5px;
-    height: 5px;
-    background-color: #007bff; /* 오늘 날짜에 표시할 스타일 */
-    color: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
