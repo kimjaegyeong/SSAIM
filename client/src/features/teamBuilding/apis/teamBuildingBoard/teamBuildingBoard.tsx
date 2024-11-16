@@ -21,3 +21,14 @@ export const getApplications = async (userId: number) => {
         throw error;
     }
 };
+
+export const getMyPost = async (userId: number) => {
+    try {
+        const response = await apiClient.get('/recruiting/posts', {params: {author: userId}});
+        console.log(response.data.data);
+        return response.data.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};

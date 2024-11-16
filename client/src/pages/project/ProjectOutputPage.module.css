@@ -4,7 +4,7 @@
     flex-direction: row;
     justify-self: center;
     justify-content: space-between;
-    margin: 20px 0 40px 0;
+    margin-bottom: 40px;
     border-bottom: 1px solid #d9d9d9;
 }
 
