@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import CheckModal from '@/components/checkModal/CheckModal';
 import { fetchApiKey } from '@features/project/apis/fetchApiKey';
 import { useProjectInfo } from '@/features/project/hooks/useProjectInfo';
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+import { FaQuestion } from 'react-icons/fa6';
+
 interface EditProjectSettingProps {
   onClose: () => void;
   type: 'jira' | 'gitlab';
@@ -32,15 +35,37 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
   const [apiKey, setApiKey] = useState<string>('');
   const [externalProjectId, setExternalProjectId] = useState<string>('');
   const [boardId, setBoardId] = useState<string>('');
+  const [isVisibleKey, setIsVisibleKey] = useState(false);
   const { data: projectInfo } = useProjectInfo(projectId);
 
-  const existingApiKey = type === 'jira' ? projectInfo?.jiraApi : projectInfo?.gitlabApi;
-
   useEffect(() => {
-    if (existingApiKey) {
-      setApiKey('**********'); // 초기값을 숨겨진 형태로 설정
+    if (!projectInfo) return;
+
+    // 타입별 데이터 매핑
+    const typeMapping = {
+      jira: {
+        id: projectInfo.jiraId,
+        boardId: projectInfo.jiraBoardId,
+        api: projectInfo.jiraApi,
+      },
+      gitlab: {
+        id: projectInfo.gitlabId,
+        boardId: null, // GitLab에는 boardId가 없음
+        api: projectInfo.gitlabApi,
+      },
+    };
+
+    const selectedType = typeMapping[type];
+
+    // 공통 상태 업데이트
+    setExternalProjectId(selectedType.id || '');
+    setApiKey(selectedType.api || '');
+
+    // 선택적 상태 업데이트
+    if (type === 'jira') {
+      setBoardId(selectedType.boardId || '');
     }
-  }, [existingApiKey]);
+  }, [projectInfo, type]);
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -74,29 +99,59 @@ const EditProjectSetting: React.FC<EditProjectSettingProps> = ({ onClose, type, 
             <p>{modalData?.title}</p>
           </div>
           <div className={styles.bodyRight}>
-            <input
-              type="text"
-              placeholder={`${modalData.content} Project Id`}
-              className={styles.input}
-              value={externalProjectId}
-              onChange={(e) => setExternalProjectId(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder={`${modalData.content} API Key`}
-              className={styles.input}
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-            />
-            {type === 'jira' ? (
+            <div className={styles.inputGroup}>
+              <label htmlFor="externalProjectId" className={styles.label}>
+                {modalData.title} Project ID
+              </label>
               <input
                 type="text"
-                placeholder={`${modalData.content} Board Id`}
+                id="externalProjectId"
                 className={styles.input}
-                value={boardId}
-                onChange={(e) => setBoardId(e.target.value)}
+                value={externalProjectId}
+                onChange={(e) => setExternalProjectId(e.target.value)}
               />
-            ) : null}
+            </div>
+
+            <div className={`${styles.inputGroup} ${styles.apiKeyContainer}`}>
+              <div className={styles.keyLabel}>
+                <label htmlFor="apiKey" className={styles.label}>
+                  {modalData.title} API Key
+                </label>
+                {type === "jira" ? 
+                <div className={styles.questionBox}>
+                  <FaQuestion />
+                  <div className={styles.tooltip}>{modalData.title} Key의 계정은 팀장 이메일과 일치해야 합니다</div>
+                </div>
+                :null}
+              </div>
+              <div className={styles.apiKeyWrapper}>
+                <input
+                  type={isVisibleKey ? 'text' : 'password'}
+                  id="apiKey"
+                  className={styles.input}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+                <button type="button" className={styles.toggleButton} onClick={() => setIsVisibleKey((prev) => !prev)}>
+                  {isVisibleKey ? <FaRegEyeSlash /> : <FaRegEye />}
+                </button>
+              </div>
+            </div>
+
+            {type === 'jira' && (
+              <div className={styles.inputGroup}>
+                <label htmlFor="boardId" className={styles.label}>
+                  {modalData.title} Board ID
+                </label>
+                <input
+                  type="text"
+                  id="boardId"
+                  className={styles.input}
+                  value={boardId}
+                  onChange={(e) => setBoardId(e.target.value)}
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className={styles.modalFooter}>

@@ -26,7 +26,7 @@ interface NavItemProps {
 }
 // menuItem 에 navbar 에서 사용할 item들의 정보 배열으로 저장
 const menuItems: MenuItem[] = [
-  { icon: <IoHomeOutline className={styles.icon} />, text: '메인페이지', path: '/' },
+  { icon: <IoHomeOutline className={styles.icon} />, text: 'Dashboard', path: '/' },
   { icon: <IoLayersOutline className={styles.icon} />, text: '프로젝트', path: '/project' },
   { icon: <IoPeopleOutline className={styles.icon} />, text: '팀 구성 게시판', path: '/team-building' },
   { icon: <IoDocumentTextOutline className={styles.icon} />, text: '회고', path: '/remind' },
