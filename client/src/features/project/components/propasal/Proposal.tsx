@@ -238,7 +238,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
       <div className={styles.aiButton}>
         <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
       </div>
-      <h2 className={styles.sectionTitle}>프로젝트 정보</h2>
+      <h2 className={styles.sectionTitle}>프로젝트 기획서</h2>
       <CommonModal 
         isOpen={isModalOpen}
         onClose={closeModal}

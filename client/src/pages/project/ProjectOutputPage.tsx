@@ -39,7 +39,7 @@ const ProjectOutputPage = () => {
           className={`${styles.outputButton} ${showOutput === 'featureSpec' ? styles.active : ''}`}
           onClick={() => setShowOutput('featureSpec')}
         >
-          기능명세서
+          기능 명세서
         </div>
         <div
           className={`${styles.outputButton} ${showOutput === 'APIspec' ? styles.active : ''}`}

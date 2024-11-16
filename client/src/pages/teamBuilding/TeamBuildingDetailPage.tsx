@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './TeamBuildingPage.module.css'
 import Tag from '../../features/teamBuilding/components/tag/Tag'
@@ -18,6 +18,8 @@ import { Recruitment, TeamBuildingData, TeamBuildingMember, MemberDeleteStatus }
 import useTeamStore from '@/features/project/stores/useTeamStore';
 import { showToast } from '@/utils/toastUtils';
 import Swal from 'sweetalert2';
+import { getApplications } from '@/features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
+import ApplicationsModal from '@/features/teamBuilding/components/modal/ApplicationsModal';
 
 const initialData: TeamBuildingData = {
   postId: 0,
@@ -59,7 +61,9 @@ const TeamBuildingDetailPage = () => {
   const [selectedTag, setSelectedTag] = useState<number>(1);
   const [message, setMessage] = useState<string>('');
   const { addMember, setLeaderId, resetStore, setPostId, setStartDate, setEndDate } = useTeamStore();
-  
+  const [isRecruited, setIsRecruited] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRefs = useRef<(HTMLDivElement | null)[]>([]);
   const navigate = useNavigate();
 
   const handleEditPost = () => {
@@ -69,18 +73,46 @@ const TeamBuildingDetailPage = () => {
   useEffect(() => {
     getPostInfo(parseInt(postId))
       .then((response) => {
-          setData(response);
-          setSelectedMembers(
-            response.recruitingMembers.map((member: TeamBuildingMember) => ({
-              userId: member.userId,
-              position: member.position,
-              delete: false,
-            }))
-          );
+        setData(response);
+        setSelectedMembers(
+          response.recruitingMembers.map((member: TeamBuildingMember) => ({
+            userId: member.userId,
+            position: member.position,
+            delete: false,
+          }))
+        );
+        if (userId) {
+          getApplications(userId)
+          .then((response) => {
+            const isRecruited = response.find((application: any) => application.status === 1)
+            setIsRecruited(isRecruited);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        }
       })
       .catch((err) => {
           console.error(err);
       });
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const clickedOutside = !modalRefs.current.some(
+        (ref) => ref && ref.contains(event.target as Node)
+      );
+  
+      if (clickedOutside) {
+        setActiveCommentId(null); // 외부 클릭 시 모달 닫기
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const isAuthor = userId === data.authorId;
@@ -440,6 +472,19 @@ const TeamBuildingDetailPage = () => {
               <button className={`${styles.authorButton} ${styles.editButton}`} onClick={handleEditPost}>게시글 수정</button>
               <button className={`${styles.authorButton} ${styles.deleteButton}`} onClick={handleDeletePost}>게시글 삭제</button>
             </div>
+          ) :  isRecruited ? (
+            <div className={styles.commentForm}>
+              <div className={styles.applicationText}>
+                <p>이미 팀에 참여 중입니다.</p>
+                <p>
+                  <button onClick={() => setIsModalOpen(true)} className={styles.applicationButton}>
+                    신청현황
+                  </button> 
+                  에서 확인해 주세요.
+                </p>
+              </div>
+              {isModalOpen && <ApplicationsModal userId={userId} onClose={() => setIsModalOpen(false)} />} 
+            </div>
           ) : (
             <div className={styles.commentForm}>
               <TagSelector onTagChange={handleTagChange} />
@@ -505,11 +550,21 @@ const TeamBuildingDetailPage = () => {
                 ) : (
                   <div className={styles.moreButtonWrapper}>
                     <AiOutlineMore
-                      onClick={() => toggleModal(index)}
+                      onClick={(event) => {
+                        event.stopPropagation(); // 이벤트 버블링 방지
+                        toggleModal(index);
+                      }}
                       className={styles.moreButton}
                     />
                     {activeCommentId === index && !isCommentEditing && (
-                      <div className={styles.modal}>
+                      <div
+                        className={styles.modal}
+                        ref={(ref) => {
+                          if (ref) {
+                            modalRefs.current[index] = ref; // 각 모달 요소를 참조 배열에 저장
+                          }
+                        }}
+                      >
                         {isAuthor ? (
                           (candidate.status !== -1) ? (
                             <>

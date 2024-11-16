@@ -12,6 +12,7 @@ import { TiDocumentText } from 'react-icons/ti';
 import jiraIcon from '@/assets/jira.svg';
 import gitlabIcon from '@/assets/gitlab.svg';
 import defaultTeamIcon from '@/assets/project/defaultTeamIcon.png';
+import { useNavigate } from 'react-router-dom';
 
 interface ProjectInfoProps {
   projectId: number;
@@ -26,6 +27,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
     { label: 'Backend', progress: projectInfo?.progressBack || 0 },
     { label: 'Frontend', progress: projectInfo?.progressFront || 0 },
   ];
+  const navigate = useNavigate();
   console.log(projectId);
   console.log(projectInfo);
   return (
@@ -78,10 +80,10 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
         <div className={styles.leftLowerSection}>
           {/* 버튼 6개가 위치할 왼쪽 영역 */}
           <div className={styles.buttonGrid}>
-            <Button children="주간 진행상황" colorType="blue" size="custom"></Button>
-            <Button children="산출물" colorType="blue" size="custom"></Button>
-            <Button children="회의록" colorType="blue" size="custom"></Button>
-            <Button children="회고" colorType="blue" size="custom"></Button>
+            <Button onClick={() => navigate(`/project/${projectId}/sprint`)} children="주간 진행상황" colorType="blue" size="custom"></Button>
+            <Button onClick={() => navigate(`/project/${projectId}/output`)} children="산출물" colorType="blue" size="custom"></Button>
+            <Button onClick={() => navigate(`/project/${projectId}/meeting`)} children="회의록" colorType="blue" size="custom"></Button>
+            <Button onClick={() => navigate(`/project/${projectId}/remind`)} children="회고" colorType="blue" size="custom"></Button>
           </div>
 
           {/* 컴포넌트가 들어갈 오른쪽 영역 */}
