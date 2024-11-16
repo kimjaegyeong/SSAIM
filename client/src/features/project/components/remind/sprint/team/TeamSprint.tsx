@@ -16,19 +16,22 @@ const TeamSprint: React.FC<TeamSprintProps> = ({ contents }) => {
 
   return (
     <div className={styles.teamReview}>
-      {contents.map((content, index) => {
-        // `content.content`를 \n\n 기준으로 나누기
-        const [keep, problem, trySection] = content.content.split("\n\n");
 
-        return (
+      {contents.length === 0 ? (
+        <p className={styles.p}>해당 주차에 생성된 회고가 없습니다.</p>
+      ) : (
+        contents.map((content, index) => (
+          // const [keep, problem, trySection] = content.content.split("\n\n");
           <TeamSprintCard
-            key={index}  // 각 카드에 고유한 키를 부여
+            key={index} // 각 카드에 고유한 키를 부여
             userName={content.username}
             userImage={content.userImage}
-            reviewText={`🟢 Keep: \n${keep}\n🟠 Problem: \n${problem}\n🔵 Try: \n${trySection}`}
+            // reviewText={`🟢 Keep: \n${keep}\n🟠 Problem: \n${problem}\n🔵 Try: \n${trySection}`}
+            reviewText={content.content}
           />
-        );
-      })}
+        ))
+      )}
+      
     </div>
   );
 };

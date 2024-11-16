@@ -34,7 +34,7 @@ const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
   ({ image, pageIndex  }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.imagePageContent}>
-        <img src={image} alt={ImageSample} className={styles.weeklyImage} />
+        <img src={image || ImageSample} alt="Weekly Reminder" className={styles.weeklyImage} />
       </div>
       <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
