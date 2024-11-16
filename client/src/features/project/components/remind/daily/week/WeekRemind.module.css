@@ -77,10 +77,12 @@
 .reviewText {
     margin: 0px;
     font-size: 14px;
+    width: 10.5vw;
     height: 57vh;
     overflow-y: auto;
     white-space: pre-wrap;
     line-height: 1.6;
+    overflow-wrap: break-word;
 }
 
 .reviewText::-webkit-scrollbar {
