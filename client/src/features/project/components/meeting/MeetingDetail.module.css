@@ -71,7 +71,7 @@
 .titleEditContainer {
     position: relative;
     display: inline-block;
-    width: 50%; /* 원하는 width로 설정 */
+    width: 17vw; /* 원하는 width로 설정 */
   }
   
 .titleInput {
@@ -187,6 +187,16 @@
     cursor: pointer;
 }
 
+.noHover {
+    color: inherit; /* 기존 색상 유지 */
+    cursor: default; /* 기본 커서 유지 */
+  }
+
+.noHover:hover {
+    color: inherit; /* 기존 색상 유지 */
+    cursor: default; /* 기본 커서 유지 */
+  }
+
 
 .highlight {
     background-color: #ade06a;
@@ -197,4 +207,29 @@
     margin: 0;
     text-align: start;
 
+}
+
+
+.commentEditContainer {
+    position: relative;
+    display: inline-block;
+    width: 60vw; /* 원하는 width로 설정 */
+    
+}
+.commentInput {
+    width: 90%;
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    word-wrap: break-word; /* 긴 단어 줄바꿈 */
+    word-break: break-word; /* 긴 단어 줄바꿈 */
+    white-space: pre-wrap; /* 공백과 줄바꿈 유지 */
+    resize: none; /* 사용자가 크기 조정 못하도록 */
+    overflow: hidden; /* 스크롤바 숨김 */
+    line-height: 1.5;
+    
 }
