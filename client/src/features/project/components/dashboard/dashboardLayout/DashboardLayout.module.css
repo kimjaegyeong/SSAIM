@@ -27,6 +27,7 @@
 
 .buttonGrid {
   display: grid;
+  min-width : 600px;
   height: 260px;;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
