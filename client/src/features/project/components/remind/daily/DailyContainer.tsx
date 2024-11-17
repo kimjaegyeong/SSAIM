@@ -16,12 +16,10 @@ import { format } from 'date-fns';
 import { dateToWeek } from '@/utils/dateToWeek';
 
 
-
 interface ProjectMember {
   userId: number;
   pmId: number;
 }
-
 
 
 const DailyContainer = () => {
@@ -39,9 +37,6 @@ const DailyContainer = () => {
 
   const { data: dailyRemindData, isError, error } = useDailyRemind({
     projectId: Number(projectId), // projectId를 넘겨줘야 함
-    projectMemberId: undefined,   // 예시로 undefined로 설정
-    startDate: undefined,      // 날짜 예시
-    endDate: undefined,        // 날짜 예시
   });
 
   useEffect(() => {
@@ -75,13 +70,6 @@ const DailyContainer = () => {
 
   const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
 
-  const dayMyfilteredMessages = dailyRemindData?.filter((item) =>
-    item.projectMemberId === pmId && item.dailyRemindDate === formattedSelectedDate
-  ) || [];
-
-  const dayTeamFilteredMessages = dailyRemindData?.filter(
-    (item) => item.dailyRemindDate === formattedSelectedDate
-  ) || [];
 
   const myfilteredMessages = dailyRemindData?.filter((item) =>
     item.projectMemberId === pmId 
@@ -118,8 +106,8 @@ const DailyContainer = () => {
           onMemberClick={handleMemberClick}
         />
         <div className={styles.remindContent}>
-          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind messages={dayMyfilteredMessages} formattedSelectedDate={formattedSelectedDate}/>}
-          {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind messages={dayTeamFilteredMessages}/>}
+          {dayWeek === '1일' && myTeam === '나의 회고' && <DayMyRemind formattedSelectedDate={formattedSelectedDate}/>}
+          {dayWeek === '1일' && myTeam === '팀원 회고' && <DayTeamRemind formattedSelectedDate={formattedSelectedDate} projectId={Number(projectId)} />}
           {dayWeek === '1주일' && myTeam === '나의 회고' && <WeekRemind messages={myfilteredMessages} selectedWeekDate={selecteWeekdDate}/>}
           {dayWeek === '1주일' && myTeam === '팀원 회고' && <WeekRemind messages={dailyRemindData|| []} selectedWeekDate={selecteWeekdDate} selectedMemberId={selectedMemberId}/>}
         </div>
