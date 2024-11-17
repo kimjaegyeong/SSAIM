@@ -250,68 +250,42 @@ const TeamBuildingDetailPage = () => {
 
   const handleNChange = (n: number) => {
     if (data.recruitedTotal > n) {
-        showToast.warn(
-            `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${n})을 초과할 수 없습니다.`
-        );
-        return;
+      showToast.warn(
+        `현재 모집된 멤버 수(${data.recruitedTotal})가 총 모집 인원(${n})을 초과할 수 없습니다.`
+      );
+      return;
     }
-
-    // 현재 recruitingMembers의 각 포지션의 최소값 계산
-    const calculateMinimumRecruitment = () => {
-        const FECount = data.recruitingMembers.filter(
-            (member) => member.position === 1
-        ).length;
-
-        const BECount = data.recruitingMembers.filter(
-            (member) => member.position === 2
-        ).length;
-
-        const InfraCount = data.recruitingMembers.filter(
-            (member) => member.position === 3
-        ).length;
-
-        return { FECount, BECount, InfraCount };
-    };
-
-    const { FECount, BECount, InfraCount } = calculateMinimumRecruitment();
-
-    setData((prevData) => {
-        const adjustedRecruitment = {
-            memberFrontend: FECount,
-            memberBackend: BECount,
-            memberInfra: InfraCount,
-        };
-
-        return {
-            ...prevData,
-            memberTotal: n,
-            ...adjustedRecruitment,
-        };
-    });
+    setData((prevData) => ({
+      ...prevData,
+      memberTotal: n,
+      frontLimit: data.frontCurrent,
+      backendLimit: data.backendCurrent,
+      infraLimit: data.infraCurrent,
+    }));
   };
+  
 
   const handleSliderChange = (role: keyof Recruitment, value: number) => {
+    // 입력된 값이 NaN인 경우 기본값을 0으로 설정
     const parsedValue = isNaN(value) ? 0 : value;
-
-    const otherTotal =
+  
+    // 총 모집 가능 인원에서 다른 역할의 제한을 뺀 값으로 제한 설정
+    const maxAllowed = Math.max(
+      0,
+      data.memberTotal - (
         role === 'FE'
-            ? data.backendLimit + data.infraLimit
-            : role === 'BE'
-            ? data.frontLimit + data.infraLimit
-            : data.frontLimit + data.backendLimit;
-
-    const maxAllowed = data.memberTotal - otherTotal;
-
+          ? data.backendLimit + data.infraLimit
+          : role === 'BE'
+          ? data.frontLimit + data.infraLimit
+          : data.frontLimit + data.backendLimit
+      )
+    );
+  
+    // 역할별 제한 값을 업데이트
     setData((prevData) => ({
-        ...prevData,
-        [role === 'FE'
-            ? 'memberFrontend'
-            : role === 'BE'
-            ? 'memberBackend'
-            : 'memberInfra']: Math.min(parsedValue, maxAllowed),
+      ...prevData,
+      [`${role === 'FE' ? 'frontLimit' : role === 'BE' ? 'backendLimit' : 'infraLimit'}`]: Math.min(parsedValue, maxAllowed),
     }));
-
-    console.log(`Updated ${role} to ${Math.min(parsedValue, maxAllowed)}`);
   };
 
   const handleDeletePost = () => {
@@ -718,17 +692,17 @@ const TeamBuildingDetailPage = () => {
           {editMembers && (
             <RecruitmentSelector
               recruitment={{
-                  FE: data.frontLimit,
-                  BE: data.backendLimit,
-                  Infra: data.infraLimit,
+                FE: data.frontLimit,
+                BE: data.backendLimit,
+                Infra: data.infraLimit,
               }}
               N={data.memberTotal}
               inputValue={data.memberTotal.toString()}
               onInputChange={(value) => {
-                  const total = parseInt(value, 10);
-                  handleNChange(total);
+                const total = parseInt(value, 10);
+                handleNChange(total);
               }}
-              onSliderChange={handleSliderChange}
+              onSliderChange={(role, value) => handleSliderChange(role, value)}
               onNChange={handleNChange}
             />
           )}
