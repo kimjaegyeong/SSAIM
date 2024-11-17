@@ -121,11 +121,18 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const mimeType = file.type;
+      const fileSizeInMB = file.size / (1024 * 1024); // 파일 크기를 MB로 변환
 
       // 허용된 MIME 타입 검사
       const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedMimeTypes.includes(mimeType)) {
         showToast.error('허용된 이미지 형식(JPEG, PNG, GIF)만 업로드 가능합니다.');
+        return;
+      }
+      // 파일 용량 검사 (예: 최대 5MB로 제한)
+      const maxFileSizeInMB = 30; // MB 단위
+      if (fileSizeInMB > maxFileSizeInMB) {
+        showToast.error(`이미지 용량은 최대 ${maxFileSizeInMB}MB까지만 허용됩니다.`, { toastId: 'fileSizeError' });
         return;
       }
 
@@ -289,7 +296,7 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
             onClick={() => document.getElementById('profileImageInput')?.click()}
             className={`${modalStyles.button} ${modalStyles.changeButton}`}
           >
-           새 사진 업로드
+            새 사진 업로드
           </button>
           <input
             type="file"
