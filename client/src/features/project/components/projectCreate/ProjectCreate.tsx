@@ -51,18 +51,54 @@ const ProjectCreate = () => {
     }
   };
 
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-      if (!allowedExtensions.exec(file.name)) {
-        alert('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const mimeType = file.type;
+      const fileSizeInMB = file.size / (1024 * 1024); // 파일 크기를 MB로 변환
+  
+      // 허용된 MIME 타입 검사
+      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedMimeTypes.includes(mimeType)) {
+        showToast.error('허용된 이미지 형식(JPEG, PNG, GIF)만 업로드 가능합니다.', { toastId: 'mimeTypeError' });
         return;
       }
-      setProjectImage(file);
-      setProjectImagePreview(URL.createObjectURL(file)); // 미리보기 URL 설정
+  
+      // 파일 용량 검사 (예: 최대 5MB로 제한)
+      const maxFileSizeInMB = 30; // MB 단위
+      if (fileSizeInMB > maxFileSizeInMB) {
+        showToast.error(`이미지 용량은 최대 ${maxFileSizeInMB}MB까지만 허용됩니다.`, { toastId: 'fileSizeError' });
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const header = uint8Array.slice(0, 4).join(' '); // 첫 4바이트 읽기
+  
+        // 매직 넘버 확인
+        const validHeaders = {
+          '255 216 255': 'jpeg', // JPEG
+          '137 80 78 71': 'png', // PNG
+          '71 73 70 56': 'gif', // GIF
+        };
+  
+        const isValid = Object.keys(validHeaders).some((key) => header.startsWith(key));
+        if (!isValid) {
+          showToast.error('허용된 이미지 형식(JPEG, PNG, GIF)만 업로드 가능합니다.', { toastId: 'magicNumberError' });
+          return;
+        }
+  
+        setProjectImage(file);
+        setProjectImagePreview(URL.createObjectURL(file)); // 미리보기 URL 설정
+      };
+  
+      reader.readAsArrayBuffer(file);
     }
   };
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

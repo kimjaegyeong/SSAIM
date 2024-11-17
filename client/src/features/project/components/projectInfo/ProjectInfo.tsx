@@ -13,6 +13,9 @@ import gitlabIcon from '@/assets/gitlab.svg';
 import defaultTeamIcon from '@/assets/project/defaultTeamIcon.png';
 import useUserStore from '@/stores/useUserStore';
 import { DashboardButtonGrid } from '@features/project/components/dashboard/dashboardLayout/DashboardLayout';
+import defaultProfile from '@/assets/profile/DefaultProfile.png'
+
+
 interface ProjectInfoProps {
   projectId: number;
 }
@@ -106,7 +109,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
                   {member.role === 1 ? (
                     <img src={leaderCrown} alt="leaderCrown" className={styles.leaderCrown} />
                   ) : null}
-                  <img src={member.profileImage} alt={member.name} className={styles.memberImage} />
+                  <img src={member.profileImage? member.profileImage : defaultProfile} alt={member.name} className={styles.memberImage} />
                   <span>{member.name}</span>
                   {member.role === 1 ? <span className={styles.leaderBadge}>팀장</span> : null}
                 </div>
