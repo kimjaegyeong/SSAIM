@@ -10,6 +10,7 @@ import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
 import { getProposal } from '../../apis/webSocket/proposal';
 import { useProjectInfo } from '../../hooks/useProjectInfo';
+import Tag from '@/features/teamBuilding/components/tag/Tag';
 
 interface FeatureSpecData {
   category: string[];
@@ -364,6 +365,31 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                             className={styles.tagOptionWrapper}
                           >
                             {member.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : column === 'priority' ? ( 
+                  <>
+                    <div className={styles.tagWrapper}>
+                      <Tag text={data[column][index]} />
+                    </div>
+                    {isEditing[index]?.[column] && (
+                      <div
+                        className={styles.tagOptions}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {['상', '중', '하'].map((value) => (
+                          <div
+                            key={value}
+                            onClick={() => {
+                              handleInputChange(column, index, value);
+                              handleBlur();
+                            }}
+                            className={styles.tagOptionWrapper}
+                          >
+                            <Tag text={value} />
                           </div>
                         ))}
                       </div>
