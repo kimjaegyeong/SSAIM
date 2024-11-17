@@ -16,6 +16,7 @@ const ProjectDatePicker: React.FC<ProjectDatePickerProps> = ({ startDate, endDat
                 type="date"
                 value={startDate}
                 onChange={(e) => onStartDateChange(e.target.value)}
+                max={endDate || undefined}
                 className={styles.dateInput}
             />
             <span className={styles.dateSeparator}>~</span>
@@ -23,6 +24,7 @@ const ProjectDatePicker: React.FC<ProjectDatePickerProps> = ({ startDate, endDat
                 type="date"
                 value={endDate}
                 onChange={(e) => onEndDateChange(e.target.value)}
+                min={startDate || undefined}
                 className={styles.dateInput}
             />
         </div>
