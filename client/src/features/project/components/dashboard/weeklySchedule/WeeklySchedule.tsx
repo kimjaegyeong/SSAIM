@@ -109,7 +109,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
       const mergeDate = new Date(mr.mergeDate);
       const dayOfWeek = mergeDate.getDay(); // 요일 인덱스 계산 (0=일요일, 1=월요일, ...)
       const weekDay = weekDays[(dayOfWeek + 6) % 7] || '날짜미지정';
-      console.log(mr.mergeDate, dayOfWeek, weekDay, mr.title);
+      // console.log(mr.mergeDate, dayOfWeek, weekDay, mr.title);
       dataByDay[weekDay as DayOfWeek]?.gitlab.push(mr);
     });
     //filteredIssue 순회하며 날짜에 해당하는 jira[] 에 넣기
