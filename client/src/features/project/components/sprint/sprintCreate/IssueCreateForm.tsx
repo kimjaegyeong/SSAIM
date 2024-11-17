@@ -4,6 +4,8 @@ import { useEpicListData } from '@/features/project/hooks/sprint/useEpicListData
 import { IssueCreateDTO } from '@/features/project/types/sprint/IssueCreateDTO';
 import { useParams } from 'react-router-dom';
 import { useSprintIssueStore } from '@/features/project/stores/useSprintIssueStore ';
+import { showToast } from '@/utils/toastUtils';
+
 interface IssueCreateFormProps {
   weekdays: string[]; // 선택 가능한 날짜 목록
   onAddIssue: (day: Date, issue: IssueCreateDTO) => void; // 이슈 추가 콜백 함수
@@ -50,7 +52,7 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
 
   const handleSaveIssue = () => {
     if (!selectedDay) {
-      alert('날짜를 선택해 주세요.');
+      showToast.warn('날짜를 선택해 주세요.');
       return;
     }
     const data: IssueCreateDTO = {

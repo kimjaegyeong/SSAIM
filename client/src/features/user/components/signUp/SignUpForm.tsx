@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { BaseUserDTO } from '@features/user/types/UserInfoDTO';
 import { signUp } from '@features/user/apis/signUpApi';
 import { regionMap } from '@/utils/labelUtils';
+import { showToast } from '@/utils/toastUtils';
 const SignUpForm: React.FC = () => {
   const [formData, setFormData] = useState<BaseUserDTO>({
     userEmail: '',
@@ -40,7 +41,7 @@ const SignUpForm: React.FC = () => {
     if (file) {
       const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
       if (!allowedExtensions.exec(file.name)) {
-        alert('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
+        showToast.warn('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
         return;
       }
       setProfileImage(file);

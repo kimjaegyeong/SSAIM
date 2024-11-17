@@ -6,6 +6,7 @@ import { editUserData } from '@/features/myPage/apis/editUserData';
 import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 import { regionMap, getRegionLabel } from '@/utils/labelUtils';
 import { useNavigate } from 'react-router-dom';
+import { showToast } from '@/utils/toastUtils';
 
 const EditProfile: React.FC = () => {
   const { userId } = useUserStore();
@@ -72,7 +73,7 @@ const EditProfile: React.FC = () => {
     if (file) {
       const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
       if (!allowedExtensions.exec(file.name)) {
-        alert('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
+        showToast.warn('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
         return;
       }
       setProfileImage(file);
@@ -83,7 +84,7 @@ const EditProfile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (phoneError) {
-      alert('전화번호 형식이 올바르지 않습니다.');
+      showToast.error('전화번호 형식이 올바르지 않습니다.');
       return;
     }
     try {

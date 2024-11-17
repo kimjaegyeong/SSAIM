@@ -56,7 +56,7 @@ const ProjectCreate = () => {
     if (file) {
       const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
       if (!allowedExtensions.exec(file.name)) {
-        alert('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
+        showToast.warn('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
         return;
       }
       setProjectImage(file);
