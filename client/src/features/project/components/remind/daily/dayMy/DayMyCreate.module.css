@@ -38,6 +38,11 @@
     font-size: 18px;
 }
 
+.headerButton {
+    display: flex;
+    gap: 20px;
+}
+
 .descriptionTitle {  
     color: #808080;
     font-size: 14px;

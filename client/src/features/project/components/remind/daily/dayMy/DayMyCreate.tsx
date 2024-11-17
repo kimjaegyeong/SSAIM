@@ -106,14 +106,9 @@ const DayMyCreate = () => {
     }
   }, [currentDate, myfilteredMessages, formattedSelectedDate]);
 
-  // dailyRemindDate와 selectedDate가 일치하는 메시지 찾기
-  // const matchingMessage = myfilteredMessages?.find(
-  //   (message: DailyRemindMessage) => {
-  //     const messageDate = new Date(message.dailyRemindDate);
-  //     // messageDate와 selectedDate를 비교
-  //     return messageDate.toLocaleDateString("ko-KR") === selectedDate.toLocaleDateString("ko-KR");
-  //   }
-  // );
+  const backButtonClick = () => {
+    navigate(-1);
+  };
 
   const handleButtonClick = async () => {
     if (!keepText || !problemText || !tryText) {
@@ -210,7 +205,10 @@ const DayMyCreate = () => {
               <p className={styles.descriptionTitle}>작성할 회고의 날짜를 변경할 수 있습니다.</p>
             )}
           </div>
-          <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
+          <div className={styles.headerButton}>
+            <Button size="xsmall" colorType="white" onClick={backButtonClick}>뒤로가기</Button>
+            <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
+          </div>
         </div>
         <div className={styles.myReview}>
           <div className={styles.keepSection}>
