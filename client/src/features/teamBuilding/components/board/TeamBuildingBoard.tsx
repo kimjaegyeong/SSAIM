@@ -41,6 +41,7 @@ const TeamBuildingBoard: React.FC = () => {
     const [error, setError] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { userId } = useUserStore();
+    const [showMyPost, setShowMyPost] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -53,16 +54,17 @@ const TeamBuildingBoard: React.FC = () => {
         setIsModalOpen(false);
     };
 
-    const fetchData = (pageNum: number) => {
+    const fetchData = (pageNum: number, isMyPost: boolean = false) => {
         setLoading(true);
-        const params = {
-            title: searchQuery || undefined,
-            domain: selectedDomain || undefined,
-            campus: selectedRegion || undefined,
-            position: selectedPosition || undefined,
-            status: selectedState || undefined,
-            pageNum,
-        };
+        const params = isMyPost
+            ? { author: userId } 
+            : {
+                title: searchQuery || undefined,
+                domain: selectedDomain || undefined,
+                campus: selectedRegion || undefined,
+                position: selectedPosition || undefined,
+                pageNum,
+            };
 
         getTeamBuildingList(params)
             .then((response) => {
@@ -86,7 +88,6 @@ const TeamBuildingBoard: React.FC = () => {
     const [selectedRegion, setSelectedRegion] = useState('');
     const [selectedDomain, setSelectedDomain] = useState('');
     const [selectedPosition, setSelectedPosition] = useState('');
-    const [selectedState, setSelectedState] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
     const regionOptions = [
@@ -153,21 +154,25 @@ const TeamBuildingBoard: React.FC = () => {
             setSelectedDomain(selectedOption.value);
         } else if (type === 'position') {
             setSelectedPosition(selectedOption.value);
-        } else if (type === 'state') {
-            setSelectedState(selectedOption.value);
         } 
     };
 
-    // 상태 변경 후 데이터 요청
     useEffect(() => {
-        fetchData(1); // 필터 상태가 변경되면 첫 페이지 데이터를 다시 요청
-    }, [selectedRegion, selectedDomain, selectedPosition, selectedState]);
+        if (!showMyPost) {
+            fetchData(1);
+        }
+    }, [selectedRegion, selectedDomain, selectedPosition, showMyPost]);
+
+    const handleShowMyPostsToggle = () => {
+        setShowMyPost(!showMyPost);
+        fetchData(1, !showMyPost);
+    };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
     };
 
-    const handleSearch = () => fetchData(1);
+    const handleSearch = () => fetchData(1, showMyPost);
 
     const handlePageChange = (page: number) => {
         if (page > 0 && page <= totalPages) {
@@ -230,12 +235,17 @@ const TeamBuildingBoard: React.FC = () => {
                                     setSelectedRegion('');
                                     setSelectedDomain('');
                                     setSelectedPosition('');
-                                    setSelectedState('');
                                 }
                             }
                         />
                     </div>
                     <div className={styles.searchActions}>
+                        <button
+                            className={`${styles.myPostButton} ${showMyPost ? styles.active : ''}`}
+                            onClick={handleShowMyPostsToggle}
+                        >
+                            내 글 보기
+                        </button>
                         <div className={styles.searchBar}>
                             <input 
                                 className={styles.searchInput} 

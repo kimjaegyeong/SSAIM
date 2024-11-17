@@ -9,6 +9,7 @@ import Button from '@components/button/Button';
 import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
 import { getProposal } from '../../apis/webSocket/proposal';
+import { useProjectInfo } from '../../hooks/useProjectInfo';
 
 interface FeatureSpecData {
   category: string[];
@@ -37,6 +38,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   const [isEditing, setIsEditing] = useState<{ [index: number]: { [field: string]: boolean } }>({});
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const stompClientRef = useRef<any>(null);
+  const { data: projectInfo } = useProjectInfo(parseInt(projectId));
 
   useEffect(() => {
     const fetchFeatureSpec = async () => {
@@ -142,17 +144,11 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   };
 
   const handleEditClick = (rowIndex: number, column: keyof FeatureSpecData) => {
-    setIsEditing((prev) => ({
-      ...prev,
-      [rowIndex]: { ...prev[rowIndex], [column]: true },
-    }));
+    setIsEditing({ [rowIndex]: { [column]: true } });
   };
 
-  const handleBlur = (rowIndex: number, column: keyof FeatureSpecData) => {
-    setIsEditing((prev) => ({
-      ...prev,
-      [rowIndex]: { ...prev[rowIndex], [column]: false },
-    }));
+  const handleBlur = () => {
+    setIsEditing({});
   };
 
   const autoResize = (element: HTMLTextAreaElement) => {
@@ -162,12 +158,10 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
 
   const handleKeyPress = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
-    rowIndex: number,
-    column: keyof FeatureSpecData
   ) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleBlur(rowIndex, column); // 엔터 키로 편집 종료
+      handleBlur(); // 엔터 키로 편집 종료
     }
   };
 
@@ -351,18 +345,47 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                     wordWrap: 'break-word',
                     wordBreak: 'break-word',
                   }}
+                  className={styles.tableCell}
                 >
-                  {isEditing[index]?.[column] ? (
+                {column === 'owner' ? (
+                  <>
+                    <div className={styles.tagWrapper}>
+                      {data[column][index]}
+                    </div>
+                    {isEditing[index]?.[column] && (
+                      <div className={styles.tagOptions} onClick={(e) => e.stopPropagation()}>
+                        {projectInfo?.projectMembers.map((member) => (
+                          <div
+                            key={member.pmId}
+                            onClick={() => {
+                              handleInputChange(column, index, member.name); // 선택된 멤버 이름으로 상태 업데이트
+                              handleBlur(); // 편집 모드 종료
+                            }}
+                            className={styles.tagOptionWrapper}
+                          >
+                            {member.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : isEditing[index]?.[column] ? (
                     <textarea
                       value={data[column][index]}
                       onChange={(e) => handleInputChange(column, index, e.target.value)}
-                      onKeyDown={(e) => handleKeyPress(e, index, column)} // 엔터 키 처리
-                      onBlur={() => handleBlur(index, column)}
+                      onKeyDown={(e) => handleKeyPress(e)} // 엔터 키 처리
+                      onBlur={() => handleBlur()}
                       autoFocus
                       ref={(el) => el && autoResize(el)} // 크기 자동 조정
                     />
                   ) : (
-                    data[column][index]
+                    data[column][index]?.length > (column === "category" ? 50 : 250) ? (
+                      <span title={data[column][index]}>
+                        {data[column][index].slice(0, column === "category" ? 50 : 250)}...
+                      </span>
+                    ) : (
+                      data[column][index]
+                    )
                   )}
                 </td>
               ))}

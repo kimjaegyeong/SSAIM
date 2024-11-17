@@ -14,6 +14,7 @@ import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
 import { getProposal } from '../../apis/webSocket/proposal';
 import { getFeatureSpec } from '../../apis/webSocket/featureSpec';
+import { useProjectInfo } from '../../hooks/useProjectInfo';
 
 interface ApiSpecData {
   category: string[];
@@ -62,6 +63,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
   const [isEditing, setIsEditing] = useState<{ [rowIndex: number]: { [column: string]: boolean } }>({});
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const { data: projectInfo } = useProjectInfo(parseInt(projectId));
 
   const openModal = (rowIndex: number) => {
     setSelectedRowIndex(rowIndex);
@@ -421,28 +423,26 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                 {(['category', 'functionName', 'uri', 'method', 'frontOwner', 'backOwner', 'frontState', 'backState', 'priority'] as const).map((column) => (
                   <td
                     key={column}
-                    onClick={() => handleEditClick(index, column)} // <td> 클릭 시 편집 모드 진입
+                    onClick={() => handleEditClick(index, column)}
                     className={styles.tableCell}
                   >
                     {column === 'frontState' || column === 'backState' ? (
                       <>
-                        {/* 기존 Tag 표시 */}
                         <div className={styles.tagWrapper}>
                           <Tag text={getApiStatusLabel(parseInt(data[column][index]))} />
                         </div>
 
-                        {/* 수정 모드: 선택 가능한 태그 목록 */}
                         {isEditing[index]?.[column] && (
                           <div
                             className={styles.tagOptions}
-                            onClick={(e) => e.stopPropagation()} // 클릭 이벤트 버블링 방지
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {[0, 1, 2].map((value) => (
                               <div
                                 key={value}
                                 onClick={() => {
                                   handleInputChange(column, index, value.toString());
-                                  handleBlur(); // 선택 후 편집 종료
+                                  handleBlur();
                                 }}
                                 className={styles.tagOptionWrapper}
                               >
@@ -454,12 +454,10 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                       </>
                     ) : column === 'method' ? ( 
                       <>
-                        {/* 기존 Tag 표시 */}
                         <div className={styles.tagWrapper}>
                           <Tag text={data[column][index]} />
                         </div>
 
-                        {/* 수정 모드: 선택 가능한 태그 목록 */}
                         {isEditing[index]?.[column] && (
                           <div
                             className={styles.tagOptions}
@@ -480,8 +478,32 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                           </div>
                         )}
                       </>
+                    ) : column === 'frontOwner' || column === 'backOwner' ? ( 
+                      <>
+                        <div className={styles.tagWrapper}>
+                          {data[column][index]}
+                        </div>
+                        {isEditing[index]?.[column] && (
+                          <div
+                            className={styles.tagOptions}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {projectInfo?.projectMembers.map((value) => (
+                              <div
+                                key={value.pmId}
+                                onClick={() => {
+                                  handleInputChange(column, index, value.name);
+                                  handleBlur();
+                                }}
+                                className={styles.tagOptionWrapper}
+                              >
+                                {value.name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
                     ) : isEditing[index]?.[column] ? (
-                      // 편집 모드: 텍스트 에디터
                       <textarea
                         value={data[column][index]}
                         onChange={(e) => handleInputChange(column, index, e.target.value)}
@@ -492,8 +514,13 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                         className={styles.editTextarea}
                       />
                     ) : (
-                      // 보기 모드: 일반 텍스트
-                      data[column][index]
+                      data[column][index]?.length > (column === "category" ? 50 : 250) ? (
+                        <span title={data[column][index]}>
+                          {data[column][index].slice(0, column === "category" ? 50 : 250)}...
+                        </span>
+                      ) : (
+                        data[column][index]
+                      )
                     )}
                   </td>
                 ))}
