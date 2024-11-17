@@ -91,3 +91,9 @@
 .activeLabel {
   color: #4A90E2; 
 }
+
+.loadingContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
