@@ -10,7 +10,7 @@ interface ERDProps {
 const ERD: React.FC<ERDProps> = ({ projectId }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null); // 이미지 상태
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  // const [isModalOpen, setIsModalOpen] = useState(false); 
 
 
   const fetchErd = async () => {
@@ -106,12 +106,18 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
     }
   };
 
-  const handleImageClick = () => {
-    setIsModalOpen(true); // 모달 열기
-  };
+  // const handleImageClick = () => {
+  //   setIsModalOpen(true); // 모달 열기
+  // };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false); // 모달 닫기
+  // const handleModalClose = () => {
+  //   setIsModalOpen(false); // 모달 닫기
+  // };
+  
+  const handleViewImage = () => {
+    if (imageUrl) {
+      window.open(imageUrl, '_blank');
+    }
   };
 
   return (
@@ -132,7 +138,8 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
             src={imageUrl}
             alt="ERD Image"
             className={styles.erdImage}
-            onClick={handleImageClick}
+            // onClick={handleImageClick}
+            onClick={handleViewImage}
           />
         </>
       ) : (
@@ -150,12 +157,12 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
           />
         </>
       )}
-      {isModalOpen && imageUrl && (
+      {/* {isModalOpen && imageUrl && (
         <div className={styles.modal} onClick={handleModalClose}>
           <span className={styles.modalClose}>&times;</span>
           <img src={imageUrl} alt="ERD Enlarged" />
         </div>
-      )}
+      )} */}
     </div>
   );
 };
