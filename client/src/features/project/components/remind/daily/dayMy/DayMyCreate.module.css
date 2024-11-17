@@ -43,6 +43,17 @@
     font-size: 14px;
     font-weight: lighter;
     white-space: pre-wrap;
+    /* 애니메이션 추가 */
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1; /* 시작과 끝은 완전 불투명 */
+    }
+    50% {
+        opacity: 0; /* 중간에 투명하게 */
+    }
 }
 
 /* 회고 작성란 */

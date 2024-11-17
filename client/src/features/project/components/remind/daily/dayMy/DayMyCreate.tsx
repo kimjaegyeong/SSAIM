@@ -5,6 +5,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { ImPencil } from "react-icons/im";
 import Button from '../../../../../../components/button/Button';
 import CreateCalendar from './CreateCalendar';
+import CreateRight from './CreateRight';
 import { createDailyRemind }from '@features/project/apis/remind/createDailyRemind';
 import { editDailyRemind } from '@features/project/apis/remind/editDailyRemind';
 import { DailyRemindPostDTO, DailyRemindPutDTO  } from '@features/project/types/remind/DailyRemindDTO';
@@ -106,13 +107,13 @@ const DayMyCreate = () => {
   }, [currentDate, myfilteredMessages, formattedSelectedDate]);
 
   // dailyRemindDate와 selectedDate가 일치하는 메시지 찾기
-  const matchingMessage = myfilteredMessages?.find(
-    (message: DailyRemindMessage) => {
-      const messageDate = new Date(message.dailyRemindDate);
-      // messageDate와 selectedDate를 비교
-      return messageDate.toLocaleDateString("ko-KR") === selectedDate.toLocaleDateString("ko-KR");
-    }
-  );
+  // const matchingMessage = myfilteredMessages?.find(
+  //   (message: DailyRemindMessage) => {
+  //     const messageDate = new Date(message.dailyRemindDate);
+  //     // messageDate와 selectedDate를 비교
+  //     return messageDate.toLocaleDateString("ko-KR") === selectedDate.toLocaleDateString("ko-KR");
+  //   }
+  // );
 
   const handleButtonClick = async () => {
     if (!keepText || !problemText || !tryText) {
@@ -253,27 +254,13 @@ const DayMyCreate = () => {
           </div>
         </div>
       </div>
-      <div className={styles.right}>
-        <p className={styles.description}>
-          이전에 작성했던 회고를 {'\n'}조회할 날짜를 선택해주세요</p>
-        <CreateCalendar selectedDate={selectedDate} onDateChange={setSelectedDate}/>
-        <div className={styles.remindBox}>
-            <div className={styles.dateSubTitle}>
-                <FaRegClock style={{ strokeWidth: 2, color: "#007bff" }} />
-                {formattedDate}
-            </div>
-            <div className={styles.remindText}>
-                {matchingMessage ? (
-                  <>
-                    {matchingMessage.message}
-                  </>
-                ) : (
-                  '선택한 날짜에 대한 회고가 없습니다.'
-                )}
-            </div>
-        </div>
-
-      </div>
+      <CreateRight
+      selectedDate={selectedDate}
+      setSelectedDate={setSelectedDate}
+      formattedDate={formattedDate}
+      projectId={Number(projectId)} // projectId 전달
+      pmId={Number(pmId)} // pmId 전달
+    />
     </div>
   );
 };
