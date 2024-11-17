@@ -4,7 +4,7 @@ import DropDown from '../filterDropDown/FilterDropDown';
 import CategoryDropdown from "../filterDropDown/CategoryDropDown";
 import Tag from '../tag/Tag';
 import useUserStore from "@/stores/useUserStore";
-import { getTeamBuildingList, getMyPost } from "../../apis/teamBuildingBoard/teamBuildingBoard";
+import { getTeamBuildingList } from "../../apis/teamBuildingBoard/teamBuildingBoard";
 import { AiOutlineProfile } from "react-icons/ai";
 import { FiPlus } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';

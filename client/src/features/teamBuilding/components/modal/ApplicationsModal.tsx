@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './ApplicationsModal.module.css';
 import Tag from '../tag/Tag';
 import { getDomainLabel, getPositionLabel, getApplicationStatusLabel } from '../../../../utils/labelUtils';
-import { getApplications, getMyPost } from '@features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
+import { getTeamBuildingList, getApplications } from '@features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
 import { useNavigate } from 'react-router-dom';
 
 interface ApplicationData {
@@ -15,6 +15,14 @@ interface ApplicationData {
     status: number;
 }
 
+interface MyPost {
+    recruitingId: number;
+    recruitingTitle: string;
+    firstDomain: number;
+    secondDomain: number;
+    position: string;
+}
+
 interface ApplicationsModalProps {
     userId: number | null;
     onClose: () => void;
@@ -22,6 +30,7 @@ interface ApplicationsModalProps {
 
 const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }) => {
     const [applications, setApplications] = useState<ApplicationData[]>([]);
+    const [myPost, setMyPost] = useState<MyPost[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,9 +45,22 @@ const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }
                 console.error('Error fetching applications:', error);
             }
         };
-        if (userId) {
-            getMyPost(userId)
-        }
+
+        const params = { author: userId }
+        getTeamBuildingList(params)
+            .then((response) => {
+                const data = response.data.map((item: any) => ({
+                    recruitingId: item.postId,
+                    recruitingTitle: item.postTitle,
+                    firstDomain: item.firstDomain,
+                    secondDomain: item.secondDomain,
+                }));
+                setMyPost(data);
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+
         fetchApplications();
     }, [userId]);
 
@@ -52,9 +74,7 @@ const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }
                     </button>
                 </div>
                 <div className={styles.modalBody}>
-                    {applications.length === 0 ? (
-                        <div className={styles.noApplications}>신청내역이 없습니다.</div>
-                    ) : (
+                    {applications.length > 0 && (
                         applications.map((application, index) => (
                             <div
                                 key={index}
@@ -85,6 +105,37 @@ const ApplicationsModal: React.FC<ApplicationsModalProps> = ({ userId, onClose }
                                 </span>
                             </div>
                         ))
+                    )}
+                    {myPost.length > 0 && (
+                        <>
+                            {myPost.map((post, index) => (
+                                <div
+                                    key={`myPost-${index}`}
+                                    className={styles.applicationRow}
+                                    onClick={() => {
+                                        onClose();
+                                        navigate(`/team-building/detail/${post.recruitingId}`);
+                                    }}
+                                >
+                                    <span className={styles.title}>{post.recruitingTitle}</span>
+                                    <div className={styles.tags}>
+                                        <Tag text={getDomainLabel(post.firstDomain)} />
+                                        {post.secondDomain && (
+                                            <Tag text={getDomainLabel(post.secondDomain)} />
+                                        )}
+                                    </div>
+                                    <Tag text={'팀장'} />
+                                    <span
+                                        className={`${styles.status} ${styles.accepted}`}
+                                    >
+                                        가입됨
+                                    </span>
+                                </div>
+                            ))}
+                        </>
+                    )}
+                    {applications.length === 0 && myPost.length === 0 && (
+                        <div className={styles.noApplications}>신청 내역과 게시글이 없습니다.</div>
                     )}
                 </div>
             </div>
