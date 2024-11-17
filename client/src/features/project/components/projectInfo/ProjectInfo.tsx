@@ -1,6 +1,5 @@
 import styles from './ProjectInfo.module.css';
 import ProgressChart from '../dashboard/progressChart/ProgressChart';
-import Button from '../../../../components/button/Button';
 import EditProjectInfoModal from './editProjectInfo/EditProjectInfo';
 import { useState } from 'react';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
@@ -13,8 +12,7 @@ import jiraIcon from '@/assets/jira.svg';
 import gitlabIcon from '@/assets/gitlab.svg';
 import defaultTeamIcon from '@/assets/project/defaultTeamIcon.png';
 import useUserStore from '@/stores/useUserStore';
-import { useNavigate } from 'react-router-dom';
-
+import { DashboardButtonGrid } from '@features/project/components/dashboard/dashboardLayout/DashboardLayout';
 interface ProjectInfoProps {
   projectId: number;
 }
@@ -30,9 +28,15 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
     { label: 'Frontend', progress: projectInfo?.progressFront || 0 },
   ];
   const isTeamLeader = projectInfo?.projectMembers.find((member) => member.userId === userId)?.role === 1;
-  const navigate = useNavigate();
   console.log(projectId);
   console.log(projectInfo);
+  const tempLink: Record<string, string> = {
+    Jira: 'http://www.naver.com',
+    Gitlab: 'http://www.naver.com',
+    Figma: 'http://www.naver.com',
+    Notion: 'http://www.naver.com',
+  };
+
   return (
     <div className={styles.projectInfoContainer}>
       <div className={styles.leftSection}>
@@ -60,7 +64,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
                   setIsEditModalOpen(true);
                 }}
               >
-                <TiDocumentText className={styles.icons}/>
+                <TiDocumentText className={styles.icons} />
               </span>
               <span
                 className={styles.modify}
@@ -83,15 +87,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
         </div>
 
         <div className={styles.leftLowerSection}>
-          {/* 버튼 6개가 위치할 왼쪽 영역 */}
-          <div className={styles.buttonGrid}>
-            <Button onClick={() => navigate(`/project/${projectId}/sprint`)} children="주간 진행상황" colorType="blue" size="custom"></Button>
-            <Button onClick={() => navigate(`/project/${projectId}/output`)} children="산출물" colorType="blue" size="custom"></Button>
-            <Button onClick={() => navigate(`/project/${projectId}/meeting`)} children="회의록" colorType="blue" size="custom"></Button>
-            <Button onClick={() => navigate(`/project/${projectId}/remind`)} children="회고" colorType="blue" size="custom"></Button>
-          </div>
-
-          {/* 컴포넌트가 들어갈 오른쪽 영역 */}
+          <DashboardButtonGrid linkMap={tempLink} />
           <div className={styles.componentArea}>
             <ProgressChart chartsData={chartsData} />
           </div>
