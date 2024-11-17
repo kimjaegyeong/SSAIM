@@ -23,7 +23,9 @@
     margin-bottom: 3px ;
 }
 
-:global(.react-calendar__tile--active) {
-    background-color: #007bff !important; 
-    color: white ; 
+
+
+:global(.react-calendar__tile.selectedTile) {
+    background-color: #198861 !important; /* 초록색 */
+    color: white !important; /* 글자 색 흰색 */
 }

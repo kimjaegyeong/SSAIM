@@ -1,4 +1,4 @@
-import { useState, useEffect  } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './MeetingList.module.css';
 import Button from '../../../../components/button/Button';
@@ -7,7 +7,8 @@ import MeetingItem from './MeetingItem';
 import MeetingModal from './MeetingModal';
 import { fetchMeetingList } from '@features/project/apis/meeting/fetchMeetingList';
 import { MeetingItemDTO } from '../../types/meeting/MeetingDTO';
-import meetingNoImage from '@/assets/meeting/meetingImage.png'
+import meetingNoImage from '@/assets/meeting/meetingImage.png';
+import moment from 'moment';
 
 const MeetingList = () => {
   const navigate = useNavigate();
@@ -15,8 +16,7 @@ const MeetingList = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [meetings, setMeetings] = useState<MeetingItemDTO[]>([]);
-
-
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   useEffect(() => {
     const getMeetings = async () => {
@@ -33,12 +33,11 @@ const MeetingList = () => {
     }
   }, [projectId]);
 
-
   const handleMeetingClick = (meeting: MeetingItemDTO) => {
     console.log('Selected meeting:', meeting);
     navigate(`/project/${projectId}/meeting/${meeting.meetingId}`);
   };
-  
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -47,12 +46,27 @@ const MeetingList = () => {
     setIsModalOpen(false);
   };
 
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date); // 선택된 날짜 상태 업데이트
+  };
+
+  const handleShowAllMeetings = () => {
+    setSelectedDate(null); // 선택된 날짜 초기화
+  };
+
+  // 선택된 날짜와 동일한 회의만 필터링
+  const filteredMeetings = selectedDate
+    ? meetings.filter((meeting) =>
+        moment(meeting.meetingCreateTime).isSame(selectedDate, 'day')
+      )
+    : meetings;
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-      <div className={styles.meetingList}>
-          {meetings.length > 0 ? (
-            meetings.map((meeting) => (
+        <div className={styles.meetingList}>
+          {filteredMeetings.length > 0 ? ( // 필터링된 meetings 사용
+            filteredMeetings.map((meeting) => (
               <MeetingItem
                 key={meeting.meetingId}
                 meeting={meeting}
@@ -66,19 +80,17 @@ const MeetingList = () => {
             </div>
           )}
         </div>
-        
       </div>
       <div className={styles.right}>
         <Button size="large" colorType="green" onClick={handleOpenModal}>
           🎙️ 회의록 생성하기
         </Button>
         <p className={styles.description}>조회할 날짜를 선택해주세요</p>
-        <MeetingCalendar />
+        <MeetingCalendar onDateChange={handleDateChange} />
+        <div className={styles.allMeeting} onClick={handleShowAllMeetings}>🌐 전체보기</div>
       </div>
 
-      <MeetingModal isOpen={isModalOpen} onClose={handleCloseModal}>
-
-      </MeetingModal>
+      <MeetingModal isOpen={isModalOpen} onClose={handleCloseModal}></MeetingModal>
     </div>
   );
 };
