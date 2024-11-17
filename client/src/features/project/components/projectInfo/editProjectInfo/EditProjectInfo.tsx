@@ -10,6 +10,8 @@ import useTeamStore from '@/features/project/stores/useTeamStore';
 import { useParams } from 'react-router-dom';
 import useUserStore from '@/stores/useUserStore';
 import { showToast } from '@/utils/toastUtils';
+import { toast } from 'react-toastify';
+
 interface EditProjectInfoModalProps {
   projectInfo: ProjectDTO;
   onClose: () => void;
@@ -97,11 +99,43 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
     };
     fileInput.click();
   };
+  const handleProjectTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const toastId = `length-warning`;
+    if (value.length > 20) {
+      if (!toast.isActive(toastId)) {
+        showToast.warn('프로젝트 이름은 최대 20자까지 입력 가능합니다.', { toastId: 'length-warning' });
+      }
+      return;
+    }
+    setProjectTitle(value);
+  };
+
+  const handleTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const toastId = `length-warning`;
+    if (value.length > 20) {
+      if (!toast.isActive(toastId)) {
+        showToast.warn('팀 이름은 최대 20자까지 입력 가능합니다.', {
+          toastId: 'length-warning',
+        });
+      }
+
+      return;
+    }
+    setTeamName(value);
+  };
 
   const handleSave = () => {
     // 시작일자와 종료일자 유효성 검사
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
       showToast.warn('프로젝트 시작일자는 종료일자보다 늦을 수 없습니다.');
+      return;
+    }
+
+    // 팀 이름 및 프로젝트 이름 길이 제한 검사
+    if (projectTitle.length > 20 || teamName.length > 20) {
+      showToast.warn('프로젝트 이름과 팀 이름은 각각 최대 20자까지 입력 가능합니다.');
       return;
     }
 
@@ -161,6 +195,7 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
       onClose();
     }
   };
+
   const handleStartDateChange = (date: Date | null) => {
     if (date && endDate && new Date(date) > new Date(endDate)) {
       showToast.warn('시작일자가 종료일자보다 늦을 수 없습니다. 종료일자가 조정됩니다.');
@@ -168,7 +203,7 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
     }
     setStartDate(date);
   };
-  
+
   const handleEndDateChange = (date: Date | null) => {
     if (date && startDate && new Date(date) < new Date(startDate)) {
       showToast.error('종료일자는 시작일자보다 빠를 수 없습니다.');
@@ -176,12 +211,12 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
     }
     setEndDate(date);
   };
-    const handleCancel = () => {
+  const handleCancel = () => {
     onClose();
   };
 
   return (
-    <div className={styles.modalOverlay} >
+    <div className={styles.modalOverlay}>
       <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2>프로젝트 정보 수정</h2>
@@ -198,7 +233,7 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
                 placeholder="프로젝트 이름"
                 className={styles.input}
                 value={projectTitle}
-                onChange={(e) => setProjectTitle(e.target.value)}
+                onChange={handleProjectTitleChange}
               />
             </div>
             <div className={styles.inputGroup}>
@@ -208,7 +243,7 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
                 placeholder="팀 이름"
                 className={styles.input}
                 value={teamName}
-                onChange={(e) => setTeamName(e.target.value)}
+                onChange={handleTeamNameChange}
               />
             </div>
           </div>
