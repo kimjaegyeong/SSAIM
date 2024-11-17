@@ -8,8 +8,9 @@ import {
   IoLogOutOutline,
 } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-import useUserStore from '@/stores/useUserStore'
-import defaultProfile from '@/assets/profile/DefaultProfile.png'
+import useUserStore from '@/stores/useUserStore';
+import defaultProfile from '@/assets/profile/DefaultProfile.png';
+import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 
 // 메뉴 아이템의 타입 정의
 interface MenuItem {
@@ -43,30 +44,47 @@ const NavItem: React.FC<NavItemProps> = ({ icon, text, onClick }) => (
 // Navbar 컴포넌트 정의
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const {userId, logout, userName, userProfileImage} = useUserStore();
-  const handleLogout = () =>{
+  const { userId, logout } = useUserStore();
+  const handleLogout = () => {
     logout();
     navigate('/login');
-
-  }
+  };
+  const { data: userInfo } = useUserInfoData(userId);
   return (
     <div className={styles.sidebarContainer}>
       <div className={styles.navList}>
         {/* 프로필 이미지와 이름 */}
-        <NavItem icon={<img className={styles.profileImage} src={userProfileImage?userProfileImage:defaultProfile}></img>} text={userName?userName:""} onClick={() => {navigate(`/profile/${userId}`)}}/>
+        <NavItem
+          icon={
+            <img
+              className={styles.profileImage}
+              src={userInfo?.userProfileImage ? userInfo?.userProfileImage : defaultProfile}
+            ></img>
+          }
+          text={userInfo?.userName ? userInfo?.userName : ''}
+          onClick={() => {
+            navigate(`/profile/${userId}`);
+          }}
+        />
 
         {/* 메뉴 아이템 리스트 */}
         {menuItems.map((item, index) => (
-          <NavItem key={index} icon={item.icon} text={item.text} onClick = {() => {navigate(item.path)}}/>
+          <NavItem
+            key={index}
+            icon={item.icon}
+            text={item.text}
+            onClick={() => {
+              navigate(item.path);
+            }}
+          />
         ))}
       </div>
 
       {/* 로그아웃 버튼 */}
-      <div className=''>
-
-      <div className={styles.footer}>
-        <NavItem icon={<IoLogOutOutline className={styles.icon} />} text="로그아웃" onClick={handleLogout}/>
-      </div>
+      <div className="">
+        <div className={styles.footer}>
+          <NavItem icon={<IoLogOutOutline className={styles.icon} />} text="로그아웃" onClick={handleLogout} />
+        </div>
       </div>
     </div>
   );
