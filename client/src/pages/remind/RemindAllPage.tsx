@@ -34,7 +34,7 @@ const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
   ({ image, pageIndex  }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.imagePageContent}>
-        <img src={image} alt={ImageSample} className={styles.weeklyImage} />
+        <img src={image || ImageSample} alt="Weekly Reminder" className={styles.weeklyImage} />
       </div>
       <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
@@ -50,7 +50,7 @@ const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
   ({ report, pageIndex }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.reportPageContent}>
-        {report}
+        <div className={styles.reportText}>{report}</div>
       </div>
       <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
     </div>
@@ -80,6 +80,36 @@ const RemindAllPage: React.FC = () => {
   }, []);
 
   let currentPageIndex = 0; 
+
+  const pages = data?.flatMap((project) => [
+    <Cover key={`cover-${project.projectId}`} project={project} pageIndex={currentPageIndex++} />,
+    ...project.weeklyRemind.flatMap((remind, index) => [
+      remind.imageUrl && (
+        <ImagePage
+          key={`image-${project.projectId}-${currentPageIndex}`}
+          image={remind.imageUrl}
+          pageIndex={currentPageIndex++}
+        />
+      ),
+      ...splitContentToPages(remind.content, 500).map((pageContent) => (
+        <ReportPage
+          key={`report-${project.projectId}-${index}-${currentPageIndex}`}
+          report={pageContent}
+          pageIndex={currentPageIndex++}
+        />
+      )),
+    ]).filter(Boolean),
+  ]) ?? [];
+
+  // 빈 페이지 추가
+  pages.push(
+    <div className={styles.page} key="end-page" ref={React.createRef<HTMLDivElement>()}>
+      <div className={styles.endPageContent}>
+        <h1 className={styles.end}>The End</h1>
+      </div>
+      <div className={styles.pageNumber_W}>- {currentPageIndex + 1} -</div>
+    </div>
+  );
 
   return (
     <div className={styles.mainContainer}>
@@ -115,15 +145,7 @@ const RemindAllPage: React.FC = () => {
           clickEventForward={true}
           showPageCorners={true}
         >
-          {data?.flatMap((project) => [
-            <Cover key={`cover-${project.projectId}`} project={project} pageIndex={currentPageIndex++}/>,
-            ...project.weeklyRemind.flatMap((remind, index) => [
-              remind.imageUrl && <ImagePage key={`image-${project.projectId}-${currentPageIndex}`} image={remind.imageUrl} pageIndex={currentPageIndex++}/>,
-              ...splitContentToPages(remind.content, 600).map((pageContent) => (
-                <ReportPage key={`report-${project.projectId}-${index}-${currentPageIndex}`} report={pageContent} pageIndex={currentPageIndex++}/>
-              ))
-            ]).filter(Boolean)
-          ])}
+          {pages}
         </HTMLFlipBook>
       </div>
     </div>

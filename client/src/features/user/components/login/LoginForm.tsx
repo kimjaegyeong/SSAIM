@@ -8,7 +8,6 @@ const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null); // 오류 상태 추가
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,7 +17,7 @@ const LoginForm: React.FC = () => {
       navigate('/'); // 성공 시 메인 페이지로 이동
     } catch (error) {
       setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인하세요.'); // 실패 시 에러 메시지 설정
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -28,7 +27,7 @@ const LoginForm: React.FC = () => {
         <div className={styles.header}>
           <h1>Login</h1>
         </div>
-        <div className={styles.inputGroup}> 
+        <div className={styles.inputGroup}>
           <label htmlFor="email" className={styles.label}>
             이메일
           </label>

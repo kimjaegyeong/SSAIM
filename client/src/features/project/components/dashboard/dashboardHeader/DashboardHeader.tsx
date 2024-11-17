@@ -90,9 +90,6 @@ const DashboardHeader: React.FC = () => {
       <div className={styles.dateRange}>
         <div>
           <select value={projectId} onChange={handleProjectChange} className={styles.projectSelect}>
-            <option disabled value="">
-              프로젝트 선택
-            </option>
             {projectListData?.map((project) => (
               <option key={project.id} value={project.id}>
                 {project.title}

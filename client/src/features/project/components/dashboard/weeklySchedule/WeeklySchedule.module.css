@@ -1,7 +1,7 @@
 .container {
-  height : 100%;
   overflow-x : scroll;
-
+  border-left: 0.1px solid #ddd;
+  background-color: #fff;
 }
 
 .header {

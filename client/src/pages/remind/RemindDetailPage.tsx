@@ -41,7 +41,7 @@ const ImagePage = React.forwardRef<HTMLDivElement, ImagePageProps>(
   ({ image, pageIndex }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.imagePageContent}>
-        <img src={image} alt={ImageSample} className={styles.weeklyImage} />
+        <img src={image || ImageSample} alt="Weekly Reminder" className={styles.weeklyImage} />
       </div>
       <div className={styles.pageNumber_W}>- {pageIndex + 1} -</div>
     </div>
@@ -123,11 +123,18 @@ const RemindDetailPage: React.FC = () => {
           <Cover project={project} pageIndex={currentPageIndex++}/>
           {project.weeklyRemind.flatMap((data, index) => {
             const imagePage = <ImagePage key={`image-${currentPageIndex}`} image={data.imageUrl} pageIndex={currentPageIndex++}/>;
-            const reportPages = splitContentToPages(data.content, 600).map((pageContent) => (
+            const reportPages = splitContentToPages(data.content, 500).map((pageContent) => (
               <ReportPage key={`report-${index}-${currentPageIndex}`} report={pageContent} pageIndex={currentPageIndex++}/>
             ));
             return [imagePage, ...reportPages];
           })}
+
+          <div className={styles.page} key="end-page" ref={React.createRef<HTMLDivElement>()}>
+            <div className={styles.endPageContent}>
+              <h1>The End</h1>
+            </div>
+            <div className={styles.pageNumber_W}>- {currentPageIndex + 1} -</div>
+          </div>
         </HTMLFlipBook>
       </div>
     </div>

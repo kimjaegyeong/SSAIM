@@ -38,11 +38,27 @@
     font-size: 18px;
 }
 
+.headerButton {
+    display: flex;
+    gap: 20px;
+}
+
 .descriptionTitle {  
     color: #808080;
     font-size: 14px;
     font-weight: lighter;
     white-space: pre-wrap;
+    /* 애니메이션 추가 */
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1; /* 시작과 끝은 완전 불투명 */
+    }
+    50% {
+        opacity: 0; /* 중간에 투명하게 */
+    }
 }
 
 /* 회고 작성란 */
@@ -105,7 +121,7 @@
 
 .textarea {
     width: 93%;
-    height: 52vh; /* Adjust height as needed */
+    height: 52vh; 
     padding: 10px;
     font-size: 16px;
     background-color: transparent;
@@ -113,7 +129,12 @@
     resize: none;
     outline: none;
     white-space: pre-wrap;
-  }
+    overflow-y: auto; 
+}
+
+.textarea::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge에서 스크롤바 숨기기 */
+}
 
 /* 오른쪽 섹션 */
 .description {  
@@ -163,4 +184,6 @@
     left: 50px; 
     top: 35px;
     z-index: 10;
+    border: #b5b7b8 1px solid;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

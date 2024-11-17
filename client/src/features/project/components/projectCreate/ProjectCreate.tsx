@@ -11,12 +11,15 @@ import { transformToProjectMember } from '@features/project/utils/transformers';
 import { deletePost } from '@/features/teamBuilding/apis/teamBuildingDetail/teamBuildingDetail';
 import useTeamStore from '../../stores/useTeamStore';
 import { showToast } from '@/utils/toastUtils';
-
+import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
+import useUserStore from '@/stores/useUserStore';
+import { toast } from 'react-toastify';
 const ProjectCreate = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { members, leaderId, postId, startDate, endDate, setStartDate, setEndDate } = useTeamStore();
-  
+  const { members, leaderId, postId, startDate, endDate, setStartDate, setEndDate, addMember } = useTeamStore();
+  const { userId } = useUserStore();
+  const { data: userInfo } = useUserInfoData(userId);
   const [projectData, setProjectData] = useState<ProjectCreateDTO>({
     title: '',
     name: '',
@@ -26,7 +29,15 @@ const ProjectCreate = () => {
   });
   const [projectImage, setProjectImage] = useState<File | null>(null);
   const [projectImagePreview, setProjectImagePreview] = useState<string | null>(null); // 미리보기 URL 상태 추가
-  
+  useEffect(() => {
+    if (members?.length === 0 && userId && userInfo)
+      addMember({
+        userId: userId,
+        userName: userInfo?.userName,
+        userEmail: userInfo?.userEmail,
+        userProfileImage: userInfo?.userProfileImage,
+      });
+  }, [userId, members.length, addMember, userInfo]);
   useEffect(() => {
     setProjectData((prevData) => ({
       ...prevData,
@@ -34,7 +45,6 @@ const ProjectCreate = () => {
       endDate: endDate ? new Date(endDate) : new Date(),
     }));
   }, [startDate, endDate]);
-
   const handleImageClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -53,10 +63,22 @@ const ProjectCreate = () => {
       setProjectImagePreview(URL.createObjectURL(file)); // 미리보기 URL 설정
     }
   };
-  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    // 20글자 제한
+    const type = name === 'title' ? '프로젝트 이름' : '팀 이름'
+    const toastId = `${type}-length-warning`
+    if (value.length > 20) {
+      if (!toast.isActive(toastId)) {
+      
+        showToast.warn(`${name === 'title' ? '프로젝트 이름' : '팀 이름'}은 최대 20자까지 입력 가능합니다.`, {
+          toastId: `${name === 'title' ? '프로젝트 이름' : '팀 이름'}-length-warning`, // 고유 ID로 중복 방지
+        });
+      }
+      return;
+    }
+
     setProjectData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -89,6 +111,15 @@ const ProjectCreate = () => {
       showToast.warn('팀장을 선택해주세요.');
       return;
     }
+    // 날짜 유효성 검사
+    if (
+      projectData.startDate &&
+      projectData.endDate &&
+      new Date(projectData.startDate) > new Date(projectData.endDate)
+    ) {
+      showToast.warn('시작일자는 종료일자보다 빠르거나 같아야 합니다.');
+      return;
+    }
     try {
       const transformedTeamMembers = members.map(transformToProjectMember);
       transformedTeamMembers.forEach((e, i) => {
@@ -102,12 +133,11 @@ const ProjectCreate = () => {
         teamMembers: transformedTeamMembers,
       };
 
-      await createProject(updatedProjectData, projectImage)
-        .then(() => {
-          if (postId) {
-            deletePost(postId);
-          }
-        });
+      await createProject(updatedProjectData, projectImage).then(() => {
+        if (postId) {
+          deletePost(postId);
+        }
+      });
       navigate('/project');
     } catch (error) {
       console.log(error);
@@ -124,7 +154,7 @@ const ProjectCreate = () => {
             <div className={styles.imagePlaceholder}>사진 추가</div>
           )}
         </div>
-        
+
         <input
           type="file"
           accept="image/*"
@@ -132,7 +162,7 @@ const ProjectCreate = () => {
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
-        
+
         <div className={styles.infoSection}>
           <input
             type="text"
@@ -141,6 +171,7 @@ const ProjectCreate = () => {
             value={projectData.title}
             onChange={handleInputChange}
             className={styles.input}
+            maxLength={20} // 제목 20글자 제한
           />
           <input
             type="text"
@@ -149,6 +180,7 @@ const ProjectCreate = () => {
             value={projectData.name}
             onChange={handleInputChange}
             className={styles.input}
+            maxLength={20} // 제목 20글자 제한
           />
         </div>
       </div>
