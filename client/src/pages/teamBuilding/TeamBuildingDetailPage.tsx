@@ -528,7 +528,7 @@ const TeamBuildingDetailPage = () => {
                         cols={50} // 원하는 열 수
                       />
                       <div className={styles.commentCharacterCount}>
-                        {message.length}/250
+                        {editedCommentContent.length}/250
                       </div>
                     </div>
                   ) : (
