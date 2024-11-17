@@ -26,6 +26,7 @@ const DayMyCreate = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  
 
   const formattedDate = new Intl.DateTimeFormat('ko', {
     year: 'numeric',
@@ -162,6 +163,21 @@ const DayMyCreate = () => {
       console.error("Failed to create daily remind:", error);
     }
   };
+
+  // 닫기 핸들러: 외부 클릭 시 달력 닫기
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const calendarElement = document.querySelector(`.${styles.calendarContainer}`);
+      if (isCalendarOpen && calendarElement && !calendarElement.contains(event.target as Node)) {
+        setIsCalendarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isCalendarOpen]);
 
   const handlePencilClick = () => {
     setIsCalendarOpen((prev) => !prev);  // 달력 표시 상태 토글

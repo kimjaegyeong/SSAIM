@@ -168,4 +168,6 @@
     left: 50px; 
     top: 35px;
     z-index: 10;
+    border: #b5b7b8 1px solid;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
