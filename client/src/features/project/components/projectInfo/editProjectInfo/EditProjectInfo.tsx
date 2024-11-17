@@ -23,6 +23,10 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
   const [image, setImage] = useState(projectInfo.projectImage || defaultTeamIcon);
   const [projectTitle, setProjectTitle] = useState(projectInfo.title);
   const [teamName, setTeamName] = useState(projectInfo.name);
+  const [jiraUrl, setJiraUrl] = useState(projectInfo.jiraUrl);
+  const [gitlabUrl, setGitlabUrl] = useState(projectInfo.gitlabUrl);
+  const [figmaUrl, setFigmaUrl] = useState(projectInfo.figmaUrl);
+  const [notionUrl, setNotionUrl] = useState(projectInfo.notionUrl);
   const { resetStore, setLeaderId, addMember, members, leaderId } = useTeamStore();
   const { projectId } = useParams();
   const { userId } = useUserStore();
@@ -126,75 +130,6 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
     setTeamName(value);
   };
 
-  const handleSave = () => {
-    // 시작일자와 종료일자 유효성 검사
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      showToast.warn('프로젝트 시작일자는 종료일자보다 늦을 수 없습니다.');
-      return;
-    }
-
-    // 팀 이름 및 프로젝트 이름 길이 제한 검사
-    if (projectTitle.length > 20 || teamName.length > 20) {
-      showToast.warn('프로젝트 이름과 팀 이름은 각각 최대 20자까지 입력 가능합니다.');
-      return;
-    }
-
-    const projectMemberEditList: ProjectEditMemberDTO[] = members.reduce((acc, member) => {
-      const originalMember = projectInfo.projectMembers.find((e) => member.userId === e.userId);
-
-      if (!originalMember) {
-        // 새로운 팀원이 추가된 경우
-        acc.push({
-          userId: member.userId,
-          role: member.userId === leaderId ? 1 : 0,
-          update: true,
-        });
-      } else if (originalMember.role === 1 && originalMember.userId !== leaderId) {
-        // 팀장이었다가 다른 팀원에게 팀장 줌
-        acc.push({
-          projectMemberId: originalMember.pmId,
-          role: 0,
-          update: true,
-        });
-      } else if (originalMember.role === 0 && originalMember.userId === leaderId) {
-        // 팀장이 팀원이 된 경우
-        acc.push({
-          projectMemberId: originalMember.pmId,
-          role: 1,
-          update: true,
-        });
-      }
-
-      return acc;
-    }, [] as ProjectEditMemberDTO[]);
-
-    const projectMemberDeleteList: ProjectEditMemberDTO[] = projectInfo.projectMembers.reduce((acc, member) => {
-      if (!members.find((e) => e.userId === member.userId)) {
-        //팀원이 삭제된 경우
-        acc.push({ projectMemberId: member.pmId, update: true, delete: true });
-      }
-      return acc;
-    }, [] as ProjectEditMemberDTO[]);
-
-    if (projectId) {
-      const mutationData: ProjectEditMutationData = {
-        projectEditData: {
-          title: projectTitle,
-          name: teamName,
-          startDate: startDate ?? undefined,
-          endDate: endDate ?? undefined,
-          projectMembers: [...projectMemberEditList, ...projectMemberDeleteList],
-        },
-      };
-
-      if (profileImageFile) {
-        mutationData.profileImage = profileImageFile;
-      }
-
-      editProjectInfoMutation.mutate(mutationData);
-      onClose();
-    }
-  };
 
   const handleStartDateChange = (date: Date | null) => {
     if (date && endDate && new Date(date) > new Date(endDate)) {
@@ -214,7 +149,115 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
   const handleCancel = () => {
     onClose();
   };
-
+  const handleUrlChange = (key: 'jiraUrl' | 'gitlabUrl' | 'figmaUrl' | 'notionUrl') => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const toastId = `${key}-length-warning`;
+      if (value.length > 255) {
+        if (!toast.isActive(toastId)) {
+          showToast.warn('URL은 최대 255자까지 입력 가능합니다.', { toastId });
+        }
+        return;
+      }
+  
+      switch (key) {
+        case 'jiraUrl':
+          setJiraUrl(value);
+          break;
+        case 'gitlabUrl':
+          setGitlabUrl(value);
+          break;
+        case 'figmaUrl':
+          setFigmaUrl(value);
+          break;
+        case 'notionUrl':
+          setNotionUrl(value);
+          break;
+        default:
+          break;
+      }
+    };
+  };
+  
+  const handleSave = () => {
+    // 시작일자와 종료일자 유효성 검사
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      showToast.warn('프로젝트 시작일자는 종료일자보다 늦을 수 없습니다.');
+      return;
+    }
+  
+    // 팀 이름 및 프로젝트 이름 길이 제한 검사
+    if (projectTitle.length > 20 || teamName.length > 20) {
+      showToast.warn('프로젝트 이름과 팀 이름은 각각 최대 20자까지 입력 가능합니다.');
+      return;
+    }
+  
+    // URL 길이 검사
+    const urlFields = { jiraUrl, gitlabUrl, figmaUrl, notionUrl };
+    for (const [key, value] of Object.entries(urlFields)) {
+      if (value && value.length > 255) {
+        showToast.warn(`${key}는 최대 255자까지 입력 가능합니다.`);
+        return;
+      }
+    }
+  
+    const projectMemberEditList: ProjectEditMemberDTO[] = members.reduce((acc, member) => {
+      const originalMember = projectInfo.projectMembers.find((e) => member.userId === e.userId);
+  
+      if (!originalMember) {
+        acc.push({
+          userId: member.userId,
+          role: member.userId === leaderId ? 1 : 0,
+          update: true,
+        });
+      } else if (originalMember.role === 1 && originalMember.userId !== leaderId) {
+        acc.push({
+          projectMemberId: originalMember.pmId,
+          role: 0,
+          update: true,
+        });
+      } else if (originalMember.role === 0 && originalMember.userId === leaderId) {
+        acc.push({
+          projectMemberId: originalMember.pmId,
+          role: 1,
+          update: true,
+        });
+      }
+  
+      return acc;
+    }, [] as ProjectEditMemberDTO[]);
+  
+    const projectMemberDeleteList: ProjectEditMemberDTO[] = projectInfo.projectMembers.reduce((acc, member) => {
+      if (!members.find((e) => e.userId === member.userId)) {
+        acc.push({ projectMemberId: member.pmId, update: true, delete: true });
+      }
+      return acc;
+    }, [] as ProjectEditMemberDTO[]);
+  
+    if (projectId) {
+      const mutationData: ProjectEditMutationData = {
+        projectEditData: {
+          title: projectTitle,
+          name: teamName,
+          startDate: startDate ?? undefined,
+          endDate: endDate ?? undefined,
+          jiraUrl: jiraUrl || null,
+          gitlabUrl: gitlabUrl || null,
+          figmaUrl: figmaUrl || null,
+          notionUrl: notionUrl || null,
+          projectMembers: [...projectMemberEditList, ...projectMemberDeleteList],
+        },
+      };
+  
+      if (profileImageFile) {
+        mutationData.profileImage = profileImageFile;
+      }
+  
+      editProjectInfoMutation.mutate(mutationData);
+      onClose();
+    }
+  };
+  
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
@@ -273,6 +316,48 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
               dateFormat="yyyy/MM/dd"
               placeholderText="종료일 선택"
               className={styles.dateInput}
+            />
+          </div>
+        </div>
+        <div className={styles.infoSection}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Jira Url</label>
+            <input
+              type="text"
+              placeholder="Jira Url"
+              className={styles.input}
+              value={jiraUrl || ''}
+              onChange={handleUrlChange('jiraUrl')}
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>GitLab Url</label>
+            <input
+              type="text"
+              placeholder="GitLab Url"
+              className={styles.input}
+              value={gitlabUrl || ''}
+              onChange={handleUrlChange('gitlabUrl')}
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Figma Url</label>
+            <input
+              type="text"
+              placeholder="Figma Url"
+              className={styles.input}
+              value={figmaUrl || ''}
+              onChange={handleUrlChange('figmaUrl')}
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Notion Url</label>
+            <input
+              type="text"
+              placeholder="Notion Url"
+              className={styles.input}
+              value={notionUrl || ''}
+              onChange={handleUrlChange('notionUrl')}
             />
           </div>
         </div>

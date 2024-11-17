@@ -11,12 +11,13 @@ import { ProjectInfoMemberDTO } from '@features/project/types/ProjectDTO';
 import { getInitialCurrentWeek } from '../../utils/getInitialCurrentWeek';
 import { IssueDTO } from '@features/project/types/dashboard/WeeklyDataDTO';
 import { useEpicListData } from '../../hooks/sprint/useEpicListData';
-import DefaultProfile from '@/assets/profile/DefaultProfile.png'
+import DefaultProfile from '@/assets/profile/DefaultProfile.png';
+import LoadingDot from '@/components/loading/LoadingDot';
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
-  console.log(projectInfo)
-  const {data : epicList } = useEpicListData(Number(projectId));
+  console.log(projectInfo);
+  const { data: epicList } = useEpicListData(Number(projectId));
   const projectWeekList = calculateWeeks(
     new Date(projectInfo?.startDate as Date),
     new Date(projectInfo?.endDate as Date)
@@ -28,14 +29,14 @@ const WeeklySprint = () => {
   // projectWeekList가 처음 로드될 때만 currentWeek를 설정하도록 조건 추가
   useEffect(() => {
     if (currentWeek === -1 && projectWeekList.length > 0) {
-      console.log(projectWeekList)
-      console.log(getInitialCurrentWeek(projectWeekList))
+      console.log(projectWeekList);
+      console.log(getInitialCurrentWeek(projectWeekList));
       setCurrentWeek(getInitialCurrentWeek(projectWeekList));
     }
   }, [projectWeekList, currentWeek, setCurrentWeek]);
 
   // 이하 코드 유지
-  const { data: sprintIssues } = useSprintIssueQuery(
+  const { data: sprintIssues, isLoading: isSprintIssuesLoading } = useSprintIssueQuery(
     Number(projectId),
     dateToString(projectWeekList[currentWeek]?.startDate, '-'),
     dateToString(projectWeekList[currentWeek]?.endDate, '-')
@@ -48,7 +49,7 @@ const WeeklySprint = () => {
     });
     return map;
   }, [epicList]);
-  
+
   const navigateToSprintList = () => {
     navigate(`list`);
   };
@@ -108,7 +109,7 @@ const WeeklySprint = () => {
       날짜미지정: undefined,
     };
   }, [projectWeekList, currentWeek]);
-  
+
   const issuesByDay = useMemo(() => {
     const dayIssueMap: Record<string, IssueDTO[]> = {
       Mon: [],
@@ -138,14 +139,13 @@ const WeeklySprint = () => {
 
       dayIssueMap[day]?.push(issue);
     });
-    console.log(dayIssueMap)
+    console.log(dayIssueMap);
     return dayIssueMap;
   }, [sprintIssues, selectedMember]);
 
   const handleFilterMember = (memberName: string) => {
     setSelectedMember(selectedMember === memberName ? null : memberName);
   };
-
   return (
     <>
       <div className={styles.header}>
@@ -156,15 +156,21 @@ const WeeklySprint = () => {
               className={`${styles.profilePictureContainer} `}
               onClick={() => handleFilterMember(member.name)}
             >
-              <img src={member.profileImage?.length>0 ? member.profileImage : DefaultProfile} alt={member.name} className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`} />
-              <span className={`${styles.profileLabel} ${selectedMember === member.name ? styles.activeLabel:''}`}>{member.name}</span>
+              <img
+                src={member.profileImage?.length > 0 ? member.profileImage : DefaultProfile}
+                alt={member.name}
+                className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
+              />
+              <span className={`${styles.profileLabel} ${selectedMember === member.name ? styles.activeLabel : ''}`}>
+                {member.name}
+              </span>
             </div>
           ))}
         </div>
         <button className={styles.arrowButton} onClick={handleDecreaseWeek}>
           &lt;
         </button>
-        <h2 className={styles.sprintTitle}>{currentWeek+1}주차</h2>
+        <h2 className={styles.sprintTitle}>{currentWeek + 1}주차</h2>
         <p>
           {dateToString(projectWeekList[currentWeek]?.startDate)} ~{' '}
           {dateToString(projectWeekList[currentWeek]?.endDate)}
@@ -187,18 +193,21 @@ const WeeklySprint = () => {
           ))}
         </div>
 
-        <div className={styles.issueGrid}>
-          {dayMap.map((day) => (
-            <div key={day} className={styles.dayColumn}>
-              {issuesByDay[day]?.map((issue: IssueDTO) => (
-                <Issue
-                issue={issue}
-                epicSummary={epicCodeMap[issue.epicCode]}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
+        {isSprintIssuesLoading ? (
+          <div className={styles.loadingContainer}>
+            <LoadingDot />
+          </div>
+        ) : (
+          <div className={styles.issueGrid}>
+            {dayMap.map((day) => (
+              <div key={day} className={styles.dayColumn}>
+                {issuesByDay[day]?.map((issue: IssueDTO) => (
+                  <Issue issue={issue} epicSummary={epicCodeMap[issue.epicCode]} />
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

@@ -56,9 +56,9 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
-  justify-content: center ;
+  justify-content: center;
   /* 가로 세로 중앙 정렬 */
-  min-height : 500px;
+  min-height: 500px;
 }
 .dayColumn {
   display: flex;
@@ -70,5 +70,12 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items : center;
+  align-items: center;
+}
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+.genButton {
+  margin: 10px;
 }

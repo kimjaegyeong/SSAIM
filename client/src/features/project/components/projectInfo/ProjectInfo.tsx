@@ -33,11 +33,11 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
   const isTeamLeader = projectInfo?.projectMembers.find((member) => member.userId === userId)?.role === 1;
   console.log(projectId);
   console.log(projectInfo);
-  const tempLink: Record<string, string> = {
-    Jira: 'http://www.naver.com',
-    Gitlab: 'http://www.naver.com',
-    Figma: 'http://www.naver.com',
-    Notion: 'http://www.naver.com',
+  const linkMap: Record<string, string|null> = {
+    Jira: projectInfo?.jiraUrl || null,
+    Gitlab: projectInfo?.gitlabUrl || null,
+    Figma: projectInfo?.figmaUrl || null,
+    Notion: projectInfo?.notionUrl || null,
   };
 
   return (
@@ -90,7 +90,7 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ projectId }) => {
         </div>
 
         <div className={styles.leftLowerSection}>
-          <DashboardButtonGrid linkMap={tempLink} />
+          <DashboardButtonGrid linkMap={linkMap} />
           <div className={styles.componentArea}>
             <ProgressChart chartsData={chartsData} />
           </div>
