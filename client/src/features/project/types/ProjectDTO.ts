@@ -16,7 +16,7 @@ export interface ProjectInfoMemberDTO {
 export interface ProjectEditMemberDTO {
   projectMemberId?: number;
   userId?: number;
-  role?: 0|1;
+  role?: 0 | 1;
   update: boolean;
   delete?: boolean;
 }
@@ -26,6 +26,10 @@ interface BaseProjectDTO {
   name: string;
   startDate: Date | null;
   endDate: Date | null;
+  jiraUrl: string | null;
+  gitlabUrl: string | null;
+  notionUrl: string | null;
+  figmaUrl: string | null;
 }
 export interface ProjectEditDTO extends Partial<BaseProjectDTO> {
   projectMembers?: Partial<ProjectEditMemberDTO>[]; // 내부 필드도 선택적으로 사용
