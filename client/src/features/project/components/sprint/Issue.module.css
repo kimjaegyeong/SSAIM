@@ -67,3 +67,23 @@
   background-color: #d4f5d0;
   color: #2d6a4f;
 }
+.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 최대 2줄 표시 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toggleButton {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.toggleButton:hover {
+  text-decoration: underline;
+}
