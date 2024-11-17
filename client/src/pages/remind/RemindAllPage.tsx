@@ -50,7 +50,7 @@ const ReportPage = React.forwardRef<HTMLDivElement, ReportPageProps>(
   ({ report, pageIndex }, ref) => (
     <div className={styles.page} ref={ref}>
       <div className={styles.reportPageContent}>
-        {report}
+        <div className={styles.reportText}>{report}</div>
       </div>
       <div className={styles.pageNumber}>- {pageIndex + 1} -</div>
     </div>
@@ -91,7 +91,7 @@ const RemindAllPage: React.FC = () => {
           pageIndex={currentPageIndex++}
         />
       ),
-      ...splitContentToPages(remind.content, 600).map((pageContent) => (
+      ...splitContentToPages(remind.content, 500).map((pageContent) => (
         <ReportPage
           key={`report-${project.projectId}-${index}-${currentPageIndex}`}
           report={pageContent}

@@ -150,6 +150,10 @@
     border: #dedede 0.1px solid;
 }
 
+.reportText {
+    height: 100%;
+}
+
 .pageNumber_W {
     position: absolute;
     bottom: 10px;

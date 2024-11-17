@@ -123,7 +123,7 @@ const RemindDetailPage: React.FC = () => {
           <Cover project={project} pageIndex={currentPageIndex++}/>
           {project.weeklyRemind.flatMap((data, index) => {
             const imagePage = <ImagePage key={`image-${currentPageIndex}`} image={data.imageUrl} pageIndex={currentPageIndex++}/>;
-            const reportPages = splitContentToPages(data.content, 600).map((pageContent) => (
+            const reportPages = splitContentToPages(data.content, 500).map((pageContent) => (
               <ReportPage key={`report-${index}-${currentPageIndex}`} report={pageContent} pageIndex={currentPageIndex++}/>
             ));
             return [imagePage, ...reportPages];
