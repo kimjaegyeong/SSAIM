@@ -1,19 +1,63 @@
 .layout {
-  height : 100%;
+  height: 100%;
   overflow: hidden;
-  padding : 10px;
+  padding: 10px;
 }
 
-.dashboardBottom{
-  display : flex;
+.dashboardBottom {
+  display: flex;
 }
 
-.chartContainer{
-  width : 600px;
-  height : 300px;
-  margin :  0 auto;
+.chartContainer {
+  width: 600px;
+  height: 400px;
+  margin: 0 auto;
 }
 
-.weeklyScheduleContainer{
-  
+.weeklyScheduleContainer {
+}
+.chartContainer {
+  width: 600px;
+  height: 300px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin : 20px;
+  border : 1px solid #ddd;
+}
+
+.buttonGrid {
+  display: grid;
+  height: 260px;;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.gridButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gridButton:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.gridButton:active {
+  background-color: #004085;
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }

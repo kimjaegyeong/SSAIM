@@ -14,10 +14,24 @@ interface DailyScheduleProps {
 }
 
 const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData, gitlabData, meetingData }) => {
+  const dayToKr = (day: DayOfWeek) => {
+    const dayMap: Record<DayOfWeek, string> = {
+      Sunday: '일요일',
+      Monday: '월요일',
+      Tuesday: '화요일',
+      Wednesday: '수요일',
+      Thursday: '목요일',
+      Friday: '금요일',
+      Saturday: '토요일',
+    };
+    return dayMap[day];
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        {day}, {date}
+        <span>{date}</span>
+        <span>{dayToKr(day)}</span>
       </div>
       <div className={styles.content}>
         {jiraData?.length > 0 && <Task taskType="jira" day={day} tasks={jiraData} />}
