@@ -11,7 +11,6 @@
 .chartContainer {
   width: 600px;
   height: 400px;
-  margin: 0 auto;
 }
 
 .weeklyScheduleContainer {
@@ -27,7 +26,7 @@
 
 .buttonGrid {
   display: grid;
-  min-width : 600px;
+  min-width : 560px;
   height: 260px;;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
