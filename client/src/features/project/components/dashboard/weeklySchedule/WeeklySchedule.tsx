@@ -124,8 +124,10 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
 
         const dayOfWeek = dateObj.getDay(); // 요일 인덱스 계산 (0=일요일, 1=월요일, ...)
         const weekDay = weekDays[(dayOfWeek + 6) % 7] || '날짜미지정';
-
-        dataByDay[weekDay as DayOfWeek].jira.push(issue);
+        if(weekMap[weekDay]?.date?.getDate() === date){
+          dataByDay[weekDay as DayOfWeek].jira.push(issue);
+        }
+        
       } else {
         // dataByDay['날짜미지정']?.jira.push(issue); // 날짜가 없을 경우 '날짜미지정' 처리
       }

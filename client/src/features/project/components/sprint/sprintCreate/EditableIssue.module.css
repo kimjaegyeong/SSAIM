@@ -69,3 +69,11 @@
   padding: 2px 6px;
   border-radius: 4px;
 }
+.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* 최대 3줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
