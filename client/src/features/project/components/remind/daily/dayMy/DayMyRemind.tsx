@@ -6,6 +6,7 @@ import { deleteDailyRemind } from '@/features/project/apis/remind/deleteDailyRem
 import { ImPencil } from "react-icons/im";
 import { RiDeleteBinFill } from "react-icons/ri";
 import { format } from 'date-fns';
+import { showToast } from '@/utils/toastUtils';
 
 interface DayMyRemindProps {
   formattedSelectedDate: string | Date | number;
@@ -68,11 +69,11 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ formattedSelectedDate }) => {
       await deleteDailyRemind(Number(projectId), dailyRemindId);
 
       await refetch();
-      alert('회고가 성공적으로 삭제되었습니다.');
+      showToast.success('회고가 성공적으로 삭제되었습니다.');
 
     } catch (error) {
       console.error('삭제 중 오류 발생:', error);
-      alert('회고 삭제에 실패했습니다.');
+      showToast.error('회고 삭제에 실패했습니다.');
     }
   };
 

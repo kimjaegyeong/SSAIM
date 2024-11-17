@@ -10,8 +10,7 @@ interface ERDProps {
 const ERD: React.FC<ERDProps> = ({ projectId }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null); // 이미지 상태
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const defaultImageUrl = "https://via.placeholder.com/300"; // 기본 이미지 경로
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  // const [isModalOpen, setIsModalOpen] = useState(false); 
 
 
   const fetchErd = async () => {
@@ -107,38 +106,63 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
     }
   };
 
-  const handleImageClick = () => {
-    setIsModalOpen(true); // 모달 열기
-  };
+  // const handleImageClick = () => {
+  //   setIsModalOpen(true); // 모달 열기
+  // };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false); // 모달 닫기
+  // const handleModalClose = () => {
+  //   setIsModalOpen(false); // 모달 닫기
+  // };
+  
+  const handleViewImage = () => {
+    if (imageUrl) {
+      window.open(imageUrl, '_blank');
+    }
   };
 
   return (
     <div className={styles.erd}>
-      <button onClick={handleEditClick} className={styles.editButton}>
-        편집
-      </button>
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={handleImageUpload}
-      />
-      <img
-        src={imageUrl || defaultImageUrl}
-        alt="ERD Image"
-        className={styles.erdImage}
-        onClick={handleImageClick}
-      />
-      {isModalOpen && (
+      {imageUrl ? (
+        <>
+          <button onClick={handleEditClick} className={styles.editButton}>
+            편집
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleImageUpload}
+          />
+          <img
+            src={imageUrl}
+            alt="ERD Image"
+            className={styles.erdImage}
+            // onClick={handleImageClick}
+            onClick={handleViewImage}
+          />
+        </>
+      ) : (
+        <>
+          <div className={styles.noImageText} onClick={handleEditClick}>
+            <p>아직 등록된 이미지가 없습니다.</p>
+            <p>여기를 눌러 ERD 이미지를 생성해주세요.</p>
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleImageUpload}
+          />
+        </>
+      )}
+      {/* {isModalOpen && imageUrl && (
         <div className={styles.modal} onClick={handleModalClose}>
           <span className={styles.modalClose}>&times;</span>
-          <img src={imageUrl || defaultImageUrl} alt="ERD Enlarged" />
+          <img src={imageUrl} alt="ERD Enlarged" />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { useSprintRemind } from '@/features/project/hooks/remind/useSprintRemind
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { RiDeleteBinFill } from "react-icons/ri";
 import Loading from '@/components/loading/Loading';
+import { showToast } from '@/utils/toastUtils';
 
 interface Content {
   content: string;
@@ -72,7 +73,7 @@ const MySprint: React.FC<MySprintProps> = ({ contents, selectedDateInfo }) => {
       const response = await deleteSprintRemind(Number(projectId), contents[0].weeklyRemindId);
       console.log("Delete successful:", response);
       refetch(); // 데이터 새로고침
-      alert("삭제 완료")
+      showToast.success("삭제 완료")
     } catch (error) {
       console.error("Delete request failed:", error);
     }
