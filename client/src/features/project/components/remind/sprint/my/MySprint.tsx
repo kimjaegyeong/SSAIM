@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import styles from './MySprint.module.css';
 import usePmIdStore from '@/features/project/stores/remind/usePmIdStore';
 import { editSprintRemind } from '@/features/project/apis/remind/editSprintRemind';
+import { deleteSprintRemind } from '@/features/project/apis/remind/deleteSprintRemind';
 import { SprintRemindRequestDTO } from '@/features/project/types/remind/SprintRemndDTO';
 import { useSprintRemind } from '@/features/project/hooks/remind/useSprintRemind';
 import { FaArrowRotateRight } from "react-icons/fa6";
@@ -22,12 +23,15 @@ interface MySprintProps {
 const MySprint: React.FC<MySprintProps> = ({ contents, selectedDateInfo }) => {
   const { projectId: projectIdParam } = useParams<{ projectId: string }>();
   const { pmId } = usePmIdStore();
-  const [keep, problem, trySection] = contents[0]?.content.split("\n\n") || [];
   const [isLoading, setIsLoading] = useState(false);
 
   const projectId = projectIdParam ? Number(projectIdParam) : undefined;
-
   const { refetch } = useSprintRemind({ projectId: projectId! });
+
+  // 회고 데이터 분리
+  const keep = contents[0]?.content.split("\n\n")[0] || "해당 주차에 생성된 회고가 없습니다.";
+  const problem = contents[0]?.content.split("\n\n")[1] || "해당 주차에 생성된 회고가 없습니다.";
+  const trySection = contents[0]?.content.split("\n\n")[2] || "해당 주차에 생성된 회고가 없습니다.";
 
   const handleEditClick = async () => {
     if (!projectId || !pmId || !selectedDateInfo || contents.length === 0) {
@@ -55,6 +59,22 @@ const MySprint: React.FC<MySprintProps> = ({ contents, selectedDateInfo }) => {
       console.error("Edit request failed:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteClick = async () => {
+    if (!projectId || contents.length === 0) {
+      console.error("필요한 데이터가 부족하여 요청을 보낼 수 없습니다.");
+      return;
+    }
+  
+    try {
+      const response = await deleteSprintRemind(Number(projectId), contents[0].weeklyRemindId);
+      console.log("Delete successful:", response);
+      refetch(); // 데이터 새로고침
+      alert("삭제 완료")
+    } catch (error) {
+      console.error("Delete request failed:", error);
     }
   };
 
@@ -99,7 +119,7 @@ const MySprint: React.FC<MySprintProps> = ({ contents, selectedDateInfo }) => {
           </div>
           <div className={styles.deleteButton} >
             <RiDeleteBinFill />
-            <p className={styles.Text}>삭제하기</p>
+            <p className={styles.Text} onClick={handleDeleteClick}>삭제하기</p>
           </div>
         </div>
       )}

@@ -25,3 +25,14 @@
     align-items: center;
     gap: 20px;
 }
+
+.allMeeting {
+    margin-top: 10px;
+    padding: 10px;
+    text-align: end;
+    font-size: 14px;
+}
+
+.allMeeting:hover {
+    cursor: pointer;
+}

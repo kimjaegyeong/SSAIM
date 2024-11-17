@@ -88,13 +88,17 @@ const MeetingModal: React.FC<MeetingModalProps> = ({ isOpen, onClose }) => {
           <div className={styles.inputContainer}>
               <div className={styles.inputTitle}>
                   <label>회의 제목 : </label>
-                  <input 
-                    type="text"
-                    value={meetingTitle}
-                    onChange={handleTitleChange}
-                    placeholder="회의 제목을 입력하세요"
-                    className={styles.inputTitleInput}
-                  />
+                  <div className={styles.inputWithCounter}>
+                    <input 
+                      type="text"
+                      value={meetingTitle}
+                      onChange={handleTitleChange}
+                      placeholder="회의 제목을 입력하세요"
+                      className={styles.inputTitleInput}
+                      maxLength={11}  // 최대 글자 수를 12로 제한
+                    />
+                    <span className={styles.charCount}>{meetingTitle.length}/12</span>
+                  </div>
               </div>
               <div className={styles.inputParticipants}>
                   <div className={styles.labelParticipants}>

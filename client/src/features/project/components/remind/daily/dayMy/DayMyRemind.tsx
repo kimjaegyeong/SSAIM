@@ -5,29 +5,28 @@ import { useDailyRemind } from '@/features/project/hooks/remind/useDailyRemind';
 import { deleteDailyRemind } from '@/features/project/apis/remind/deleteDailyRemind';
 import { ImPencil } from "react-icons/im";
 import { RiDeleteBinFill } from "react-icons/ri";
-
-interface Message {
-  message: string;
-  dailyRemindId: number;
-}
+import { format } from 'date-fns';
 
 interface DayMyRemindProps {
-  messages: Message[];
-  formattedSelectedDate: string|Date|number;
+  formattedSelectedDate: string | Date | number;
 }
 
-
-const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDate }) => {
+const DayMyRemind: React.FC<DayMyRemindProps> = ({ formattedSelectedDate }) => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { pmId } = usePmIdStore();
 
-  const { refetch } = useDailyRemind({
+  const { data: dailyRemindData, refetch } = useDailyRemind({
     projectId: Number(projectId),
     projectMemberId: Number(pmId),
   });
 
-  // 각 섹션에 맞는 메시지를 추출하는 함수
+  const formattedDate = format(new Date(formattedSelectedDate), 'yyyy-MM-dd');
+
+  const dayMyfilteredMessages = dailyRemindData?.filter(
+    (item) => item.projectMemberId === pmId && item.dailyRemindDate === formattedDate
+  ) || [];
+
   const extractSectionMessage = (msg: string, prefix: string, nextPrefix?: string) => {
     const startIndex = msg.indexOf(prefix);
     if (startIndex === -1) return null;
@@ -35,16 +34,15 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
     return msg.substring(startIndex + prefix.length, endIndex).trim();
   };
 
-  // Keep, Problem, Try 메시지 각각 추출
-  const keepMessages = messages
+  const keepMessages = dayMyfilteredMessages
     .map((msg) => extractSectionMessage(msg.message, '🟢 Keep:', '🟠 Problem:'))
     .filter((msg): msg is string => msg !== null);
 
-  const problemMessages = messages
+  const problemMessages = dayMyfilteredMessages
     .map((msg) => extractSectionMessage(msg.message, '🟠 Problem:', '🔵 Try:'))
     .filter((msg): msg is string => msg !== null);
 
-  const tryMessages = messages
+  const tryMessages = dayMyfilteredMessages
     .map((msg) => extractSectionMessage(msg.message, '🔵 Try:'))
     .filter((msg): msg is string => msg !== null);
 
@@ -52,9 +50,9 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
     navigate(`/project/${projectId}/remind/create`,
       {
         state: { 
-          myfilteredMessages:messages,
-          formattedSelectedDate
-         },
+          myfilteredMessages: dayMyfilteredMessages,
+          formattedSelectedDate,
+        },
       }
     ); 
   };
@@ -66,8 +64,7 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
     }
 
     try {
-      // 삭제 API 호출
-      const dailyRemindId = messages[0].dailyRemindId; // 첫 번째 메시지의 ID를 가져옴
+      const dailyRemindId = dayMyfilteredMessages[0].dailyRemindId;
       await deleteDailyRemind(Number(projectId), dailyRemindId);
 
       await refetch();
@@ -127,7 +124,7 @@ const DayMyRemind: React.FC<DayMyRemindProps> = ({ messages, formattedSelectedDa
           </div>
         </div>
       </div>
-      {messages.length > 0 && (
+      {dayMyfilteredMessages.length > 0 && (
         <div className={styles.editbox}>
           <div className={styles.editButton} onClick={handleEditClick}>
             <ImPencil />

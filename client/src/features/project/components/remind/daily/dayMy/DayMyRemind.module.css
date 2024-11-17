@@ -85,9 +85,11 @@
     margin: 0px;
     font-size: 15px;
     line-height: 1.6;
+    width: 18vw;
     height: 54vh;
     overflow-y: auto;
     white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
 
 .p::-webkit-scrollbar {

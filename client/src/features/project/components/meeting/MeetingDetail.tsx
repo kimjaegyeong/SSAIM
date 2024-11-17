@@ -9,8 +9,9 @@ import { fectchMeetingDetail } from '../../apis/meeting/fectchMeetingDetail';
 import { createAISummary } from '../../apis/meeting/createAISummary';
 import { editMeetingTitle } from '../../apis/meeting/editMeetingTitle';
 import { editSpeakers } from '../../apis/meeting/editSpeakers';
+import { editMeetingScript } from '../../apis/meeting/editMeetingScript';
 import { deleteMeeting } from '../../apis/meeting/deleteMeeting';
-import { Speaker, MeetingTitlePutDTO } from '../../types/meeting/MeetingDTO';
+import { Speaker, MeetingTitlePutDTO, MeetingScriptPutDTO } from '../../types/meeting/MeetingDTO';
 import { formatMeetingTime, formatMeetingDuration } from '../../utils/meetingTime';
 import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import { useMeeting } from '@features/project/hooks/meeting/useMeeting';
@@ -28,9 +29,14 @@ const MeetingDetail = () => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const segmentRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState<string>('');
+
+  const [editingCommentIndex, setEditingCommentIndex] = useState<number | null>(null); // 수정 중인 댓글 인덱스
+  const [editedCommentText, setEditedCommentText] = useState<string>('');
+  
 
   // useMeeting 훅 호출하여 refetch 가져오기
   const { data: meetingData, refetch } = useMeeting({
@@ -83,6 +89,13 @@ const MeetingDetail = () => {
       alert('회의 제목 수정에 실패했습니다.');
     }
   };
+
+  useEffect(() => {
+    if (editingCommentIndex !== null && textareaRef.current) {
+      textareaRef.current.style.height = "auto"; // 높이를 초기화
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // 내용에 맞게 높이 조정
+    }
+  }, [editingCommentIndex]);
 
 
   // AI 요약 생성 API 호출
@@ -172,6 +185,33 @@ const MeetingDetail = () => {
     }
   };
 
+  const handleCommentClick = (index: number, text: string, start:number) => {
+    setEditingCommentIndex(index);
+    setEditedCommentText(text);
+    console.log(start);
+  };
+
+  const handleCommentSave = async (start: number) => {
+    if (!projectId || !meetingId) return;
+  
+    const meetingScriptPutDTO: MeetingScriptPutDTO = {
+      projectId: Number(projectId),
+      start: start,
+      script: editedCommentText,
+    };
+  
+    try {
+      await editMeetingScript(Number(projectId), Number(meetingId), meetingScriptPutDTO);
+      console.log('Comment updated successfully.');
+      refetch();
+      setEditingCommentIndex(null); // 편집 모드 종료
+      setEditedCommentText(''); // 입력 필드 초기화
+    } catch (error) {
+      console.error('Failed to edit comment:', error);
+      alert('댓글 수정에 실패했습니다.');
+    }
+  };
+
 
   return (
     <div className={styles.container}>
@@ -185,7 +225,11 @@ const MeetingDetail = () => {
                   <input
                     type="text"
                     value={editedTitle}
-                    onChange={(e) => setEditedTitle(e.target.value)}
+                    onChange={(e) => {
+                      if ([...e.target.value].length <= 12) {
+                        setEditedTitle(e.target.value);
+                      }
+                    }}
                     className={styles.titleInput}
                   />
                   <button onClick={handleTitleSave} className={styles.saveButton}>완료</button>
@@ -231,6 +275,7 @@ const MeetingDetail = () => {
                 (member) => member.name === segment.speaker.name
               );
               const profileImage = matchingMember?.profileImage || DefaultProfile;
+              const isActive = isActiveSegment(segment.start, segment.end);
 
               return (
                 <div key={index} className={styles.participantBox}>
@@ -243,9 +288,34 @@ const MeetingDetail = () => {
                     {/* 음성 텍스트 싱크 추적 가능 */}
                     <p
                       ref={(el) => (segmentRefs.current[index] = el)}
-                      className={`${styles.comment} ${isActiveSegment(segment.start, segment.end) ? styles.highlight : ''}`}
+                      className={`${styles.comment} ${
+                        isActive && editingCommentIndex !== index ? styles.highlight : ""
+                      } ${editingCommentIndex === index ? styles.noHover : ""}`}
+                      onClick={() => handleCommentClick(index, segment.text, segment.start)}
                     >
-                      {segment.text}
+                      {editingCommentIndex === index ? (
+                      <div className={styles.commentEditContainer}>
+                        <textarea
+                          ref={textareaRef}
+                          value={editedCommentText}
+                          onChange={(e) => {
+                            setEditedCommentText(e.target.value);
+                            e.target.style.height = "auto"; // 높이를 초기화
+                            e.target.style.height = `${e.target.scrollHeight}px`; // 내용에 맞게 높이 조정
+                          }}
+                          className={styles.commentInput}
+                          rows={1} // 최소 높이
+                        />
+                        <button
+                          className={styles.saveButton}
+                          onClick={() => handleCommentSave(segment.start)}
+                        >
+                          완료
+                        </button>
+                      </div>
+                      ) : (
+                        segment.text
+                      )}
                     </p>
                   </div>
                 </div>

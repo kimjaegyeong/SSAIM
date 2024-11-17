@@ -5,6 +5,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { ImPencil } from "react-icons/im";
 import Button from '../../../../../../components/button/Button';
 import CreateCalendar from './CreateCalendar';
+import CreateRight from './CreateRight';
 import { createDailyRemind }from '@features/project/apis/remind/createDailyRemind';
 import { editDailyRemind } from '@features/project/apis/remind/editDailyRemind';
 import { DailyRemindPostDTO, DailyRemindPutDTO  } from '@features/project/types/remind/DailyRemindDTO';
@@ -26,6 +27,7 @@ const DayMyCreate = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  
 
   const formattedDate = new Intl.DateTimeFormat('ko', {
     year: 'numeric',
@@ -104,14 +106,9 @@ const DayMyCreate = () => {
     }
   }, [currentDate, myfilteredMessages, formattedSelectedDate]);
 
-  // dailyRemindDate와 selectedDate가 일치하는 메시지 찾기
-  const matchingMessage = myfilteredMessages?.find(
-    (message: DailyRemindMessage) => {
-      const messageDate = new Date(message.dailyRemindDate);
-      // messageDate와 selectedDate를 비교
-      return messageDate.toLocaleDateString("ko-KR") === selectedDate.toLocaleDateString("ko-KR");
-    }
-  );
+  const backButtonClick = () => {
+    navigate(-1);
+  };
 
   const handleButtonClick = async () => {
     if (!keepText || !problemText || !tryText) {
@@ -128,7 +125,7 @@ const DayMyCreate = () => {
       return;
     }
 
-    const dailyRemindContents = `🟢 Keep: ${keepText}\n🟠 Problem: ${problemText}\n🔵 Try: ${tryText}`;
+    const dailyRemindContents = `🟢 Keep: \n${keepText}\n🟠 Problem: \n${problemText}\n🔵 Try: \n${tryText}`;
     const dailyRemindDate = currentDate.toLocaleDateString("ko-KR", {
       year: 'numeric',
       month: '2-digit',
@@ -163,6 +160,21 @@ const DayMyCreate = () => {
     }
   };
 
+  // 닫기 핸들러: 외부 클릭 시 달력 닫기
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const calendarElement = document.querySelector(`.${styles.calendarContainer}`);
+      if (isCalendarOpen && calendarElement && !calendarElement.contains(event.target as Node)) {
+        setIsCalendarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isCalendarOpen]);
+
   const handlePencilClick = () => {
     setIsCalendarOpen((prev) => !prev);  // 달력 표시 상태 토글
   };
@@ -193,7 +205,10 @@ const DayMyCreate = () => {
               <p className={styles.descriptionTitle}>작성할 회고의 날짜를 변경할 수 있습니다.</p>
             )}
           </div>
-          <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
+          <div className={styles.headerButton}>
+            <Button size="xsmall" colorType="white" onClick={backButtonClick}>뒤로가기</Button>
+            <Button size="xsmall" colorType="blue" onClick={handleButtonClick}>완료</Button>
+          </div>
         </div>
         <div className={styles.myReview}>
           <div className={styles.keepSection}>
@@ -237,27 +252,13 @@ const DayMyCreate = () => {
           </div>
         </div>
       </div>
-      <div className={styles.right}>
-        <p className={styles.description}>
-          이전에 작성했던 회고를 {'\n'}조회할 날짜를 선택해주세요</p>
-        <CreateCalendar selectedDate={selectedDate} onDateChange={setSelectedDate}/>
-        <div className={styles.remindBox}>
-            <div className={styles.dateSubTitle}>
-                <FaRegClock style={{ strokeWidth: 2, color: "#007bff" }} />
-                {formattedDate}
-            </div>
-            <div className={styles.remindText}>
-                {matchingMessage ? (
-                  <>
-                    {matchingMessage.message}
-                  </>
-                ) : (
-                  '선택한 날짜에 대한 회고가 없습니다.'
-                )}
-            </div>
-        </div>
-
-      </div>
+      <CreateRight
+      selectedDate={selectedDate}
+      setSelectedDate={setSelectedDate}
+      formattedDate={formattedDate}
+      projectId={Number(projectId)} // projectId 전달
+      pmId={Number(pmId)} // pmId 전달
+    />
     </div>
   );
 };

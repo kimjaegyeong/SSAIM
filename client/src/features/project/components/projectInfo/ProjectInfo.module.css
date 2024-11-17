@@ -114,6 +114,7 @@
   border-radius: 4px;
   height: 300px;
   width: 500px;
+  margin-left : 20px;
 }
 
 .modify {
@@ -132,7 +133,6 @@
   transform: scale(1.05); /* 약간 확대 */
 }
 .modifyButtons {
-  
   position: absolute;
   top: 0px;
   right: 0px;
@@ -155,7 +155,11 @@
 }
 
 .icons {
-  width : 20px;
+  width: 20px; /* 아이콘 크기 */
+  height: 20px; /* 아이콘 크기 */
+  vertical-align: middle; /* 텍스트와 수직 정렬 */
+  display: inline-block; /* SVG와 동일하게 inline-block으로 처리 */
+  object-fit: contain; /* 이미지 비율 유지 */
 }
 
 .leaderBadge {
