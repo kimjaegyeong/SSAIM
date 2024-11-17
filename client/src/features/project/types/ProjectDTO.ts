@@ -26,13 +26,13 @@ interface BaseProjectDTO {
   name: string;
   startDate: Date | null;
   endDate: Date | null;
+}
+export interface ProjectEditDTO extends Partial<BaseProjectDTO> {
+  projectMembers?: Partial<ProjectEditMemberDTO>[]; // 내부 필드도 선택적으로 사용
   jiraUrl: string | null;
   gitlabUrl: string | null;
   notionUrl: string | null;
   figmaUrl: string | null;
-}
-export interface ProjectEditDTO extends Partial<BaseProjectDTO> {
-  projectMembers?: Partial<ProjectEditMemberDTO>[]; // 내부 필드도 선택적으로 사용
 }
 
 // ProjectCreateDTO에서 공통 속성 상속
@@ -53,6 +53,11 @@ export interface ProjectDTO extends BaseProjectDTO {
   jiraBoardId: string | null;
   jiraId: string | null;
   gitlabId: string | null;
+  jiraUrl: string | null;
+  gitlabUrl: string | null;
+  notionUrl: string | null;
+  figmaUrl: string | null;
+
 }
 export interface ProjectEditMutationData {
   projectEditData: ProjectEditDTO;
