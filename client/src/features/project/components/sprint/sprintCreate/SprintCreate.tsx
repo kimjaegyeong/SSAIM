@@ -9,14 +9,14 @@ import { IssueDTO } from '@/features/project/types/dashboard/WeeklyDataDTO';
 import { useIssueInSprintQuery } from '@/features/project/hooks/sprint/useIssueInSprintQuery';
 import useUserStore from '@/stores/useUserStore';
 import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
-// import { useEpicListData } from '@/features/project/hooks/sprint/useEpicListData';
 import Button from '@/components/button/Button';
 import SprintCreateModal from './SprintAutoCreateModal';
 import EditableIssue from './EditableIssue';
 import { IssueCreateDTO } from '@/features/project/types/sprint/IssueCreateDTO';
 import { generateIssueOnSprint } from '@/features/project/apis/sprint/generate/generateIssueOnSprint';
+import Loading from '@/components/loading/Loading';
 const SprintCreate: React.FC = () => {
-  //userInfo
+  // userInfo
   const { userId } = useUserStore();
   const { data: userInfo } = useUserInfoData(userId);
   const userName = userInfo?.userName;
@@ -27,21 +27,15 @@ const SprintCreate: React.FC = () => {
   // queries
   const { data: sprint } = useSprintQuery(Number(projectId), Number(sprintId));
   const { data: issueInSprint } = useIssueInSprintQuery(Number(projectId), Number(sprintId));
-  // const { data: epicList } = useEpicListData(Number(projectId));
 
   // stores
   const { tempIssueList, addIssue, initializeTempIssueList } = useSprintIssueStore();
 
   // 자동 생성 모달 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(issueInSprint, tempIssueList);
-  // const epicCodeMap = useMemo(() => {
-  //   const map: Record<string, string> = {};
-  //   epicList?.forEach((epic) => {
-  //     map[epic.key] = epic.summary;
-  //   });
-  //   return map;
-  // }, [epicList]);
+
+  // 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(false);
 
   const weekdays = useMemo(() => {
     if (!sprint?.startDate || !sprint?.endDate) return [];
@@ -56,6 +50,7 @@ const SprintCreate: React.FC = () => {
     }
     return days;
   }, [sprint]);
+
   // 초기화: 컴포넌트가 로드될 때 tempIssueList 초기화
   useEffect(() => {
     if (weekdays.length && sprint) {
@@ -81,14 +76,11 @@ const SprintCreate: React.FC = () => {
           const date = parseInt(dateStr.slice(4, 6), 10);
           const dateObj = new Date(year, month, date);
           const day = format(dateObj, 'yyyy-MM-dd');
-          console.log(day);
           dayIssueMap[day]?.issues.push(issue);
         }
       });
-    console.log(dayIssueMap);
     return dayIssueMap;
   }, [issueInSprint, userName, weekdays]);
-  console.log(weekdays);
 
   const handleAssignIssueToSprint = async () => {
     if (!projectId || !sprintId) {
@@ -96,7 +88,8 @@ const SprintCreate: React.FC = () => {
       return;
     }
 
-    // tempIssueList를 API 요청 형식으로 변환
+    setIsLoading(true); // 로딩 시작
+
     const request = tempIssueList.map((day) => ({
       day: day.day,
       tasks: day.tasks.map((task) => ({
@@ -110,33 +103,46 @@ const SprintCreate: React.FC = () => {
     }));
 
     try {
-      // API 호출
       const response = await generateIssueOnSprint(Number(projectId), Number(sprintId), request);
       console.log('Issues successfully assigned to sprint:', response);
       alert('Issues successfully assigned to the sprint.');
     } catch (error) {
       console.error('Failed to assign issues to sprint:', error);
       alert('Failed to assign issues to the sprint.');
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>{sprint?.name}</h2>
-        <div>
-          <Button
-            size="small"
-            colorType="purple"
-            onClick={() => {
-              setIsModalOpen(true);
-            }}
-          >
-            🚀 AI 자동생성
-          </Button>
-          <Button size="small" colorType="purple" onClick={handleAssignIssueToSprint}>
-            저장하기
-          </Button>
+        <div className={styles.buttonContainer}>
+          <div className={styles.genButton}>
+            <Button
+              size="small"
+              colorType="purple"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+            >
+              🚀 AI 자동생성
+            </Button>
+          </div>
+          <div className={styles.genButton}>
+            <Button size="small" colorType="purple" onClick={handleAssignIssueToSprint}>
+              저장하기
+            </Button>
+          </div>
         </div>
       </div>
       <hr />
@@ -155,6 +161,9 @@ const SprintCreate: React.FC = () => {
         <div className={styles.issueGrid}>
           {weekdays.map((day) => (
             <div key={day} className={styles.dayColumn}>
+              {issuesByDay[day] && issuesByDay[day].issues.length === 0 && tempIssueList && tempIssueList.length && (
+                <span>이슈가 없습니다.</span>
+              )}
               {issuesByDay[day]?.issues.map((issue: IssueDTO) => (
                 <EditableIssue day={new Date(day)} issueData={issue} isEditable={false} />
               ))}
