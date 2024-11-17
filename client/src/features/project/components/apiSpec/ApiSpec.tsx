@@ -452,12 +452,36 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                           </div>
                         )}
                       </>
+                    ) : column === 'priority' ? ( 
+                      <>
+                        <div className={styles.tagWrapper}>
+                          <Tag text={data[column][index]} />
+                        </div>
+                        {isEditing[index]?.[column] && (
+                          <div
+                            className={styles.tagOptions}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {['상', '중', '하'].map((value) => (
+                              <div
+                                key={value}
+                                onClick={() => {
+                                  handleInputChange(column, index, value);
+                                  handleBlur();
+                                }}
+                                className={styles.tagOptionWrapper}
+                              >
+                                <Tag text={value} />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
                     ) : column === 'method' ? ( 
                       <>
                         <div className={styles.tagWrapper}>
                           <Tag text={data[column][index]} />
                         </div>
-
                         {isEditing[index]?.[column] && (
                           <div
                             className={styles.tagOptions}
