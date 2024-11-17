@@ -18,14 +18,14 @@ const WeeklySprint = () => {
   const { data: projectInfo } = useProjectInfo(Number(projectId));
   console.log(projectInfo);
   const { data: epicList } = useEpicListData(Number(projectId));
-  const projectWeekList = calculateWeeks(
-    new Date(projectInfo?.startDate as Date),
-    new Date(projectInfo?.endDate as Date)
-  );
   const projectMembers = projectInfo?.projectMembers;
   const [currentWeek, setCurrentWeek] = useState(-1);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
   const navigate = useNavigate();
+  const projectWeekList = useMemo(() => {
+    if (!projectInfo?.startDate || !projectInfo?.endDate) return [];
+    return calculateWeeks(new Date(projectInfo.startDate as Date), new Date(projectInfo.endDate as Date));
+  }, [projectInfo]);
   // projectWeekList가 처음 로드될 때만 currentWeek를 설정하도록 조건 추가
   useEffect(() => {
     if (currentWeek === -1 && projectWeekList.length > 0) {
@@ -33,7 +33,7 @@ const WeeklySprint = () => {
       console.log(getInitialCurrentWeek(projectWeekList));
       setCurrentWeek(getInitialCurrentWeek(projectWeekList));
     }
-  }, [projectWeekList, currentWeek, setCurrentWeek]);
+  }, [projectInfo, currentWeek, setCurrentWeek]);
 
   // 이하 코드 유지
   const { data: sprintIssues, isLoading: isSprintIssuesLoading } = useSprintIssueQuery(
@@ -147,7 +147,7 @@ const WeeklySprint = () => {
     setSelectedMember(selectedMember === memberName ? null : memberName);
   };
   return (
-    <>
+    <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.teamProfiles}>
           {projectMembers?.map((member: ProjectInfoMemberDTO) => (
@@ -209,7 +209,7 @@ const WeeklySprint = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
