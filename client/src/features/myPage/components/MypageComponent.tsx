@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './MypageComponent.module.css';
 import { FaPen } from 'react-icons/fa6';
-import HexagonChart from './commitChart/HexagonChart';
 import { useUserInfoData } from '../hooks/useUserInfoData';
 import useUserStore from '@/stores/useUserStore';
 import { editUserData } from '../apis/editUserData';
@@ -11,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import ProfileImageModal from './profileImageModal/ProfileImageModal';
 import modalStyles from './profileImageModal/ProfileImageModal.module.css';
 import { useQueryClient } from '@tanstack/react-query';
+import { showToast } from '@/utils/toastUtils';
+import { toast } from 'react-toastify';
 
 type MypageProps = {
   profileOwnerId: number;
@@ -30,7 +31,6 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
 
   const isProfileOwner = userId === profileOwnerId;
-  const dummyData = [60, 80, 50, 70, 40, 90];
   useEffect(() => {
     if (userInfo) {
       setStatusMessage(userInfo.userProfileMessage || '');
@@ -53,36 +53,64 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
   };
 
   // 상태 메시지 입력값 변화 핸들러
-  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStatusMessage(e.target.value);
+  const handleStatusChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const toastId = 'length-warning';
+    if (value.length >= 250) {
+      if (!toast.isActive(toastId)) {
+        showToast.warn(`상태 메시지는 최대 250자까지 입력 가능합니다.`, {
+          toastId: `length-warning`, // 고유 ID로 중복 방지
+        });
+      }
+    }
+    setStatusMessage(value);
   };
 
   // 스택 입력값 변화 핸들러
-  const handleStacksChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStacks(e.target.value);
+  const handleStacksChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const toastId = 'length-warning';
+
+    if (value.length >= 250) {
+      if (!toast.isActive(toastId)) {
+        showToast.warn(`상태 메시지는 최대 250자까지 입력 가능합니다.`, {
+          toastId: `length-warning`, // 고유 ID로 중복 방지
+        });
+      }
+    }
+    setStacks(value);
   };
 
   // 상태 메시지 변경 시 API 요청
-  const handleSaveProfilesMessage = () => {
-    if (statusMessage !== userInfo?.userProfileMessage) {
-      // 변경이 있을 때만 API 요청
-      console.log('Status message updated:', statusMessage);
-      // 여기에 API 요청 추가
-      editUserData(userId, { userProfileMessage: statusMessage });
+  const handleSaveProfilesMessage = async () => {
+    try {
+      if (statusMessage !== userInfo?.userProfileMessage) {
+        await editUserData(userId, { userProfileMessage: statusMessage });
+        showToast.success('성공적으로 저장되었습니다.'); // 성공 알림
+      }
+    } catch (error) {
+      showToast.error('저장에 실패했습니다. 다시 시도해주세요.'); // 실패 알림
+      console.error(error); // 추가 디버깅용
+    } finally {
+      setIsEditingMessage(false);
     }
-    setIsEditingMessage(false);
   };
 
   // 스택 변경 시 API 요청
-  const handleSaveStacks = () => {
-    if (stacks !== userInfo?.userSkills) {
-      // 변경이 있을 때만 API 요청
-      console.log('Stacks updated:', stacks);
-      // 여기에 API 요청 추가
-      editUserData(userId, { userSkills: stacks });
+  const handleSaveStacks = async () => {
+    try {
+      if (stacks !== userInfo?.userSkills) {
+        await editUserData(userId, { userSkills: stacks });
+        showToast.success('성공적으로 저장되었습니다.'); // 성공 알림
+      }
+    } catch (error) {
+      showToast.error('저장에 실패했습니다. 다시 시도해주세요.'); // 실패 알림
+      console.error(error); // 추가 디버깅용
+    } finally {
+      setIsEditingStack(false);
     }
-    setIsEditingStack(false);
   };
+
   const handleProfileImageClick = () => {
     if (profileOwnerId === userId) {
       setIsModalOpen(true);
@@ -92,12 +120,38 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-      if (!allowedExtensions.exec(file.name)) {
-        alert('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
+      const mimeType = file.type;
+
+      // 허용된 MIME 타입 검사
+      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedMimeTypes.includes(mimeType)) {
+        showToast.error('허용된 이미지 형식(JPEG, PNG, GIF)만 업로드 가능합니다.');
         return;
       }
-      setProfileImage(file);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const header = uint8Array.slice(0, 4).join(' '); // 첫 4바이트 읽기
+
+        // 매직 넘버 확인
+        const validHeaders = {
+          '255 216 255': 'jpeg', // JPEG
+          '137 80 78 71': 'png', // PNG
+          '71 73 70 56': 'gif', // GIF
+        };
+
+        const isValid = Object.keys(validHeaders).some((key) => header.startsWith(key));
+        if (!isValid) {
+          showToast.error('허용된 이미지 형식(JPEG, PNG, GIF)만 업로드 가능합니다.');
+          return;
+        }
+
+        setProfileImage(file);
+      };
+
+      reader.readAsArrayBuffer(file);
     }
   };
 
@@ -109,9 +163,16 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
         setIsModalOpen(false); // 저장 후 모달 닫기
         setProfileImage(null);
         queryClient.invalidateQueries({ queryKey: ['userInfo', profileOwnerId] }); // 쿼리 무효화로 데이터 새로고침
+        showToast.success('프로필 이미지가 성공적으로 저장되었습니다.');
       } catch (error) {
         console.error('Failed to update profile image:', error);
+        showToast.error('이미지 저장에 실패했습니다.');
+      } finally {
+        setIsModalOpen(false);
       }
+    } else {
+      showToast.info('변경사항이 없습니다.');
+      setIsModalOpen(false);
     }
   };
 
@@ -140,65 +201,69 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
 
       {/* 본문 구역 */}
       <div className={styles.bodyContainer}>
-        {/* 왼쪽 위 - 프로필 사진 및 리본 */}
-        <div className={styles.profileSection} onClick={handleProfileImageClick}>
-          <div className={styles.profileImageContainer}>
-            <img src={userInfo?.userProfileImage} alt="프로필 사진" className={styles.profileImage} />
-            <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${
-              userInfo ? getRegionLabel(userInfo?.userCampus) : null
-            }`}</div>
+        <div className={styles.bodyLeft}>
+          <div className={styles.profileSection}>
+            <div className={styles.profileSectionHeader}>
+              <h2>{userInfo?.userName}</h2>
+              <span>{`${userInfo?.userGeneration}기 ${userInfo ? getRegionLabel(userInfo?.userCampus) : null}`}</span>
+            </div>
+            <hr />
+            <div className={styles.profileImageContainer} onClick={handleProfileImageClick}>
+              <img src={userInfo?.userProfileImage} alt="프로필 사진" className={styles.profileImage} />
+              <div className={styles.ribbon}>{`${userInfo?.userGeneration}기 ${
+                userInfo ? getRegionLabel(userInfo?.userCampus) : null
+              }`}</div>
+            </div>
           </div>
         </div>
+        <div className={styles.bodyRight}>
+          <div className={styles.commonSection}>
+            <h3>Message</h3>
+            <hr />
+            <div className={styles.commonBody}>
+              {isProfileOwner ? <FaPen className={styles.modifyIcon} onClick={handleEditMessageClick} /> : null}
 
-        {/* 오른쪽 위 - 이름, 기수, 지역, 상태 메시지 */}
-        <div className={styles.infoSection}>
-          <div className={styles.infoHeader}>
-            <h2>{userInfo?.userName}</h2>
-            <p>{`${userInfo?.userGeneration}기 ${userInfo ? getRegionLabel(userInfo?.userCampus) : null}`}</p>
+              {isEditingMessage ? (
+                <textarea
+                  value={statusMessage}
+                  onChange={handleStatusChange}
+                  onBlur={handleSaveProfilesMessage} // 포커스를 벗어나면 저장
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveProfilesMessage(); // Enter 키로 저장
+                    }
+                  }}
+                  className={styles.commonInput}
+                  maxLength={250} // 250자 제한 추가
+                />
+              ) : (
+                <p className={styles.statusMessage}>{statusMessage}</p>
+              )}
+            </div>
           </div>
-          <hr />
-          <div className={styles.infoFooter}>
-            {isProfileOwner ? <FaPen className={styles.modifyIcon} onClick={handleEditMessageClick} /> : null}
-
-            {isEditingMessage ? (
-              <input
-                type="text"
-                value={statusMessage}
-                onChange={handleStatusChange}
-                onBlur={handleSaveProfilesMessage} // 포커스를 벗어나면 저장
-                className={styles.statusInput}
-              />
-            ) : (
-              <p className={styles.statusMessage}>{statusMessage}</p>
-            )}
+          <div className={styles.commonSection}>
+            <h3>Stacks</h3>
+            <hr />
+            <div className={styles.commonBody}>
+              {isProfileOwner ? <FaPen className={styles.modifyIcon} onClick={handleEditStackClick} /> : null}
+              {isEditingStack ? (
+                <textarea
+                  value={stacks}
+                  onChange={handleStacksChange}
+                  onBlur={handleSaveStacks} // 포커스를 벗어나면 저장
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveStacks(); // Enter 키로 저장
+                    }
+                  }}
+                  className={styles.commonInput}
+                  maxLength={250} // 250자 제한 추가
+                />
+              ) : (
+                <p className={styles.statusMessage}>{stacks}</p>
+              )}
+            </div>
           </div>
-        </div>
-
-        {/* 왼쪽 아래 - 스택 목록 */}
-        <div className={styles.stacksSection}>
-          <h3>Stacks</h3>
-          <hr />
-          <div className={styles.stacksBody}>
-            {isProfileOwner ? <FaPen className={styles.modifyIcon} onClick={handleEditStackClick} /> : null}
-            {isEditingStack ? (
-              <input
-                type="text"
-                value={stacks}
-                onChange={handleStacksChange}
-                onBlur={handleSaveStacks} // 포커스를 벗어나면 저장
-                className={styles.stackInput}
-              />
-            ) : (
-              <p>{stacks}</p>
-            )}
-          </div>
-        </div>
-
-        {/* 오른쪽 아래 - Commit Info */}
-        <div className={styles.commitInfoSection}>
-          <h3>Commit Info</h3>
-          <hr />
-          <HexagonChart data={dummyData} />
         </div>
       </div>
       <ProfileImageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
@@ -224,7 +289,7 @@ const MypageComponent: React.FC<MypageProps> = ({ profileOwnerId }) => {
             onClick={() => document.getElementById('profileImageInput')?.click()}
             className={`${modalStyles.button} ${modalStyles.changeButton}`}
           >
-            프로필 사진 변경
+           새 사진 업로드
           </button>
           <input
             type="file"
