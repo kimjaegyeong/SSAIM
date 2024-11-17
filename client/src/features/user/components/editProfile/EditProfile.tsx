@@ -6,6 +6,8 @@ import { editUserData } from '@/features/myPage/apis/editUserData';
 import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 import { regionMap, getRegionLabel } from '@/utils/labelUtils';
 import { useNavigate } from 'react-router-dom';
+import { showToast } from '@/utils/toastUtils';
+import { toast } from 'react-toastify';
 
 const EditProfile: React.FC = () => {
   const { userId } = useUserStore();
@@ -52,6 +54,7 @@ const EditProfile: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+
     if (name === 'userPhone') {
       const phoneRegex = /^\d{3}-\d{3,4}-\d{4}$/;
       if (!phoneRegex.test(value)) {
@@ -60,6 +63,26 @@ const EditProfile: React.FC = () => {
         setPhoneError(null);
       }
     }
+
+    // 닉네임 20자 제한
+    if (name === 'userNickname' && value.length > 20) {
+      if (!toast.isActive('nicknameError')) {
+        showToast.error('닉네임은 최대 20자까지 입력할 수 있습니다.', { toastId: 'nicknameError' });
+      }
+      return;
+    }
+
+    // 기수 1~13 제한
+    if (name === 'userGeneration') {
+      const generation = Number(value);
+      if (generation < 1 || generation > 13) {
+        if (!toast.isActive('generationError')) {
+          showToast.error('기수는 1~13까지만 입력할 수 있습니다.', { toastId: 'generationError' });
+        }
+        return;
+      }
+    }
+
     setProfile((prevProfile) => ({ ...prevProfile, [name]: value }));
   };
 
@@ -68,22 +91,56 @@ const EditProfile: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-      if (!allowedExtensions.exec(file.name)) {
-        alert('허용된 이미지 형식(.jpg, .jpeg, .png, .gif)만 업로드 가능합니다.');
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const mimeType = file.type;
+      const fileSizeInMB = file.size / (1024 * 1024); // 파일 크기를 MB로 변환
+
+      // 허용된 MIME 타입 검사
+      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedMimeTypes.includes(mimeType)) {
+        showToast.error('허용된 이미지 형식(JPEG, PNG, GIF)만 업로드 가능합니다.', { toastId: 'mimeTypeError' });
         return;
       }
-      setProfileImage(file);
-      setProfileImagePreview(URL.createObjectURL(file));
+
+      // 파일 용량 검사 (예: 최대 5MB로 제한)
+      const maxFileSizeInMB = 30; // MB 단위
+      if (fileSizeInMB > maxFileSizeInMB) {
+        showToast.error(`이미지 용량은 최대 ${maxFileSizeInMB}MB까지만 허용됩니다.`, { toastId: 'fileSizeError' });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const header = uint8Array.slice(0, 4).join(' '); // 첫 4바이트 읽기
+
+        // 매직 넘버 확인
+        const validHeaders = {
+          '255 216 255': 'jpeg', // JPEG
+          '137 80 78 71': 'png', // PNG
+          '71 73 70 56': 'gif', // GIF
+        };
+
+        const isValid = Object.keys(validHeaders).some((key) => header.startsWith(key));
+        if (!isValid) {
+          showToast.error('허용된 이미지 형식(JPEG, PNG, GIF)만 업로드 가능합니다.', { toastId: 'magicNumberError' });
+          return;
+        }
+
+        setProfileImage(file);
+        setProfileImagePreview(URL.createObjectURL(file));
+      };
+
+      reader.readAsArrayBuffer(file);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (phoneError) {
-      alert('전화번호 형식이 올바르지 않습니다.');
+      showToast.error('전화번호 형식이 올바르지 않습니다.', { toastId: 'phoneNumberError' });
       return;
     }
     try {
@@ -100,11 +157,18 @@ const EditProfile: React.FC = () => {
     <div className={styles.editProfileContainer}>
       <h2 className={styles.title}>개인정보 수정</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.imageSection} onClick={handleFileClick}>
+        <div className={styles.imageSection}>
           {profileImagePreview ? (
-            <img src={profileImagePreview} alt="프로필 사진" className={styles.imagePreview} />
+            <img
+              src={profileImagePreview}
+              alt="프로필 사진"
+              className={styles.imagePreview}
+              onClick={handleFileClick}
+            />
           ) : (
-            <div className={styles.imagePlaceholder}>사진 추가</div>
+            <div className={styles.imagePlaceholder} onClick={handleFileClick}>
+              사진 추가
+            </div>
           )}
         </div>
 
@@ -158,6 +222,7 @@ const EditProfile: React.FC = () => {
             value={profile.userNickname}
             onChange={handleChange}
             className={styles.input}
+            maxLength={20}
           />
         </label>
 

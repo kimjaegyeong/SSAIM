@@ -50,7 +50,7 @@ const EditProjectInfoModal: React.FC<EditProjectInfoModalProps> = ({ projectInfo
       const file = event.target.files[0];
       if (file) {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        const maxSizeMB = 50; // 최대 파일 크기: 5MB
+        const maxSizeMB = 30; // 최대 파일 크기: 5MB
 
         // 1. 파일 크기 검사
         if (file.size > maxSizeMB * 1024 * 1024) {
