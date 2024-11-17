@@ -128,6 +128,13 @@ const RemindDetailPage: React.FC = () => {
             ));
             return [imagePage, ...reportPages];
           })}
+
+          <div className={styles.page} key="end-page" ref={React.createRef<HTMLDivElement>()}>
+            <div className={styles.endPageContent}>
+              <h1>The End</h1>
+            </div>
+            <div className={styles.pageNumber_W}>- {currentPageIndex + 1} -</div>
+          </div>
         </HTMLFlipBook>
       </div>
     </div>
