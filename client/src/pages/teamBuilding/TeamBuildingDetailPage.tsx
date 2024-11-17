@@ -96,7 +96,7 @@ const TeamBuildingDetailPage = () => {
       .catch((err) => {
           console.error(err);
       });
-  }, []);
+  }, [postId]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
