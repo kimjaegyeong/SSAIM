@@ -15,6 +15,8 @@ import SprintCreateModal from './SprintAutoCreateModal';
 import EditableIssue from './EditableIssue';
 import { IssueCreateDTO } from '@/features/project/types/sprint/IssueCreateDTO';
 import { generateIssueOnSprint } from '@/features/project/apis/sprint/generate/generateIssueOnSprint';
+import { showToast } from '@/utils/toastUtils';
+
 const SprintCreate: React.FC = () => {
   //userInfo
   const { userId } = useUserStore();
@@ -113,10 +115,10 @@ const SprintCreate: React.FC = () => {
       // API 호출
       const response = await generateIssueOnSprint(Number(projectId), Number(sprintId), request);
       console.log('Issues successfully assigned to sprint:', response);
-      alert('Issues successfully assigned to the sprint.');
+      showToast.success('이슈가 스프린트에 성공적으로 할당되었습니다.');
     } catch (error) {
       console.error('Failed to assign issues to sprint:', error);
-      alert('Failed to assign issues to the sprint.');
+      showToast.error('이슈를 스프린트에 할당하는 데 실패했습니다.');
     }
   };
 
