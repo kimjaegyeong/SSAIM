@@ -158,8 +158,6 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
 
   const handleKeyPress = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
-    rowIndex: number,
-    column: keyof FeatureSpecData
   ) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -375,7 +373,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                     <textarea
                       value={data[column][index]}
                       onChange={(e) => handleInputChange(column, index, e.target.value)}
-                      onKeyDown={(e) => handleKeyPress(e, index, column)} // 엔터 키 처리
+                      onKeyDown={(e) => handleKeyPress(e)} // 엔터 키 처리
                       onBlur={() => handleBlur()}
                       autoFocus
                       ref={(el) => el && autoResize(el)} // 크기 자동 조정
