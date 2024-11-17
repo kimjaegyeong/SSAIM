@@ -17,6 +17,7 @@ import { useProjectInfo } from '@features/project/hooks/useProjectInfo';
 import { useMeeting } from '@features/project/hooks/meeting/useMeeting';
 import Loading from '@/components/loading/Loading';
 import DefaultProfile from '@/assets/profile/DefaultProfile.png';
+import { showToast } from '@/utils/toastUtils';
 
 const MeetingDetail = () => {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ const MeetingDetail = () => {
       refetch();
     } catch (error) {
       console.error('Failed to edit meeting title:', error);
-      alert('회의 제목 수정에 실패했습니다.');
+      showToast.error('회의 제목 수정에 실패했습니다.');
     }
   };
 
@@ -180,7 +181,7 @@ const MeetingDetail = () => {
         navigate(`/project/${projectId}/meeting`); // 삭제 후 회의 목록 페이지로 이동
       } catch (error) {
         console.error('Failed to delete meeting:', error);
-        alert('회의 삭제에 실패했습니다.');
+        showToast.error('회의 삭제에 실패했습니다.');
       }
     }
   };
@@ -208,7 +209,7 @@ const MeetingDetail = () => {
       setEditedCommentText(''); // 입력 필드 초기화
     } catch (error) {
       console.error('Failed to edit comment:', error);
-      alert('댓글 수정에 실패했습니다.');
+      showToast.error('댓글 수정에 실패했습니다.');
     }
   };
 

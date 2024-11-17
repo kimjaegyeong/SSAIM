@@ -18,7 +18,7 @@ import { Recruitment, TeamBuildingData, TeamBuildingMember, MemberDeleteStatus }
 import useTeamStore from '@/features/project/stores/useTeamStore';
 import { showToast } from '@/utils/toastUtils';
 import Swal from 'sweetalert2';
-import { getApplications } from '@/features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
+import { getApplications, getTeamBuildingList } from '@/features/teamBuilding/apis/teamBuildingBoard/teamBuildingBoard';
 import ApplicationsModal from '@/features/teamBuilding/components/modal/ApplicationsModal';
 
 const initialData: TeamBuildingData = {
@@ -87,10 +87,18 @@ const TeamBuildingDetailPage = () => {
           .then((response) => {
             const isRecruited = response.find((application: any) => application.status >= 0)
             setIsRecruited(isRecruited);
+            return
           })
           .catch((err) => {
             console.error(err);
           });
+          getTeamBuildingList({author: userId})
+          .then((response) => {
+            if (response.data.length > 0) {
+              setIsRecruited(true);
+            }
+            return
+          })
         }
       })
       .catch((err) => {
