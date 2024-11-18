@@ -13,6 +13,7 @@ import { IssueDTO } from '@features/project/types/dashboard/WeeklyDataDTO';
 import { useEpicListData } from '../../hooks/sprint/useEpicListData';
 import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 import LoadingDot from '@/components/loading/LoadingDot';
+
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));

@@ -1,26 +1,29 @@
-.container{
-  padding : 0 30px;
+.container {
+  padding: 0 30px;
 }
 .weeklyProgressContainer {
   padding: 20px;
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 10px;
-  overflow-x : scroll;
+  overflow-x: scroll;
 }
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  width : calc(100% - 60px)
+  width: calc(100% - 60px);
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding-bottom : 10px;
 }
 
 .teamProfiles {
   display: flex;
   gap: 10px;
 }
-
 
 .sprintTitle {
   font-size: 24px;
@@ -55,8 +58,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width : 250px;
-  max-width : 300px;
+  width: 250px;
+  max-width: 300px;
 }
 
 .arrowButton {
@@ -64,13 +67,12 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  padding: 0 1
-  0px;
+  padding: 0 1 0px;
 }
-.profilePictureContainer{
-  display : flex;
+.profilePictureContainer {
+  display: flex;
   align-items: center;
-  flex-direction : column;
+  flex-direction: column;
 }
 
 .profilePicture {
@@ -79,23 +81,23 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  margin-bottom : 5px;
+  margin-bottom: 5px;
 }
 
-.profileLabel{
-  font-size :10px;
+.profileLabel {
+  font-size: 10px;
 }
 
 .activeProfile {
-  border: 2px solid #4A90E2; /* 활성화된 상태의 테두리 색상 */
+  border: 2px solid #4a90e2; /* 활성화된 상태의 테두리 색상 */
   box-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* 활성화된 상태의 그림자 효과 */
 }
 
 .activeLabel {
-  color: #4A90E2; 
+  color: #4a90e2;
 }
 
-.loadingContainer{
+.loadingContainer {
   display: flex;
   justify-content: center;
   align-items: center;

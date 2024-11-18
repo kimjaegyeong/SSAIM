@@ -6,7 +6,7 @@ import leaderCrown from '@/assets/project/leaderCrown.png';
 import useUserStore from '@/stores/useUserStore';
 import { showToast } from '@/utils/toastUtils';
 import { toast } from 'react-toastify';
-
+import defaultProfile from '@/assets/profile/DefaultProfile.png'
 const TeamMemberGrid = () => {
   const { userId } = useUserStore();
   const { members, isModalOpen, openModal, closeModal, removeMember, leaderId, setLeaderId } = useTeamStore();
@@ -40,7 +40,7 @@ const TeamMemberGrid = () => {
                   <img src={leaderCrown} alt="leaderCrown" className={styles.leaderCrown} />
                 </div>
               ) : null}
-              <img src={member.userProfileImage} alt={`${member.userName}의 프로필`} className={styles.profileImage} />
+              <img src={member.userProfileImage? member.userProfileImage : defaultProfile} alt={`${member.userName}의 프로필`} className={styles.profileImage} />
               <div className={styles.memberInfo}>
                 <div className={styles.name}>{member.userName}</div>
                 <div className={styles.email}>{member.userEmail}</div>
