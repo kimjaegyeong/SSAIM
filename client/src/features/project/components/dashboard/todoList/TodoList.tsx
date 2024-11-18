@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import styles from './TodoList.module.css';
 import { useDashboardData } from '../../../hooks/useDashboardData';
 import { IssueDTO } from '../../../types/dashboard/WeeklyDataDTO';
@@ -7,16 +7,19 @@ import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
 import { dateToString } from '@/utils/dateToString';
 import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 import useUserStore from '@/stores/useUserStore';
+import { useEpicListData } from '@/features/project/hooks/sprint/useEpicListData';
+
 interface TodoListItemProps {
   task: IssueDTO;
+  epicString: string | null;
 }
 
-const TodoListItem: React.FC<TodoListItemProps> = ({ task }) => {
+const TodoListItem: React.FC<TodoListItemProps> = ({ task, epicString }) => {
   // console.log(task);
   return (
     <div className={styles.todoListItem}>
       <div>
-        <span className={styles.taskEpic}>{task.epicCode}</span>
+        <span className={styles.taskEpic}>{task.epicCode ? epicString : '에픽 미지정'}</span>
         <span className={styles.taskTitle}>{task.summary}</span>
       </div>
       <span className={styles.taskPriority}>{task.storyPoint}</span>
@@ -29,8 +32,18 @@ const TodoList: React.FC = () => {
   const { projectId, projectWeekList } = useDashboardStore();
   const { data: weeklyData } = useDashboardData();
   const { data: userInfo } = useUserInfoData(userId);
+  const { data: epicList } = useEpicListData(Number(projectId));
+
   const [latestWeekIdx, setLatestWeekIdx] = useState(0);
   const userName = userInfo?.userName;
+  const epicCodeMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    epicList?.forEach((epic) => {
+      map[epic.key] = epic.summary;
+    });
+    return map;
+  }, [epicList]);
+
   useEffect(() => {
     if (projectWeekList && projectWeekList.length > 0) {
       let flag = 0;
@@ -69,7 +82,7 @@ const TodoList: React.FC = () => {
         {todoList &&
           todoList?.length > 0 &&
           todoList.map((t: IssueDTO, i: number) => {
-            return <TodoListItem task={t} key={i} />;
+            return <TodoListItem task={t} key={i} epicString={t.epicCode ? epicCodeMap[t.epicCode] : null} />;
           })}
         {todoList?.length === 0 && <div className={styles.noData}>할일이 없습니다</div>}
       </div>
