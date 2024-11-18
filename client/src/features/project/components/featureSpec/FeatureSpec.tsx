@@ -147,7 +147,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       functionName: [...data.functionName, ''],
       description: [...data.description, ''],
       owner: [...data.owner, ''],
-      priority: [...data.priority, ''],
+      priority: [...data.priority, '하'],
       participant: { ...data.participant },
     };
 
