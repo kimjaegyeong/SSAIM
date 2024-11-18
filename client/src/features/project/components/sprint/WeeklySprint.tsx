@@ -15,6 +15,8 @@ import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 import LoadingDot from '@/components/loading/LoadingDot';
 import { IoIosArrowDropleft, IoIosArrowDropright } from 'react-icons/io';
 
+const statusOrder = ['진행 중', '해야 할 일', '완료']; // 상태 우선순위 정의
+
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { data: projectInfo } = useProjectInfo(Number(projectId));
@@ -141,12 +143,30 @@ const WeeklySprint = () => {
 
       dayIssueMap[day]?.push(issue);
     });
+
+    Object.keys(dayIssueMap).forEach((day) => {
+      dayIssueMap[day].sort((a, b) => {
+        const statusA = statusOrder.indexOf(a.progress || '해야 할 일');
+        const statusB = statusOrder.indexOf(b.progress || '해야 할 일');
+        return statusA - statusB;
+      });
+    });
+
     console.log(dayIssueMap);
     return dayIssueMap;
   }, [sprintIssues, selectedMember]);
 
   const handleFilterMember = (memberName: string) => {
     setSelectedMember(selectedMember === memberName ? null : memberName);
+  };
+
+  const weekMap = {
+    Mon: '월요일',
+    Tue: '화요일',
+    Wed: '수요일',
+    Thu: '목요일',
+    Fri: '금요일',
+    날짜미지정: '날짜미지정',
   };
   return (
     <div className={styles.container}>
@@ -193,9 +213,9 @@ const WeeklySprint = () => {
       <div className={styles.weeklyProgressContainer}>
         <div className={styles.contentheader}>
           {dayMap.map((day) => (
-            <div key={day} className={styles.dayHeader}>
-              {day}
-              {dateMap[day]}
+            <div key={day} className={`${styles.dayHeader} ${dateMap[day] === undefined ? styles.singleItem : ''}`}>
+              {dateMap[day] !== undefined && <span>{dateMap[day]}</span>}
+              <span>{weekMap[day]}</span>
             </div>
           ))}
         </div>
@@ -208,7 +228,9 @@ const WeeklySprint = () => {
           <div className={styles.issueGrid}>
             {dayMap.map((day) => (
               <div key={day} className={styles.dayColumn}>
-                {issuesByDay[day] && issuesByDay[day].length === 0 && <span>이슈가 없습니다.</span>}
+                {issuesByDay[day] && issuesByDay[day].length === 0 && (
+                  <span className={styles.noData}>해당 날짜에 이슈가 없습니다.</span>
+                )}
 
                 {issuesByDay[day]?.map((issue: IssueDTO) => (
                   <Issue issue={issue} epicSummary={issue.epicCode ? epicCodeMap?.[issue.epicCode] || '' : ''} />

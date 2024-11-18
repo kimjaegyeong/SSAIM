@@ -1,4 +1,4 @@
-/* DashboardLayout.module.css*/
+/* DashboardLayout.module.css */
 .layout {
   height: 100%;
   overflow: hidden;
@@ -51,6 +51,11 @@
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-direction: column;
+}
+
+.gridButton img{
+  width: 2rem;
 }
 
 .gridButton:hover {

@@ -18,7 +18,7 @@
   top: 0;
   background-color: #fff;
   padding-bottom: 10px;
-  width: 100% ;  
+  width: 100%;
 }
 .headerTitle {
   display: flex;
@@ -58,15 +58,25 @@
 .contentheader {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
   text-align: center;
   font-weight: bold;
   font-size: 18px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+  color: #555;
+
 }
 
 .dayHeader {
   padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  gap: 90px;
+}
+
+.dayHeader.singleItem {
+  justify-content: center;
 }
 
 .issueGrid {
@@ -138,4 +148,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+
+.noData {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 20px;
 }
