@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import useUserStore from '@/stores/useUserStore';
 import { useDashboardStore } from '@/features/project/stores/useDashboardStore';
 import { dateToString } from '@/utils/dateToString';
+import { IoIosArrowDropleft, IoIosArrowDropright } from 'react-icons/io';
 
 const DashboardHeader: React.FC = () => {
   const { userId } = useUserStore();
@@ -82,13 +83,19 @@ const DashboardHeader: React.FC = () => {
     <>
       <div className={styles.dashboardHeader}>
         <button className={styles.arrowButton} onClick={handleDecreaseWeek}>
-          &lt;
+          <IoIosArrowDropleft 
+            color={currentWeek === 0 ? '#999' : 'black'}
+            cursor={currentWeek === 0 ? 'default' : 'pointer'}
+          />
         </button>
         <h1 className={styles.title}>
           {projectTitle} {currentWeek + 1}주차
         </h1>
         <button className={styles.arrowButton} onClick={handleIncreaseWeek}>
-          {projectWeekList.length - 1 !== currentWeek ? '>' : null}
+          <IoIosArrowDropright 
+            color={projectWeekList.length - 1 === currentWeek ? '#999' : 'black'}
+            cursor={projectWeekList.length - 1 === currentWeek ? 'default' : 'pointer'}
+          />
         </button>
       </div>
       <div className={styles.dateRange}>

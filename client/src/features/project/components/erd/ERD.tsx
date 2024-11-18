@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import styles from "./ERD.module.css";
 import { getErd, postErd, patchErd } from "../../apis/webSocket/erd";
 import { showToast } from "@/utils/toastUtils";
+import Button from '@components/button/Button';
 
 interface ERDProps {
   projectId: string;
@@ -127,9 +128,9 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
     <div className={styles.erd}>
       {imageUrl ? (
         <>
-          <button onClick={handleEditClick} className={styles.editButton}>
-            편집
-          </button>
+          <div className={styles.editButton}>
+            <Button size='custom' colorType='purple' onClick={handleEditClick}>수정</Button>
+          </div>
           <input
             type="file"
             accept="image/*"
