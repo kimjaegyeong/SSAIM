@@ -24,7 +24,8 @@ const Task: React.FC<TaskProps> = ({ taskType, day, tasks }) => {
   return (
     <>
       <div onClick={handleClick} className={classNames(styles.taskTitle, styles[`${taskType}-title`])}>
-        {taskType} {isOpen ? '▼' : '►'}
+        <span>{taskType}</span>
+        <span>{isOpen ? '▼' : '◀'}</span>
       </div>
       {isOpen &&
         tasks.map((task, index) => (
