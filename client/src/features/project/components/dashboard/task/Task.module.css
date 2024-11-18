@@ -34,6 +34,8 @@
   padding: 8px 12px; /* 가로 여백을 살짝 더 넓게 */
   color: white; /* 텍스트 색상을 흰색으로 통일 */
   transition: background-color 0.3s ease; /* 배경색 전환 효과 */
+  display : flex;
+  justify-content: space-between;
 }
 
 .jira-title {

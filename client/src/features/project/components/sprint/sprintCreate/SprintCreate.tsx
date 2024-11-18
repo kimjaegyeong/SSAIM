@@ -14,9 +14,10 @@ import SprintCreateModal from './SprintAutoCreateModal';
 import EditableIssue from './EditableIssue';
 import { IssueCreateDTO } from '@/features/project/types/sprint/IssueCreateDTO';
 import { generateIssueOnSprint } from '@/features/project/apis/sprint/generate/generateIssueOnSprint';
-import Loading from '@/components/loading/Loading';
+// import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
 import { useNavigate } from 'react-router-dom';
+import useIndicatorStore from '@/stores/useIndicatorStore';
 
 const SprintCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -34,12 +35,12 @@ const SprintCreate: React.FC = () => {
 
   // stores
   const { tempIssueList, addIssue, initializeTempIssueList } = useSprintIssueStore();
-
+  const { startUpload, updateElapsedTime, completeUpload } = useIndicatorStore();
   // 자동 생성 모달 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 로딩 상태 추가
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const weekdays = useMemo(() => {
     if (!sprint?.startDate || !sprint?.endDate) return [];
@@ -99,7 +100,7 @@ const SprintCreate: React.FC = () => {
       showToast.warn('추가할 이슈가 없습니다. 이슈를 추가하고 저장해주세요.', { toastId: 'no-issue-error' });
       return;
     }
-    setIsLoading(true); // 로딩 시작
+    // setIsLoading(true); // 로딩 시작
 
     const request = tempIssueList.map((day) => ({
       day: day.day,
@@ -114,27 +115,34 @@ const SprintCreate: React.FC = () => {
     }));
 
     try {
-      const response = await generateIssueOnSprint(Number(projectId), Number(sprintId), request);
-      console.log('Issues successfully assigned to sprint:', response);
-      showToast.success('이슈가 스프린트에 성공적으로 할당되었습니다.');
       navigate(`/project/${projectId}/sprint`);
+      updateElapsedTime();
+      startUpload(
+        `${sprint?.name} 에 이슈 할당이 완료되었습니다.`,
+        `${sprint?.name}에 이슈 할당이 실패했습니다. 다시 시도해주세요`,
+        `${sprint?.id}`,
+        `${sprint?.name}`
+      );
+      const response = await generateIssueOnSprint(Number(projectId), Number(sprintId), request);
+      console.log(response)
+      showToast.success('이슈가 스프린트에 성공적으로 할당되었습니다.');
+      completeUpload();
     } catch (error) {
       console.error('Failed to assign issues to sprint:', error);
-      alert('Failed to assign issues to the sprint.');
       showToast.error('이슈를 스프린트에 할당하는 데 실패했습니다.');
     } finally {
-      setIsLoading(false); // 로딩 종료
+      // setIsLoading(false); // 로딩 종료
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <Loading />
-      </div>
-    );
-  }
-  console.log(tempIssueList);
+  // if (isLoading) {
+  //   return (
+  //     <div className={styles.loadingContainer}>
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
+  // console.log(tempIssueList);
   return (
     <div className={styles.container}>
       <div className={styles.header}>
