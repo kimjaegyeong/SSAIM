@@ -292,10 +292,12 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
 
   return (
     <div className={styles.tableContainer}>
-      <div className={styles.aiButton}>
-        <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
-      </div>
-      <h2 className={styles.sectionTitle}>기능 명세서</h2>
+      <h2 className={styles.sectionTitle}>
+        기능 명세서
+        <div className={styles.aiButton}>
+          <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
+        </div>
+      </h2>
       <CommonModal 
         isOpen={isModalOpen}
         onClose={closeModal}

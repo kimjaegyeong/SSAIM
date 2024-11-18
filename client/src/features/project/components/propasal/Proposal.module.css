@@ -4,6 +4,7 @@
 }
 
 .sectionTitle {
+    position: relative;
     margin-bottom: 16px;
     border-bottom: 2px solid #ccc;
     padding-bottom: 8px;
@@ -70,8 +71,9 @@ textarea {
 }
 
 .aiButton {
+    position: absolute;
     width: 100%;
-    margin-bottom: 20px;
+    bottom: 10px;
     text-align: right;
 }
 

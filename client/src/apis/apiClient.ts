@@ -38,6 +38,10 @@ apiClient.interceptors.response.use(
       console.error('Unauthorized: Redirecting to login');
       // 로그아웃 또는 리다이렉트 추가 가능
     }
+    if (error.response && error.response.status === 403) {
+      console.error('Unauthorized: Redirecting to login');
+      // 로그아웃 또는 리다이렉트 추가 가능
+    }
     return Promise.reject(error);
   }
 );

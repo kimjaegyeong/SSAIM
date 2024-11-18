@@ -84,25 +84,22 @@ const TeamBuildingDetailPage = () => {
         );
         if (userId) {
           getApplications(userId)
-          .then((response) => {
-            const isRecruited = response.find((application: any) => application.status >= 0)
-            setIsRecruited(isRecruited);
-            return
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+            .then((response) => {
+              const isRecruited = response.find((application: any) => application.status >= 0)
+              setIsRecruited(isRecruited);
+              return
+            })
           getTeamBuildingList({author: userId})
-          .then((response) => {
-            if (response.data.length > 0) {
-              setIsRecruited(true);
-            }
-            return
-          })
+            .then((response) => {
+              if (response.data.length > 0) {
+                setIsRecruited(true);
+              }
+              return
+            })
         }
       })
-      .catch((err) => {
-          console.error(err);
+      .catch(() => {
+          showToast.error('초기 데이터 로딩에 실패했습니다.');
       });
   }, [postId]);
 
@@ -177,16 +174,13 @@ const TeamBuildingDetailPage = () => {
       position: selectedTag,
       message: message,
     };
-    console.log(params);
 
     createComment(data.postId, params)
-     .then((response) => {
-        console.log(response);
+     .then(() => {
         setMessage('');
         window.location.reload();
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         showToast.error('댓글 작성 중 오류가 발생했습니다. 지원은 전체 한번만 가능합니다.');
       }); 
   };
@@ -250,8 +244,6 @@ const TeamBuildingDetailPage = () => {
               'error'
             );
           });
-      } else {
-        console.log("User canceled the deletion.");
       }
     });
   };
@@ -389,12 +381,10 @@ const TeamBuildingDetailPage = () => {
     };
     
     editRecruiting(data.postId, formData)
-      .then((response) => {
-          console.log(response);
+      .then(() => {
           window.location.reload();
       })
-      .catch((err) => {
-          console.error(err);
+      .catch(() => {
           showToast.error("데이터를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요."); // 사용자에게 에러 메시지를 표시합니다.
       });
   };

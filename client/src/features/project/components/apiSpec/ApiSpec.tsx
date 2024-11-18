@@ -361,10 +361,12 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
 
   return (
     <div className={styles.tableContainer} ref={tableRef}>
-      <div className={styles.aiButton}>
-        <Button size='custom' colorType='purple' onClick={openAiModal}>AI 자동생성</Button>
-      </div>
-      <h2 className={styles.sectionTitle}>API 명세서</h2>
+      <h2 className={styles.sectionTitle}>
+        API 명세서
+        <div className={styles.aiButton}>
+          <Button size='custom' colorType='purple' onClick={openAiModal}>AI 자동생성</Button>
+        </div>
+      </h2>
       <CommonModal 
         isOpen={isAiModalOpen}
         onClose={closeAiModal}
