@@ -5,7 +5,5 @@ export interface IssueCreateDTO {
   issueType: 'Story' | 'Task';
   storyPoint: number;
   epic?: string | null;
-  epicKey?: string | null; // epicKey 추가
-
   assignee?: string | null;
 }

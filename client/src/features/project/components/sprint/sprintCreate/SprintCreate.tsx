@@ -167,11 +167,6 @@ const SprintCreate: React.FC = () => {
         <div className={styles.issueGrid}>
           {weekdays.map((day) => (
             <div key={day} className={styles.dayColumn}>
-              {/* 기존 issuesByDay의 이슈들 */}
-              {issuesByDay[day]?.issues.map((issue: IssueDTO) => (
-                <EditableIssue key={issue.issueKey} day={new Date(day)} issueData={issue} isEditable={false} />
-              ))}
-
               {/* tempIssueList에서 해당 day에 대한 이슈들 */}
               {tempIssueList
                 .filter((tempIssue) => tempIssue.day === day)
@@ -186,9 +181,14 @@ const SprintCreate: React.FC = () => {
                       />
                     ))
                   ) : (
-                    <span key={`empty-${day}`}>이슈가 없습니다.</span>
+                    <span key={`empty-${day}`}>추가한 이슈가 없습니다.</span>
                   )
                 )}
+                <hr />
+              {/* 기존 issuesByDay의 이슈들 */}
+              {issuesByDay[day]?.issues.map((issue: IssueDTO) => (
+                <EditableIssue key={issue.issueKey} day={new Date(day)} issueData={issue} isEditable={false} />
+              ))}
             </div>
           ))}
         </div>

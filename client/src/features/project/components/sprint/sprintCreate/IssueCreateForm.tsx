@@ -137,7 +137,8 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
           <label className={styles.label}>Epic</label>
           <div className={styles.customDropdown}>
             <button onClick={() => setIsEpicOpen(!isEpicOpen)} className={styles.dropdownButton}>
-              {selectedEpic ? epicList?.find((epic) => epic.key === selectedEpic)?.summary : '에픽 미설정'}
+              {selectedEpic ? epicList?.find((epic) => {
+                return epic.summary === selectedEpic})?.summary : '에픽 미설정'}
             </button>
             {isEpicOpen && (
               <ul className={styles.dropdownMenu}>
@@ -154,7 +155,7 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
                   <li
                     key={epic.key}
                     onClick={() => {
-                      setSelectedEpic(epic.key);
+                      setSelectedEpic(epic.summary);
                       setIsEpicOpen(false);
                     }}
                     className={styles.dropdownItem}
