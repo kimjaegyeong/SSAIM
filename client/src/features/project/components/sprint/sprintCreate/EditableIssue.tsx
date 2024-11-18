@@ -6,6 +6,7 @@ import styles from './EditableIssue.module.css';
 import { FaPen } from 'react-icons/fa6';
 import { showToast } from '@/utils/toastUtils';
 import { toast } from 'react-toastify';
+import { epicColors } from '@/features/project/utils/epicColors';
 // import { useEpicListData } from '@/features/project/hooks/sprint/useEpicListData';
 // import { useParams } from 'react-router-dom';
 
@@ -23,7 +24,7 @@ function isIssueCreateDTO(issue: IssueCreateDTO | IssueDTO): issue is IssueCreat
 const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditable }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editableIssue, setEditableIssue] = useState<IssueCreateDTO | IssueDTO>(issueData);
-  const [isExpanded, setIsExpanded] = useState(false); // 제목/설명 확장 상태
+  // const [isExpanded, setIsExpanded] = useState(false); // 제목/설명 확장 상태
   // const { projectId } = useParams();
   // const { data: epicList } = useEpicListData(Number(projectId));
   const { updateIssue } = useSprintIssueStore();
@@ -100,7 +101,13 @@ const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditabl
 
   // epicKey 또는 epicCode 값을 가져오기
   const epicValue = isIssueCreateDTO(editableIssue) ? editableIssue.epic : editableIssue.epicKey;
-
+  const asciiSum = epicValue
+    ? epicValue
+        .slice(0, 5) // 첫 5글자
+        .split('') // 글자를 배열로 분리
+        .reduce((sum, char) => sum + char.charCodeAt(0), 0) // ASCII 값 합산
+    : 0;
+  const epicColor = epicColors[asciiSum % epicColors.length] || '#888'; // 나머지로 색상 선택
   const handleEpicChange = (value: string) => {
     setEditableIssue((prevIssue) =>
       isIssueCreateDTO(prevIssue) ? { ...prevIssue, epic: value } : { ...prevIssue, epicCode: value }
@@ -115,78 +122,79 @@ const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditabl
       )}
       <div className={styles.issueHeader}>
         {isEditing && isEditable ? (
-          <input
-            type="text"
-            name="summary"
-            value={editableIssue.summary}
-            onChange={handleChange}
-            className={styles.input}
-            placeholder="이슈 제목을 입력하세요"
-          />
+          <>
+            <label className={styles.editLabel}>요약</label>
+
+            <input
+              type="text"
+              name="summary"
+              value={editableIssue.summary}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="이슈 제목을 입력하세요"
+            />
+          </>
         ) : (
-          <span
-            className={`${styles.issueName} ${editableIssue.summary.length > 3 && !isExpanded ? styles.collapsed : ''}`}
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {editableIssue.summary}
-          </span>
+          <span className={`${styles.issueName}`}>{editableIssue.summary}</span>
         )}
       </div>
 
       {/* 이슈 description */}
       <div className={styles.issueDescription}>
         {isEditing && isEditable ? (
-          <input
-            type="text"
-            name="description"
-            value={editableIssue.description}
-            onChange={handleChange}
-            className={styles.input}
-            placeholder="이슈 설명을 입력하세요"
-          />
+          <>
+            <label className={styles.editLabel}>설명</label>
+            <input
+              type="text"
+              name="description"
+              value={editableIssue.description}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="이슈 설명을 입력하세요"
+            />
+          </>
         ) : (
-          <span
-            className={`${styles.issueText} ${
-              editableIssue.description.length > 3 && !isExpanded ? styles.collapsed : ''
-            }`}
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {editableIssue.description}
-          </span>
+          <span className={`${styles.issueText}`}>{editableIssue.description}</span>
         )}
       </div>
 
       {/* epicKey/epicCode, storyPoint */}
-      <div className={styles.issueDetails}>
+      <div className={`${styles.issueDetails} ${isEditing ? styles.editMode : ''}`}>
         {isEditing && isEditable ? (
-          <input
-            type="text"
-            name="epic"
-            value={epicValue || ''}
-            onChange={(e) => handleEpicChange(e.target.value)}
-            className={styles.input}
-            placeholder="Epic Summary"
-          />
-        ) : (
-          <span className={styles.epicName}>{epicValue || 'No Epic'}</span>
-        )}
-        <div className={styles.storyPointGroup}>
-          <span>스토리 포인트 </span>
-          {isEditable ? (
+          <>
+            <label className={styles.editLabel}>epic</label>
             <input
-              type="number"
-              name="storyPoint"
-              value={editableIssue.storyPoint}
-              onChange={handleChangePoint}
-              className={styles.inputNumber}
-              placeholder="Story Point"
-              min={0}
-              max={4}
+              type="text"
+              name="epic"
+              value={epicValue || ''}
+              onChange={(e) => handleEpicChange(e.target.value)}
+              className={styles.input}
+              placeholder="Epic Summary"
             />
-          ) : (
-            <span className={styles.storyPoint}>{editableIssue.storyPoint}</span>
-          )}
-        </div>
+          </>
+        ) : (
+          <span className={styles.epicName} style={{ backgroundColor: epicColor }}>
+            {epicValue || 'No Epic'}
+          </span>
+        )}
+        {!isEditing && (
+          <div className={styles.storyPointGroup}>
+            {isEditable ? (
+              <input
+                type="number"
+                name="storyPoint"
+                value={editableIssue.storyPoint}
+                onChange={handleChangePoint}
+                className={styles.inputNumber}
+                placeholder="Story Point"
+                min={0}
+                max={4}
+              />
+            ) : (
+              <span className={styles.storyPoint}>{editableIssue.storyPoint}</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 저장 및 취소 버튼 */}

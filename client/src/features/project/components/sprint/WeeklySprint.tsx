@@ -205,7 +205,7 @@ const WeeklySprint = () => {
               {dateToString(projectWeekList[currentWeek]?.endDate)}
             </p>
             <div className={styles.buttonPlaceholder}>
-              <Button children="스프린트 생성" colorType="blue" size="small" onClick={navigateToSprintList} />
+              <Button children="스프린트 생성" colorType="blue" size="custom" onClick={navigateToSprintList} />
             </div>
           </div>
         </div>

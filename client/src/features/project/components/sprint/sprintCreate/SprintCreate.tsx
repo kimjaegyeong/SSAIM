@@ -135,7 +135,7 @@ const SprintCreate: React.FC = () => {
       // setIsLoading(false); // 로딩 종료
     }
   };
-
+  const weekMap = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
   // if (isLoading) {
   //   return (
   //     <div className={styles.loadingContainer}>
@@ -152,7 +152,7 @@ const SprintCreate: React.FC = () => {
           <div className={styles.genButton}>
             <Button
               size="small"
-              colorType="purple"
+              colorType="blue"
               onClick={() => {
                 setIsModalOpen(true);
               }}
@@ -161,7 +161,7 @@ const SprintCreate: React.FC = () => {
             </Button>
           </div>
           <div className={styles.genButton}>
-            <Button size="small" colorType="purple" onClick={handleAssignIssueToSprint}>
+            <Button size="small" colorType="blue" onClick={handleAssignIssueToSprint}>
               저장하기
             </Button>
           </div>
@@ -170,17 +170,18 @@ const SprintCreate: React.FC = () => {
       <hr />
       <IssueCreateForm weekdays={weekdays} onAddIssue={addIssue} />
       <hr />
-      <h3>주간 계획표</h3>
+      {/* <h3>주간 계획표</h3> */}
       <div className={styles.weeklyProgressContainer}>
         <div className={styles.contentheader}>
           {weekdays.map((day) => (
             <div key={day} className={styles.dayHeader}>
-              {day}
+              <span>{new Date(day).getDate()}</span>
+              <span>{weekMap[new Date(day).getDay()]}</span>
             </div>
           ))}
         </div>
 
-        <div className={styles.issueGrid}>
+        <div className={`${styles.issueGrid} ${styles.tempIssueGrid}`}>
           {weekdays.map((day) => (
             <div key={day} className={styles.dayColumn}>
               {/* tempIssueList에서 해당 day에 대한 이슈들 */}
@@ -197,10 +198,19 @@ const SprintCreate: React.FC = () => {
                       />
                     ))
                   ) : (
-                    <span key={`empty-${day}`}>추가한 이슈가 없습니다.</span>
+                    <span className={styles.noData} key={`empty-${day}`}>추가한 이슈가 없습니다.</span>
                   )
                 )}
-              <hr />
+              {/* 기존 issuesByDay의 이슈들 */}
+            </div>
+          ))}
+        </div>
+        
+          <hr />
+        <div className={styles.issueGrid}>
+          {weekdays.map((day) => (
+            <div key={day} className={styles.dayColumn}>
+              {/* tempIssueList에서 해당 day에 대한 이슈들 */}
               {/* 기존 issuesByDay의 이슈들 */}
               {issuesByDay[day]?.issues.map((issue: IssueDTO) => (
                 <EditableIssue key={issue.issueKey} day={new Date(day)} issueData={issue} isEditable={false} />
@@ -208,6 +218,7 @@ const SprintCreate: React.FC = () => {
             </div>
           ))}
         </div>
+
       </div>
       {isModalOpen && <SprintCreateModal onClose={() => setIsModalOpen(false)} />}
     </div>
