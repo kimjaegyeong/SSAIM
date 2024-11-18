@@ -75,35 +75,27 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId, isDaily, setIs
               회의록
             </p>
           </li>
-          {location.pathname === `/project/${projectId}/remind` ? (
-            <>
-              <li>
-                <p
-                  className={isDaily ? styles.activeLink : styles.navLink}
-                  onClick={toggleRemindState}
-                >
-                  일간
-                </p>
-              </li>
-              <li>
-                <p
-                  className={!isDaily ? styles.activeLink : styles.navLink}
-                  onClick={toggleRemindState}
-                >
-                  주간
-                </p>
-              </li>
-            </>
-          ) : (
-            <li>
+          <li>
+            <div className={styles.remindContainer}>
               <p
                 className={getLinkClass(`/project/${projectId}/remind`)}
                 onClick={() => handleNavigation(`/project/${projectId}/remind`)}
               >
                 회고
               </p>
-            </li>
-          )}
+              {location.pathname === `/project/${projectId}/remind` && (
+                <div className={styles.switchContainer} onClick={toggleRemindState}>
+                  <div
+                    className={`${styles.switchKnob} ${
+                      isDaily ? styles.switchDaily : styles.switchWeekly
+                    }`}
+                  />
+                  <span className={styles.switchText}>일간</span>
+                  <span className={styles.switchText}>주간</span>
+                </div>
+              )}
+            </div>
+          </li>
         </ul>
       </nav>
     </div>

@@ -11,10 +11,6 @@ const ProjectRemindPage = () => {
 
   const [isDaily, setIsDaily] = useState(true);
 
-  const handleMoveClick = () => {
-    setIsDaily(!isDaily);
-  };
-
   return (
     <div className={styles.pageContainer}>
       <ProjectHeader
