@@ -1,7 +1,7 @@
 /* Sidebar 전체 컨테이너 */
 .sidebarContainer {
   padding-top: 3%;
-  background-color: #3C90E2;
+  background-color: #3c90e2;
   position: fixed;
   color: #ddd;
   top: 0;
@@ -11,7 +11,7 @@
   height: 100vh;
   transition: width 0.3s ease;
   z-index: 1000;
-  display : flex;
+  display: flex;
   justify-content: space-between;
   flex-direction: column;
 }
@@ -28,6 +28,8 @@
 /* Nav 아이템 */
 .navItem {
   display: flex;
+  background-color: #3c90e2;
+
   align-items: center;
   padding: 0;
   padding: 20px 0px;
@@ -35,8 +37,9 @@
 }
 
 .navItem:hover {
-  background-color: #46467a;
-  color: white;
+  filter: brightness(1.1); /* 밝기를 1.2배로 증가 */
+  color: white; /* hover 시 text color */
+  transition: filter 0.3s ease; /* 부드러운 전환 추가 */
 }
 
 /* Nav 아이콘 이미지 */
@@ -59,9 +62,9 @@
   opacity: 0;
   visibility: hidden;
   transition: width 0.3s ease, opacity 0.3s ease;
-  line-height : 1.5;
+  line-height: 1.5;
   text-align: left;
-  margin-left : 15px;
+  margin-left: 15px;
 }
 
 .sidebarContainer:hover .navText {
@@ -76,5 +79,5 @@
   color: white;
 }
 .footer {
-  margin-bottom : 70px;
+  margin-bottom: 70px;
 }
