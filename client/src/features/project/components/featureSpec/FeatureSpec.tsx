@@ -417,8 +417,14 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
       .map(([username]) => username);
   
-    // 첫 번째 참여자의 이름을 기준으로 테두리 색상 결정
-    const borderColor = participants.length > 0 ? getColorFromName(participants[0]) : '#4A90E2';
+    // userName과 일치하는 참여자가 있는지 확인
+    const currentUserName = userInfo?.userName;
+    const userBorderColor = currentUserName && participants.includes(currentUserName) 
+      ? getColorFromName(currentUserName) 
+      : null;
+
+    // 테두리 색상 결정: userName과 일치하는 사용자가 있으면 그 색상을 사용, 없으면 첫 번째 참여자의 색상
+    const borderColor = userBorderColor || (participants.length > 0 ? getColorFromName(participants[0]) : '#4A90E2');
   
     return participants.length > 0
       ? {
