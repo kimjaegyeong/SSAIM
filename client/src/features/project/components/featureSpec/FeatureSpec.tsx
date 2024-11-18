@@ -406,14 +406,23 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     setIsModalOpen(false);
   };
 
+  const getColorFromName = (name: string): string => {
+    const hash = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  };
+  
   const getCellStyle = (rowIndex: number, column: keyof FeatureSpecData): React.CSSProperties => {
     const participants = Object.entries(data.participant || {})
       .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
-      .map( ([username]) => username);
-
+      .map(([username]) => username);
+  
+    // 첫 번째 참여자의 이름을 기준으로 테두리 색상 결정
+    const borderColor = participants.length > 0 ? getColorFromName(participants[0]) : '#4A90E2';
+  
     return participants.length > 0
       ? {
-          border: '2px solid #4A90E2',
+          border: `2px solid ${borderColor}`,
           position: 'relative',
           padding: '8px',
         }
@@ -563,7 +572,11 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                       />
                       <div className={styles.participantNames}>
                         {getParticipantNames(index, column).map((name) => (
-                          <span key={name} className={styles.participantName}>
+                          <span
+                            key={name}
+                            style={{backgroundColor: getColorFromName(name)}}
+                            className={styles.participantName}
+                          >
                             {name}
                           </span>
                         ))}
