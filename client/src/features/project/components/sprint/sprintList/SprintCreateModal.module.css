@@ -5,7 +5,8 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6); /* 더 어두운 투명도 */
+  background: rgba(0, 0, 0, 0.6);
+  /* 더 어두운 투명도 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,12 +15,15 @@
 
 /* 모달 콘텐츠 */
 .modalContent {
-  background: linear-gradient(to bottom, #ffffff, #f9f9f9); /* 그라데이션 배경 */
+  background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+  /* 그라데이션 배경 */
   padding: 25px;
-  border-radius: 12px; /* 더 둥근 모서리 */
+  border-radius: 12px;
+  /* 더 둥근 모서리 */
   width: 450px;
   max-width: 90%;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* 더 강한 그림자 */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  /* 더 강한 그림자 */
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
   transform: scale(1);
   animation: fadeIn 0.3s ease-in-out;
@@ -30,6 +34,7 @@
     transform: scale(0.95);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -37,13 +42,14 @@
 }
 
 /* 제목 */
-h3 {
+.modalTitle {
   margin-bottom: 20px;
   text-align: center;
   font-size: 1.5em;
   color: #333;
   font-weight: bold;
-  border-bottom: 2px solid #ddd; /* 하단 테두리 */
+  border-bottom: 2px solid #ddd;
+  /* 하단 테두리 */
   padding-bottom: 10px;
 }
 
@@ -70,8 +76,10 @@ h3 {
 }
 
 .textArea {
-  height: 70px; /* 높이 조금 증가 */
-  resize: none; /* 리사이즈 제거 */
+  height: 70px;
+  /* 높이 조금 증가 */
+  resize: none;
+  /* 리사이즈 제거 */
 }
 
 /* 셀렉트 박스 */
@@ -104,7 +112,8 @@ h3 {
 
 /* 제출 버튼 */
 .submitButton {
-  background-color: #0997ee; /* 버튼 그라데이션 */
+  background-color: #0997ee;
+  /* 버튼 그라데이션 */
   color: #fff;
   padding: 12px 25px;
   border: none;
@@ -116,13 +125,15 @@ h3 {
 }
 
 .submitButton:hover {
-  transform: scale(1.05); /* 약간의 확대 효과 */
+  transform: scale(1.05);
+  /* 약간의 확대 효과 */
   background: linear-gradient(to right, #0074b3, #005f8b);
 }
 
 /* 취소 버튼 */
 .cancelButton {
-  background-color: #f44336; /* 버튼 그라데이션 */
+  background-color: #f44336;
+  /* 버튼 그라데이션 */
   color: #fff;
   padding: 12px 25px;
   border: none;
@@ -134,6 +145,7 @@ h3 {
 }
 
 .cancelButton:hover {
-  transform: scale(1.05); /* 약간의 확대 효과 */
+  transform: scale(1.05);
+  /* 약간의 확대 효과 */
   background: linear-gradient(to right, #d32f2f, #b71c1c);
 }
