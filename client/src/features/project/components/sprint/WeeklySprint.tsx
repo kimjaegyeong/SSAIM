@@ -201,8 +201,10 @@ const WeeklySprint = () => {
           <div className={styles.issueGrid}>
             {dayMap.map((day) => (
               <div key={day} className={styles.dayColumn}>
+                {issuesByDay[day] && issuesByDay[day].length === 0 && <span>이슈가 없습니다.</span>}
+
                 {issuesByDay[day]?.map((issue: IssueDTO) => (
-                  <Issue issue={issue} epicSummary={epicCodeMap[issue.epicCode]} />
+                  <Issue issue={issue} epicSummary={issue.epicCode ? epicCodeMap?.[issue.epicCode] || '' : ''} />
                 ))}
               </div>
             ))}

@@ -25,11 +25,13 @@ export interface IssueDTO{
   allocator: string;
   summary: string;
   progress: '해야 할 일' | '진행 중' | '완료';
-  epicCode: string;
+  epicCode?: string;
   storyPoint: number;
   issueKey: string;
   issueType : "작업"|"스토리";
+  epicKey? :string;
   description : string;
+  epic?: string;
 }
 
 export interface GitlabDTO extends TaskDTO {
