@@ -7,6 +7,7 @@ import SprintCreateModal from './SprintCreateModal';
 import { useCreateSprint } from '@/features/project/hooks/useCreateSprint';
 import { showToast } from '@/utils/toastUtils';
 import { startOfWeek, endOfWeek, addWeeks, isBefore, isAfter } from 'date-fns';
+import Button from '@/components/button/Button';
 
 interface SprintListProps {
   projectId: number;
@@ -60,9 +61,9 @@ const SprintList: React.FC<SprintListProps> = ({ projectId }) => {
       {/* Header Section */}
       <div className={styles.header}>
         <h2>스프린트 목록</h2>
-        <button className={styles.createSprintButton} onClick={openModal}>
+        <Button size="custom" colorType="blue" onClick={openModal}>
           새 스프린트 생성
-        </button>
+        </Button>
       </div>
 
       {/* Body Section */}

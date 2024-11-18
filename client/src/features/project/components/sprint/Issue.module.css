@@ -6,7 +6,7 @@
   margin: 3px 0;
 }
 .issueContainer:hover {
-  background-color : #ddd;
+  background-color : #eee;
 }
 .issueHeader {
   display: flex;
