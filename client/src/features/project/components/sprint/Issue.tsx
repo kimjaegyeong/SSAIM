@@ -8,6 +8,7 @@ import { useUpdateIssueStatus } from '../../hooks/sprint/useUpdateIssueStatus';
 import { useParams } from 'react-router-dom';
 import { showToast } from '@/utils/toastUtils';
 import { toast } from 'react-toastify';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 
 interface IssueProps {
   issue: IssueDTO;
@@ -24,7 +25,6 @@ const Issue: React.FC<IssueProps> = ({ issue, epicSummary }) => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false); // 상태 변경 요청 중 상태
   const [currentStatus, setCurrentStatus] = useState<'해야 할 일' | '진행 중' | '완료'>(issue.progress); // 현재 상태 관리
-  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false); // summary 확장 여부
 
   const { mutate: updateIssueStatus } = useUpdateIssueStatus(Number(projectId), issue.issueKey);
   useEffect(() => {
@@ -76,18 +76,14 @@ const Issue: React.FC<IssueProps> = ({ issue, epicSummary }) => {
       {/* 상단 - 이슈 이름과 ... 버튼 */}
       <div className={styles.issueHeader}>
         <span
-          className={`${styles.issueName} ${!isSummaryExpanded ? styles.collapsed : ''}`}
-          title={!isSummaryExpanded ? issue.summary : undefined} // 마우스를 올리면 전체 내용 표시
+          className={`${styles.issueName} ${styles.collapsed}`}
+          title={issue.summary} // 마우스를 올리면 전체 내용 표시
         >
           {issue.summary}
         </span>
-        {issue.summary.length > 60 && (
-          <button className={styles.toggleButton} onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}>
-            {isSummaryExpanded ? '간략히' : '더보기'}
-          </button>
-        )}
+
         <button className={styles.moreButton} onClick={handleOpenEditModal}>
-          ...
+          <BsThreeDotsVertical />
         </button>
       </div>
 
@@ -96,12 +92,14 @@ const Issue: React.FC<IssueProps> = ({ issue, epicSummary }) => {
         <span
           className={styles.epicName}
           title={epicSummary} // 마우스를 올리면 전체 내용 표시
-          style={{ color: epicColor }}
+          style={{ backgroundColor: epicColor }}
         >
           {epicCode ? `${epicSummary}` : 'No Epic'}
         </span>
-        <span className={styles.storyPoint}>{issue.storyPoint}</span>
-        <StatusSwitch status={currentStatus} onChange={handleChangeStatus} />
+        <div className={styles.issueFooterRight}>
+          <span className={styles.storyPoint}>{issue.storyPoint}</span>
+          <StatusSwitch status={currentStatus} onChange={handleChangeStatus} />
+        </div>
       </div>
       {/* Edit Modal */}
       {isEditModalOpen && <IssueEditModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} issue={issue} />}

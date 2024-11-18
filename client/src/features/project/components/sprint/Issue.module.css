@@ -1,20 +1,27 @@
 .issueContainer {
   width: 230px;
-  border: 1px solid #ddd;
   padding: 10px;
-  background-color: #f9f9f9;
-  margin : 3px 0;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  margin: 3px 0;
 }
-
+.issueContainer:hover {
+  background-color : #ddd;
+}
 .issueHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
 }
 
 .issueName {
   font-weight: bold;
+  font-size: 0.9em;
+  white-space: nowrap; /* 한 줄로 유지 */
+  overflow: hidden; /* 넘치는 내용 숨김 */
+  text-overflow: ellipsis; /* 넘치는 부분 ...으로 표시 */
+  width: 80%;
 }
 
 .moreButton {
@@ -24,6 +31,10 @@
   cursor: pointer;
 }
 
+.moreButton:hover {
+  filter: brightness(0.9);
+}
+
 .issueFooter {
   display: flex;
   align-items: center;
@@ -31,9 +42,12 @@
   gap: 10px;
   font-size: 14px;
 }
-
+.issueFooterRight {
+  display: flex;
+  gap: 10px;
+}
 .epicName {
-  color: #888;
+  color: white;
   max-width: 60px; /* 적절한 최대 너비 설정 */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -42,13 +56,19 @@
   -webkit-line-clamp: 2; /* 최대 두 줄 표시 */
   -webkit-box-orient: vertical;
   word-break: break-word; /* 단어 단위로 줄바꿈 */
-  cursor: pointer; /* 마우스 포인터 표시 */
+  padding: 3px;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
 .storyPoint {
-  background-color: #eee;
-  padding: 2px 6px;
-  border-radius: 4px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center; /* 좌우 가운데 정렬 */
+  width: 20px;
+  align-items: center; /* 상하 가운데 정렬 */
+  /* border: 1px solid #000; 확인용 테두리 */
 }
 
 .status {

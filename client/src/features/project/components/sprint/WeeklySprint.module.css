@@ -1,5 +1,7 @@
 .container {
-  padding: 0 30px;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: calc(100vw-120px);
 }
 .weeklyProgressContainer {
   padding: 20px;
@@ -9,43 +11,72 @@
   overflow-x: scroll;
 }
 .header {
-  display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  width: calc(100% - 60px);
   position: sticky;
   top: 0;
   background-color: #fff;
-  padding-bottom : 10px;
+  padding-bottom: 10px;
+  width: 100%;
 }
-
+.headerTitle {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.headerBottom {
+  display: flex;
+  gap: 10px;
+  align-items: center; /* 버튼과 텍스트를 수직으로 정렬 */
+  justify-content: space-between; /* 여백 균등 배분 */
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  flex-wrap: wrap; /* 화면이 좁아지면 줄 바꿈 허용 */
+}
+.headerBottomRight {
+  display: flex;
+  gap: 10px;
+}
 .teamProfiles {
   display: flex;
   gap: 10px;
 }
 
 .sprintTitle {
-  font-size: 24px;
+  font-size: 32px;
+  font-weight: bold;
   text-align: center;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 0px;
 }
 
 .buttonPlaceholder {
-  width: 80px;
 }
 
 .contentheader {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
   text-align: center;
   font-weight: bold;
   font-size: 18px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
+  color: #555;
+
 }
 
 .dayHeader {
   padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  gap: 90px;
+}
+
+.dayHeader.singleItem {
+  justify-content: center;
 }
 
 .issueGrid {
@@ -63,11 +94,27 @@
 }
 
 .arrowButton {
-  background: none;
+  background-color: transparent;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  padding: 0 1 0px;
+  padding: 3px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrowButton:hover {
+  background-color: #e0e0e0; /* 살짝 밝은 회색 */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transform: scale(1.1); /* 살짝 확대 효과 */
+}
+
+.arrowButton:active {
+  background-color: #d1d1d1; /* 조금 더 진한 회색 */
+  transform: scale(0.95); /* 살짝 축소 효과 */
 }
 .profilePictureContainer {
   display: flex;
@@ -101,4 +148,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+
+.noData {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 20px;
 }

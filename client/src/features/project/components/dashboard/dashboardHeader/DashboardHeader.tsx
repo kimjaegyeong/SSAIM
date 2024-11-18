@@ -19,7 +19,7 @@ const DashboardHeader: React.FC = () => {
       const lastProject = projectListData.sort((a, b) => {
         const startA = a.startDate ? new Date(a.startDate).getTime() : 0;
         const startB = b.startDate ? new Date(b.startDate).getTime() : 0;
-        return startA-startB ;
+        return startA - startB;
       })[projectListData.length - 1];
       setProjectId(Number(lastProject.id));
       const { startDate, endDate } = lastProject;
@@ -88,7 +88,7 @@ const DashboardHeader: React.FC = () => {
           {projectTitle} {currentWeek + 1}주차
         </h1>
         <button className={styles.arrowButton} onClick={handleIncreaseWeek}>
-          &gt;
+          {projectWeekList.length - 1 !== currentWeek ? '>' : null}
         </button>
       </div>
       <div className={styles.dateRange}>
