@@ -36,9 +36,15 @@ const Issue: React.FC<IssueProps> = ({ issue, epicSummary }) => {
   const handleCloseEditModal = () => {
     setEditModalOpen(false);
   };
+  // 첫 5글자 ASCII 합 계산
   const epicCode = issue.epicCode?.split('-')[1];
-  const lastDigit = epicCode ? parseInt(epicCode.slice(-1), 10) : null;
-  const epicColor = lastDigit !== null ? epicColors[lastDigit] : '#888'; // 회색 기본값
+  const asciiSum = epicSummary
+    ? epicSummary
+        .slice(0, 5) // 첫 5글자
+        .split('') // 글자를 배열로 분리
+        .reduce((sum, char) => sum + char.charCodeAt(0), 0) // ASCII 값 합산
+    : 0;
+  const epicColor = epicColors[asciiSum % epicColors.length] || '#888'; // 나머지로 색상 선택
 
   const handleChangeStatus = (status: 'todo' | 'inProgress' | 'done') => {
     if (isUpdating) return; // 중복 호출 방지
@@ -49,7 +55,9 @@ const Issue: React.FC<IssueProps> = ({ issue, epicSummary }) => {
         setCurrentStatus(statusMap[status]); // 상태 업데이트
         const toastId = `${status}-changed`;
         if (!toast.isActive(toastId)) {
-          showToast.success(`${issue.summary} 이슈 상태가 ${statusMap[status]}로 변경되었습니다.`, { issueId: `${status}-changed` });
+          showToast.success(`${issue.summary} 이슈 상태가 ${statusMap[status]}로 변경되었습니다.`, {
+            issueId: `${status}-changed`,
+          });
         }
       },
       onError: (error) => {
@@ -74,10 +82,7 @@ const Issue: React.FC<IssueProps> = ({ issue, epicSummary }) => {
           {issue.summary}
         </span>
         {issue.summary.length > 60 && (
-          <button
-            className={styles.toggleButton}
-            onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}
-          >
+          <button className={styles.toggleButton} onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}>
             {isSummaryExpanded ? '간략히' : '더보기'}
           </button>
         )}
