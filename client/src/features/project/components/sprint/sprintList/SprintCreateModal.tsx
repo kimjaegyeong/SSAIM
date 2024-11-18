@@ -3,7 +3,7 @@ import { SprintCreateDTO } from '@/features/project/types/SprintDTO';
 import styles from './SprintCreateModal.module.css';
 import { showToast } from '@/utils/toastUtils';
 import { startOfWeek, endOfWeek, addWeeks, format } from 'date-fns';
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify';
 interface SprintCreateModalProps {
   onClose: () => void;
   onCreate: (data: SprintCreateDTO) => void;
@@ -26,20 +26,14 @@ const SprintCreateModal: React.FC<SprintCreateModalProps> = ({ onClose, onCreate
   const availableWeeks = useMemo(() => {
     const weeks = [
       {
-        label: `${format(currentWeek.startDate, 'yyyy-MM-dd')} ~ ${format(
-          currentWeek.endDate,
-          'yyyy-MM-dd'
-        )}`,
+        label: `${format(currentWeek.startDate, 'yyyy-MM-dd')} ~ ${format(currentWeek.endDate, 'yyyy-MM-dd')}`,
         startDate: currentWeek.startDate,
         endDate: currentWeek.endDate,
       },
     ];
     if (isFridayOrAfter) {
       weeks.push({
-        label: `${format(nextWeek.startDate, 'yyyy-MM-dd')} ~ ${format(
-          nextWeek.endDate,
-          'yyyy-MM-dd'
-        )}`,
+        label: `${format(nextWeek.startDate, 'yyyy-MM-dd')} ~ ${format(nextWeek.endDate, 'yyyy-MM-dd')}`,
         startDate: nextWeek.startDate,
         endDate: nextWeek.endDate,
       });
