@@ -16,8 +16,10 @@ import { IssueCreateDTO } from '@/features/project/types/sprint/IssueCreateDTO';
 import { generateIssueOnSprint } from '@/features/project/apis/sprint/generate/generateIssueOnSprint';
 import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
+import { useNavigate } from 'react-router-dom';
 
 const SprintCreate: React.FC = () => {
+  const navigate = useNavigate();
   // userInfo
   const { userId } = useUserStore();
   const { data: userInfo } = useUserInfoData(userId);
@@ -108,6 +110,7 @@ const SprintCreate: React.FC = () => {
       const response = await generateIssueOnSprint(Number(projectId), Number(sprintId), request);
       console.log('Issues successfully assigned to sprint:', response);
       showToast.success('이슈가 스프린트에 성공적으로 할당되었습니다.');
+      navigate(`/project/${projectId}/sprint`);
     } catch (error) {
       console.error('Failed to assign issues to sprint:', error);
       alert('Failed to assign issues to the sprint.');
@@ -124,7 +127,7 @@ const SprintCreate: React.FC = () => {
       </div>
     );
   }
-
+  console.log(tempIssueList);
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -164,19 +167,28 @@ const SprintCreate: React.FC = () => {
         <div className={styles.issueGrid}>
           {weekdays.map((day) => (
             <div key={day} className={styles.dayColumn}>
-              {issuesByDay[day] && issuesByDay[day].issues.length === 0 && tempIssueList && tempIssueList.length && (
-                <span>이슈가 없습니다.</span>
-              )}
+              {/* 기존 issuesByDay의 이슈들 */}
               {issuesByDay[day]?.issues.map((issue: IssueDTO) => (
-                <EditableIssue day={new Date(day)} issueData={issue} isEditable={false} />
+                <EditableIssue key={issue.issueKey} day={new Date(day)} issueData={issue} isEditable={false} />
               ))}
+
+              {/* tempIssueList에서 해당 day에 대한 이슈들 */}
               {tempIssueList
-                .find((e) => {
-                  return e.day === day;
-                })
-                ?.tasks.map((issue: IssueCreateDTO) => (
-                  <EditableIssue day={new Date(day)} issueData={issue} isEditable={true} />
-                ))}
+                .filter((tempIssue) => tempIssue.day === day)
+                .flatMap((tempIssue) =>
+                  tempIssue.tasks.length > 0 ? (
+                    tempIssue.tasks.map((issue: IssueCreateDTO, index: number) => (
+                      <EditableIssue
+                        key={`temp-${day}-${index}`}
+                        day={new Date(day)}
+                        issueData={issue}
+                        isEditable={true}
+                      />
+                    ))
+                  ) : (
+                    <span key={`empty-${day}`}>이슈가 없습니다.</span>
+                  )
+                )}
             </div>
           ))}
         </div>

@@ -14,23 +14,26 @@ interface IssueCreateFormProps {
 const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
   const { projectId } = useParams();
   const { data: epicList } = useEpicListData(Number(projectId));
-  const {addIssue}= useSprintIssueStore()
+  const { addIssue } = useSprintIssueStore();
+
   const [issueType, setIssueType] = useState<'Story' | 'Task'>('Task');
   const [selectedEpic, setSelectedEpic] = useState<string | null>('');
   const [description, setDescription] = useState('');
   const [summary, setSummary] = useState('');
   const [storyPoint, setStoryPoint] = useState(0);
-  const [selectedDay, setSelectedDay] = useState<string | null>(null); // 선택된 날짜 상태
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   const [isIssueTypeOpen, setIsIssueTypeOpen] = useState(false);
   const [isEpicOpen, setIsEpicOpen] = useState(false);
-  const [isDateOpen, setIsDateOpen] = useState(false); // 날짜 드롭다운 상태
+  const [isDateOpen, setIsDateOpen] = useState(false);
 
   const issueTypeRef = useRef<HTMLDivElement>(null);
   const epicRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
 
-  // 외부 클릭 감지하여 드롭다운 닫기
+  const toastIds = useRef({ description: 'desc-toast', summary: 'summary-toast', storyPoint: 'sp-toast' });
+
+  // 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (issueTypeRef.current && !issueTypeRef.current.contains(event.target as Node)) {
@@ -61,21 +64,42 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
       description,
       storyPoint,
       assignee: null,
-      ...(selectedEpic && { epicKey: selectedEpic }), // selectedEpic이 있을 때만 epicKey 추가
+      ...(selectedEpic && { epic: selectedEpic }),
     };
 
-    // 선택된 날짜와 함께 이슈 추가
     addIssue(new Date(selectedDay), data);
     console.log('Temporary Issue added to store:', data);
-    // 필드 초기화
+
     setIssueType('Task');
     setSelectedEpic('');
     setDescription('');
     setSummary('');
     setStoryPoint(0);
     setSelectedDay(null);
+  };
 
-    // 여기에 필요시 toast 알림 추가
+  const handleDescriptionChange = (value: string) => {
+    if (value.length > 255) {
+      showToast.warn('설명은 최대 255자까지 입력 가능합니다.', { toastId: toastIds.current.description });
+      return;
+    }
+    setDescription(value);
+  };
+
+  const handleSummaryChange = (value: string) => {
+    if (value.length > 255) {
+      showToast.warn('제목은 최대 255자까지 입력 가능합니다.', { toastId: toastIds.current.summary });
+      return;
+    }
+    setSummary(value);
+  };
+
+  const handleStoryPointChange = (value: number) => {
+    if (value > 4) {
+      showToast.warn('스토리 포인트는 최대 4까지만 입력 가능합니다.', { toastId: toastIds.current.storyPoint });
+      return;
+    }
+    setStoryPoint(value);
   };
 
   return (
@@ -172,14 +196,19 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
         {/* 나머지 필드들 */}
         <div>
           <label className={styles.label}>제목</label>
-          <input type="text" value={summary} onChange={(e) => setSummary(e.target.value)} className={styles.input} />
+          <input
+            type="text"
+            value={summary}
+            onChange={(e) => handleSummaryChange(e.target.value)}
+            className={styles.input}
+          />
         </div>
         <div>
           <label className={styles.label}>설명</label>
           <input
             type="text"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => handleDescriptionChange(e.target.value)}
             className={styles.input}
           />
         </div>
@@ -188,7 +217,7 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
           <input
             type="number"
             value={storyPoint}
-            onChange={(e) => setStoryPoint(Math.max(0, Number(e.target.value)))}
+            onChange={(e) => handleStoryPointChange(Number(e.target.value))}
             className={styles.inputNumber}
             min="0"
           />
