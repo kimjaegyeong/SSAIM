@@ -26,7 +26,7 @@ const ProjectOutputPage = () => {
   }, [projectId]);
 
   return (
-    <div>
+    <div className={styles.body}>
       <ProjectHeader projectId={projectId as string} />
       <div className={styles.outputHeader}>
         <div

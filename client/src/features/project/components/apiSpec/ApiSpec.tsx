@@ -161,7 +161,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       backOwner: [...data.backOwner, ''],
       frontState: [...data.frontState, '0'],
       backState: [...data.backState, '0'],
-      priority: [...data.priority, ''],
+      priority: [...data.priority, '하'],
       description: [...data.description, ''],
       requestHeader: [...data.requestHeader, ''],
       responseHeader: [...data.responseHeader, ''],
