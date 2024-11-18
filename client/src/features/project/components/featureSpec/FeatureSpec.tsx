@@ -576,17 +576,6 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                         autoFocus
                         ref={(el) => el && autoResize(el)} // 크기 자동 조정
                       />
-                      <div className={styles.participantNames}>
-                        {getParticipantNames(index, column).map((name) => (
-                          <span
-                            key={name}
-                            style={{backgroundColor: getColorFromName(name)}}
-                            className={styles.participantName}
-                          >
-                            {name}
-                          </span>
-                        ))}
-                      </div>
                     </>
                   ) : (
                     data[column][index]?.length > (column === "category" ? 50 : 250) ? (
@@ -597,6 +586,17 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                       data[column][index]
                     )
                   )}
+                  <div className={styles.participantNames}>
+                    {getParticipantNames(index, column).map((name) => (
+                      <span
+                        key={name}
+                        style={{backgroundColor: getColorFromName(name)}}
+                        className={styles.participantName}
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
                 </td>
               ))}
               <td>
