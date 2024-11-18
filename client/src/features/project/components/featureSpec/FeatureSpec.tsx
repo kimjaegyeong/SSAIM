@@ -164,25 +164,27 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     isEditing: boolean
   ) => {
     setData((prevData) => {
-      // participant가 없으면 초기화
       const participant = prevData.participant || {};
       const currentTasks = participant[username] || [];
       const context = `Row ${rowIndex}, Column ${column}`; // 작업 중인 셀 정보
   
-      // 새로운 작업 추가 또는 제거
-      const updatedTasks = isEditing
-        ? [...new Set([...currentTasks, context])] // 중복 제거
-        : currentTasks.filter((task) => task !== context);
+      let updatedTasks;
+  
+      if (isEditing) {
+        // 기존 작업 제거하고 새로운 작업 추가 (중복 방지)
+        updatedTasks = [context];
+      } else {
+        // 작업 제거 (편집 종료 시)
+        updatedTasks = currentTasks.filter((task) => task !== context);
+      }
   
       const updatedData = {
         ...prevData,
         participant: {
-          ...participant, // 기존 데이터 유지
-          [username]: updatedTasks, // 현재 사용자 작업 업데이트
+          ...participant,
+          [username]: updatedTasks,
         },
       };
-
-      console.log(updatedData.participant)
   
       // WebSocket 전송
       if (stompClientRef.current?.connected) {
@@ -193,11 +195,11 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
             JSON.stringify(updatedData)
           );
         } catch (error) {
-          console.error("WebSocket 전송 실패:", error);
+          console.error('WebSocket 전송 실패:', error);
         }
       }
   
-      return updatedData; // 로컬 상태 업데이트
+      return updatedData;
     });
   };
 
