@@ -18,7 +18,9 @@
 }
 
 .table th {
-    background-color: #433878;
+    background-color: #913BF6;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
     color: white;
     padding: 10px;
     text-align: center;
@@ -27,6 +29,7 @@
 .table td {
     padding: 10px;
     border: 1px solid #ddd;
+    box-sizing: border-box;
     cursor: pointer;
     white-space: pre-wrap;
     overflow-wrap: break-word;
