@@ -61,6 +61,35 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   }, [projectId]);
 
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (stompClientRef.current?.connected && userInfo?.userName) {
+        // 현재 편집 정보를 초기화
+        const updatedParticipant = { ...data.participant };
+  
+        // 현재 사용자의 편집 정보를 제거
+        delete updatedParticipant[userInfo.userName];
+  
+        // WebSocket을 통해 초기화된 데이터를 전송
+        stompClientRef.current.send(
+          `/app/edit/api/v1/projects/${projectId}/function-description`,
+          {},
+          JSON.stringify({ ...data, participant: updatedParticipant })
+        );
+  
+        console.log("Participant cleared before unload:", updatedParticipant);
+      }
+    };
+  
+    // `beforeunload` 이벤트 등록
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  
+    // 정리(cleanup) 작업
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [data, projectId, userInfo]);
+
+  useEffect(() => {
     if (isWebSocketConnected) {
       const socket = new SockJS('https://k11e203.p.ssafy.io:8080/ws');
       const stompClient = Stomp.over(socket);
@@ -378,10 +407,10 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   };
 
   const getCellStyle = (rowIndex: number, column: keyof FeatureSpecData): React.CSSProperties => {
-    const participants = Object.entries(data.participant)
+    const participants = Object.entries(data.participant || {})
       .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
-      .map(([username]) => username);
-  
+      .map( ([username]) => username);
+
     return participants.length > 0
       ? {
           border: '2px solid #4A90E2',
@@ -392,7 +421,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
   };
 
   const getParticipantNames = (rowIndex: number, column: keyof FeatureSpecData): string[] => {
-    return Object.entries(data.participant)
+    return Object.entries(data.participant || {}) // participant가 없으면 빈 객체로 처리
       .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
       .map(([username]) => username);
   };
