@@ -11,6 +11,8 @@ import { showToast } from '@/utils/toastUtils';
 import { getProposal } from '../../apis/webSocket/proposal';
 import { useProjectInfo } from '../../hooks/useProjectInfo';
 import Tag from '@/features/teamBuilding/components/tag/Tag';
+import useUserStore from '@/stores/useUserStore';
+import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 
 interface FeatureSpecData {
   category: string[];
@@ -18,6 +20,7 @@ interface FeatureSpecData {
   description: string[];
   owner: string[];
   priority: string[];
+  participant: { [username: string]: string[] };
 }
 
 interface FeatureSpecTableProps {
@@ -34,12 +37,15 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     description: [],
     owner: [],
     priority: [],
+    participant: {},
   });
 
   const [isEditing, setIsEditing] = useState<{ [index: number]: { [field: string]: boolean } }>({});
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const stompClientRef = useRef<any>(null);
   const { data: projectInfo } = useProjectInfo(parseInt(projectId));
+  const { userId } = useUserStore();
+  const { data: userInfo } = useUserInfoData(userId);
 
   useEffect(() => {
     const fetchFeatureSpec = async () => {
@@ -53,6 +59,35 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
 
     fetchFeatureSpec();
   }, [projectId]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (stompClientRef.current?.connected && userInfo?.userName) {
+        // 현재 편집 정보를 초기화
+        const updatedParticipant = { ...data.participant };
+  
+        // 현재 사용자의 편집 정보를 제거
+        delete updatedParticipant[userInfo.userName];
+  
+        // WebSocket을 통해 초기화된 데이터를 전송
+        stompClientRef.current.send(
+          `/app/edit/api/v1/projects/${projectId}/function-description`,
+          {},
+          JSON.stringify({ ...data, participant: updatedParticipant })
+        );
+  
+        console.log("Participant cleared before unload:", updatedParticipant);
+      }
+    };
+  
+    // `beforeunload` 이벤트 등록
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  
+    // 정리(cleanup) 작업
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [data, projectId, userInfo]);
 
   useEffect(() => {
     if (isWebSocketConnected) {
@@ -74,8 +109,30 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       });
 
       return () => {
-        if (stompClient.connected) {
-          stompClient.disconnect(() => {
+        if (stompClientRef.current?.connected) {
+          const updatedParticipant = { ...data.participant };
+      
+          if (userInfo?.userName && updatedParticipant[userInfo.userName]) {
+            // 사용자 ID 제거
+            delete updatedParticipant[userInfo.userName];
+      
+            // 로컬 데이터 업데이트
+            setData((prevData) => ({
+              ...prevData,
+              participant: updatedParticipant,
+            }));
+      
+            // 서버로 업데이트된 participant 전송
+            stompClientRef.current.send(
+              `/app/edit/api/v1/projects/${projectId}/function-description`,
+              {},
+              JSON.stringify({ ...data, participant: updatedParticipant })
+            );
+            console.log('Participant updated on disconnect:', updatedParticipant);
+          }
+      
+          // WebSocket 연결 종료
+          stompClientRef.current.disconnect(() => {
             console.log('WebSocket disconnected for FeatureSpecTable');
           });
         }
@@ -91,6 +148,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       description: [...data.description, ''],
       owner: [...data.owner, ''],
       priority: [...data.priority, ''],
+      participant: { ...data.participant },
     };
 
     setData(updatedData);
@@ -113,6 +171,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
       description: data.description.filter((_, i) => i !== index),
       owner: data.owner.filter((_, i) => i !== index),
       priority: data.priority.filter((_, i) => i !== index),
+      participant: { ...data.participant },
     };
 
     setData(updatedData);
@@ -127,7 +186,57 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     }
   };
 
+  const updateParticipant = (
+    username: string,
+    rowIndex: number,
+    column: keyof FeatureSpecData,
+    isEditing: boolean
+  ) => {
+    setData((prevData) => {
+      const participant = prevData.participant || {};
+      const currentTasks = participant[username] || [];
+      const context = `Row ${rowIndex}, Column ${column}`; // 작업 중인 셀 정보
+  
+      let updatedTasks;
+  
+      if (isEditing) {
+        // 기존 작업 제거하고 새로운 작업 추가 (중복 방지)
+        updatedTasks = [context];
+      } else {
+        // 작업 제거 (편집 종료 시)
+        updatedTasks = currentTasks.filter((task) => task !== context);
+      }
+  
+      const updatedData = {
+        ...prevData,
+        participant: {
+          ...participant,
+          [username]: updatedTasks,
+        },
+      };
+  
+      // WebSocket 전송
+      if (stompClientRef.current?.connected) {
+        try {
+          stompClientRef.current.send(
+            `/app/edit/api/v1/projects/${projectId}/function-description`,
+            {},
+            JSON.stringify(updatedData)
+          );
+        } catch (error) {
+          console.error('WebSocket 전송 실패:', error);
+        }
+      }
+  
+      return updatedData;
+    });
+  };
+
   const handleInputChange = (column: keyof FeatureSpecData, rowIndex: number, value: string) => {
+    if (column === 'participant') {
+      return;
+    }
+
     const updatedColumn = [...data[column]];
     updatedColumn[rowIndex] = value;
 
@@ -148,8 +257,11 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     setIsEditing({ [rowIndex]: { [column]: true } });
   };
 
-  const handleBlur = () => {
+  const handleBlur = (username: string, rowIndex: number, column: keyof FeatureSpecData) => {
     setIsEditing({});
+    if (username) {
+      updateParticipant(username, rowIndex, column, false); // 편집 종료 시 작업 제거
+    }
   };
 
   const autoResize = (element: HTMLTextAreaElement) => {
@@ -159,10 +271,14 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
 
   const handleKeyPress = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
+    rowIndex: number,
+    column: keyof FeatureSpecData
   ) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleBlur(); // 엔터 키로 편집 종료
+      if (userInfo) {
+        handleBlur(userInfo?.userName, rowIndex, column);
+      }
     }
   };
 
@@ -290,12 +406,49 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
     setIsModalOpen(false);
   };
 
+  const getColorFromName = (name: string): string => {
+    const hash = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  };
+  
+  const getCellStyle = (rowIndex: number, column: keyof FeatureSpecData): React.CSSProperties => {
+    const participants = Object.entries(data.participant || {})
+      .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
+      .map(([username]) => username);
+  
+    // userName과 일치하는 참여자가 있는지 확인
+    const currentUserName = userInfo?.userName;
+    const userBorderColor = currentUserName && participants.includes(currentUserName) 
+      ? getColorFromName(currentUserName) 
+      : null;
+
+    // 테두리 색상 결정: userName과 일치하는 사용자가 있으면 그 색상을 사용, 없으면 첫 번째 참여자의 색상
+    const borderColor = userBorderColor || (participants.length > 0 ? getColorFromName(participants[0]) : '#4A90E2');
+  
+    return participants.length > 0
+      ? {
+          border: `2px solid ${borderColor}`,
+          position: 'relative',
+          padding: '8px',
+        }
+      : {};
+  };
+
+  const getParticipantNames = (rowIndex: number, column: keyof FeatureSpecData): string[] => {
+    return Object.entries(data.participant || {}) // participant가 없으면 빈 객체로 처리
+      .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
+      .map(([username]) => username);
+  };
+
   return (
     <div className={styles.tableContainer}>
-      <div className={styles.aiButton}>
-        <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
-      </div>
-      <h2 className={styles.sectionTitle}>기능 명세서</h2>
+      <h2 className={styles.sectionTitle}>
+        기능 명세서
+        <div className={styles.aiButton}>
+          <Button size='custom' colorType='purple' onClick={openModal}>AI 자동생성</Button>
+        </div>
+      </h2>
       <CommonModal 
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -340,12 +493,7 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                 <td
                   key={column}
                   onClick={() => handleEditClick(index, column)}
-                  style={{ 
-                    whiteSpace: 'pre-wrap',
-                    overflowWrap: 'break-word',
-                    wordWrap: 'break-word',
-                    wordBreak: 'break-word',
-                  }}
+                  style={getCellStyle(index, column)}
                   className={styles.tableCell}
                 >
                 {column === 'owner' ? (
@@ -358,9 +506,16 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                         {projectInfo?.projectMembers.map((member) => (
                           <div
                             key={member.pmId}
+                            onFocus={() =>
+                              userInfo
+                                ? updateParticipant(userInfo.userName, index, column, true)
+                                : null
+                            }
                             onClick={() => {
-                              handleInputChange(column, index, member.name); // 선택된 멤버 이름으로 상태 업데이트
-                              handleBlur(); // 편집 모드 종료
+                              handleInputChange(column, index, member.name);
+                              if (userInfo) {
+                                handleBlur(userInfo?.userName, index, column);
+                              }
                             }}
                             className={styles.tagOptionWrapper}
                           >
@@ -383,9 +538,16 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                         {['상', '중', '하'].map((value) => (
                           <div
                             key={value}
+                            onFocus={() =>
+                              userInfo
+                                ? updateParticipant(userInfo.userName, index, column, true)
+                                : null
+                            }
                             onClick={() => {
                               handleInputChange(column, index, value);
-                              handleBlur();
+                              if (userInfo) {
+                                handleBlur(userInfo?.userName, index, column);
+                              }
                             }}
                             className={styles.tagOptionWrapper}
                           >
@@ -396,14 +558,36 @@ const FeatureSpecTable: React.FC<FeatureSpecTableProps> = ({ projectId, isWebSoc
                     )}
                   </>
                 ) : isEditing[index]?.[column] ? (
-                    <textarea
-                      value={data[column][index]}
-                      onChange={(e) => handleInputChange(column, index, e.target.value)}
-                      onKeyDown={(e) => handleKeyPress(e)} // 엔터 키 처리
-                      onBlur={() => handleBlur()}
-                      autoFocus
-                      ref={(el) => el && autoResize(el)} // 크기 자동 조정
-                    />
+                    <>
+                      <textarea
+                        value={data[column][index]}
+                        onChange={(e) => handleInputChange(column, index, e.target.value)}
+                        onFocus={() =>
+                          userInfo
+                            ? updateParticipant(userInfo.userName, index, column, true)
+                            : null
+                        }
+                        onKeyDown={(e) => handleKeyPress(e, index, column)}
+                        onBlur={() => 
+                          userInfo
+                            ? handleBlur(userInfo.userName, index, column)
+                            : null
+                        }
+                        autoFocus
+                        ref={(el) => el && autoResize(el)} // 크기 자동 조정
+                      />
+                      <div className={styles.participantNames}>
+                        {getParticipantNames(index, column).map((name) => (
+                          <span
+                            key={name}
+                            style={{backgroundColor: getColorFromName(name)}}
+                            className={styles.participantName}
+                          >
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    </>
                   ) : (
                     data[column][index]?.length > (column === "category" ? 50 : 250) ? (
                       <span title={data[column][index]}>
