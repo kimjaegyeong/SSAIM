@@ -124,12 +124,13 @@ const SprintCreate: React.FC = () => {
         `${sprint?.name}`
       );
       const response = await generateIssueOnSprint(Number(projectId), Number(sprintId), request);
-      console.log(response)
+      console.log(response);
       showToast.success('이슈가 스프린트에 성공적으로 할당되었습니다.');
       completeUpload();
     } catch (error) {
       console.error('Failed to assign issues to sprint:', error);
       showToast.error('이슈를 스프린트에 할당하는 데 실패했습니다.');
+      completeUpload();
     } finally {
       // setIsLoading(false); // 로딩 종료
     }

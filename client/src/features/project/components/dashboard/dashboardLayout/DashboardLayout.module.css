@@ -1,3 +1,4 @@
+/* DashboardLayout.module.css */
 .layout {
   height: 100%;
   overflow: hidden;
@@ -6,6 +7,8 @@
 
 .dashboardBottom {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chartContainer {
@@ -16,7 +19,7 @@
 .weeklyScheduleContainer {
 }
 .chartContainer {
-  width: 600px;
+  width: 300px;
   height: 300px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -26,8 +29,8 @@
 
 .buttonGrid {
   display: grid;
-  min-width : 560px;
-  height: 260px;;
+  width : 260px;
+  height: 260px;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 15px;
@@ -40,14 +43,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #007bff;
+  background-color: #3c90e2;
   color: #ffffff;
-  font-size: 16px;
+  font-size: 1.5rem;
   font-weight: 500;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-direction: column;
+}
+
+.gridButton img{
+  width: 2rem;
 }
 
 .gridButton:hover {

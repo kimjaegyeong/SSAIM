@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react';
 import styles from './Navbar.module.css';
+import Logo from '/SSAIM.png';
+
 import {
   IoHomeOutline,
   IoLayersOutline,
@@ -54,18 +56,9 @@ const Navbar: React.FC = () => {
     <div className={styles.sidebarContainer}>
       <div className={styles.navList}>
         {/* 프로필 이미지와 이름 */}
-        <NavItem
-          icon={
-            <img
-              className={styles.profileImage}
-              src={userInfo?.userProfileImage ? userInfo?.userProfileImage : defaultProfile}
-            ></img>
-          }
-          text={userInfo?.userName ? userInfo?.userName : ''}
-          onClick={() => {
-            navigate(`/profile/${userId}`);
-          }}
-        />
+        <div className={styles.title}>
+          <img className={styles.logo} src={Logo}></img> <span className={styles.titleText}>{"SSAIM"}</span>
+        </div>
 
         {/* 메뉴 아이템 리스트 */}
         {menuItems.map((item, index) => (
@@ -83,6 +76,18 @@ const Navbar: React.FC = () => {
       {/* 로그아웃 버튼 */}
       <div className="">
         <div className={styles.footer}>
+          <NavItem
+            icon={
+              <img
+                className={styles.profileImage}
+                src={userInfo?.userProfileImage ? userInfo?.userProfileImage : defaultProfile}
+              ></img>
+            }
+            text={userInfo?.userName ? userInfo?.userName : ''}
+            onClick={() => {
+              navigate(`/profile/${userId}`);
+            }}
+          />
           <NavItem icon={<IoLogOutOutline className={styles.icon} />} text="로그아웃" onClick={handleLogout} />
         </div>
       </div>

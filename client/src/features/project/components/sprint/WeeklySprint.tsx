@@ -13,6 +13,9 @@ import { IssueDTO } from '@features/project/types/dashboard/WeeklyDataDTO';
 import { useEpicListData } from '../../hooks/sprint/useEpicListData';
 import DefaultProfile from '@/assets/profile/DefaultProfile.png';
 import LoadingDot from '@/components/loading/LoadingDot';
+import { IoIosArrowDropleft, IoIosArrowDropright } from 'react-icons/io';
+
+const statusOrder = ['진행 중', '해야 할 일', '완료']; // 상태 우선순위 정의
 
 const WeeklySprint = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -140,6 +143,15 @@ const WeeklySprint = () => {
 
       dayIssueMap[day]?.push(issue);
     });
+
+    Object.keys(dayIssueMap).forEach((day) => {
+      dayIssueMap[day].sort((a, b) => {
+        const statusA = statusOrder.indexOf(a.progress || '해야 할 일');
+        const statusB = statusOrder.indexOf(b.progress || '해야 할 일');
+        return statusA - statusB;
+      });
+    });
+
     console.log(dayIssueMap);
     return dayIssueMap;
   }, [sprintIssues, selectedMember]);
@@ -147,49 +159,63 @@ const WeeklySprint = () => {
   const handleFilterMember = (memberName: string) => {
     setSelectedMember(selectedMember === memberName ? null : memberName);
   };
+
+  const weekMap = {
+    Mon: '월요일',
+    Tue: '화요일',
+    Wed: '수요일',
+    Thu: '목요일',
+    Fri: '금요일',
+    날짜미지정: '날짜미지정',
+  };
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.teamProfiles}>
-          {projectMembers?.map((member: ProjectInfoMemberDTO) => (
-            <div
-              key={member.name}
-              className={`${styles.profilePictureContainer} `}
-              onClick={() => handleFilterMember(member.name)}
-            >
-              <img
-                src={member.profileImage?.length > 0 ? member.profileImage : DefaultProfile}
-                alt={member.name}
-                className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
-              />
-              <span className={`${styles.profileLabel} ${selectedMember === member.name ? styles.activeLabel : ''}`}>
-                {member.name}
-              </span>
-            </div>
-          ))}
+        <div className={styles.headerTitle}>
+          <button className={styles.arrowButton} onClick={handleDecreaseWeek}>
+            <IoIosArrowDropleft />
+          </button>
+          <h2 className={styles.sprintTitle}>{currentWeek + 1}주차</h2>
+          <button className={styles.arrowButton} onClick={handleIncreaseWeek}>
+            <IoIosArrowDropright />
+          </button>
         </div>
-        <button className={styles.arrowButton} onClick={handleDecreaseWeek}>
-          &lt;
-        </button>
-        <h2 className={styles.sprintTitle}>{currentWeek + 1}주차</h2>
-        <p>
-          {dateToString(projectWeekList[currentWeek]?.startDate)} ~{' '}
-          {dateToString(projectWeekList[currentWeek]?.endDate)}
-        </p>
-        <button className={styles.arrowButton} onClick={handleIncreaseWeek}>
-          &gt;
-        </button>
-
-        <div className={styles.buttonPlaceholder}>
-          <Button children="스프린트 생성" colorType="blue" size="small" onClick={navigateToSprintList} />
+        <div className={styles.headerBottom}>
+          <div className={styles.teamProfiles}>
+            {projectMembers?.map((member: ProjectInfoMemberDTO) => (
+              <div
+                key={member.name}
+                className={`${styles.profilePictureContainer} `}
+                onClick={() => handleFilterMember(member.name)}
+              >
+                <img
+                  src={member.profileImage?.length > 0 ? member.profileImage : DefaultProfile}
+                  alt={member.name}
+                  className={`${styles.profilePicture} ${selectedMember === member.name ? styles.activeProfile : ''}`}
+                />
+                <span className={`${styles.profileLabel} ${selectedMember === member.name ? styles.activeLabel : ''}`}>
+                  {member.name}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className={styles.headerBottomRight}>
+            <p>
+              {dateToString(projectWeekList[currentWeek]?.startDate)} ~{' '}
+              {dateToString(projectWeekList[currentWeek]?.endDate)}
+            </p>
+            <div className={styles.buttonPlaceholder}>
+              <Button children="스프린트 생성" colorType="blue" size="small" onClick={navigateToSprintList} />
+            </div>
+          </div>
         </div>
       </div>
       <div className={styles.weeklyProgressContainer}>
         <div className={styles.contentheader}>
           {dayMap.map((day) => (
-            <div key={day} className={styles.dayHeader}>
-              {day}
-              {dateMap[day]}
+            <div key={day} className={`${styles.dayHeader} ${dateMap[day] === undefined ? styles.singleItem : ''}`}>
+              {dateMap[day] !== undefined && <span>{dateMap[day]}</span>}
+              <span>{weekMap[day]}</span>
             </div>
           ))}
         </div>
@@ -202,7 +228,9 @@ const WeeklySprint = () => {
           <div className={styles.issueGrid}>
             {dayMap.map((day) => (
               <div key={day} className={styles.dayColumn}>
-                {issuesByDay[day] && issuesByDay[day].length === 0 && <span>이슈가 없습니다.</span>}
+                {issuesByDay[day] && issuesByDay[day].length === 0 && (
+                  <span className={styles.noData}>해당 날짜에 이슈가 없습니다.</span>
+                )}
 
                 {issuesByDay[day]?.map((issue: IssueDTO) => (
                   <Issue issue={issue} epicSummary={issue.epicCode ? epicCodeMap?.[issue.epicCode] || '' : ''} />

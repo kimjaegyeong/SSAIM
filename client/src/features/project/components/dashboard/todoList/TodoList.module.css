@@ -1,3 +1,5 @@
+/* TodoList.module.css */
+
 .todoList {
   width: 800px;
   height: 300px;
@@ -57,11 +59,12 @@
 
 .taskEpic {
   font-size: 0.9rem;
-  color: #555;
-  background-color: #e8eaf6;
+  color: #ffffff;
+  background-color: #3c90e2;
   padding: 4px 8px;
   border-radius: 4px;
-  margin-left: 8px;
+  margin-right: 1.0rem;
+
 }
 
 .taskPriority {
@@ -69,6 +72,7 @@
   font-weight: bold;
   padding: 4px 8px;
   border-radius: 5px;
+  background-color: #e6e6e6;
 }
 
 .taskPriority.low {
