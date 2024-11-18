@@ -4,6 +4,7 @@ import Task from '../task/Task';
 import { DayOfWeek } from '../../../types/dashboard/DayOfWeek';
 import { IssueDTO, GitlabDTO } from '@/features/project/types/dashboard/WeeklyDataDTO';
 import { MeetingItemDTO } from '@/features/project/types/meeting/MeetingDTO';
+import LoadingDot from '@/components/loading/LoadingDot';
 
 interface DailyScheduleProps {
   day: DayOfWeek;
@@ -11,9 +12,10 @@ interface DailyScheduleProps {
   jiraData: IssueDTO[] | [];
   gitlabData: GitlabDTO[];
   meetingData: MeetingItemDTO[];
+  isLoading: boolean;
 }
 
-const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData, gitlabData, meetingData }) => {
+const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData, gitlabData, meetingData, isLoading }) => {
   const dayToKr = (day: DayOfWeek) => {
     const dayMap: Record<DayOfWeek, string> = {
       Sunday: '일요일',
@@ -33,14 +35,22 @@ const DailySchedule: React.FC<DailyScheduleProps> = ({ day, date, jiraData, gitl
         <span>{date}</span>
         <span>{dayToKr(day)}</span>
       </div>
-      <div className={styles.content}>
-        {jiraData?.length > 0 && <Task taskType="jira" day={day} tasks={jiraData} />}
-        {gitlabData?.length > 0 && <Task taskType="gitlab" day={day} tasks={gitlabData} />}
-        {meetingData?.length > 0 && <Task taskType="meeting" day={day} tasks={meetingData} />}
-        {jiraData.length === 0 && gitlabData.length === 0 && meetingData.length === 0 && (
-          <div className={styles.noData}>작업이 없습니다.</div>
-        )}
-      </div>
+      {isLoading ? (
+        <div className={styles.loadingContent}>
+          <LoadingDot />
+        </div>
+      ) : (
+        <>
+          <div className={styles.content}>
+            {jiraData?.length > 0 && <Task taskType="jira" day={day} tasks={jiraData} />}
+            {gitlabData?.length > 0 && <Task taskType="gitlab" day={day} tasks={gitlabData} />}
+            {meetingData?.length > 0 && <Task taskType="meeting" day={day} tasks={meetingData} />}
+            {jiraData.length === 0 && gitlabData.length === 0 && meetingData.length === 0 && (
+              <div className={styles.noData}>작업이 없습니다.</div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };

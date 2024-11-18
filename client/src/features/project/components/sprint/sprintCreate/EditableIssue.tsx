@@ -6,6 +6,8 @@ import styles from './EditableIssue.module.css';
 import { FaPen } from 'react-icons/fa6';
 import { showToast } from '@/utils/toastUtils';
 import { toast } from 'react-toastify';
+// import { useEpicListData } from '@/features/project/hooks/sprint/useEpicListData';
+// import { useParams } from 'react-router-dom';
 
 interface EditableIssueProps {
   issueData: IssueCreateDTO | IssueDTO;
@@ -22,12 +24,22 @@ const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditabl
   const [isEditing, setIsEditing] = useState(false);
   const [editableIssue, setEditableIssue] = useState<IssueCreateDTO | IssueDTO>(issueData);
   const [isExpanded, setIsExpanded] = useState(false); // 제목/설명 확장 상태
+  // const { projectId } = useParams();
+  // const { data: epicList } = useEpicListData(Number(projectId));
   const { updateIssue } = useSprintIssueStore();
+
+  // const epicCodeMap = useMemo(() => {
+  //   const map: Record<string, string> = {};
+  //   epicList?.forEach((epic) => {
+  //     map[epic.key] = epic.summary;
+  //   });
+  //   return map;
+  // }, [epicList]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    if (name === 'summary' || name === 'description') {
+    if (name === 'summary' || name === 'description' || name === 'epic') {
       if (value.length > 255) {
         const toastId = `${name}-length-warning`;
         if (!toast.isActive(toastId)) {
@@ -54,6 +66,26 @@ const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditabl
     }));
   };
 
+  const handleChangePoint = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    const numberValue = Number(value);
+    if (numberValue > 4) {
+      const toastId = 'storyPoint-max-warning';
+      if (!toast.isActive(toastId)) {
+        showToast.warn('스토리포인트는 최대 4까지 입력 가능합니다.', { toastId });
+      }
+      return;
+    }
+
+    setEditableIssue((prevIssue) => ({
+      ...prevIssue,
+      [name]: Number(value),
+    }));
+    if (isIssueCreateDTO(editableIssue)) {
+      updateIssue(day, editableIssue);
+    }
+  };
   const handleSave = () => {
     if (isEditable && isIssueCreateDTO(editableIssue)) {
       updateIssue(day, editableIssue);
@@ -67,18 +99,20 @@ const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditabl
   };
 
   // epicKey 또는 epicCode 값을 가져오기
-  const epicValue = isIssueCreateDTO(editableIssue) ? editableIssue.epic : editableIssue.epicCode;
+  const epicValue = isIssueCreateDTO(editableIssue) ? editableIssue.epic : editableIssue.epicKey;
 
   const handleEpicChange = (value: string) => {
     setEditableIssue((prevIssue) =>
-      isIssueCreateDTO(prevIssue) ? { ...prevIssue, epicKey: value } : { ...prevIssue, epicCode: value }
+      isIssueCreateDTO(prevIssue) ? { ...prevIssue, epic: value } : { ...prevIssue, epicCode: value }
     );
   };
 
   return (
     <div className={styles.issueContainer}>
       {/* 이슈 summary */}
-      {isEditable && !isEditing && <FaPen onClick={() => isEditable && setIsEditing(true)} />}
+      {isEditable && !isEditing && (
+        <FaPen className={styles.editIcon} onClick={() => isEditable && setIsEditing(true)} />
+      )}
       <div className={styles.issueHeader}>
         {isEditing && isEditable ? (
           <input
@@ -112,7 +146,9 @@ const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditabl
           />
         ) : (
           <span
-            className={`${styles.issueText} ${editableIssue.description.length > 3 && !isExpanded ? styles.collapsed : ''}`}
+            className={`${styles.issueText} ${
+              editableIssue.description.length > 3 && !isExpanded ? styles.collapsed : ''
+            }`}
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {editableIssue.description}
@@ -129,26 +165,28 @@ const EditableIssue: React.FC<EditableIssueProps> = ({ issueData, day, isEditabl
             value={epicValue || ''}
             onChange={(e) => handleEpicChange(e.target.value)}
             className={styles.input}
-            placeholder="Epic Key/Code"
+            placeholder="Epic Summary"
           />
         ) : (
           <span className={styles.epicName}>{epicValue || 'No Epic'}</span>
         )}
-
-        {isEditing && isEditable ? (
-          <input
-            type="number"
-            name="storyPoint"
-            value={editableIssue.storyPoint}
-            onChange={handleChange}
-            className={styles.input}
-            placeholder="Story Point"
-            min={0}
-            max={4}
-          />
-        ) : (
-          <span>{editableIssue.storyPoint}</span>
-        )}
+        <div className={styles.storyPointGroup}>
+          <span>스토리 포인트 </span>
+          {isEditable ? (
+            <input
+              type="number"
+              name="storyPoint"
+              value={editableIssue.storyPoint}
+              onChange={handleChangePoint}
+              className={styles.inputNumber}
+              placeholder="Story Point"
+              min={0}
+              max={4}
+            />
+          ) : (
+            <span className={styles.storyPoint}>{editableIssue.storyPoint}</span>
+          )}
+        </div>
       </div>
 
       {/* 저장 및 취소 버튼 */}

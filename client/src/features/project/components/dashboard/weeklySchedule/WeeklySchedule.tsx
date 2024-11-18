@@ -39,8 +39,8 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
   const day = endDate?.getDate();
   //queries
   const { data: userInfo } = useUserInfoData(userId);
-  const { data: meetingList } = useMeetingListQuery(Number(projectId));
-  const { data: sprintIssues } = useSprintIssueQuery(
+  const { data: meetingList, isLoading: isMeetingLoading } = useMeetingListQuery(Number(projectId));
+  const { data: sprintIssues, isLoading: isJiraLoading } = useSprintIssueQuery(
     projectId,
     dateToString(startDate, '-'),
     dateToString(endDate, '-')
@@ -57,7 +57,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
   //   return endOfDay.toISOString();
   // };
 
-  const { data: gitlabData } = useGitlabData(
+  const { data: gitlabData, isLoading: isGitlabLoading } = useGitlabData(
     projectId,
     startDate
       ? (new Date(Date.UTC(year, month, day - 3, 0, 0, 0)).toISOString() as ISOStringFormat) // 자정
@@ -124,10 +124,9 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
 
         const dayOfWeek = dateObj.getDay(); // 요일 인덱스 계산 (0=일요일, 1=월요일, ...)
         const weekDay = weekDays[(dayOfWeek + 6) % 7] || '날짜미지정';
-        if(weekMap[weekDay]?.date?.getDate() === date){
+        if (weekMap[weekDay]?.date?.getDate() === date) {
           dataByDay[weekDay as DayOfWeek].jira.push(issue);
         }
-        
       } else {
         // dataByDay['날짜미지정']?.jira.push(issue); // 날짜가 없을 경우 '날짜미지정' 처리
       }
@@ -147,6 +146,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
 
     return dataByDay;
   }, [gitlabData, filterdIssues, meetingList]);
+  const isDataLoading = isGitlabLoading || isJiraLoading || isMeetingLoading;
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -158,6 +158,7 @@ const WeeklySchedule: React.FC<WeeklyScheduleProps> = () => {
             jiraData={dashboardData[day]?.jira}
             gitlabData={dashboardData[day]?.gitlab}
             meetingData={dashboardData[day]?.meeting}
+            isLoading={isDataLoading}
           />
         ))}
       </div>

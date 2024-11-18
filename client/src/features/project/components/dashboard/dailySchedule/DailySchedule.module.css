@@ -41,3 +41,10 @@
   font-style: italic;
   margin-top: 20px;
 }
+
+.loadingContent{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
