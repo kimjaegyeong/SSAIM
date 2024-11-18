@@ -8,6 +8,8 @@ import CommonModal from '@components/modal/Modal';
 import Button from '@components/button/Button';
 import Loading from '@/components/loading/Loading';
 import { showToast } from '@/utils/toastUtils';
+import useUserStore from '@/stores/useUserStore';
+import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 
 interface ProposalProps {
   projectId: string;
@@ -26,12 +28,21 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [modalTextareaValue, setModalTextareaValue] = useState<string>('');
+  const { userId } = useUserStore();
+  const { data: userInfo } = useUserInfoData(userId);
   const [editableData, setEditableData] = useState<EditableData>({
     title: '',
     description: '',
     background: '',
     feature: '',
     effect: '',
+  });
+  const [participant, setParticipant] = useState<{ [key: string]: string[] }>({
+    title: [],
+    description: [],
+    background: [],
+    feature: [],
+    effect: []
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState({
@@ -59,6 +70,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
         };
 
         setEditableData(filledData);
+        setParticipant(data.participant || {});
       } catch (error) {
         console.error('Error parsing JSON data:', error);
       } finally {
@@ -88,6 +100,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
               feature: data.feature || prevData.feature,
               effect: data.effect || prevData.effect,
             }));
+            setParticipant(data.participant || {});
           } catch (error) {
             console.error('Error parsing WebSocket message:', error);
           }
@@ -106,6 +119,42 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
     }
   }, [isWebSocketConnected, projectId]);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (stompClientRef.current?.connected && userInfo?.userName) {
+        // 현재 편집 정보를 초기화
+        const updatedParticipant = { ...participant };
+  
+        // 모든 필드에서 현재 사용자의 이름 제거
+        Object.keys(updatedParticipant).forEach((field) => {
+          updatedParticipant[field] = updatedParticipant[field].filter(
+            (username) => username !== userInfo.userName
+          );
+        });
+  
+        // WebSocket을 통해 초기화된 데이터를 전송
+        stompClientRef.current.send(
+          `/app/edit/api/v1/projects/${projectId}/proposal`,
+          {},
+          JSON.stringify({ 
+            ...editableData,
+            participant: updatedParticipant 
+          })
+        );
+  
+        console.log("Participant cleared before unload:", updatedParticipant);
+      }
+    };
+  
+    // `beforeunload` 이벤트 등록
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  
+    // 정리(cleanup) 작업
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [participant, editableData, projectId, userInfo]);
+
   const handleFieldChange = (field: keyof EditableData, value: string) => {
     setEditableData((prev) => {
       const updatedData = { ...prev, [field]: value };
@@ -119,6 +168,74 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
       return updatedData;
     });
   };
+
+  const handleEditStart = (field: keyof EditableData) => {
+    if (!userInfo?.userName) {
+      return;
+    }
+  
+    // participant가 undefined일 경우 기본값 설정
+    const updatedParticipant = { ...(participant || {}) };
+  
+    // 특정 field가 undefined일 경우 빈 배열로 초기화
+    if (!updatedParticipant[field]) {
+      updatedParticipant[field] = [];
+    }
+  
+    // field에 해당 사용자가 이미 포함되어 있는지 확인 후 추가
+    if (!updatedParticipant[field].includes(userInfo.userName)) {
+      updatedParticipant[field] = [...updatedParticipant[field], userInfo.userName];
+  
+      // WebSocket 메시지 전송
+      stompClientRef.current?.send(
+        `/app/edit/api/v1/projects/${projectId}/proposal`,
+        {},
+        JSON.stringify({ 
+          title: editableData.title,
+          description: editableData.description,
+          background: editableData.background,
+          feature: editableData.feature,
+          effect: editableData.effect, 
+          participant: updatedParticipant 
+        })
+      );
+  
+      setParticipant(updatedParticipant);
+    }
+  };  
+
+  const handleEditEnd = (field: keyof EditableData) => {
+  if (!userInfo?.userName) {
+    return;
+  }
+
+  // 기존 상태에서 participant가 undefined일 경우 기본값 설정
+  const updatedParticipant = { ...(participant || {}) };
+  if (!updatedParticipant[field]) {
+    updatedParticipant[field] = [];
+  }
+
+  updatedParticipant[field] = updatedParticipant[field].filter(
+    (user) => user !== userInfo.userName
+  );
+
+  // WebSocket 메시지 전송
+  stompClientRef.current?.send(
+    `/app/edit/api/v1/projects/${projectId}/proposal`,
+    {},
+    JSON.stringify({ 
+      title: editableData.title,
+      description: editableData.description,
+      background: editableData.background,
+      feature: editableData.feature,
+      effect: editableData.effect, 
+      participant: updatedParticipant 
+    })
+  );
+
+  setParticipant(updatedParticipant);
+};
+
 
   const toggleEdit = (field: keyof EditableData) => {
     setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -233,6 +350,42 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
     setIsModalOpen(false);
   };
 
+  
+  const getColorFromName = (name: string): string => {
+    const hash = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  };
+  
+  const getCellStyle = (field: keyof EditableData): React.CSSProperties => {
+    // participant가 없으면 빈 배열로 처리
+    const participants = participant?.[field] || [];
+  
+    // 현재 사용자 이름 가져오기
+    const currentUserName = userInfo?.userName;
+  
+    // 테두리 색상 결정
+    let borderColor = '#4A90E2'; // 기본 색상
+  
+    if (currentUserName && participants.includes(currentUserName)) {
+      // 현재 사용자가 참여 중일 때
+      borderColor = getColorFromName(currentUserName);
+    } else if (participants.length > 0) {
+      // 다른 사용자가 참여 중일 때 첫 번째 사용자의 색상 사용
+      borderColor = getColorFromName(participants[0]);
+    }
+  
+    return {
+      border: participants.length > 0 ? `2px solid ${borderColor}` : undefined,
+      position: 'relative',
+      padding: '8px'
+    };
+  };
+
+  const getParticipantNames = (field: keyof EditableData): string[] => {
+    return participant?.[field] || [];
+  };
+
   return (
     <div className={styles.proposal}>
       <h2 className={styles.sectionTitle}>
@@ -274,6 +427,7 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
           <tbody>
             {Object.entries(editableData).map(([key, value]) => {
               const field = key as keyof EditableData;
+
               return (
                 <tr key={field}>
                   <td className={styles.label}>
@@ -286,31 +440,43 @@ const Proposal: React.FC<ProposalProps> = ({ projectId, isWebSocketConnected }) 
                   <td
                     className={styles.content}
                     onClick={() => !isEditing[field] && toggleEdit(field)}
-                    style={{ 
-                      whiteSpace: 'pre-wrap',
-                      overflowWrap: 'break-word',
-                      wordWrap: 'break-word',
-                      wordBreak: 'break-word',
-                    }}
+                    style={getCellStyle(field)}
                   >
-                    {isEditing[field] ? (
-                      <textarea
-                        className={styles.inputTextarea}
-                        value={value}
-                        onChange={(e) => handleFieldChange(field, e.target.value)}
-                        onBlur={() => toggleEdit(field)}
-                        autoFocus
-                        ref={(el) => el && autoResize(el)}
-                        onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
-                        onKeyDown={(e) => handleKeyPress(e, field)}
-                      ></textarea>
-                    ) : (
-                      <div
-                        className={styles.readOnly}
-                      >
-                        {value}
+                    <>
+                      <div className={styles.participantNames}>
+                        {getParticipantNames(field).map((username) => (
+                          <span
+                            key={username}
+                            className={styles.participantName}
+                            style={{ backgroundColor: getColorFromName(username) }}
+                          >
+                            {username}
+                          </span>
+                        ))}
                       </div>
-                    )}
+                      {isEditing[field] ? (
+                        <textarea
+                          className={styles.inputTextarea}
+                          value={value}
+                          onFocus={() => handleEditStart(field)}
+                          onChange={(e) => handleFieldChange(field, e.target.value)}
+                          onBlur={() => {
+                            toggleEdit(field)
+                            handleEditEnd(field)
+                          }}
+                          autoFocus
+                          ref={(el) => el && autoResize(el)}
+                          onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
+                          onKeyDown={(e) => handleKeyPress(e, field)}
+                        ></textarea>
+                      ) : (
+                        <div
+                          className={styles.readOnly}
+                        >
+                          {value}
+                        </div>
+                      )}
+                    </>
                   </td>
                 </tr>
               );

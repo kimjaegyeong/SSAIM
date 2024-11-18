@@ -5,9 +5,11 @@ import { useProjectInfo } from '../hooks/useProjectInfo';
 
 interface ProjectHeaderProps {
   projectId: string;
+  isDaily?: boolean;
+  setIsDaily?: (value: boolean) => void;
 }
 
-const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
+const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId, isDaily, setIsDaily }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const {data : projectInfo} = useProjectInfo(Number(projectId));
@@ -24,6 +26,11 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
     navigate(path);
   };
 
+  const toggleRemindState = () => {
+    if (setIsDaily) {
+      setIsDaily(!isDaily);
+    }
+  };
 
   return (
     <div className={styles.projectHeader}>
@@ -69,12 +76,25 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
             </p>
           </li>
           <li>
-            <p
-              className={getLinkClass(`/project/${projectId}/remind`)}
-              onClick={() => handleNavigation(`/project/${projectId}/remind`)}
-            >
-              회고
-            </p>
+            <div className={styles.remindContainer}>
+              <p
+                className={getLinkClass(`/project/${projectId}/remind`)}
+                onClick={() => handleNavigation(`/project/${projectId}/remind`)}
+              >
+                회고
+              </p>
+              {location.pathname === `/project/${projectId}/remind` && (
+                <div className={styles.switchContainer} onClick={toggleRemindState}>
+                  <div
+                    className={`${styles.switchKnob} ${
+                      isDaily ? styles.switchDaily : styles.switchWeekly
+                    }`}
+                  />
+                  <span className={styles.switchText}>일간</span>
+                  <span className={styles.switchText}>주간</span>
+                </div>
+              )}
+            </div>
           </li>
         </ul>
       </nav>
