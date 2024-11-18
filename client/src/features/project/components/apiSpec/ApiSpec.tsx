@@ -15,6 +15,8 @@ import { showToast } from '@/utils/toastUtils';
 import { getProposal } from '../../apis/webSocket/proposal';
 import { getFeatureSpec } from '../../apis/webSocket/featureSpec';
 import { useProjectInfo } from '../../hooks/useProjectInfo';
+import useUserStore from '@/stores/useUserStore';
+import { useUserInfoData } from '@/features/myPage/hooks/useUserInfoData';
 
 interface ApiSpecData {
   category: string[];
@@ -31,6 +33,7 @@ interface ApiSpecData {
   responseHeader: string[];
   requestBody: string[];
   responseBody: string[];
+  participant: { [username: string]: string[] };
 }
 
 interface ApiSpecTableProps {
@@ -54,6 +57,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     responseHeader: [],
     requestBody: [],
     responseBody: [],
+    participant: {},
   });
   const tableRef = useRef<HTMLDivElement | null>(null);
   const stompClientRef = useRef<any>(null);
@@ -64,6 +68,8 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   const [isEditing, setIsEditing] = useState<{ [rowIndex: number]: { [column: string]: boolean } }>({});
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const { data: projectInfo } = useProjectInfo(parseInt(projectId));
+  const { userId } = useUserStore();
+  const { data: userInfo } = useUserInfoData(userId);
 
   const openModal = (rowIndex: number) => {
     setSelectedRowIndex(rowIndex);
@@ -117,6 +123,33 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     }
   }, [isWebSocketConnected, projectId]);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (stompClientRef.current?.connected && userInfo?.userName) {
+        // 현재 편집 정보를 초기화
+        const updatedParticipant = { ...data.participant };
+  
+        // 현재 사용자의 편집 정보를 제거
+        delete updatedParticipant[userInfo.userName];
+  
+        // WebSocket을 통해 초기화된 데이터를 전송
+        stompClientRef.current.send(
+          `/app/edit/api/v1/projects/${projectId}/api-docs`,
+          {},
+          JSON.stringify({ ...data, participant: updatedParticipant })
+        );
+      }
+    };
+  
+    // `beforeunload` 이벤트 등록
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  
+    // 정리(cleanup) 작업
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [data, projectId, userInfo]);
+
   const addNewRow = () => {
     const updatedData = {
       ...data,
@@ -134,6 +167,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       responseHeader: [...data.responseHeader, ''],
       requestBody: [...data.requestBody, ''],
       responseBody: [...data.responseBody, ''],
+      participant: { ...data.participant },
     };
 
     setData(updatedData);
@@ -163,6 +197,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
       responseHeader: data.responseHeader.filter((_, i) => i !== index),
       requestBody: data.requestBody.filter((_, i) => i !== index),
       responseBody: data.responseBody.filter((_, i) => i !== index),
+      participant: { ...data.participant },
     };
 
     setData(updatedData);
@@ -174,6 +209,52 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
         JSON.stringify(updatedData)
       );
     }
+  };
+
+  const updateParticipant = (
+    username: string,
+    rowIndex: number,
+    column: keyof ApiSpecData,
+    isEditing: boolean
+  ) => {
+    setData((prevData) => {
+      const participant = prevData.participant || {};
+      const currentTasks = participant[username] || [];
+      const context = `Row ${rowIndex}, Column ${column}`; // 작업 중인 셀 정보
+  
+      let updatedTasks;
+  
+      if (isEditing) {
+        // 기존 작업 제거하고 새로운 작업 추가 (중복 방지)
+        updatedTasks = [context];
+      } else {
+        // 작업 제거 (편집 종료 시)
+        updatedTasks = currentTasks.filter((task) => task !== context);
+      }
+  
+      const updatedData = {
+        ...prevData,
+        participant: {
+          ...participant,
+          [username]: updatedTasks,
+        },
+      };
+  
+      // WebSocket 전송
+      if (stompClientRef.current?.connected) {
+        try {
+          stompClientRef.current.send(
+            `/app/edit/api/v1/projects/${projectId}/api-docs`,
+            {},
+            JSON.stringify(updatedData)
+          );
+        } catch (error) {
+          console.error('WebSocket 전송 실패:', error);
+        }
+      }
+  
+      return updatedData;
+    });
   };
   
   const maxCharCount = 200;
@@ -331,6 +412,10 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
   };
 
   const handleInputChange = (column: keyof ApiSpecData, rowIndex: number, value: string) => {
+    if (column === 'participant') {
+      return;
+    }
+
     const updatedColumn = [...data[column]];
     updatedColumn[rowIndex] = value;
   
@@ -346,17 +431,59 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
     }
   };
 
-  const handleBlur = () => {
+  const handleBlur = (username: string, rowIndex: number, column: keyof ApiSpecData) => {
     setIsEditing({});
+    if (username) {
+      updateParticipant(username, rowIndex, column, false); // 편집 종료 시 작업 제거
+    }
   };
 
   const handleKeyPress = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
+    rowIndex: number,
+    column: keyof ApiSpecData
   ) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleBlur();
+      if (userInfo) {
+        handleBlur(userInfo?.userName, rowIndex, column);
+      }
     }
+  };
+
+  const getColorFromName = (name: string): string => {
+    const hash = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  };
+  
+  const getCellStyle = (rowIndex: number, column: keyof ApiSpecData): React.CSSProperties => {
+    const participants = Object.entries(data.participant || {})
+      .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
+      .map(([username]) => username);
+  
+    // userName과 일치하는 참여자가 있는지 확인
+    const currentUserName = userInfo?.userName;
+    const userBorderColor = currentUserName && participants.includes(currentUserName) 
+      ? getColorFromName(currentUserName) 
+      : null;
+
+    // 테두리 색상 결정: userName과 일치하는 사용자가 있으면 그 색상을 사용, 없으면 첫 번째 참여자의 색상
+    const borderColor = userBorderColor || (participants.length > 0 ? getColorFromName(participants[0]) : '#4A90E2');
+  
+    return participants.length > 0
+      ? {
+          border: `2px solid ${borderColor}`,
+          position: 'relative',
+          padding: '8px',
+        }
+      : {};
+  };
+
+  const getParticipantNames = (rowIndex: number, column: keyof ApiSpecData): string[] => {
+    return Object.entries(data.participant || {}) // participant가 없으면 빈 객체로 처리
+      .filter(([_, tasks]) => tasks.includes(`Row ${rowIndex}, Column ${column}`))
+      .map(([username]) => username);
   };
 
   return (
@@ -426,6 +553,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                   <td
                     key={column}
                     onClick={() => handleEditClick(index, column)}
+                    style={getCellStyle(index, column)}
                     className={styles.tableCell}
                   >
                     {column === 'frontState' || column === 'backState' ? (
@@ -442,9 +570,16 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                             {[0, 1, 2].map((value) => (
                               <div
                                 key={value}
+                                onFocus={() =>
+                                  userInfo
+                                    ? updateParticipant(userInfo.userName, index, column, true)
+                                    : null
+                                }
                                 onClick={() => {
                                   handleInputChange(column, index, value.toString());
-                                  handleBlur();
+                                  if (userInfo) {
+                                    handleBlur(userInfo?.userName, index, column);
+                                  }
                                 }}
                                 className={styles.tagOptionWrapper}
                               >
@@ -467,9 +602,16 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                             {['상', '중', '하'].map((value) => (
                               <div
                                 key={value}
+                                onFocus={() =>
+                                  userInfo
+                                    ? updateParticipant(userInfo.userName, index, column, true)
+                                    : null
+                                }
                                 onClick={() => {
                                   handleInputChange(column, index, value);
-                                  handleBlur();
+                                  if (userInfo) {
+                                    handleBlur(userInfo?.userName, index, column);
+                                  }
                                 }}
                                 className={styles.tagOptionWrapper}
                               >
@@ -492,9 +634,16 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                             {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((value) => (
                               <div
                                 key={value}
+                                onFocus={() =>
+                                  userInfo
+                                    ? updateParticipant(userInfo.userName, index, column, true)
+                                    : null
+                                }
                                 onClick={() => {
                                   handleInputChange(column, index, value);
-                                  handleBlur(); // 선택 후 편집 종료
+                                  if (userInfo) {
+                                    handleBlur(userInfo?.userName, index, column);
+                                  }
                                 }}
                                 className={styles.tagOptionWrapper}
                               >
@@ -517,9 +666,16 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                             {projectInfo?.projectMembers.map((value) => (
                               <div
                                 key={value.pmId}
+                                onFocus={() =>
+                                  userInfo
+                                    ? updateParticipant(userInfo.userName, index, column, true)
+                                    : null
+                                }
                                 onClick={() => {
                                   handleInputChange(column, index, value.name);
-                                  handleBlur();
+                                  if (userInfo) {
+                                    handleBlur(userInfo?.userName, index, column);
+                                  }
                                 }}
                                 className={styles.tagOptionWrapper}
                               >
@@ -532,9 +688,18 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                     ) : isEditing[index]?.[column] ? (
                       <textarea
                         value={data[column][index]}
+                        onFocus={() =>
+                          userInfo
+                            ? updateParticipant(userInfo.userName, index, column, true)
+                            : null
+                        }
                         onChange={(e) => handleInputChange(column, index, e.target.value)}
-                        onKeyDown={(e) => handleKeyPress(e)}
-                        onBlur={() => handleBlur()}
+                        onKeyDown={(e) => handleKeyPress(e, index, column)}
+                        onBlur={() => 
+                          userInfo
+                            ? handleBlur(userInfo.userName, index, column)
+                            : null
+                        }
                         autoFocus
                         ref={(el) => el && autoResize(el)}
                         className={styles.editTextarea}
@@ -548,6 +713,17 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
                         data[column][index]
                       )
                     )}
+                    <div className={styles.participantNames}>
+                      {getParticipantNames(index, column).map((name) => (
+                        <span
+                          key={name}
+                          style={{backgroundColor: getColorFromName(name)}}
+                          className={styles.participantName}
+                        >
+                          {name}
+                        </span>
+                      ))}
+                    </div>
                   </td>
                 ))}
                 <td>
@@ -562,7 +738,7 @@ const ApiSpecTable: React.FC<ApiSpecTableProps> = ({ projectId, isWebSocketConne
             </React.Fragment>
           ))}
           <tr className={styles.addRow} onClick={addNewRow}>
-            <td colSpan={11} className={styles.addRowTd}>+ Add New Row</td> {/* colspan을 11로 조정 */}
+            <td colSpan={11} className={styles.addRowTd}>+ Add New Row</td>
           </tr>
         </tbody>
       </table>
