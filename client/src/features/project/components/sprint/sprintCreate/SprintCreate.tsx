@@ -91,7 +91,14 @@ const SprintCreate: React.FC = () => {
       console.error('Project ID or Sprint ID is missing.');
       return;
     }
-
+    const tempIssueCount = tempIssueList.reduce((sum, dayIssueList) => {
+      return sum + dayIssueList.tasks.length;
+    }, 0);
+    // showToast.info(`${tempIssueCount}`);
+    if (tempIssueCount === 0) {
+      showToast.warn('추가할 이슈가 없습니다. 이슈를 추가하고 저장해주세요.', { toastId: 'no-issue-error' });
+      return;
+    }
     setIsLoading(true); // 로딩 시작
 
     const request = tempIssueList.map((day) => ({
@@ -184,7 +191,7 @@ const SprintCreate: React.FC = () => {
                     <span key={`empty-${day}`}>추가한 이슈가 없습니다.</span>
                   )
                 )}
-                <hr />
+              <hr />
               {/* 기존 issuesByDay의 이슈들 */}
               {issuesByDay[day]?.issues.map((issue: IssueDTO) => (
                 <EditableIssue key={issue.issueKey} day={new Date(day)} issueData={issue} isEditable={false} />
