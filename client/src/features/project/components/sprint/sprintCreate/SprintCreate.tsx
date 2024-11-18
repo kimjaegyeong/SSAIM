@@ -157,7 +157,7 @@ const SprintCreate: React.FC = () => {
                 setIsModalOpen(true);
               }}
             >
-              🚀 AI 자동생성
+              🚀AI 자동생성
             </Button>
           </div>
           <div className={styles.genButton}>

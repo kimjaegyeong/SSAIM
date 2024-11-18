@@ -159,6 +159,11 @@ const WeeklySprint = () => {
   const handleFilterMember = (memberName: string) => {
     setSelectedMember(selectedMember === memberName ? null : memberName);
   };
+  const year = projectWeekList[currentWeek]?.endDate.getFullYear();
+  const month = projectWeekList[currentWeek]?.endDate.getMonth();
+  const day = projectWeekList[currentWeek]?.endDate.getDate();
+  const dateMon = dateToString(new Date(year, month, day - 3));
+  const dateSun = dateToString(new Date(year, month, day + 3));
 
   const weekMap = {
     Mon: '월요일',
@@ -201,8 +206,7 @@ const WeeklySprint = () => {
           </div>
           <div className={styles.headerBottomRight}>
             <p>
-              {dateToString(projectWeekList[currentWeek]?.startDate)} ~{' '}
-              {dateToString(projectWeekList[currentWeek]?.endDate)}
+              {dateMon} ~ {dateSun}
             </p>
             <div className={styles.buttonPlaceholder}>
               <Button children="스프린트 생성" colorType="blue" size="custom" onClick={navigateToSprintList} />
