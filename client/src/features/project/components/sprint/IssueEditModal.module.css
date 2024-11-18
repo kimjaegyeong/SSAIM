@@ -18,7 +18,9 @@
   width: 320px;
   max-width: 90%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1100; /* 모달 내용이 오버레이보다 위에 위치 */
 }
+
 
 h2 {
   margin-bottom: 16px;

@@ -14,19 +14,23 @@ interface TodoListItemProps {
   epicString: string | null;
 }
 
+/* Todolist.tsx */
 const TodoListItem: React.FC<TodoListItemProps> = ({ task, epicString }) => {
   // console.log(task);
   return (
     <div className={styles.todoListItem}>
       <div>
-        <span className={styles.taskEpic}>{task.epicCode ? epicString : '에픽 미지정'}</span>
+        <span> - </span>
         <span className={styles.taskTitle}>{task.summary}</span>
       </div>
-      <span className={styles.taskPriority}>{task.storyPoint}</span>
+      <div>
+        <span className={styles.taskEpic}>{task.epicCode ? epicString : '에픽 미지정'}</span>
+        <span className={styles.taskPriority}>{task.storyPoint}</span>
+      </div>
+
     </div>
   );
 };
-
 const TodoList: React.FC = () => {
   const { userId } = useUserStore();
   const { projectId, projectWeekList } = useDashboardStore();

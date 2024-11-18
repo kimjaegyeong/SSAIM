@@ -2,29 +2,45 @@
 .jira {
   background-color: #e2edfb; /* Jira 연한 파란색 */
   color: #357DE8;
+  border-bottom : 1px solid rgba(53, 125, 232, 0.2);
 }
 
 .gitlab {
   background-color: #ffe0cc; /* GitLab 연한 오렌지 */
   color: #fc6d26;
+  border-bottom : 1px solid rgba(252, 109, 38, 0.2);
 }
 
 .meeting {
   background-color:#b9eddb; /* 회의록 연한 초록색 */
   color: #198861;
+  border-bottom : 1px solid rgba(25, 136, 97, 0.2);
 }
 
 .task {
   font-size : 0.9rem;
+  line-height : 1.3rem;
   min-height : 40px;
   display: flex;
   align-items: center;
-  transition: transform 0.5s, box-shadow 0.2s; /* 애니메이션 효과 */
-  border : 0.1px solid #ddd;
+  /* transition: transform 0.5s, box-shadow 0.5s; 애니메이션 효과 */
+
+  opacity: 0; /* 초기 상태: 투명 */
+  animation: fadeIn 1s forwards; /* fadeIn 애니메이션 적용 */
+  padding-left: 0.5rem;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0; /* 애니메이션 시작: 투명 */
+  }
+  to {
+      opacity: 1; /* 애니메이션 종료: 불투명 */
+  }
 }
 
 .task:hover {
-  filter: brightness(0.9); /* 마우스 오버 시 밝아짐 */
+  filter: brightness(0.95); /* 마우스 오버 시 밝아짐 */
 
 }
 

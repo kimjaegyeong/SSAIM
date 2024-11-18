@@ -20,11 +20,11 @@ const Task: React.FC<TaskProps> = ({ taskType, day, tasks }) => {
   const handleClick = () => {
     toggleTask(day, taskType); // 상태 토글
   };
-
+  const title = taskType.charAt(0).toUpperCase() + taskType.slice(1)
   return (
     <>
       <div onClick={handleClick} className={classNames(styles.taskTitle, styles[`${taskType}-title`])}>
-        <span>{taskType}</span>
+        <span>{title}</span>
         <span>{isOpen ? '▼' : '◀'}</span>
       </div>
       {isOpen &&
