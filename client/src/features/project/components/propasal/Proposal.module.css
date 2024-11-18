@@ -19,7 +19,8 @@
 .label {
     width: 200px;
     font-weight: bold;
-    background-color: #b6e0fa;
+    background-color: #913BF6;
+    color: white;
     border: 1px solid #ccc;
     text-align: center;
 }
@@ -28,6 +29,11 @@
     padding: 8px;
     border: 1px solid #ccc;
     cursor: pointer;
+    white-space: 'pre-wrap';
+    overflow-wrap: 'break-word';
+    word-wrap: 'break-word';
+    word-break: 'break-word';
+    position: relative;
 }
 
 .inputTextarea {
@@ -82,4 +88,22 @@ textarea {
     font-size: 12px;
     color: gray;
     text-align: right;
+}
+
+.participantNames {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    bottom: 100%;
+    right: -2px;
+    z-index: 10;
+}
+
+.participantName {
+    padding: 5px;
+    border-radius: 4px 4px 0 0;
+    font-size: 12px;
+    color: white;
+    text-align: center;
+    background-color: #4a90e2; /* 기본 색상, getColorFromName으로 동적 설정 */
 }
