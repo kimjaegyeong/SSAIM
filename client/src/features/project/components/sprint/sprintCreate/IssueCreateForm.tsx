@@ -64,7 +64,7 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
       description,
       storyPoint,
       assignee: null,
-      ...(selectedEpic && { epic: selectedEpic }),
+      epic: selectedEpic,
     };
 
     addIssue(new Date(selectedDay), data);
@@ -137,8 +137,11 @@ const IssueCreateForm: React.FC<IssueCreateFormProps> = ({ weekdays }) => {
           <label className={styles.label}>Epic</label>
           <div className={styles.customDropdown}>
             <button onClick={() => setIsEpicOpen(!isEpicOpen)} className={styles.dropdownButton}>
-              {selectedEpic ? epicList?.find((epic) => {
-                return epic.summary === selectedEpic})?.summary : '에픽 미설정'}
+              {selectedEpic
+                ? epicList?.find((epic) => {
+                    return epic.summary === selectedEpic;
+                  })?.summary
+                : '에픽 미설정'}
             </button>
             {isEpicOpen && (
               <ul className={styles.dropdownMenu}>

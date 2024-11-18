@@ -47,7 +47,7 @@ h3 {
 }
 
 .submitButton {
-  background-color: #4caf50;
+  background-color: #0997ee;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -57,7 +57,7 @@ h3 {
 }
 
 .submitButton:hover {
-  background-color: #45a049;
+  background-color: #0074b3;
 }
 
 .cancelButton {
