@@ -58,16 +58,19 @@ const ERD: React.FC<ERDProps> = ({ projectId }) => {
 
       if (file.size > maxFileSize) {
         showToast.error("파일 크기가 100MB를 초과할 수 없습니다.");
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
   
       if (!allowedTypes.includes(file.type)) {
         showToast.error("허용된 파일 형식은 JPG 및 PNG입니다.");
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
 
       if (!isValidImage) {
         showToast.error("읽을 수 없는 파일입니다.");
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
   

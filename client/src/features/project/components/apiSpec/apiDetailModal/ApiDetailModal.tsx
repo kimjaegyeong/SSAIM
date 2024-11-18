@@ -24,12 +24,29 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
 }) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const textareaRefs = useRef<{ [key: string]: HTMLTextAreaElement | null }>({});
+
+  const autoResize = (element: HTMLTextAreaElement) => {
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight}px`;
+  };
 
   useEffect(() => {
     if (editingField && inputRefs.current[editingField]) {
       inputRefs.current[editingField]?.focus();
     }
   }, [editingField]);
+
+  useEffect(() => {
+    if (isOpen && data) {
+      Object.keys(textareaRefs.current).forEach((key) => {
+        const textarea = textareaRefs.current[key];
+        if (textarea) {
+          autoResize(textarea);
+        }
+      });
+    }
+  }, [isOpen, data]);
 
   const handleInputChange = (column: string, value: string) => {
     const updatedColumn = [...data[column]];
@@ -179,14 +196,11 @@ const ApiDetailModal: React.FC<ApiDetailModalProps> = ({
             <div key={key} className={styles.bodySection}>
               <h3 className={styles.bodyTitle}>{key}</h3>
               <textarea
+                ref={(el) => (textareaRefs.current[key] = el)}
                 className={styles.bodyTextarea}
                 value={data[key][rowIndex]}
                 onChange={(e) => handleInputChange(key, e.target.value)}
-                onInput={(e) => {
-                  const textarea = e.target as HTMLTextAreaElement;
-                  textarea.style.height = 'auto';
-                  textarea.style.height = `${textarea.scrollHeight}px`;
-                }}
+                onInput={(e) => autoResize(e.target as HTMLTextAreaElement)}
               />
             </div>
           ))}

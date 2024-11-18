@@ -97,7 +97,7 @@
 .tags {
     display: flex;
     gap: 5px;
-    flex: 2;
+    flex: 1;
 }
 
 .status {
