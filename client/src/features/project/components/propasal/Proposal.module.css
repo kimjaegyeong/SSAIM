@@ -19,7 +19,8 @@
 .label {
     width: 200px;
     font-weight: bold;
-    background-color: #b6e0fa;
+    background-color: #913BF6;
+    color: white;
     border: 1px solid #ccc;
     text-align: center;
 }

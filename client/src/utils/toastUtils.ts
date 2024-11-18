@@ -9,7 +9,7 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      theme: "dark",
+      theme: "light",
       ...options, // 사용자 정의 옵션 병합
     }),
 
@@ -21,7 +21,7 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      theme: "dark",
+      theme: "light",
       ...options,
     }),
 
@@ -33,7 +33,7 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      theme: "dark",
+      theme: "light",
       ...options,
     }),
 
@@ -45,7 +45,7 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      theme: "dark",
+      theme: "light",
       ...options,
     }),
 };

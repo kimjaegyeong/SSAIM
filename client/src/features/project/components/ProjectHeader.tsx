@@ -5,9 +5,11 @@ import { useProjectInfo } from '../hooks/useProjectInfo';
 
 interface ProjectHeaderProps {
   projectId: string;
+  isDaily?: boolean;
+  setIsDaily?: (value: boolean) => void;
 }
 
-const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
+const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId, isDaily, setIsDaily }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const {data : projectInfo} = useProjectInfo(Number(projectId));
@@ -24,6 +26,11 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
     navigate(path);
   };
 
+  const toggleRemindState = () => {
+    if (setIsDaily) {
+      setIsDaily(!isDaily);
+    }
+  };
 
   return (
     <div className={styles.projectHeader}>
@@ -68,14 +75,35 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ projectId }) => {
               회의록
             </p>
           </li>
-          <li>
-            <p
-              className={getLinkClass(`/project/${projectId}/remind`)}
-              onClick={() => handleNavigation(`/project/${projectId}/remind`)}
-            >
-              회고
-            </p>
-          </li>
+          {location.pathname === `/project/${projectId}/remind` ? (
+            <>
+              <li>
+                <p
+                  className={isDaily ? styles.activeLink : styles.navLink}
+                  onClick={toggleRemindState}
+                >
+                  일간
+                </p>
+              </li>
+              <li>
+                <p
+                  className={!isDaily ? styles.activeLink : styles.navLink}
+                  onClick={toggleRemindState}
+                >
+                  주간
+                </p>
+              </li>
+            </>
+          ) : (
+            <li>
+              <p
+                className={getLinkClass(`/project/${projectId}/remind`)}
+                onClick={() => handleNavigation(`/project/${projectId}/remind`)}
+              >
+                회고
+              </p>
+            </li>
+          )}
         </ul>
       </nav>
     </div>

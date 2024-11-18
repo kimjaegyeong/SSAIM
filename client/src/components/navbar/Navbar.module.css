@@ -32,6 +32,7 @@
   padding: 0;
   padding: 20px 0px;
   padding-left: 15px;
+  cursor: pointer;
 }
 
 .navItem:hover {
