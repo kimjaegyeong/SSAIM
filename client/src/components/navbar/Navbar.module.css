@@ -99,6 +99,11 @@
   visibility: visible;
   opacity: 1;
 }
+.sidebarContainer:hover .titleText {
+  width: 120px;
+  visibility: visible;
+  opacity: 1;
+}
 
 .header {
   padding: 10px;
