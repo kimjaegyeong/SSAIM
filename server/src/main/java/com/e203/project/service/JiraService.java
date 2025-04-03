@@ -4,7 +4,6 @@ import static org.springframework.http.HttpStatus.*;
 
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +14,8 @@ import com.e203.global.utils.ChatAiService;
 import com.e203.project.dto.jiraapi.*;
 import com.e203.project.dto.request.*;
 import com.e203.project.dto.response.*;
+import com.e203.project.strategy.Data;
+import com.e203.project.strategy.JiraApiFindStrategy;
 import com.e203.user.entity.User;
 import com.e203.user.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -55,15 +56,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JiraService {
 	private static final Logger log = LoggerFactory.getLogger(JiraService.class);
-	// jira api key를 db에 저장하기
+	private static final String JIRA_URL = "https://ssafy.atlassian.net/rest";
+
 	private final ProjectRepository projectRepository;
 	private final ProjectMemberRepository projectMemberRepository;
 	private final RestClient restClient;
 	private final ObjectMapper objectMapper;
-	private final String JIRA_URL = "https://ssafy.atlassian.net/rest";
 	private final ChatAiService chatAiService;
 	private final ApiDocsService apiDocsService;
 	private final UserRepository userRepository;
+	private final JiraApiFindStrategy jiraApiFindStrategy;
 
 	@Transactional
 	public Boolean setJiraApi(ProjectJiraConnectDto jiraConnectDto, int projectId) {
@@ -97,8 +99,14 @@ public class JiraService {
 			+ endDate + "\"" + " AND issuetype!=Epic ORDER BY created ASC";
 		String fields = "&fields= summary,status,assignee,customfield_10014,customfield_10031, issuetype, description, ";
 
-		List<JiraContent> issues = retrieve(jql, fields, info.getEncodedCredentials(), JiraContent.class);
-		return issues.stream().map(JiraIssueResponseDto::transferDto).collect(Collectors.toList());
+		try {
+			Data data = Data.builder().jql(jql).fields(fields).key(info.getEncodedCredentials()).build();
+			List<JiraContent> issues = jiraApiFindStrategy.execute(data, JiraContent.class);
+			return issues.stream().map(JiraIssueResponseDto::transferDto).collect(Collectors.toList());
+		} catch (RuntimeException e) {
+			log.error("Jira 이슈 조회 실패 (projectId={})", projectId, e);
+			return null;
+		}
 	}
 
 	public List<JiraSprintIssueResponseDto> findSprintIssue(int projectId, int sprintId) {
@@ -109,15 +117,17 @@ public class JiraService {
 		String jql = "/agile/1.0/sprint/" + sprintId + "/issue";
 		String fields = "?fields=summary,status,assignee,customfield_10014,customfield_10031, issuetype,description&jql=issuetype != Epic ORDER BY created ASC ";
 
-		List<JiraSprintFindIssueRequest> issues = retrieve(jql, fields, info.getEncodedCredentials(),
-			JiraSprintFindIssueRequest.class);
-
-		return issues.stream().map(JiraSprintIssueResponseDto::transferDto).collect(Collectors.toList());
-
+		try {
+			Data data = Data.builder().jql(jql).fields(fields).key(info.getEncodedCredentials()).build();
+			List<JiraSprintFindIssueRequest> issues = jiraApiFindStrategy.execute(data, JiraSprintFindIssueRequest.class);
+			return issues.stream().map(JiraSprintIssueResponseDto::transferDto).collect(Collectors.toList());
+		} catch (RuntimeException e) {
+			log.error("스프린트 이슈 조회 실패 (projectId={}, sprintId={})", projectId, sprintId, e);
+			return null;
+		}
 	}
 
 	public List<ProjectJiraEpicResponseDto> findAllEpics(int projectId) {
-
 		JiraInfo info = getInfo(projectId);
 		if (info == null) {
 			return null;
@@ -125,8 +135,15 @@ public class JiraService {
 
 		String jql = "/api/3/search?jql=" + "project=\"" + info.getJiraProjectId() + "\" AND issuetype=Epic";
 		String fields = "&fields=key,summary";
-		List<JiraContent> epics = retrieve(jql, fields, info.getEncodedCredentials(), JiraContent.class);
-		return epics.stream().map(ProjectJiraEpicResponseDto::transferDto).collect(Collectors.toList());
+
+		try {
+			Data data = Data.builder().jql(jql).fields(fields).key(info.getEncodedCredentials()).build();
+			List<JiraContent> epics = jiraApiFindStrategy.execute(data, JiraContent.class);
+			return epics.stream().map(ProjectJiraEpicResponseDto::transferDto).collect(Collectors.toList());
+		} catch (RuntimeException e) {
+			log.error("에픽 조회 실패 (projectId={})", projectId, e);
+			return null;
+		}
 	}
 
 	public String findJiraAccountId(String userEmail, String jiraApi) {
@@ -238,41 +255,6 @@ public class JiraService {
 		}
 
 		return sprints.stream().map(SprintResponseDto::transferDto).collect(Collectors.toList());
-	}
-
-	private <T> List<T> retrieve(String jql, String fields, String encodedCredentials, Class<T> reqType) {
-		List<T> issues = new ArrayList<>();
-		int startAt = 0;
-		int maxResults = 100;
-		boolean hasMore = true;
-
-		while (hasMore) {
-			String jiraUri = JIRA_URL + jql + fields + "&startAt=" + startAt + "&maxResults=" + maxResults;
-
-			try {
-				String responseBody = getRequestString(jiraUri, encodedCredentials);
-
-				if (reqType.equals(JiraContent.class)) {
-					JiraResponse response = objectMapper.readValue(responseBody, JiraResponse.class);
-					issues.addAll((Collection<? extends T>)response.getIssues()); //	private List<JiraContent> issues;
-					startAt += response.getIssues().size();
-					hasMore = startAt < response.getTotal();
-
-				} else if (reqType.equals(JiraSprintFindIssueRequest.class)) {
-					JiraSprintFindIssue sprintFindIssue = objectMapper.readValue(responseBody,
-						JiraSprintFindIssue.class);
-					issues.addAll(
-						(Collection<? extends T>)sprintFindIssue.getIssues()); // List<JiraSprintFindIssueRequest> issues;
-					startAt += sprintFindIssue.getIssues().size();
-					hasMore = startAt < sprintFindIssue.getTotal();
-				}
-
-			} catch (Exception e) {
-				handleException("Error occurred while calling Jira API", e);
-				break;
-			}
-		}
-		return issues;
 	}
 
 	private String getRequestString(String jiraUri, String encodedCredentials) {

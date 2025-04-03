@@ -7,6 +7,11 @@ import java.util.List;
 public class JiraSprintResponseProcessor implements JiraResponseProcessor<JiraSprintFindIssue, JiraSprintFindIssueRequest> {
 
     @Override
+    public Class<JiraSprintFindIssue> getWrapperType() {
+        return JiraSprintFindIssue.class;
+    }
+
+    @Override
     public Pagination processResponse(JiraSprintFindIssue response, List<JiraSprintFindIssueRequest> issues) {
         issues.addAll(response.getIssues());
         return new Pagination(response.getIssues().size(), response.getTotal());
