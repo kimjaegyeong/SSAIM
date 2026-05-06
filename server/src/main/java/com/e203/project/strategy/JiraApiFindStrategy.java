@@ -1,43 +1,49 @@
 package com.e203.project.strategy;
 
-import com.e203.global.utils.ExceptionHandler;
 import com.e203.project.factory.JiraResponseProcessorFactory;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
-public class JiraApiFindStrategy<T> implements JiraApiStrategy<Data, T> {
+public class JiraApiFindStrategy implements JiraApiStrategy {
+
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
+    private final JiraResponseProcessorFactory processorFactory;
+
     @Override
-    public T execute(Data data, Class<T> responseType) {
-        List<T> issues = new ArrayList<>();
+    public <R> List<R> execute(Data data, Class<R> elementType) {
+        List<R> issues = new ArrayList<>();
         int startAt = 0;
         int maxResults = 100;
         boolean hasMore = true;
 
-        JiraResponseProcessor processor = JiraResponseProcessorFactory.getProcessor(responseType);
+        JiraResponseProcessor<?, R> processor = processorFactory.getProcessor(elementType);
 
         while (hasMore) {
-            String jiraUri = data.getJIRA_URL() + data.getJql() + data.getFields() + "&startAt=" + startAt + "&maxResults=" + maxResults;
+            String jiraUri = Data.JIRA_URL + data.getJql() + data.getFields()
+                    + "&startAt=" + startAt + "&maxResults=" + maxResults;
             try {
                 String responseBody = getRequestString(jiraUri, data.getKey());
-                T response = objectMapper.readValue(responseBody, new TypeReference<T>() {});
-                Pagination pagination= processor.processResponse(response, issues);
+                Pagination pagination = processor.deserializeAndProcess(responseBody, objectMapper, issues);
 
+                if (pagination.getNext() == 0) {
+                    break;
+                }
                 startAt += pagination.getNext();
                 hasMore = startAt < pagination.getTotal();
             } catch (Exception e) {
-                ExceptionHandler.handleException("Error occurred while calling Jira API", e);
-                break;
+                throw new RuntimeException("Jira API 호출 중 오류 발생 (startAt=" + startAt + ")", e);
             }
         }
-        return (T) issues;
+        return issues;
     }
 
     private String getRequestString(String jiraUri, String encodedCredentials) {

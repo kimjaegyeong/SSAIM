@@ -7,6 +7,11 @@ import java.util.List;
 public class IssueResponseProcessor implements JiraResponseProcessor<JiraResponse, JiraContent> {
 
     @Override
+    public Class<JiraResponse> getWrapperType() {
+        return JiraResponse.class;
+    }
+
+    @Override
     public Pagination processResponse(JiraResponse response, List<JiraContent> issues) {
         issues.addAll(response.getIssues());
         return new Pagination(response.getIssues().size(), response.getTotal());
